@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.Globalization;
+using System.IO.Compression;
 using McMaster.Extensions.CommandLineUtils;
 using Wolfgang.LogCompressor.Model;
 
@@ -93,6 +94,18 @@ internal abstract class SharedOptions
 
 
     /// <summary>
+    /// Gets or sets the compression level.
+    /// </summary>
+    [Option
+    (
+        "-l|--level",
+        Description = "Compression level: fastest, optimal, smallest (default: smallest)"
+    )]
+    public string Level { get; set; } = "smallest";
+
+
+
+    /// <summary>
     /// Validates command options and writes errors to the console.
     /// </summary>
     /// <param name="console">The console to write errors to.</param>
@@ -123,6 +136,12 @@ internal abstract class SharedOptions
             return false;
         }
 
+        if (!TryParseLevel(Level, out _))
+        {
+            console.Error.WriteLine($"Error: Unsupported compression level: '{Level}'. Supported: fastest, optimal, smallest");
+            return false;
+        }
+
         return true;
     }
 
@@ -135,6 +154,7 @@ internal abstract class SharedOptions
     internal CompressionOptions BuildOptions()
     {
         TryParseFormat(Format, out var format);
+        TryParseLevel(Level, out var level);
 
         return new CompressionOptions
         {
@@ -144,7 +164,8 @@ internal abstract class SharedOptions
             OlderThanDays = OlderThan,
             MinDateTime = ParseDateTime(MinDateTime),
             MaxDateTime = ParseDateTime(MaxDateTime),
-            Format = format
+            Format = format,
+            Level = level
         };
     }
 
@@ -182,5 +203,20 @@ internal abstract class SharedOptions
         };
 
         return (int)format >= 0;
+    }
+
+
+
+    private static bool TryParseLevel(string value, out CompressionLevel level)
+    {
+        level = value.ToLowerInvariant() switch
+        {
+            "fastest" => CompressionLevel.Fastest,
+            "optimal" => CompressionLevel.Optimal,
+            "smallest" => CompressionLevel.SmallestSize,
+            _ => (CompressionLevel)(-99)
+        };
+
+        return (int)level != -99;
     }
 }

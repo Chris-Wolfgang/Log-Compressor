@@ -9,6 +9,21 @@ namespace Wolfgang.LogCompressor.Service.Compression;
 /// </summary>
 internal sealed class BrotliCompressionStrategy : ICompressionStrategy
 {
+    private readonly CompressionLevel _level;
+
+
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="BrotliCompressionStrategy"/> class.
+    /// </summary>
+    /// <param name="level">The compression level to use.</param>
+    public BrotliCompressionStrategy(CompressionLevel level = CompressionLevel.SmallestSize)
+    {
+        _level = level;
+    }
+
+
+
     /// <inheritdoc />
     public string FileExtension => "br";
 
@@ -28,7 +43,7 @@ internal sealed class BrotliCompressionStrategy : ICompressionStrategy
         CancellationToken cancellationToken = default
     )
     {
-        await using var brotliStream = new BrotliStream(outputStream, CompressionLevel.SmallestSize, leaveOpen: true);
+        await using var brotliStream = new BrotliStream(outputStream, _level, leaveOpen: true);
         await inputStream.CopyToAsync(brotliStream, cancellationToken).ConfigureAwait(false);
     }
 
@@ -42,7 +57,7 @@ internal sealed class BrotliCompressionStrategy : ICompressionStrategy
         CancellationToken cancellationToken = default
     )
     {
-        await using var brotliStream = new BrotliStream(outputStream, CompressionLevel.SmallestSize, leaveOpen: true);
+        await using var brotliStream = new BrotliStream(outputStream, _level, leaveOpen: true);
         await using var tarWriter = new TarWriter(brotliStream, leaveOpen: true);
 
         foreach (var (stream, entryName) in inputs)

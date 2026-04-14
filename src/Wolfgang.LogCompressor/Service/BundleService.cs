@@ -58,7 +58,7 @@ internal class BundleService
     {
         ArgumentNullException.ThrowIfNull(options);
 
-        var strategy = _strategyFactory.Create(options.Format);
+        var strategy = _strategyFactory.Create(options.Format, options.Level);
         var files = EnumerateSourceFiles(options);
         var filtered = _fileFilter.Apply(files, options.OlderThanDays, options.MinDateTime, options.MaxDateTime);
 

@@ -8,6 +8,21 @@ namespace Wolfgang.LogCompressor.Service.Compression;
 /// </summary>
 internal sealed class ZipCompressionStrategy : ICompressionStrategy
 {
+    private readonly CompressionLevel _level;
+
+
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ZipCompressionStrategy"/> class.
+    /// </summary>
+    /// <param name="level">The compression level to use.</param>
+    public ZipCompressionStrategy(CompressionLevel level = CompressionLevel.SmallestSize)
+    {
+        _level = level;
+    }
+
+
+
     /// <inheritdoc />
     public string FileExtension => "zip";
 
@@ -28,7 +43,7 @@ internal sealed class ZipCompressionStrategy : ICompressionStrategy
     )
     {
         using var archive = new ZipArchive(outputStream, ZipArchiveMode.Create, leaveOpen: true);
-        var entry = archive.CreateEntry(entryName, CompressionLevel.SmallestSize);
+        var entry = archive.CreateEntry(entryName, _level);
         var entryStream = await entry.OpenAsync(cancellationToken).ConfigureAwait(false);
         await using (entryStream.ConfigureAwait(false))
         {
@@ -52,7 +67,7 @@ internal sealed class ZipCompressionStrategy : ICompressionStrategy
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            var entry = archive.CreateEntry(entryName, CompressionLevel.SmallestSize);
+            var entry = archive.CreateEntry(entryName, _level);
             var entryStream = await entry.OpenAsync(cancellationToken).ConfigureAwait(false);
             await using (entryStream.ConfigureAwait(false))
             {

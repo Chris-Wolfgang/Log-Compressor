@@ -1,3 +1,4 @@
+using System.IO.Compression;
 using McMaster.Extensions.CommandLineUtils;
 using NSubstitute;
 using Wolfgang.LogCompressor.Command;
@@ -170,6 +171,44 @@ public sealed class SharedOptionsValidationTests
 
 
     [Fact]
+    public void ValidateOptions_when_invalidLevel_expected_false()
+    {
+        var console = Substitute.For<IConsole>();
+        console.Error.Returns(new StringWriter());
+
+        var options = new TestOptions
+        {
+            Path = "/tmp",
+            Level = "turbo"
+        };
+
+        Assert.False(options.ValidateOptions(console));
+    }
+
+
+
+    [Theory]
+    [InlineData("fastest")]
+    [InlineData("optimal")]
+    [InlineData("smallest")]
+    [InlineData("Fastest")]
+    [InlineData("OPTIMAL")]
+    public void ValidateOptions_when_validLevel_expected_true(string level)
+    {
+        var console = Substitute.For<IConsole>();
+
+        var options = new TestOptions
+        {
+            Path = "/tmp",
+            Level = level
+        };
+
+        Assert.True(options.ValidateOptions(console));
+    }
+
+
+
+    [Fact]
     public void BuildOptions_when_allFieldsSet_expected_correctMapping()
     {
         var options = new TestOptions
@@ -178,7 +217,8 @@ public sealed class SharedOptionsValidationTests
             Output = "/tmp/output",
             Recurse = true,
             OlderThan = 30,
-            Format = "gz"
+            Format = "gz",
+            Level = "fastest"
         };
 
         var result = options.BuildOptions();
@@ -188,6 +228,7 @@ public sealed class SharedOptionsValidationTests
         Assert.True(result.Recurse);
         Assert.Equal(30, result.OlderThanDays);
         Assert.Equal(CompressionFormat.Gz, result.Format);
+        Assert.Equal(CompressionLevel.Fastest, result.Level);
     }
 
 
@@ -220,6 +261,7 @@ public sealed class SharedOptionsValidationTests
         var result = options.BuildOptions();
 
         Assert.Equal(CompressionFormat.Zip, result.Format);
+        Assert.Equal(CompressionLevel.SmallestSize, result.Level);
         Assert.Null(result.OutputPath);
         Assert.Null(result.OlderThanDays);
         Assert.Null(result.MinDateTime);

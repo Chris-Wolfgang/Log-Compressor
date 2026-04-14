@@ -15,6 +15,7 @@ internal sealed class FileNamingService : IFileNamer
     public string GetCompressedFileName(FileInfo sourceFile, string extension)
     {
         ArgumentNullException.ThrowIfNull(sourceFile);
+        ArgumentException.ThrowIfNullOrWhiteSpace(extension);
 
         var baseName = System.IO.Path.GetFileNameWithoutExtension(sourceFile.Name);
         var modified = sourceFile.LastWriteTime.ToString(DateTimeFormat);
@@ -29,6 +30,7 @@ internal sealed class FileNamingService : IFileNamer
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(folderName);
         ArgumentNullException.ThrowIfNull(files);
+        ArgumentException.ThrowIfNullOrWhiteSpace(extension);
 
         if (files.Count == 0)
         {

@@ -198,6 +198,32 @@ public sealed class CompressServiceTests
 
 
 
+    [Fact]
+    public async Task ExecuteAsync_when_cancelled_expected_throwsOperationCanceledException()
+    {
+        var tempFile = CreateTempFile();
+        var fileInfo = new FileInfo(tempFile);
+        var cts = new CancellationTokenSource();
+
+        _fileSystem.FileExists(tempFile).Returns(true);
+        _fileSystem.GetFileInfo(tempFile).Returns(fileInfo);
+        _fileFilter.Apply(Arg.Any<IEnumerable<FileInfo>>(), null, null, null).Returns([fileInfo]);
+        _fileNamer.GetCompressedFileName(fileInfo, "zip").Returns("out.zip");
+        _fileSystem.OpenRead(tempFile).Returns(_ => new MemoryStream("content"u8.ToArray()));
+        _fileSystem.CreateWrite(Arg.Any<string>()).Returns(_ => new MemoryStream());
+
+        await cts.CancelAsync();
+
+        var options = new CompressionOptions { SourcePath = tempFile };
+
+        await Assert.ThrowsAsync<OperationCanceledException>
+        (
+            () => _sut.ExecuteAsync(options, cts.Token)
+        );
+    }
+
+
+
     private static string CreateTempFile()
     {
         var path = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + ".log");

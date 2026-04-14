@@ -105,6 +105,55 @@ public sealed class FileNamingServiceTests
 
 
 
+    [Theory]
+    [InlineData("My App Logs")]
+    [InlineData("App[Prod]")]
+    [InlineData("App.v2.0")]
+    public void GetBundleFileName_when_specialCharactersInFolderName_expected_includesNameInOutput(string folderName)
+    {
+        var files = new List<FileInfo>
+        {
+            CreateFileInfo(new DateTime(2026, 1, 1, 0, 0, 0))
+        };
+
+        var result = _sut.GetBundleFileName(folderName, files, "zip");
+
+        Assert.StartsWith(folderName, result);
+        Assert.EndsWith(".zip", result);
+    }
+
+
+
+    [Fact]
+    public void GetCompressedFileName_when_nullExtension_expected_throwsArgumentNullException()
+    {
+        var file = CreateFileInfo(DateTime.Now);
+
+        Assert.Throws<ArgumentNullException>(() => _sut.GetCompressedFileName(file, null!));
+    }
+
+
+
+    [Fact]
+    public void GetCompressedFileName_when_emptyExtension_expected_throwsArgumentException()
+    {
+        var file = CreateFileInfo(DateTime.Now);
+
+        Assert.Throws<ArgumentException>(() => _sut.GetCompressedFileName(file, ""));
+    }
+
+
+
+    [Fact]
+    public void GetBundleFileName_when_nullExtension_expected_throwsArgumentNullException()
+    {
+        var files = new List<FileInfo> { CreateFileInfo(DateTime.Now) };
+
+        Assert.Throws<ArgumentNullException>(() => _sut.GetBundleFileName("Logs", files, null!));
+    }
+
+
+
     private static string CreateTempFileWithWriteTime(DateTime lastWriteTime)
     {
         var tempDir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());

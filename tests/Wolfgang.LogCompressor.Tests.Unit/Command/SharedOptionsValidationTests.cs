@@ -211,10 +211,13 @@ public sealed class SharedOptionsValidationTests
     [Fact]
     public void BuildOptions_when_allFieldsSet_expected_correctMapping()
     {
+        var sourcePath = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "logs");
+        var outputPath = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "output");
+
         var options = new TestOptions
         {
-            Path = "/tmp/logs",
-            Output = "/tmp/output",
+            Path = sourcePath,
+            Output = outputPath,
             Recurse = true,
             OlderThan = 30,
             Format = "gz",
@@ -223,8 +226,8 @@ public sealed class SharedOptionsValidationTests
 
         var result = options.BuildOptions();
 
-        Assert.Equal("/tmp/logs", result.SourcePath);
-        Assert.Equal("/tmp/output", result.OutputPath);
+        Assert.Equal(System.IO.Path.GetFullPath(sourcePath), result.SourcePath);
+        Assert.Equal(System.IO.Path.GetFullPath(outputPath), result.OutputPath);
         Assert.True(result.Recurse);
         Assert.Equal(30, result.OlderThanDays);
         Assert.Equal(CompressionFormat.Gz, result.Format);

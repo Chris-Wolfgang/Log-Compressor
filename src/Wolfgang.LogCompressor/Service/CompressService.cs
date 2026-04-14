@@ -35,6 +35,12 @@ internal class CompressService
         ILogger<CompressService> logger
     )
     {
+        ArgumentNullException.ThrowIfNull(fileSystem);
+        ArgumentNullException.ThrowIfNull(fileFilter);
+        ArgumentNullException.ThrowIfNull(fileNamer);
+        ArgumentNullException.ThrowIfNull(strategyFactory);
+        ArgumentNullException.ThrowIfNull(logger);
+
         _fileSystem = fileSystem;
         _fileFilter = fileFilter;
         _fileNamer = fileNamer;
@@ -112,7 +118,7 @@ internal class CompressService
         CancellationToken cancellationToken
     )
     {
-        var outputDir = options.OutputPath ?? sourceFile.DirectoryName!;
+        var outputDir = options.OutputPath ?? sourceFile.DirectoryName ?? Directory.GetCurrentDirectory();
         var outputFileName = _fileNamer.GetCompressedFileName(sourceFile, strategy.FileExtension);
         var outputPath = Path.Combine(outputDir, outputFileName);
 

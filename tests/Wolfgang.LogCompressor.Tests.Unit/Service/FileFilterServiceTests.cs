@@ -132,6 +132,45 @@ public sealed class FileFilterServiceTests
 
 
 
+    [Fact]
+    public void Apply_when_fileModifiedExactlyAtMinDateTime_expected_fileIncluded()
+    {
+        var exactTime = new DateTime(2026, 6, 15, 12, 0, 0);
+        var files = CreateFiles(exactTime);
+
+        var result = _sut.Apply(files, null, minDateTime: exactTime, null);
+
+        Assert.Single(result);
+    }
+
+
+
+    [Fact]
+    public void Apply_when_fileModifiedExactlyAtMaxDateTime_expected_fileIncluded()
+    {
+        var exactTime = new DateTime(2026, 6, 15, 12, 0, 0);
+        var files = CreateFiles(exactTime);
+
+        var result = _sut.Apply(files, null, null, maxDateTime: exactTime);
+
+        Assert.Single(result);
+    }
+
+
+
+    [Fact]
+    public void Apply_when_fileModifiedExactlyAtOlderThanThreshold_expected_fileExcluded()
+    {
+        var threshold = DateTime.Today.AddDays(-7);
+        var files = CreateFiles(threshold);
+
+        var result = _sut.Apply(files, olderThanDays: 7, null, null);
+
+        Assert.Empty(result);
+    }
+
+
+
     private static List<FileInfo> CreateFiles(params DateTime[] lastWriteTimes)
     {
         var tempDir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());

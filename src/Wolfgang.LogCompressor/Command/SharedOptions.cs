@@ -11,6 +11,11 @@ namespace Wolfgang.LogCompressor.Command;
 /// </summary>
 internal abstract class SharedOptions
 {
+    private const int InvalidFormatSentinel = -1;
+    private const int InvalidLevelSentinel = -1;
+
+
+
     /// <summary>
     /// Gets or sets the path to a file or directory to process.
     /// </summary>
@@ -112,6 +117,17 @@ internal abstract class SharedOptions
     /// <returns><see langword="true"/> if options are valid; otherwise, <see langword="false"/>.</returns>
     internal bool ValidateOptions(IConsole console)
     {
+        var resolvedPath = System.IO.Path.GetFullPath(Path);
+        if (!resolvedPath.Equals(Path, StringComparison.Ordinal))
+        {
+            Path = resolvedPath;
+        }
+
+        if (Output != null)
+        {
+            Output = System.IO.Path.GetFullPath(Output);
+        }
+
         if (OlderThan.HasValue && (MinDateTime != null || MaxDateTime != null))
         {
             console.Error.WriteLine("Error: --older-than cannot be used with --min-datetime or --max-datetime.");
@@ -158,8 +174,8 @@ internal abstract class SharedOptions
 
         return new CompressionOptions
         {
-            SourcePath = Path,
-            OutputPath = Output,
+            SourcePath = System.IO.Path.GetFullPath(Path),
+            OutputPath = Output != null ? System.IO.Path.GetFullPath(Output) : null,
             Recurse = Recurse,
             OlderThanDays = OlderThan,
             MinDateTime = ParseDateTime(MinDateTime),
@@ -199,10 +215,10 @@ internal abstract class SharedOptions
             "zip" => CompressionFormat.Zip,
             "gz" or "gzip" => CompressionFormat.Gz,
             "br" or "brotli" => CompressionFormat.Brotli,
-            _ => (CompressionFormat)(-1)
+            _ => (CompressionFormat)InvalidFormatSentinel
         };
 
-        return (int)format >= 0;
+        return (int)format != InvalidFormatSentinel;
     }
 
 
@@ -214,9 +230,9 @@ internal abstract class SharedOptions
             "fastest" => CompressionLevel.Fastest,
             "optimal" => CompressionLevel.Optimal,
             "smallest" => CompressionLevel.SmallestSize,
-            _ => (CompressionLevel)(-99)
+            _ => (CompressionLevel)InvalidLevelSentinel
         };
 
-        return (int)level != -99;
+        return (int)level != InvalidLevelSentinel;
     }
 }

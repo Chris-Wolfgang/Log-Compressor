@@ -35,6 +35,12 @@ internal class BundleService
         ILogger<BundleService> logger
     )
     {
+        ArgumentNullException.ThrowIfNull(fileSystem);
+        ArgumentNullException.ThrowIfNull(fileFilter);
+        ArgumentNullException.ThrowIfNull(fileNamer);
+        ArgumentNullException.ThrowIfNull(strategyFactory);
+        ArgumentNullException.ThrowIfNull(logger);
+
         _fileSystem = fileSystem;
         _fileFilter = fileFilter;
         _fileNamer = fileNamer;
@@ -82,8 +88,14 @@ internal class BundleService
             };
         }
 
-        var folderName = Path.GetFileName(options.SourcePath.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar));
-        var outputDir = options.OutputPath ?? Path.GetDirectoryName(options.SourcePath)!;
+        var trimmedPath = options.SourcePath.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+        var folderName = Path.GetFileName(trimmedPath);
+        if (string.IsNullOrEmpty(folderName))
+        {
+            folderName = "archive";
+        }
+
+        var outputDir = options.OutputPath ?? Path.GetDirectoryName(trimmedPath) ?? trimmedPath;
         var outputFileName = _fileNamer.GetBundleFileName(folderName, filtered, strategy.BundleFileExtension);
         var outputPath = Path.Combine(outputDir, outputFileName);
 

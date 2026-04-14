@@ -8,88 +8,84 @@ using Wolfgang.LogCompressor.Service.Compression;
 using McMaster.Extensions.CommandLineUtils;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Serilog;
-using ILogger = Microsoft.Extensions.Logging.ILogger;
 
-namespace Wolfgang.LogCompressor
+namespace Wolfgang.LogCompressor;
+
+[Command
+(
+    Name = "logc",
+
+    Description = "Cross-platform CLI tool to compress log files",
+
+    UnrecognizedArgumentHandling = UnrecognizedArgumentHandling.Throw,
+
+    ResponseFileHandling = ResponseFileHandling.ParseArgsAsLineSeparated
+)]
+[Subcommand(typeof(Compress))]
+[Subcommand(typeof(Bundle))]
+[ExcludeFromCodeCoverage]
+internal class Program
 {
-
-    [Command
-    (
-        Name = "logc",
-
-        Description = "Cross-platform CLI tool to compress log files",
-
-        UnrecognizedArgumentHandling = UnrecognizedArgumentHandling.Throw,
-
-        ResponseFileHandling = ResponseFileHandling.ParseArgsAsLineSeparated
-    )]
-    [Subcommand(typeof(Compress))]
-    [Subcommand(typeof(Bundle))]
-    [ExcludeFromCodeCoverage]
-    internal class Program
+    private static async Task<int> Main(string[] args)
     {
-        private static async Task<int> Main(string[] args)
+        try
         {
-            try
-            {
-                return await new HostBuilder()
-                    .AddConfigurationFile
-                    (
-                        ConfigurationFileMethod.SingleFile,
-                        optional: false,
-                        reloadOnChange: false
-                    )
+            return await new HostBuilder()
+                .AddConfigurationFile
+                (
+                    ConfigurationFileMethod.SingleFile,
+                    optional: false,
+                    reloadOnChange: false
+                )
 
-                    .UseSerilog((context, configuration) =>
-                    {
-                        configuration
-                            .ReadFrom.Configuration(context.Configuration)
-                            .Enrich.WithProperty("Version", Assembly.GetEntryAssembly()?.GetName().Version)
-                            ;
-                    })
+                .UseSerilog((context, configuration) =>
+                {
+                    configuration
+                        .ReadFrom.Configuration(context.Configuration)
+                        .Enrich.WithProperty("Version", Assembly.GetEntryAssembly()?.GetName().Version)
+                        ;
+                })
 
-                    .ConfigureServices((_, serviceCollection) =>
-                    {
-                        serviceCollection
-                            .AddSingleton<IReporter, ConsoleReporter>()
-                            .AddSingleton<IFileSystem, FileSystemWrapper>()
-                            .AddSingleton<IFileFilter, FileFilterService>()
-                            .AddSingleton<IFileNamer, FileNamingService>()
-                            .AddSingleton<CompressionStrategyFactory>()
-                            .AddTransient<CompressService>()
-                            .AddTransient<BundleService>()
-                            ;
-                    })
-                    .RunCommandLineApplicationAsync<Program>(args);
-            }
-            catch (Exception e)
-            {
-                await Console.Error.WriteLineAsync(e.Message);
-                Log.Logger.Fatal(e, "Unhandled exception: {Message}", e.Message);
-                return ExitCode.UnhandledException;
-            }
-            finally
-            {
-                await Log.CloseAndFlushAsync();
-            }
+                .ConfigureServices((_, serviceCollection) =>
+                {
+                    serviceCollection
+                        .AddSingleton<IReporter, ConsoleReporter>()
+                        .AddSingleton<IFileSystem, FileSystemWrapper>()
+                        .AddSingleton<IFileFilter, FileFilterService>()
+                        .AddSingleton<IFileNamer, FileNamingService>()
+                        .AddSingleton<CompressionStrategyFactory>()
+                        .AddTransient<CompressService>()
+                        .AddTransient<BundleService>()
+                        ;
+                })
+                .RunCommandLineApplicationAsync<Program>(args);
         }
-
-
-
-        /// <summary>
-        /// This method is called if the user does not specify a sub command.
-        /// </summary>
-        /// <param name="application">The command line application.</param>
-        /// <returns>0 on success or any positive number for failure.</returns>
-        internal int OnExecute
-        (
-            CommandLineApplication<Program> application
-        )
+        catch (Exception e)
         {
-            application.ShowHelp();
-            return ExitCode.Success;
+            await Console.Error.WriteLineAsync(e.Message);
+            Log.Logger.Fatal(e, "Unhandled exception: {Message}", e.Message);
+            return ExitCode.UnhandledException;
         }
+        finally
+        {
+            await Log.CloseAndFlushAsync();
+        }
+    }
+
+
+
+    /// <summary>
+    /// This method is called if the user does not specify a sub command.
+    /// </summary>
+    /// <param name="application">The command line application.</param>
+    /// <returns>0 on success or any positive number for failure.</returns>
+    internal int OnExecute
+    (
+        CommandLineApplication<Program> application
+    )
+    {
+        application.ShowHelp();
+        return ExitCode.Success;
     }
 }

@@ -148,6 +148,16 @@ jobs:
           --self-contained
           --output ./publish
 
+      - name: Smoke test published binary
+        shell: bash
+        run: |
+          if [[ "${{ runner.os }}" == "Windows" ]]; then
+            ./publish/logc.exe -?
+          else
+            chmod +x ./publish/logc
+            ./publish/logc -?
+          fi
+
       - name: Create archive (zip)
         if: matrix.archive == 'zip'
         shell: pwsh

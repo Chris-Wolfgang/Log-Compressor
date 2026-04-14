@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/benchmarks/">
+    <Project Path="benchmarks/Wolfgang.LogCompressor.Benchmarks/Wolfgang.LogCompressor.Benchmarks.csproj" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="src/Wolfgang.LogCompressor/Wolfgang.LogCompressor.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Wolfgang.LogCompressor.Tests.Unit/Wolfgang.LogCompressor.Tests.Unit.csproj" />
+  </Folder>
+</Solution>

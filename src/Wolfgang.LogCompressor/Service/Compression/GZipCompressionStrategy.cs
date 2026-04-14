@@ -9,6 +9,21 @@ namespace Wolfgang.LogCompressor.Service.Compression;
 /// </summary>
 internal sealed class GZipCompressionStrategy : ICompressionStrategy
 {
+    private readonly CompressionLevel _level;
+
+
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GZipCompressionStrategy"/> class.
+    /// </summary>
+    /// <param name="level">The compression level to use.</param>
+    public GZipCompressionStrategy(CompressionLevel level = CompressionLevel.SmallestSize)
+    {
+        _level = level;
+    }
+
+
+
     /// <inheritdoc />
     public string FileExtension => "gz";
 
@@ -28,7 +43,7 @@ internal sealed class GZipCompressionStrategy : ICompressionStrategy
         CancellationToken cancellationToken = default
     )
     {
-        await using var gzipStream = new GZipStream(outputStream, CompressionLevel.SmallestSize, leaveOpen: true);
+        await using var gzipStream = new GZipStream(outputStream, _level, leaveOpen: true);
         await inputStream.CopyToAsync(gzipStream, cancellationToken).ConfigureAwait(false);
     }
 
@@ -42,7 +57,7 @@ internal sealed class GZipCompressionStrategy : ICompressionStrategy
         CancellationToken cancellationToken = default
     )
     {
-        await using var gzipStream = new GZipStream(outputStream, CompressionLevel.SmallestSize, leaveOpen: true);
+        await using var gzipStream = new GZipStream(outputStream, _level, leaveOpen: true);
         await using var tarWriter = new TarWriter(gzipStream, leaveOpen: true);
 
         foreach (var (stream, entryName) in inputs)

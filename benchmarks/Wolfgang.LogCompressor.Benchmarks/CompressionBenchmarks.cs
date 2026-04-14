@@ -1,3 +1,4 @@
+using System.IO.Compression;
 using System.Text;
 using BenchmarkDotNet.Attributes;
 using Wolfgang.LogCompressor.Abstraction;
@@ -7,7 +8,7 @@ using Wolfgang.LogCompressor.Service.Compression;
 namespace Wolfgang.LogCompressor.Benchmarks;
 
 /// <summary>
-/// Benchmarks for comparing compression strategies across file sizes and formats.
+/// Benchmarks for comparing compression strategies across file sizes, formats, and compression levels.
 /// </summary>
 [MemoryDiagnoser]
 public class CompressionBenchmarks
@@ -21,7 +22,7 @@ public class CompressionBenchmarks
     /// <summary>
     /// Gets or sets the simulated file size in bytes.
     /// </summary>
-    [Params(1024, 102_400, 1_048_576)]
+    [Params(10_485_760, 104_857_600)]
     public int FileSize { get; set; }
 
 
@@ -31,6 +32,14 @@ public class CompressionBenchmarks
     /// </summary>
     [Params("zip", "gz", "brotli")]
     public string Format { get; set; } = "zip";
+
+
+
+    /// <summary>
+    /// Gets or sets the compression level to benchmark.
+    /// </summary>
+    [Params("fastest", "optimal", "smallest")]
+    public string Level { get; set; } = "smallest";
 
 
 
@@ -48,7 +57,15 @@ public class CompressionBenchmarks
             _ => CompressionFormat.Zip
         };
 
-        _strategy = _factory.Create(format);
+        var level = Level switch
+        {
+            "fastest" => CompressionLevel.Fastest,
+            "optimal" => CompressionLevel.Optimal,
+            "smallest" => CompressionLevel.SmallestSize,
+            _ => CompressionLevel.SmallestSize
+        };
+
+        _strategy = _factory.Create(format, level);
 
         var line = "2026-03-15 23:00:15.123 [INF] Processing request id=abc123 method=GET path=/api/data duration=42ms\n";
         var sb = new StringBuilder(FileSize);

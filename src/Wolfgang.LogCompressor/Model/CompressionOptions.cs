@@ -1,3 +1,5 @@
+using System.IO.Compression;
+
 namespace Wolfgang.LogCompressor.Model;
 
 /// <summary>
@@ -51,4 +53,11 @@ internal record CompressionOptions
     /// Gets the compression format to use.
     /// </summary>
     public CompressionFormat Format { get; init; } = CompressionFormat.Zip;
+
+
+
+    /// <summary>
+    /// Gets the compression level to use.
+    /// </summary>
+    public CompressionLevel Level { get; init; } = CompressionLevel.SmallestSize;
 }

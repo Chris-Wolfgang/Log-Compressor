@@ -21,7 +21,7 @@ public sealed class CompressServiceTests
     public CompressServiceTests()
     {
         _strategyFactory = Substitute.For<CompressionStrategyFactory>();
-        _strategyFactory.Create(Arg.Any<CompressionFormat>()).Returns(_strategy);
+        _strategyFactory.Create(Arg.Any<CompressionFormat>(), Arg.Any<System.IO.Compression.CompressionLevel>()).Returns(_strategy);
         _strategy.FileExtension.Returns("zip");
 
         _sut = new CompressService

@@ -43,6 +43,7 @@ internal sealed class GZipCompressionStrategy : ICompressionStrategy
         CancellationToken cancellationToken = default
     )
     {
+        _ = entryName; // Not used by single-stream GZip format
         await using var gzipStream = new GZipStream(outputStream, _level, leaveOpen: true);
         await inputStream.CopyToAsync(gzipStream, cancellationToken).ConfigureAwait(false);
     }

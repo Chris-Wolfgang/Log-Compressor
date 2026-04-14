@@ -11,11 +11,12 @@ public sealed class FileFilterServiceTests
     [Fact]
     public void Apply_when_noFiltersSpecified_expected_allFilesReturned()
     {
+        var today = DateTime.Today;
         var files = CreateFiles
         (
-            DateTime.Today.AddDays(-1),
-            DateTime.Today.AddDays(-10),
-            DateTime.Today.AddDays(-30)
+            today.AddDays(-1),
+            today.AddDays(-10),
+            today.AddDays(-30)
         );
 
         var result = _sut.Apply(files, null, null, null);
@@ -28,17 +29,18 @@ public sealed class FileFilterServiceTests
     [Fact]
     public void Apply_when_olderThanDays_expected_onlyOlderFilesReturned()
     {
+        var today = DateTime.Today;
         var files = CreateFiles
         (
-            DateTime.Today.AddDays(-1),
-            DateTime.Today.AddDays(-10),
-            DateTime.Today.AddDays(-30)
+            today.AddDays(-1),
+            today.AddDays(-10),
+            today.AddDays(-30)
         );
 
         var result = _sut.Apply(files, olderThanDays: 7, null, null);
 
         Assert.Equal(2, result.Count);
-        Assert.All(result, f => Assert.True(f.LastWriteTime < DateTime.Today.AddDays(-7)));
+        Assert.All(result, f => Assert.True(f.LastWriteTime < today.AddDays(-7)));
     }
 
 
@@ -46,12 +48,13 @@ public sealed class FileFilterServiceTests
     [Fact]
     public void Apply_when_minDateTimeSet_expected_filesOnOrAfterReturned()
     {
-        var threshold = DateTime.Today.AddDays(-15);
+        var today = DateTime.Today;
+        var threshold = today.AddDays(-15);
         var files = CreateFiles
         (
-            DateTime.Today.AddDays(-1),
-            DateTime.Today.AddDays(-10),
-            DateTime.Today.AddDays(-30)
+            today.AddDays(-1),
+            today.AddDays(-10),
+            today.AddDays(-30)
         );
 
         var result = _sut.Apply(files, null, minDateTime: threshold, null);
@@ -65,12 +68,13 @@ public sealed class FileFilterServiceTests
     [Fact]
     public void Apply_when_maxDateTimeSet_expected_filesOnOrBeforeReturned()
     {
-        var threshold = DateTime.Today.AddDays(-5);
+        var today = DateTime.Today;
+        var threshold = today.AddDays(-5);
         var files = CreateFiles
         (
-            DateTime.Today.AddDays(-1),
-            DateTime.Today.AddDays(-10),
-            DateTime.Today.AddDays(-30)
+            today.AddDays(-1),
+            today.AddDays(-10),
+            today.AddDays(-30)
         );
 
         var result = _sut.Apply(files, null, null, maxDateTime: threshold);
@@ -84,13 +88,14 @@ public sealed class FileFilterServiceTests
     [Fact]
     public void Apply_when_minAndMaxDateTimeSet_expected_filesInRangeReturned()
     {
-        var min = DateTime.Today.AddDays(-20);
-        var max = DateTime.Today.AddDays(-5);
+        var today = DateTime.Today;
+        var min = today.AddDays(-20);
+        var max = today.AddDays(-5);
         var files = CreateFiles
         (
-            DateTime.Today.AddDays(-1),
-            DateTime.Today.AddDays(-10),
-            DateTime.Today.AddDays(-30)
+            today.AddDays(-1),
+            today.AddDays(-10),
+            today.AddDays(-30)
         );
 
         var result = _sut.Apply(files, null, minDateTime: min, maxDateTime: max);
@@ -105,7 +110,8 @@ public sealed class FileFilterServiceTests
     [Fact]
     public void Apply_when_noFilesMatchFilter_expected_emptyListReturned()
     {
-        var files = CreateFiles(DateTime.Today.AddDays(-1));
+        var today = DateTime.Today;
+        var files = CreateFiles(today.AddDays(-1));
 
         var result = _sut.Apply(files, olderThanDays: 30, null, null);
 
@@ -161,7 +167,8 @@ public sealed class FileFilterServiceTests
     [Fact]
     public void Apply_when_fileModifiedExactlyAtOlderThanThreshold_expected_fileExcluded()
     {
-        var threshold = DateTime.Today.AddDays(-7);
+        var today = DateTime.Today;
+        var threshold = today.AddDays(-7);
         var files = CreateFiles(threshold);
 
         var result = _sut.Apply(files, olderThanDays: 7, null, null);

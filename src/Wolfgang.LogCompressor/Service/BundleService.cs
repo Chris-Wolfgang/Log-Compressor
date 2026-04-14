@@ -88,14 +88,9 @@ internal class BundleService
             };
         }
 
-        var trimmedPath = options.SourcePath.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
-        var folderName = Path.GetFileName(trimmedPath);
-        if (string.IsNullOrEmpty(folderName))
-        {
-            folderName = "archive";
-        }
-
-        var outputDir = options.OutputPath ?? Path.GetDirectoryName(trimmedPath) ?? trimmedPath;
+        var sourceDirectory = new DirectoryInfo(options.SourcePath);
+        var folderName = string.IsNullOrWhiteSpace(sourceDirectory.Name) ? "archive" : sourceDirectory.Name;
+        var outputDir = options.OutputPath ?? sourceDirectory.Parent?.FullName ?? sourceDirectory.FullName;
         var outputFileName = _fileNamer.GetBundleFileName(folderName, filtered, strategy.BundleFileExtension);
         var outputPath = Path.Combine(outputDir, outputFileName);
 

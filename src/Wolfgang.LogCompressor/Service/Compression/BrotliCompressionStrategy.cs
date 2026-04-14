@@ -43,6 +43,7 @@ internal sealed class BrotliCompressionStrategy : ICompressionStrategy
         CancellationToken cancellationToken = default
     )
     {
+        _ = entryName; // Not used by single-stream Brotli format
         await using var brotliStream = new BrotliStream(outputStream, _level, leaveOpen: true);
         await inputStream.CopyToAsync(brotliStream, cancellationToken).ConfigureAwait(false);
     }

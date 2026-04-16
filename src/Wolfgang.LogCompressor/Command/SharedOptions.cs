@@ -171,6 +171,18 @@ internal abstract class SharedOptions
 
 
     /// <summary>
+    /// Gets or sets a value indicating whether to disable directory locking.
+    /// </summary>
+    [Option
+    (
+        "--no-lock",
+        Description = "Disable single-instance directory locking"
+    )]
+    public bool NoLock { get; set; }
+
+
+
+    /// <summary>
     /// Gets or sets the number of days after which old archives are deleted.
     /// </summary>
     [Option
@@ -272,7 +284,8 @@ internal abstract class SharedOptions
             Verify = !NoVerify,
             ReportFormat = Report,
             ReportPath = ReportPath,
-            DeleteArchivesOlderThanDays = DeleteArchivesOlderThan
+            DeleteArchivesOlderThanDays = DeleteArchivesOlderThan,
+            NoLock = NoLock
         };
     }
 

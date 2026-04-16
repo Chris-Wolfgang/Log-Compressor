@@ -40,14 +40,29 @@ internal class Bundle : SharedOptions
             return ExitCode.InvalidArguments;
         }
 
+        var options = BuildOptions();
+
+        using var processLock = new ProcessLock
+        (
+            System.IO.Path.GetDirectoryName(options.SourcePath) ?? options.SourcePath,
+            logger
+        );
+
+        if (!options.NoLock && !processLock.TryAcquire())
+        {
+#pragma warning disable CA1849, VSTHRD103 // McMaster IConsole has no async overloads
+            console.Error.WriteLine("Another instance is already processing this directory.");
+#pragma warning restore CA1849, VSTHRD103
+            return ExitCode.AlreadyRunning;
+        }
+
         try
         {
-            var options = BuildOptions();
             var sw = Stopwatch.StartNew();
             var result = await bundleService.ExecuteAsync(options).ConfigureAwait(false);
             sw.Stop();
 
-#pragma warning disable CA1849, VSTHRD103 // McMaster IConsole has no async overloads
+#pragma warning disable CA1849, VSTHRD103
             if (result.Success)
             {
                 console.WriteLine($"Bundled files to {result.OutputPath}");

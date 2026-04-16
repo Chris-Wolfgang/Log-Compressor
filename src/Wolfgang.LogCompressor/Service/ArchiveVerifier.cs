@@ -1,3 +1,4 @@
+using System.Formats.Tar;
 using System.IO.Compression;
 using Microsoft.Extensions.Logging;
 using Wolfgang.LogCompressor.Abstraction;
@@ -38,10 +39,16 @@ internal sealed class ArchiveVerifier : IArchiveVerifier
                 case "zip":
                     await VerifyZipAsync(archivePath).ConfigureAwait(false);
                     break;
-                case "gz" or "tar.gz":
+                case "tar.gz":
+                    await VerifyTarStreamAsync<GZipStream>(archivePath).ConfigureAwait(false);
+                    break;
+                case "tar.br":
+                    await VerifyTarStreamAsync<BrotliStream>(archivePath).ConfigureAwait(false);
+                    break;
+                case "gz":
                     await VerifyDecompressionAsync<GZipStream>(archivePath).ConfigureAwait(false);
                     break;
-                case "br" or "tar.br":
+                case "br":
                     await VerifyDecompressionAsync<BrotliStream>(archivePath).ConfigureAwait(false);
                     break;
                 default:
@@ -71,6 +78,34 @@ internal sealed class ArchiveVerifier : IArchiveVerifier
             await using (entryStream.ConfigureAwait(false))
             {
                 await entryStream.CopyToAsync(Stream.Null).ConfigureAwait(false);
+            }
+        }
+    }
+
+
+
+    private static async Task VerifyTarStreamAsync<TStream>(string path)
+        where TStream : Stream
+    {
+        await using var fileStream = File.OpenRead(path);
+        var decompressionStream = (Stream)Activator.CreateInstance
+        (
+            typeof(TStream),
+            fileStream,
+            CompressionMode.Decompress,
+            true
+        )!;
+
+        await using (decompressionStream.ConfigureAwait(false))
+        {
+            await using var tarReader = new TarReader(decompressionStream);
+
+            while (await tarReader.GetNextEntryAsync().ConfigureAwait(false) is { } entry)
+            {
+                if (entry.DataStream != null)
+                {
+                    await entry.DataStream.CopyToAsync(Stream.Null).ConfigureAwait(false);
+                }
             }
         }
     }

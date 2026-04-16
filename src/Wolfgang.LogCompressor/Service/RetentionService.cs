@@ -44,6 +44,7 @@ internal sealed class RetentionService
     public int DeleteOldArchives(string directory, int olderThanDays)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(directory);
+        ArgumentOutOfRangeException.ThrowIfLessThan(olderThanDays, 1);
 
         if (!_fileSystem.DirectoryExists(directory))
         {

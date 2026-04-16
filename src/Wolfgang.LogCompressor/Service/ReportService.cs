@@ -45,6 +45,12 @@ internal sealed class ReportService
             _ => throw new ArgumentException($"Unsupported report format: {format}", nameof(format))
         };
 
+        var directory = System.IO.Path.GetDirectoryName(outputPath);
+        if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory))
+        {
+            Directory.CreateDirectory(directory);
+        }
+
         return File.WriteAllTextAsync(outputPath, content);
     }
 

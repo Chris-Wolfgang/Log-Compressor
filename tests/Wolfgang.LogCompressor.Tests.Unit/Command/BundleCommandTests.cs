@@ -57,7 +57,7 @@ public sealed class BundleCommandTests
                 }
             );
 
-        var command = new Bundle { Path = "/tmp/logs" };
+        var command = new Bundle { Path = "/tmp/logs", NoLock = true };
 
         var result = await command.OnExecuteAsync(_console, _logger, _bundleService, _reportService, _retentionService);
 
@@ -81,7 +81,7 @@ public sealed class BundleCommandTests
                 }
             );
 
-        var command = new Bundle { Path = "/tmp/logs" };
+        var command = new Bundle { Path = "/tmp/logs", NoLock = true };
 
         var result = await command.OnExecuteAsync(_console, _logger, _bundleService, _reportService, _retentionService);
 
@@ -113,7 +113,7 @@ public sealed class BundleCommandTests
         _bundleService.ExecuteAsync(Arg.Any<CompressionOptions>(), Arg.Any<CancellationToken>())
             .Returns<CompressionResult>(_ => throw new IOException("disk full"));
 
-        var command = new Bundle { Path = "/tmp" };
+        var command = new Bundle { Path = "/tmp", NoLock = true };
 
         var result = await command.OnExecuteAsync(_console, _logger, _bundleService, _reportService, _retentionService);
 

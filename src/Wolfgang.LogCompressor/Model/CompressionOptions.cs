@@ -102,4 +102,11 @@ internal record CompressionOptions
     /// Gets the number of days after which compressed archives should be deleted.
     /// </summary>
     public int? DeleteArchivesOlderThanDays { get; init; }
+
+
+
+    /// <summary>
+    /// Gets a value indicating whether to disable single-instance directory locking.
+    /// </summary>
+    public bool NoLock { get; init; }
 }

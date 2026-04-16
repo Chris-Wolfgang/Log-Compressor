@@ -40,9 +40,24 @@ internal class Compress : SharedOptions
             return ExitCode.InvalidArguments;
         }
 
+        var options = BuildOptions();
+
+        using var processLock = new ProcessLock
+        (
+            System.IO.Path.GetDirectoryName(options.SourcePath) ?? options.SourcePath,
+            logger
+        );
+
+        if (!options.NoLock && !processLock.TryAcquire())
+        {
+#pragma warning disable CA1849, VSTHRD103 // McMaster IConsole has no async overloads
+            console.Error.WriteLine("Another instance is already processing this directory.");
+#pragma warning restore CA1849, VSTHRD103
+            return ExitCode.AlreadyRunning;
+        }
+
         try
         {
-            var options = BuildOptions();
             var sw = Stopwatch.StartNew();
             var results = await compressService.ExecuteAsync(options).ConfigureAwait(false);
             sw.Stop();
@@ -50,7 +65,7 @@ internal class Compress : SharedOptions
             var succeeded = results.Count(r => r.Success);
             var failed = results.Count(r => !r.Success);
 
-#pragma warning disable CA1849, VSTHRD103 // McMaster IConsole has no async overloads
+#pragma warning disable CA1849, VSTHRD103
             console.WriteLine($"Compressed {succeeded} file(s) successfully.");
 
             if (failed > 0)

@@ -53,7 +53,7 @@ public sealed class CompressCommandTests
                 }
             );
 
-        var command = new Compress { Path = "/tmp/test.log" };
+        var command = new Compress { Path = "/tmp/test.log", NoLock = true };
 
         var result = await command.OnExecuteAsync(_console, _logger, _compressService, _reportService, _retentionService);
 
@@ -75,7 +75,7 @@ public sealed class CompressCommandTests
                 }
             );
 
-        var command = new Compress { Path = "/tmp" };
+        var command = new Compress { Path = "/tmp", NoLock = true };
 
         var result = await command.OnExecuteAsync(_console, _logger, _compressService, _reportService, _retentionService);
 
@@ -107,7 +107,7 @@ public sealed class CompressCommandTests
         _compressService.ExecuteAsync(Arg.Any<CompressionOptions>(), Arg.Any<CancellationToken>())
             .Returns<IReadOnlyList<CompressionResult>>(_ => throw new IOException("disk full"));
 
-        var command = new Compress { Path = "/tmp" };
+        var command = new Compress { Path = "/tmp", NoLock = true };
 
         var result = await command.OnExecuteAsync(_console, _logger, _compressService, _reportService, _retentionService);
 

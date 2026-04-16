@@ -13,6 +13,7 @@ internal class CompressService
     private readonly IFileSystem _fileSystem;
     private readonly IFileFilter _fileFilter;
     private readonly IFileNamer _fileNamer;
+    private readonly IArchiveVerifier _archiveVerifier;
     private readonly CompressionStrategyFactory _strategyFactory;
     private readonly ILogger<CompressService> _logger;
 
@@ -31,6 +32,7 @@ internal class CompressService
         IFileSystem fileSystem,
         IFileFilter fileFilter,
         IFileNamer fileNamer,
+        IArchiveVerifier archiveVerifier,
         CompressionStrategyFactory strategyFactory,
         ILogger<CompressService> logger
     )
@@ -38,12 +40,14 @@ internal class CompressService
         ArgumentNullException.ThrowIfNull(fileSystem);
         ArgumentNullException.ThrowIfNull(fileFilter);
         ArgumentNullException.ThrowIfNull(fileNamer);
+        ArgumentNullException.ThrowIfNull(archiveVerifier);
         ArgumentNullException.ThrowIfNull(strategyFactory);
         ArgumentNullException.ThrowIfNull(logger);
 
         _fileSystem = fileSystem;
         _fileFilter = fileFilter;
         _fileNamer = fileNamer;
+        _archiveVerifier = archiveVerifier;
         _strategyFactory = strategyFactory;
         _logger = logger;
     }
@@ -66,7 +70,15 @@ internal class CompressService
 
         var strategy = _strategyFactory.Create(options.Format, options.Level);
         var files = EnumerateSourceFiles(options);
-        var filtered = _fileFilter.Apply(files, options.OlderThanDays, options.MinDateTime, options.MaxDateTime);
+        var filtered = _fileFilter.Apply
+        (
+            files,
+            options.OlderThanDays,
+            options.MinDateTime,
+            options.MaxDateTime,
+            options.IncludePatterns,
+            options.ExcludePatterns
+        );
 
         _logger.LogInformation
         (
@@ -143,6 +155,21 @@ internal class CompressService
             await outputStream.FlushAsync(cancellationToken).ConfigureAwait(false);
 
             var compressedSize = outputStream.Length;
+
+            if (options.Verify && !await _archiveVerifier.VerifyAsync(outputPath, strategy.FileExtension).ConfigureAwait(false))
+            {
+                _logger.LogError("Archive verification failed for {Output}, original file preserved", outputPath);
+
+                return new CompressionResult
+                {
+                    SourcePath = sourceFile.FullName,
+                    OutputPath = outputPath,
+                    OriginalSize = sourceFile.Length,
+                    CompressedSize = compressedSize,
+                    Success = false,
+                    ErrorMessage = "Archive verification failed."
+                };
+            }
 
             _fileSystem.DeleteFile(sourceFile.FullName);
 

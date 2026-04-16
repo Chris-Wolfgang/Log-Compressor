@@ -24,6 +24,7 @@ namespace Wolfgang.LogCompressor;
 )]
 [Subcommand(typeof(Compress))]
 [Subcommand(typeof(Bundle))]
+[Subcommand(typeof(Init))]
 [ExcludeFromCodeCoverage]
 internal class Program
 {
@@ -54,7 +55,10 @@ internal class Program
                         .AddSingleton<IFileSystem, FileSystemWrapper>()
                         .AddSingleton<IFileFilter, FileFilterService>()
                         .AddSingleton<IFileNamer, FileNamingService>()
+                        .AddSingleton<IArchiveVerifier, ArchiveVerifier>()
                         .AddSingleton<CompressionStrategyFactory>()
+                        .AddSingleton<ReportService>()
+                        .AddSingleton<RetentionService>()
                         .AddTransient<CompressService>()
                         .AddTransient<BundleService>()
                         ;

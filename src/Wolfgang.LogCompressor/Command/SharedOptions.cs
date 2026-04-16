@@ -111,6 +111,79 @@ internal abstract class SharedOptions
 
 
     /// <summary>
+    /// Gets or sets the glob patterns to include.
+    /// </summary>
+    [Option
+    (
+        "--include",
+        Description = "Only include files matching this glob pattern (can be specified multiple times)"
+    )]
+    public string[]? Include { get; set; }
+
+
+
+    /// <summary>
+    /// Gets or sets the glob patterns to exclude.
+    /// </summary>
+    [Option
+    (
+        "--exclude",
+        Description = "Exclude files matching this glob pattern (can be specified multiple times)"
+    )]
+    public string[]? Exclude { get; set; }
+
+
+
+    /// <summary>
+    /// Gets or sets a value indicating whether to skip archive verification.
+    /// </summary>
+    [Option
+    (
+        "--no-verify",
+        Description = "Skip archive integrity verification before deleting originals"
+    )]
+    public bool NoVerify { get; set; }
+
+
+
+    /// <summary>
+    /// Gets or sets the report format.
+    /// </summary>
+    [Option
+    (
+        "--report",
+        Description = "Output a summary report: json or csv"
+    )]
+    public string? Report { get; set; }
+
+
+
+    /// <summary>
+    /// Gets or sets the report output path.
+    /// </summary>
+    [Option
+    (
+        "--report-path",
+        Description = "Path for the summary report file"
+    )]
+    public string? ReportPath { get; set; }
+
+
+
+    /// <summary>
+    /// Gets or sets the number of days after which old archives are deleted.
+    /// </summary>
+    [Option
+    (
+        "--delete-archives-older-than",
+        Description = "Delete compressed archives older than N days after compression"
+    )]
+    [Range(1, int.MaxValue)]
+    public int? DeleteArchivesOlderThan { get; set; }
+
+
+
+    /// <summary>
     /// Validates command options and writes errors to the console.
     /// </summary>
     /// <param name="console">The console to write errors to.</param>
@@ -158,6 +231,18 @@ internal abstract class SharedOptions
             return false;
         }
 
+        if (Report != null && !IsValidReportFormat(Report))
+        {
+            console.Error.WriteLine($"Error: Unsupported report format: '{Report}'. Supported: json, csv");
+            return false;
+        }
+
+        if (ReportPath != null && Report == null)
+        {
+            console.Error.WriteLine("Error: --report-path requires --report to be specified.");
+            return false;
+        }
+
         return true;
     }
 
@@ -181,7 +266,13 @@ internal abstract class SharedOptions
             MinDateTime = ParseDateTime(MinDateTime),
             MaxDateTime = ParseDateTime(MaxDateTime),
             Format = format,
-            Level = level
+            Level = level,
+            IncludePatterns = Include ?? [],
+            ExcludePatterns = Exclude ?? [],
+            Verify = !NoVerify,
+            ReportFormat = Report,
+            ReportPath = ReportPath,
+            DeleteArchivesOlderThanDays = DeleteArchivesOlderThan
         };
     }
 
@@ -234,5 +325,12 @@ internal abstract class SharedOptions
         };
 
         return (int)level != InvalidLevelSentinel;
+    }
+
+
+
+    private static bool IsValidReportFormat(string value)
+    {
+        return value.ToLowerInvariant() is "json" or "csv";
     }
 }

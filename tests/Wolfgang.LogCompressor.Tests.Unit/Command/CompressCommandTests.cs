@@ -12,6 +12,8 @@ public sealed class CompressCommandTests
     private readonly IConsole _console = Substitute.For<IConsole>();
     private readonly ILogger<Compress> _logger = Substitute.For<ILogger<Compress>>();
     private readonly CompressService _compressService;
+    private readonly ReportService _reportService = new();
+    private readonly RetentionService _retentionService;
 
 
 
@@ -25,8 +27,15 @@ public sealed class CompressCommandTests
             Substitute.For<Wolfgang.LogCompressor.Abstraction.IFileSystem>(),
             Substitute.For<Wolfgang.LogCompressor.Abstraction.IFileFilter>(),
             Substitute.For<Wolfgang.LogCompressor.Abstraction.IFileNamer>(),
+            Substitute.For<Wolfgang.LogCompressor.Abstraction.IArchiveVerifier>(),
             Substitute.For<Wolfgang.LogCompressor.Service.Compression.CompressionStrategyFactory>(),
             Substitute.For<ILogger<CompressService>>()
+        );
+
+        _retentionService = new RetentionService
+        (
+            Substitute.For<Wolfgang.LogCompressor.Abstraction.IFileSystem>(),
+            Substitute.For<ILogger<RetentionService>>()
         );
     }
 
@@ -46,7 +55,7 @@ public sealed class CompressCommandTests
 
         var command = new Compress { Path = "/tmp/test.log" };
 
-        var result = await command.OnExecuteAsync(_console, _logger, _compressService);
+        var result = await command.OnExecuteAsync(_console, _logger, _compressService, _reportService, _retentionService);
 
         Assert.Equal(ExitCode.Success, result);
     }
@@ -68,7 +77,7 @@ public sealed class CompressCommandTests
 
         var command = new Compress { Path = "/tmp" };
 
-        var result = await command.OnExecuteAsync(_console, _logger, _compressService);
+        var result = await command.OnExecuteAsync(_console, _logger, _compressService, _reportService, _retentionService);
 
         Assert.Equal(ExitCode.ApplicationError, result);
     }
@@ -85,7 +94,7 @@ public sealed class CompressCommandTests
             MinDateTime = "2026-01-01"
         };
 
-        var result = await command.OnExecuteAsync(_console, _logger, _compressService);
+        var result = await command.OnExecuteAsync(_console, _logger, _compressService, _reportService, _retentionService);
 
         Assert.Equal(ExitCode.InvalidArguments, result);
     }
@@ -100,7 +109,7 @@ public sealed class CompressCommandTests
 
         var command = new Compress { Path = "/tmp" };
 
-        var result = await command.OnExecuteAsync(_console, _logger, _compressService);
+        var result = await command.OnExecuteAsync(_console, _logger, _compressService, _reportService, _retentionService);
 
         Assert.Equal(ExitCode.ApplicationError, result);
     }

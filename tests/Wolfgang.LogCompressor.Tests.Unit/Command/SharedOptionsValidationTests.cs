@@ -271,4 +271,209 @@ public sealed class SharedOptionsValidationTests
         Assert.Null(result.MaxDateTime);
         Assert.False(result.Recurse);
     }
+
+
+
+    [Fact]
+    public void ValidateOptions_when_validReportFormat_expected_true()
+    {
+        var console = Substitute.For<IConsole>();
+
+        var options = new TestOptions
+        {
+            Path = "/tmp",
+            Report = "json"
+        };
+
+        Assert.True(options.ValidateOptions(console));
+    }
+
+
+
+    [Fact]
+    public void ValidateOptions_when_invalidReportFormat_expected_false()
+    {
+        var console = Substitute.For<IConsole>();
+        console.Error.Returns(new StringWriter());
+
+        var options = new TestOptions
+        {
+            Path = "/tmp",
+            Report = "xml"
+        };
+
+        Assert.False(options.ValidateOptions(console));
+    }
+
+
+
+    [Fact]
+    public void ValidateOptions_when_reportPathWithoutReport_expected_false()
+    {
+        var console = Substitute.For<IConsole>();
+        console.Error.Returns(new StringWriter());
+
+        var options = new TestOptions
+        {
+            Path = "/tmp",
+            ReportPath = "/tmp/report.json"
+        };
+
+        Assert.False(options.ValidateOptions(console));
+    }
+
+
+
+    [Fact]
+    public void ValidateOptions_when_reportPathWithReport_expected_true()
+    {
+        var console = Substitute.For<IConsole>();
+
+        var options = new TestOptions
+        {
+            Path = "/tmp",
+            Report = "csv",
+            ReportPath = "/tmp/report.csv"
+        };
+
+        Assert.True(options.ValidateOptions(console));
+    }
+
+
+
+    [Fact]
+    public void ValidateOptions_when_noVerifySet_expected_true()
+    {
+        var console = Substitute.For<IConsole>();
+
+        var options = new TestOptions
+        {
+            Path = "/tmp",
+            NoVerify = true
+        };
+
+        Assert.True(options.ValidateOptions(console));
+    }
+
+
+
+    [Fact]
+    public void BuildOptions_when_noVerifySet_expected_verifyFalse()
+    {
+        var options = new TestOptions
+        {
+            Path = "/tmp",
+            NoVerify = true
+        };
+
+        var result = options.BuildOptions();
+
+        Assert.False(result.Verify);
+    }
+
+
+
+    [Fact]
+    public void BuildOptions_when_noVerifyNotSet_expected_verifyTrue()
+    {
+        var options = new TestOptions { Path = "/tmp" };
+
+        var result = options.BuildOptions();
+
+        Assert.True(result.Verify);
+    }
+
+
+
+    [Fact]
+    public void BuildOptions_when_includePatterns_expected_mappedCorrectly()
+    {
+        var options = new TestOptions
+        {
+            Path = "/tmp",
+            Include = ["*.log", "*.txt"]
+        };
+
+        var result = options.BuildOptions();
+
+        Assert.Equal(2, result.IncludePatterns.Count);
+        Assert.Contains("*.log", result.IncludePatterns);
+        Assert.Contains("*.txt", result.IncludePatterns);
+    }
+
+
+
+    [Fact]
+    public void BuildOptions_when_excludePatterns_expected_mappedCorrectly()
+    {
+        var options = new TestOptions
+        {
+            Path = "/tmp",
+            Exclude = ["*.tmp"]
+        };
+
+        var result = options.BuildOptions();
+
+        Assert.Single(result.ExcludePatterns);
+        Assert.Contains("*.tmp", result.ExcludePatterns);
+    }
+
+
+
+    [Fact]
+    public void BuildOptions_when_noPatternsSet_expected_emptyLists()
+    {
+        var options = new TestOptions { Path = "/tmp" };
+
+        var result = options.BuildOptions();
+
+        Assert.Empty(result.IncludePatterns);
+        Assert.Empty(result.ExcludePatterns);
+    }
+
+
+
+    [Fact]
+    public void BuildOptions_when_deleteArchivesOlderThanSet_expected_mappedCorrectly()
+    {
+        var options = new TestOptions
+        {
+            Path = "/tmp",
+            DeleteArchivesOlderThan = 90
+        };
+
+        var result = options.BuildOptions();
+
+        Assert.Equal(90, result.DeleteArchivesOlderThanDays);
+    }
+
+
+
+    [Fact]
+    public void BuildOptions_when_deleteArchivesOlderThanNotSet_expected_null()
+    {
+        var options = new TestOptions { Path = "/tmp" };
+
+        var result = options.BuildOptions();
+
+        Assert.Null(result.DeleteArchivesOlderThanDays);
+    }
+
+
+
+    [Fact]
+    public void BuildOptions_when_reportFormatSet_expected_mappedCorrectly()
+    {
+        var options = new TestOptions
+        {
+            Path = "/tmp",
+            Report = "json",
+            ReportPath = "/tmp/report.json"
+        };
+
+        var result = options.BuildOptions();
+
+        Assert.Equal("json", result.ReportFormat);
+        Assert.Equal("/tmp/report.json", result.ReportPath);
+    }
 }

@@ -12,6 +12,7 @@ public sealed class BundleServiceTests
     private readonly IFileSystem _fileSystem = Substitute.For<IFileSystem>();
     private readonly IFileFilter _fileFilter = Substitute.For<IFileFilter>();
     private readonly IFileNamer _fileNamer = Substitute.For<IFileNamer>();
+    private readonly IArchiveVerifier _archiveVerifier = Substitute.For<IArchiveVerifier>();
     private readonly ICompressionStrategy _strategy = Substitute.For<ICompressionStrategy>();
     private readonly CompressionStrategyFactory _strategyFactory;
     private readonly BundleService _sut;
@@ -23,12 +24,14 @@ public sealed class BundleServiceTests
         _strategyFactory = Substitute.For<CompressionStrategyFactory>();
         _strategyFactory.Create(Arg.Any<CompressionFormat>(), Arg.Any<System.IO.Compression.CompressionLevel>()).Returns(_strategy);
         _strategy.BundleFileExtension.Returns("zip");
+        _archiveVerifier.VerifyAsync(Arg.Any<string>(), Arg.Any<string>()).Returns(Task.FromResult(true));
 
         _sut = new BundleService
         (
             _fileSystem,
             _fileFilter,
             _fileNamer,
+            _archiveVerifier,
             _strategyFactory,
             Substitute.For<ILogger<BundleService>>()
         );
@@ -75,7 +78,15 @@ public sealed class BundleServiceTests
             _fileSystem.GetFileInfo(file).Returns(allInfos[allFiles.ToList().IndexOf(file)]);
         }
 
-        _fileFilter.Apply(Arg.Any<IEnumerable<FileInfo>>(), 7, null, null).Returns(filteredInfos);
+        _fileFilter.Apply
+        (
+            Arg.Any<IEnumerable<FileInfo>>(),
+            Arg.Is<int?>(7),
+            Arg.Any<DateTime?>(),
+            Arg.Any<DateTime?>(),
+            Arg.Any<IReadOnlyList<string>>(),
+            Arg.Any<IReadOnlyList<string>>()
+        ).Returns(filteredInfos);
         _fileNamer.GetBundleFileName("MyApp", Arg.Any<IReadOnlyList<FileInfo>>(), "zip").Returns("bundle.zip");
         _fileSystem.OpenRead(Arg.Any<string>()).Returns(new MemoryStream("content"u8.ToArray()));
         _fileSystem.CreateWrite(Arg.Any<string>()).Returns(new MemoryStream());
@@ -122,7 +133,15 @@ public sealed class BundleServiceTests
         _fileSystem.FileExists(dir).Returns(false);
         _fileSystem.DirectoryExists(dir).Returns(true);
         _fileSystem.EnumerateFiles(dir, "*", SearchOption.TopDirectoryOnly).Returns([]);
-        _fileFilter.Apply(Arg.Any<IEnumerable<FileInfo>>(), null, null, null).Returns([]);
+        _fileFilter.Apply
+        (
+            Arg.Any<IEnumerable<FileInfo>>(),
+            Arg.Any<int?>(),
+            Arg.Any<DateTime?>(),
+            Arg.Any<DateTime?>(),
+            Arg.Any<IReadOnlyList<string>>(),
+            Arg.Any<IReadOnlyList<string>>()
+        ).Returns([]);
 
         var options = new CompressionOptions { SourcePath = dir };
         var result = await _sut.ExecuteAsync(options);
@@ -182,7 +201,15 @@ public sealed class BundleServiceTests
 
         _fileSystem.FileExists(file).Returns(true);
         _fileSystem.GetFileInfo(file).Returns(fileInfo);
-        _fileFilter.Apply(Arg.Any<IEnumerable<FileInfo>>(), null, null, null).Returns(new List<FileInfo> { fileInfo });
+        _fileFilter.Apply
+        (
+            Arg.Any<IEnumerable<FileInfo>>(),
+            Arg.Any<int?>(),
+            Arg.Any<DateTime?>(),
+            Arg.Any<DateTime?>(),
+            Arg.Any<IReadOnlyList<string>>(),
+            Arg.Any<IReadOnlyList<string>>()
+        ).Returns(new List<FileInfo> { fileInfo });
         _fileNamer.GetBundleFileName(Arg.Any<string>(), Arg.Any<IReadOnlyList<FileInfo>>(), "zip").Returns("bundle.zip");
         _fileSystem.OpenRead(file).Returns(new MemoryStream("content"u8.ToArray()));
         _fileSystem.CreateWrite(Arg.Any<string>()).Returns(new MemoryStream());
@@ -208,7 +235,15 @@ public sealed class BundleServiceTests
         _fileSystem.EnumerateFiles(dir, "*", SearchOption.AllDirectories).Returns(files);
         _fileSystem.GetFileInfo(files[0]).Returns(fileInfos[0]);
         _fileSystem.OpenRead(files[0]).Returns(new MemoryStream("content"u8.ToArray()));
-        _fileFilter.Apply(Arg.Any<IEnumerable<FileInfo>>(), null, null, null).Returns(fileInfos);
+        _fileFilter.Apply
+        (
+            Arg.Any<IEnumerable<FileInfo>>(),
+            Arg.Any<int?>(),
+            Arg.Any<DateTime?>(),
+            Arg.Any<DateTime?>(),
+            Arg.Any<IReadOnlyList<string>>(),
+            Arg.Any<IReadOnlyList<string>>()
+        ).Returns(fileInfos);
         _fileNamer.GetBundleFileName("MyApp", Arg.Any<IReadOnlyList<FileInfo>>(), "zip").Returns("bundle.zip");
         _fileSystem.CreateWrite(Arg.Any<string>()).Returns(new MemoryStream());
 
@@ -233,7 +268,15 @@ public sealed class BundleServiceTests
             _fileSystem.OpenRead(files[i]).Returns(new MemoryStream("content"u8.ToArray()));
         }
 
-        _fileFilter.Apply(Arg.Any<IEnumerable<FileInfo>>(), null, null, null).Returns(fileInfos);
+        _fileFilter.Apply
+        (
+            Arg.Any<IEnumerable<FileInfo>>(),
+            Arg.Any<int?>(),
+            Arg.Any<DateTime?>(),
+            Arg.Any<DateTime?>(),
+            Arg.Any<IReadOnlyList<string>>(),
+            Arg.Any<IReadOnlyList<string>>()
+        ).Returns(fileInfos);
     }
 
 

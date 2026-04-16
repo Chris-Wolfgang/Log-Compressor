@@ -12,6 +12,8 @@ public sealed class BundleCommandTests
     private readonly IConsole _console = Substitute.For<IConsole>();
     private readonly ILogger<Bundle> _logger = Substitute.For<ILogger<Bundle>>();
     private readonly BundleService _bundleService;
+    private readonly ReportService _reportService = new();
+    private readonly RetentionService _retentionService;
 
 
 
@@ -25,8 +27,15 @@ public sealed class BundleCommandTests
             Substitute.For<Wolfgang.LogCompressor.Abstraction.IFileSystem>(),
             Substitute.For<Wolfgang.LogCompressor.Abstraction.IFileFilter>(),
             Substitute.For<Wolfgang.LogCompressor.Abstraction.IFileNamer>(),
+            Substitute.For<Wolfgang.LogCompressor.Abstraction.IArchiveVerifier>(),
             Substitute.For<Wolfgang.LogCompressor.Service.Compression.CompressionStrategyFactory>(),
             Substitute.For<ILogger<BundleService>>()
+        );
+
+        _retentionService = new RetentionService
+        (
+            Substitute.For<Wolfgang.LogCompressor.Abstraction.IFileSystem>(),
+            Substitute.For<ILogger<RetentionService>>()
         );
     }
 
@@ -50,7 +59,7 @@ public sealed class BundleCommandTests
 
         var command = new Bundle { Path = "/tmp/logs" };
 
-        var result = await command.OnExecuteAsync(_console, _logger, _bundleService);
+        var result = await command.OnExecuteAsync(_console, _logger, _bundleService, _reportService, _retentionService);
 
         Assert.Equal(ExitCode.Success, result);
     }
@@ -74,7 +83,7 @@ public sealed class BundleCommandTests
 
         var command = new Bundle { Path = "/tmp/logs" };
 
-        var result = await command.OnExecuteAsync(_console, _logger, _bundleService);
+        var result = await command.OnExecuteAsync(_console, _logger, _bundleService, _reportService, _retentionService);
 
         Assert.Equal(ExitCode.ApplicationError, result);
     }
@@ -91,7 +100,7 @@ public sealed class BundleCommandTests
             MaxDateTime = "2026-12-31"
         };
 
-        var result = await command.OnExecuteAsync(_console, _logger, _bundleService);
+        var result = await command.OnExecuteAsync(_console, _logger, _bundleService, _reportService, _retentionService);
 
         Assert.Equal(ExitCode.InvalidArguments, result);
     }
@@ -106,7 +115,7 @@ public sealed class BundleCommandTests
 
         var command = new Bundle { Path = "/tmp" };
 
-        var result = await command.OnExecuteAsync(_console, _logger, _bundleService);
+        var result = await command.OnExecuteAsync(_console, _logger, _bundleService, _reportService, _retentionService);
 
         Assert.Equal(ExitCode.ApplicationError, result);
     }

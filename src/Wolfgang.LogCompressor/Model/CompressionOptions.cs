@@ -60,4 +60,46 @@ internal record CompressionOptions
     /// Gets the compression level to use.
     /// </summary>
     public CompressionLevel Level { get; init; } = CompressionLevel.SmallestSize;
+
+
+
+    /// <summary>
+    /// Gets the glob patterns to include. Only files matching at least one pattern are processed.
+    /// </summary>
+    public IReadOnlyList<string> IncludePatterns { get; init; } = [];
+
+
+
+    /// <summary>
+    /// Gets the glob patterns to exclude. Files matching any pattern are skipped.
+    /// </summary>
+    public IReadOnlyList<string> ExcludePatterns { get; init; } = [];
+
+
+
+    /// <summary>
+    /// Gets a value indicating whether to verify archive integrity before deleting originals.
+    /// </summary>
+    public bool Verify { get; init; } = true;
+
+
+
+    /// <summary>
+    /// Gets the report format. When <see langword="null"/>, no report file is written.
+    /// </summary>
+    public string? ReportFormat { get; init; }
+
+
+
+    /// <summary>
+    /// Gets the report output path.
+    /// </summary>
+    public string? ReportPath { get; init; }
+
+
+
+    /// <summary>
+    /// Gets the number of days after which compressed archives should be deleted.
+    /// </summary>
+    public int? DeleteArchivesOlderThanDays { get; init; }
 }

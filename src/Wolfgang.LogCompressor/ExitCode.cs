@@ -10,6 +10,10 @@ internal static class ExitCode
 
 
 
+    internal const int AlreadyRunning = 2;
+
+
+
     internal const int UnhandledException = 10;
 
 

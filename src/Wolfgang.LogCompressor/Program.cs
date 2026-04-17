@@ -1,14 +1,14 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
+using McMaster.Extensions.CommandLineUtils;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Serilog;
 using Wolfgang.LogCompressor.Abstraction;
 using Wolfgang.LogCompressor.Command;
 using Wolfgang.LogCompressor.Framework;
 using Wolfgang.LogCompressor.Service;
 using Wolfgang.LogCompressor.Service.Compression;
-using McMaster.Extensions.CommandLineUtils;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Serilog;
 
 namespace Wolfgang.LogCompressor;
 
@@ -24,6 +24,7 @@ namespace Wolfgang.LogCompressor;
 )]
 [Subcommand(typeof(Compress))]
 [Subcommand(typeof(Bundle))]
+[Subcommand(typeof(Init))]
 [ExcludeFromCodeCoverage]
 internal class Program
 {
@@ -54,7 +55,10 @@ internal class Program
                         .AddSingleton<IFileSystem, FileSystemWrapper>()
                         .AddSingleton<IFileFilter, FileFilterService>()
                         .AddSingleton<IFileNamer, FileNamingService>()
+                        .AddSingleton<IArchiveVerifier, ArchiveVerifier>()
                         .AddSingleton<CompressionStrategyFactory>()
+                        .AddSingleton<ReportService>()
+                        .AddSingleton<RetentionService>()
                         .AddTransient<CompressService>()
                         .AddTransient<BundleService>()
                         ;

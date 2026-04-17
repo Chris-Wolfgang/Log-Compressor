@@ -1,9 +1,10 @@
+using Microsoft.Extensions.FileSystemGlobbing;
 using Wolfgang.LogCompressor.Abstraction;
 
 namespace Wolfgang.LogCompressor.Service;
 
 /// <summary>
-/// Filters files based on last-modified date criteria.
+/// Filters files based on last-modified date and glob pattern criteria.
 /// </summary>
 internal sealed class FileFilterService : IFileFilter
 {
@@ -13,7 +14,9 @@ internal sealed class FileFilterService : IFileFilter
         IEnumerable<FileInfo> files,
         int? olderThanDays,
         DateTime? minDateTime,
-        DateTime? maxDateTime
+        DateTime? maxDateTime,
+        IReadOnlyList<string>? includePatterns = null,
+        IReadOnlyList<string>? excludePatterns = null
     )
     {
         ArgumentNullException.ThrowIfNull(files);
@@ -34,6 +37,28 @@ internal sealed class FileFilterService : IFileFilter
         if (maxDateTime.HasValue)
         {
             query = query.Where(f => f.LastWriteTime <= maxDateTime.Value);
+        }
+
+        if (includePatterns is { Count: > 0 })
+        {
+            var matcher = new Matcher();
+            foreach (var pattern in includePatterns)
+            {
+                matcher.AddInclude(pattern);
+            }
+
+            query = query.Where(f => matcher.Match(f.Name).HasMatches);
+        }
+
+        if (excludePatterns is { Count: > 0 })
+        {
+            var matcher = new Matcher();
+            foreach (var pattern in excludePatterns)
+            {
+                matcher.AddInclude(pattern);
+            }
+
+            query = query.Where(f => !matcher.Match(f.Name).HasMatches);
         }
 
         return query.ToList();

@@ -430,3 +430,4 @@ docfx_project/_site/
 docfx_project/obj/
 
 BenchmarkDotNet.Artifacts/
+resharper-report.xml

@@ -37,7 +37,7 @@ public sealed class FileFilterServiceTests
             today.AddDays(-30)
         );
 
-        var result = _sut.Apply(files, olderThanDays: 7, null, null);
+        var result = _sut.Apply(files, olderThanDays: 7, minDateTime: null, maxDateTime: null);
 
         Assert.Equal(2, result.Count);
         Assert.All(result, f => Assert.True(f.LastWriteTime < today.AddDays(-7)));
@@ -57,7 +57,7 @@ public sealed class FileFilterServiceTests
             today.AddDays(-30)
         );
 
-        var result = _sut.Apply(files, null, minDateTime: threshold, null);
+        var result = _sut.Apply(files, olderThanDays: null, minDateTime: threshold, maxDateTime: null);
 
         Assert.Equal(2, result.Count);
         Assert.All(result, f => Assert.True(f.LastWriteTime >= threshold));
@@ -77,7 +77,7 @@ public sealed class FileFilterServiceTests
             today.AddDays(-30)
         );
 
-        var result = _sut.Apply(files, null, null, maxDateTime: threshold);
+        var result = _sut.Apply(files, olderThanDays: null, minDateTime: null, maxDateTime: threshold);
 
         Assert.Equal(2, result.Count);
         Assert.All(result, f => Assert.True(f.LastWriteTime <= threshold));
@@ -98,7 +98,7 @@ public sealed class FileFilterServiceTests
             today.AddDays(-30)
         );
 
-        var result = _sut.Apply(files, null, minDateTime: min, maxDateTime: max);
+        var result = _sut.Apply(files, olderThanDays: null, minDateTime: min, maxDateTime: max);
 
         Assert.Single(result);
         Assert.True(result[0].LastWriteTime >= min);
@@ -113,7 +113,7 @@ public sealed class FileFilterServiceTests
         var today = DateTime.Today;
         var files = CreateFiles(today.AddDays(-1));
 
-        var result = _sut.Apply(files, olderThanDays: 30, null, null);
+        var result = _sut.Apply(files, olderThanDays: 30, minDateTime: null, maxDateTime: null);
 
         Assert.Empty(result);
     }
@@ -144,7 +144,7 @@ public sealed class FileFilterServiceTests
         var exactTime = new DateTime(2026, 6, 15, 12, 0, 0);
         var files = CreateFiles(exactTime);
 
-        var result = _sut.Apply(files, null, minDateTime: exactTime, null);
+        var result = _sut.Apply(files, olderThanDays: null, minDateTime: exactTime, maxDateTime: null);
 
         Assert.Single(result);
     }
@@ -157,7 +157,7 @@ public sealed class FileFilterServiceTests
         var exactTime = new DateTime(2026, 6, 15, 12, 0, 0);
         var files = CreateFiles(exactTime);
 
-        var result = _sut.Apply(files, null, null, maxDateTime: exactTime);
+        var result = _sut.Apply(files, olderThanDays: null, minDateTime: null, maxDateTime: exactTime);
 
         Assert.Single(result);
     }
@@ -171,7 +171,7 @@ public sealed class FileFilterServiceTests
         var threshold = today.AddDays(-7);
         var files = CreateFiles(threshold);
 
-        var result = _sut.Apply(files, olderThanDays: 7, null, null);
+        var result = _sut.Apply(files, olderThanDays: 7, minDateTime: null, maxDateTime: null);
 
         Assert.Empty(result);
     }
@@ -212,17 +212,17 @@ public sealed class FileFilterServiceTests
         var result = _sut.Apply
         (
             files,
-            null,
-            null,
-            null,
+            olderThanDays: null,
+            minDateTime: null,
+            maxDateTime: null,
             includePatterns: ["*.log"],
             excludePatterns: ["debug.*"]
         );
 
         Assert.Equal(2, result.Count);
-        Assert.Contains(result, f => f.Name == "app.log");
-        Assert.Contains(result, f => f.Name == "error.log");
-        Assert.DoesNotContain(result, f => f.Name == "debug.log");
+        Assert.Contains(result, f => string.Equals(f.Name, "app.log", StringComparison.Ordinal));
+        Assert.Contains(result, f => string.Equals(f.Name, "error.log", StringComparison.Ordinal));
+        Assert.DoesNotContain(result, f => string.Equals(f.Name, "debug.log", StringComparison.Ordinal));
     }
 
 
@@ -235,8 +235,8 @@ public sealed class FileFilterServiceTests
         var result = _sut.Apply(files, null, null, null, includePatterns: ["*.log", "*.csv"]);
 
         Assert.Equal(2, result.Count);
-        Assert.Contains(result, f => f.Name == "app.log");
-        Assert.Contains(result, f => f.Name == "data.csv");
+        Assert.Contains(result, f => string.Equals(f.Name, "app.log", StringComparison.Ordinal));
+        Assert.Contains(result, f => string.Equals(f.Name, "data.csv", StringComparison.Ordinal));
     }
 
 

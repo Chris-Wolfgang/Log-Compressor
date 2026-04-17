@@ -25,6 +25,7 @@ internal class BundleService
     /// <param name="fileSystem">The file system abstraction.</param>
     /// <param name="fileFilter">The file filter service.</param>
     /// <param name="fileNamer">The file naming service.</param>
+    /// <param name="archiveVerifier">The archive verifier.</param>
     /// <param name="strategyFactory">The compression strategy factory.</param>
     /// <param name="logger">The logger.</param>
     public BundleService

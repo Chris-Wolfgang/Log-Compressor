@@ -26,6 +26,7 @@ internal sealed class ReportService
     /// <param name="format">The report format ("json" or "csv").</param>
     /// <param name="outputPath">The output path for the report file.</param>
     /// <param name="duration">The total operation duration.</param>
+    /// <exception cref="ArgumentException">Thrown when <paramref name="format"/> is not supported.</exception>
     public Task WriteReportAsync
     (
         IReadOnlyList<CompressionResult> results,

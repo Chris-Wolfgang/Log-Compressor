@@ -45,7 +45,7 @@ public sealed class RetentionServiceTests
     [Fact]
     public void DeleteOldArchives_when_directoryDoesNotExist_expected_returnsZero()
     {
-        _fileSystem.DirectoryExists("/nonexistent").Returns(false);
+        _fileSystem.DirectoryExists("/nonexistent").Returns(returnThis: false);
 
         var result = _sut.DeleteOldArchives("/nonexistent", 30);
 
@@ -61,7 +61,7 @@ public sealed class RetentionServiceTests
         var oldArchive = "/tmp/archives/old.zip";
         var newArchive = "/tmp/archives/new.zip";
 
-        _fileSystem.DirectoryExists(dir).Returns(true);
+        _fileSystem.DirectoryExists(dir).Returns(returnThis: true);
         _fileSystem.EnumerateFiles(dir, "*", SearchOption.TopDirectoryOnly)
             .Returns([oldArchive, newArchive]);
 
@@ -96,7 +96,7 @@ public sealed class RetentionServiceTests
         var dir = "/tmp/archives";
         var logFile = "/tmp/archives/old.log";
 
-        _fileSystem.DirectoryExists(dir).Returns(true);
+        _fileSystem.DirectoryExists(dir).Returns(returnThis: true);
         _fileSystem.EnumerateFiles(dir, "*", SearchOption.TopDirectoryOnly).Returns([logFile]);
 
         var tempDir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
@@ -137,7 +137,7 @@ public sealed class RetentionServiceTests
     {
         var dir = "/tmp/archives";
 
-        _fileSystem.DirectoryExists(dir).Returns(true);
+        _fileSystem.DirectoryExists(dir).Returns(returnThis: true);
         _fileSystem.EnumerateFiles(dir, "*", SearchOption.TopDirectoryOnly).Returns([]);
 
         var result = _sut.DeleteOldArchives(dir, 30);

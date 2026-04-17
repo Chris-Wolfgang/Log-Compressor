@@ -1,14 +1,14 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
+using McMaster.Extensions.CommandLineUtils;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Serilog;
 using Wolfgang.LogCompressor.Abstraction;
 using Wolfgang.LogCompressor.Command;
 using Wolfgang.LogCompressor.Framework;
 using Wolfgang.LogCompressor.Service;
 using Wolfgang.LogCompressor.Service.Compression;
-using McMaster.Extensions.CommandLineUtils;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Serilog;
 
 namespace Wolfgang.LogCompressor;
 

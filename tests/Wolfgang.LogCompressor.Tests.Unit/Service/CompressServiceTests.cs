@@ -45,7 +45,7 @@ public sealed class CompressServiceTests
         var tempFile = CreateTempFile();
         var fileInfo = new FileInfo(tempFile);
 
-        _fileSystem.FileExists(tempFile).Returns(true);
+        _fileSystem.FileExists(tempFile).Returns(returnThis: true);
         _fileSystem.GetFileInfo(tempFile).Returns(fileInfo);
         _fileFilter.Apply
         (
@@ -77,8 +77,8 @@ public sealed class CompressServiceTests
         var files = new[] { CreateTempFile(), CreateTempFile() };
         var fileInfos = files.Select(f => new FileInfo(f)).ToList();
 
-        _fileSystem.FileExists(dir).Returns(false);
-        _fileSystem.DirectoryExists(dir).Returns(true);
+        _fileSystem.FileExists(dir).Returns(returnThis: false);
+        _fileSystem.DirectoryExists(dir).Returns(returnThis: true);
         _fileSystem.EnumerateFiles(dir, "*", SearchOption.TopDirectoryOnly).Returns(files);
         _fileSystem.GetFileInfo(files[0]).Returns(fileInfos[0]);
         _fileSystem.GetFileInfo(files[1]).Returns(fileInfos[1]);
@@ -111,8 +111,8 @@ public sealed class CompressServiceTests
         var file = CreateTempFile();
         var fileInfo = new FileInfo(file);
 
-        _fileSystem.FileExists(dir).Returns(false);
-        _fileSystem.DirectoryExists(dir).Returns(true);
+        _fileSystem.FileExists(dir).Returns(returnThis: false);
+        _fileSystem.DirectoryExists(dir).Returns(returnThis: true);
         _fileSystem.EnumerateFiles(dir, "*", SearchOption.AllDirectories).Returns([file]);
         _fileSystem.GetFileInfo(file).Returns(fileInfo);
         _fileFilter.Apply
@@ -144,7 +144,7 @@ public sealed class CompressServiceTests
         var fileInfo = new FileInfo(tempFile);
         var outputDir = Path.Combine(Path.GetTempPath(), "output");
 
-        _fileSystem.FileExists(tempFile).Returns(true);
+        _fileSystem.FileExists(tempFile).Returns(returnThis: true);
         _fileSystem.GetFileInfo(tempFile).Returns(fileInfo);
         _fileFilter.Apply
         (
@@ -156,7 +156,7 @@ public sealed class CompressServiceTests
             Arg.Any<IReadOnlyList<string>>()
         ).Returns([fileInfo]);
         _fileNamer.GetCompressedFileName(fileInfo, "zip").Returns("out.zip");
-        _fileSystem.DirectoryExists(outputDir).Returns(false);
+        _fileSystem.DirectoryExists(outputDir).Returns(returnThis: false);
         _fileSystem.OpenRead(tempFile).Returns(new MemoryStream("content"u8.ToArray()));
         _fileSystem.CreateWrite(Arg.Any<string>()).Returns(new MemoryStream());
 
@@ -176,7 +176,7 @@ public sealed class CompressServiceTests
         var tempFile = CreateTempFile();
         var fileInfo = new FileInfo(tempFile);
 
-        _fileSystem.FileExists(tempFile).Returns(true);
+        _fileSystem.FileExists(tempFile).Returns(returnThis: true);
         _fileSystem.GetFileInfo(tempFile).Returns(fileInfo);
         _fileFilter.Apply
         (
@@ -207,8 +207,8 @@ public sealed class CompressServiceTests
     {
         var dir = Path.GetTempPath();
 
-        _fileSystem.FileExists(dir).Returns(false);
-        _fileSystem.DirectoryExists(dir).Returns(true);
+        _fileSystem.FileExists(dir).Returns(returnThis: false);
+        _fileSystem.DirectoryExists(dir).Returns(returnThis: true);
         _fileSystem.EnumerateFiles(dir, "*", SearchOption.TopDirectoryOnly).Returns([]);
         _fileFilter.Apply
         (
@@ -231,8 +231,8 @@ public sealed class CompressServiceTests
     [Fact]
     public async Task ExecuteAsync_when_sourceNotFound_expected_throwsFileNotFoundException()
     {
-        _fileSystem.FileExists("nonexistent").Returns(false);
-        _fileSystem.DirectoryExists("nonexistent").Returns(false);
+        _fileSystem.FileExists("nonexistent").Returns(returnThis: false);
+        _fileSystem.DirectoryExists("nonexistent").Returns(returnThis: false);
 
         var options = new CompressionOptions { SourcePath = "nonexistent" };
 
@@ -256,7 +256,7 @@ public sealed class CompressServiceTests
         var fileInfo = new FileInfo(tempFile);
         var cts = new CancellationTokenSource();
 
-        _fileSystem.FileExists(tempFile).Returns(true);
+        _fileSystem.FileExists(tempFile).Returns(returnThis: true);
         _fileSystem.GetFileInfo(tempFile).Returns(fileInfo);
         _fileFilter.Apply
         (

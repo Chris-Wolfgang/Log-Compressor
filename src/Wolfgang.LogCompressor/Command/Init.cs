@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using McMaster.Extensions.CommandLineUtils;
 using Microsoft.Extensions.Logging;
 
@@ -13,6 +14,7 @@ namespace Wolfgang.LogCompressor.Command;
 )]
 [Subcommand(typeof(InitCompress))]
 [Subcommand(typeof(InitBundle))]
+[ExcludeFromCodeCoverage]
 internal class Init
 {
     /// <summary>
@@ -37,6 +39,7 @@ internal class Init
     Name = "compress",
     Description = "Generate a compress configuration file"
 )]
+[ExcludeFromCodeCoverage]
 internal class InitCompress
 {
     /// <summary>
@@ -127,6 +130,7 @@ internal class InitCompress
     Name = "bundle",
     Description = "Generate a bundle configuration file"
 )]
+[ExcludeFromCodeCoverage]
 internal class InitBundle
 {
     /// <summary>

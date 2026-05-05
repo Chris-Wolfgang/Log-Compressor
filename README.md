@@ -128,6 +128,8 @@ Compression strategies (`ZipStrategy`, `GZipStrategy`, `BrotliStrategy`) are dis
 - **Distribution:** self-contained single-file executable
 - **Runtimes:** `win-x64`, `linux-x64`, `osx-x64`
 
+> The `src/Wolfgang.LogCompressor` project lives on the [`initial-dev`](https://github.com/Chris-Wolfgang/Log-Compressor/tree/initial-dev) branch until v0.1.0 lands on `main`. Check it out first (see [Build from source](#build-from-source) above).
+
 ```bash
 dotnet publish src/Wolfgang.LogCompressor -c Release -r linux-x64 --self-contained -p:PublishSingleFile=true
 ```

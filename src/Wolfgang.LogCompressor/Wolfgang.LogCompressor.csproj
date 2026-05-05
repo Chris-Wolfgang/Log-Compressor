@@ -5,17 +5,14 @@
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <PackageVersion>0.1.0</PackageVersion>
+    <Version>0.1.0</Version>
     <LangVersion>latest</LangVersion>
     <Copyright>Copyright 2026 Chris Wolfgang</Copyright>
     <Description>Cross-platform CLI tool to compress log files</Description>
-    <Author>Chris Wolfgang</Author>
     <Authors>Chris Wolfgang</Authors>
     <RepositoryUrl>https://github.com/Chris-Wolfgang/Log-Compressor</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
-    <Title>Wolfgang.LogCompressor</Title>
-    <PackageProjectUrl>https://github.com/Chris-Wolfgang/Log-Compressor</PackageProjectUrl>
     <AssemblyName>logc</AssemblyName>
     <PublishSingleFile>true</PublishSingleFile>
     <NoWarn>$(NoWarn);SYSLIB1104</NoWarn>

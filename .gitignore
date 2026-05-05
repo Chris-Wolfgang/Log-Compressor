@@ -421,13 +421,12 @@ FodyWeavers.xsd
 TestResults/
 CoverageReport/
 
-# Release workflow temporary directories
-package-smoke-test/
-nuget-packages/
-
 # DocFX generated files
 docfx_project/_site/
 docfx_project/obj/
 
-BenchmarkDotNet.Artifacts/
+# ReSharper inspection report (used locally; not for commit)
 resharper-report.xml
+
+# Claude Code local settings
+.claude/

@@ -45,7 +45,7 @@
    ```powershell
    dotnet publish src/Wolfgang.LogCompressor -c Release -r linux-x64 --self-contained -p:PublishSingleFile=true
    ```
-   The output binary in `bin/Release/net10.0/<rid>/publish/` is a single self-contained file.
+   The output binary lands under the project's own `bin/` — i.e. `src/Wolfgang.LogCompressor/bin/Release/net10.0/<rid>/publish/` — as a single self-contained file.
 
 6. **Security scanning (optional locally; runs in CI):**
    ```powershell
@@ -53,10 +53,10 @@
    ```
 
 ### Critical Build Requirements
-- **Code Coverage:** Minimum 90% line coverage. Current run is ~96.8%.
+- **Code Coverage:** Minimum 90% line coverage (enforced by the CI gate). Aim well above 90%; do not lower the gate.
 - **Security Scanning:** DevSkim must pass with no errors of `error`/`critical`/`high` severity.
 - **Build Configuration:** Always use Release configuration for CI.
-- **Test framework:** xunit 2.9.3 with NSubstitute for mocking. ~75+ unit tests today.
+- **Test framework:** xunit 2.9.3 with NSubstitute for mocking.
 - **Benchmarks:** BenchmarkDotNet under `benchmarks/` (run manually; not gated by CI).
 
 ### Common Issues and Workarounds
@@ -92,7 +92,7 @@ root/
   - `.github/workflows/release.yaml` — release/publish pipeline.
   - `.github/workflows/docfx.yaml` — documentation build/deploy.
 - **Issue/PR Templates:** Bug reports (YAML) and feature requests (Markdown); structured PR template.
-- **CODEOWNERS:** `@Chris-Wolfgang`.
+- **CODEOWNERS:** `.github/CODEOWNERS` still contains the unfilled `{{GITHUB_USERNAME}}` template token; ownership rules are not yet enforced. Treat the de-facto owner as `@Chris-Wolfgang` until the file is updated.
 - **Dependabot:** Configured for NuGet packages.
 
 ### Continuous Integration Pipeline (`.github/workflows/pr.yaml`)
@@ -106,21 +106,23 @@ The workflow runs on `pull_request_target` to `main`:
 `pull_request_target` means the workflow YAML always runs from `main`, so changes to `pr.yaml` in a PR are not validated by that PR's own run. Validate workflow changes by re-running an existing PR after the workflow change merges.
 
 ### Branch Protection
-Configured by `scripts/Setup-BranchRuleset.ps1`. The current ruleset on `main` requires:
+The active ruleset on `main` requires:
 - All PR-Checks status checks to pass.
 - Conversation resolution before merging.
 - No force-push, no deletion.
 
+Manage the ruleset via the GitHub UI (Settings → Rules → Rulesets) or the REST API (`/repos/{owner}/{repo}/rulesets`). There is no checked-in setup script in this repo.
+
 ## Agent Guidelines
 
 ### Trust These Instructions First
-This file describes Log-Compressor's actual structure and conventions. **Only search for additional information if these instructions are incomplete or appear incorrect.** When in doubt, the README on `chore/finalize-readme` (or, after merge, on `main`) is the canonical project description.
+This file describes Log-Compressor's actual structure and conventions. **Only search for additional information if these instructions are incomplete or appear incorrect.** When in doubt, fall back to the in-tree `README.md` on the branch you are working from — that is the project's source of truth.
 
 ### When Working on This Project
 1. **Code style:** Follow `.editorconfig`. Use file-scoped namespaces, Allman braces, `var` for obvious types, async-first APIs.
 2. **Adding dependencies:** Use `dotnet add package`. Avoid pinning `System.Linq.Async`/`Microsoft.Bcl.*` independently — they cascade.
 3. **Banned APIs:** Don't introduce calls flagged by `BannedSymbols.txt` (sync I/O, `Task.Wait`, `Thread.Sleep`, `BinaryFormatter`, `WebClient`, …).
-4. **Testing:** Add tests in `tests/` matching `*Tests.csproj` naming. Coverage must stay ≥ 90%.
+4. **Testing:** Add tests in `tests/` matching the `*Test*.csproj` naming pattern (the CI workflow discovers test projects with that glob). Coverage must stay ≥ 90%.
 5. **Benchmarks:** Add new benchmarks under `benchmarks/` if you change a hot path; do not change the existing benchmark harness without a clear reason.
 6. **Security:** If DevSkim flags new findings, address or justify before merging.
 

@@ -61,7 +61,9 @@ internal class BundleService
     /// <param name="options">The compression options.</param>
     /// <param name="cancellationToken">A token to cancel the operation.</param>
     /// <returns>The compression result.</returns>
+#pragma warning disable MA0051 // Linear orchestration with logging branches; splitting hurts readability
     public virtual async Task<CompressionResult> ExecuteAsync
+#pragma warning restore MA0051
     (
         CompressionOptions options,
         CancellationToken cancellationToken = default
@@ -145,7 +147,9 @@ internal class BundleService
 
 
 
+#pragma warning disable MA0051 // Linear compress/verify/delete with stream cleanup; splitting hurts readability
     private async Task<CompressionResult> CompressAndDeleteAsync
+#pragma warning restore MA0051
     (
         IReadOnlyList<FileInfo> filtered,
         string outputPath,

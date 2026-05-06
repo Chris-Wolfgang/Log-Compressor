@@ -387,6 +387,7 @@ dotnet_diagnostic.VSTHRD200.severity = none       # Async suffix not required in
 dotnet_diagnostic.RS0030.severity = none          # Allow banned APIs in tests
 
 # Meziantou - Relax in tests
+dotnet_diagnostic.MA0003.severity = none         # Named args not critical in tests (mock setup uses literal null often)
 dotnet_diagnostic.MA0004.severity = none         # ConfigureAwait not needed in tests
 dotnet_diagnostic.MA0011.severity = none         # IFormatProvider not critical in tests
 dotnet_diagnostic.MA0026.severity = none         # TODO comments OK in tests

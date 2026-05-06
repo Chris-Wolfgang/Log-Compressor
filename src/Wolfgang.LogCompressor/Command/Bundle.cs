@@ -24,7 +24,9 @@ internal class Bundle : SharedOptions
     /// <param name="reportService">The report service.</param>
     /// <param name="retentionService">The retention service.</param>
     /// <returns>An exit code indicating success or failure.</returns>
+#pragma warning disable MA0051 // Linear command orchestration; splitting hurts readability
     internal async Task<int> OnExecuteAsync
+#pragma warning restore MA0051
     (
         IConsole console,
         ILogger<Bundle> logger,

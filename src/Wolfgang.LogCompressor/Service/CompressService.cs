@@ -61,7 +61,9 @@ internal class CompressService
     /// <param name="options">The compression options.</param>
     /// <param name="cancellationToken">A token to cancel the operation.</param>
     /// <returns>A list of compression results.</returns>
+#pragma warning disable MA0051 // Linear orchestration with parallel logging; splitting hurts readability
     public virtual async Task<IReadOnlyList<CompressionResult>> ExecuteAsync
+#pragma warning restore MA0051
     (
         CompressionOptions options,
         CancellationToken cancellationToken = default
@@ -123,7 +125,9 @@ internal class CompressService
 
 
 
+#pragma warning disable MA0051 // Linear compress/verify/delete with try/catch; splitting hurts readability
     private async Task<CompressionResult> CompressFileAsync
+#pragma warning restore MA0051
     (
         FileInfo sourceFile,
         CompressionOptions options,

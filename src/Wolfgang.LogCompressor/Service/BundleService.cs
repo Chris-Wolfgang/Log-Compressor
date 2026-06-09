@@ -309,6 +309,9 @@ internal class BundleService
         var searchOption = options.Recurse ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly;
         return _fileSystem
             .EnumerateFiles(options.SourcePath, "*", searchOption)
+            // Skip files that are already compressed archives so a repeated run over
+            // the same directory does not re-bundle (and then delete) its own output.
+            .Where(p => !RetentionService.IsArchiveFile(p))
             .Select(p => _fileSystem.GetFileInfo(p))
             .ToList();
     }

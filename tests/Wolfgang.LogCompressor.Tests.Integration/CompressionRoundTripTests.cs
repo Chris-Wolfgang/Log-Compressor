@@ -197,4 +197,30 @@ public sealed class CompressionRoundTripTests
             Assert.True(File.Exists(result.OutputPath));                                   // archive still created
         }
     }
+
+
+
+    [Fact]
+    public async Task Compress_run_twice_does_not_recompress_its_own_archive()
+    {
+        using var temp = new TempDirectory();
+        temp.WriteFile("app.log", "log contents");
+        var sut = CreateCompressService();
+
+        var first = await sut.ExecuteAsync
+        (
+            new CompressionOptions { SourcePath = temp.Path, Format = CompressionFormat.Zip, Verify = true }
+        );
+        Assert.Single(first);                                    // app.log compressed on the first run
+
+        // Second run over the same directory: the .zip produced by the first run
+        // must be ignored, not re-compressed and deleted.
+        var second = await sut.ExecuteAsync
+        (
+            new CompressionOptions { SourcePath = temp.Path, Format = CompressionFormat.Zip, Verify = true }
+        );
+        Assert.Empty(second);                                    // nothing to do — the archive is not a source
+
+        Assert.Single(Directory.GetFiles(temp.Path, "*.zip"));   // the original archive is intact
+    }
 }

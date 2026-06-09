@@ -160,14 +160,50 @@ internal class BundleService
     {
         var streams = new List<Stream>(filtered.Count);
         var inputs = new List<(Stream Stream, string EntryName)>(filtered.Count);
+        var bundled = new List<FileInfo>(filtered.Count);
+        var skipped = 0;
 
         try
         {
             foreach (var file in filtered)
             {
-                var stream = _fileSystem.OpenRead(file.FullName);
+                Stream stream;
+
+                try
+                {
+                    stream = _fileSystem.OpenRead(file.FullName);
+                }
+                catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+                {
+                    // Skip unreadable files (locked by another process, no read
+                    // permission, etc.). They are NOT added to the archive and must
+                    // NOT be deleted afterwards.
+                    skipped++;
+                    _logger.LogWarning("Skipping unreadable file {File}: {Message}", file.FullName, ex.Message);
+                    continue;
+                }
+
                 streams.Add(stream);
                 inputs.Add((stream, file.Name));
+                bundled.Add(file);
+            }
+
+            if (bundled.Count == 0)
+            {
+                _logger.LogError
+                (
+                    "No readable files to bundle from {Source}; {Skipped} file(s) skipped",
+                    options.SourcePath,
+                    skipped
+                );
+
+                return new CompressionResult
+                {
+                    SourcePath = options.SourcePath,
+                    OutputPath = outputPath,
+                    Success = false,
+                    ErrorMessage = $"No readable files to bundle ({skipped} file(s) could not be read)."
+                };
             }
 
             long compressedSize;
@@ -189,7 +225,7 @@ internal class BundleService
 
             streams.Clear();
 
-            var totalOriginalSize = filtered.Sum(f => f.Length);
+            var totalOriginalSize = bundled.Sum(f => f.Length);
 
             if (options.Verify && !await _archiveVerifier.VerifyAsync(outputPath, strategy.BundleFileExtension).ConfigureAwait(false))
             {
@@ -206,7 +242,9 @@ internal class BundleService
                 };
             }
 
-            foreach (var file in filtered)
+            // Delete only the files that were successfully bundled; skipped
+            // (unreadable) files are left in place.
+            foreach (var file in bundled)
             {
                 _fileSystem.DeleteFile(file.FullName);
             }
@@ -214,11 +252,27 @@ internal class BundleService
             _logger.LogInformation
             (
                 "Bundled {FileCount} file(s) -> {Output} ({OriginalSize:N0} -> {CompressedSize:N0} bytes)",
-                filtered.Count,
+                bundled.Count,
                 outputPath,
                 totalOriginalSize,
                 compressedSize
             );
+
+            // A bundle that skipped one or more unreadable files is a partial
+            // success: the archive was written and the readable originals deleted,
+            // but the caller must still see a non-success result (and exit code).
+            if (skipped > 0)
+            {
+                return new CompressionResult
+                {
+                    SourcePath = options.SourcePath,
+                    OutputPath = outputPath,
+                    OriginalSize = totalOriginalSize,
+                    CompressedSize = compressedSize,
+                    Success = false,
+                    ErrorMessage = $"{skipped} file(s) could not be read and were skipped (left in place); {bundled.Count} file(s) bundled to {outputPath}."
+                };
+            }
 
             return new CompressionResult
             {

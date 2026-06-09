@@ -164,4 +164,37 @@ public sealed class CompressionRoundTripTests
         Assert.False(File.Exists(oldFile));              // old file compressed + deleted
         Assert.True(File.Exists(recentFile));            // recent file left untouched
     }
+
+
+
+    [Fact]
+    public async Task Bundle_skips_unreadable_file_preserves_it_and_returns_nonsuccess()
+    {
+        using var temp = new TempDirectory();
+        var readable = temp.WriteFile("readable.log", "readable content");
+        var locked = temp.WriteFile("locked.log", "locked content");
+
+        // Hold an exclusive (no-share) handle so the bundler's File.OpenRead fails
+        // for this one file — simulating a file locked by another process.
+        using (new FileStream(locked, FileMode.Open, FileAccess.Read, FileShare.None))
+        {
+            var sut = CreateBundleService();
+
+            var result = await sut.ExecuteAsync
+            (
+                new CompressionOptions
+                {
+                    SourcePath = temp.Path,
+                    Format = CompressionFormat.Zip,
+                    Verify = true
+                }
+            );
+
+            Assert.False(result.Success);                                                  // partial → non-success
+            Assert.Contains("skipped", result.ErrorMessage, StringComparison.OrdinalIgnoreCase);
+            Assert.True(File.Exists(locked));                                              // unreadable file preserved
+            Assert.False(File.Exists(readable));                                           // readable file bundled + deleted
+            Assert.True(File.Exists(result.OutputPath));                                   // archive still created
+        }
+    }
 }

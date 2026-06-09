@@ -52,6 +52,24 @@ public sealed class SharedOptionsValidationTests
 
 
     [Fact]
+    public void ValidateOptions_when_outputSet_expected_resolvedToFullPath()
+    {
+        var console = Substitute.For<IConsole>();
+        console.Error.Returns(new StringWriter());
+
+        var options = new TestOptions
+        {
+            Path = "/tmp",
+            Output = System.IO.Path.Combine("relative", "out")
+        };
+
+        Assert.True(options.ValidateOptions(console));
+        Assert.Equal(System.IO.Path.GetFullPath(System.IO.Path.Combine("relative", "out")), options.Output);
+    }
+
+
+
+    [Fact]
     public void ValidateOptions_when_olderThanAlone_expected_true()
     {
         var console = Substitute.For<IConsole>();

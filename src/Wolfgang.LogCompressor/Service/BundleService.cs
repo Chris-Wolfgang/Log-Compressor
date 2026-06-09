@@ -170,13 +170,26 @@ internal class BundleService
                 inputs.Add((stream, file.Name));
             }
 
-            await using var outputStream = _fileSystem.CreateWrite(outputPath);
+            long compressedSize;
 
-            await strategy.CompressFilesAsync(inputs, outputStream, cancellationToken).ConfigureAwait(false);
-            await outputStream.FlushAsync(cancellationToken).ConfigureAwait(false);
+            await using (var outputStream = _fileSystem.CreateWrite(outputPath))
+            {
+                await strategy.CompressFilesAsync(inputs, outputStream, cancellationToken).ConfigureAwait(false);
+                await outputStream.FlushAsync(cancellationToken).ConfigureAwait(false);
+                compressedSize = outputStream.Length;
+            }
+
+            // Close the source read handles before verify/delete: the verifier opens
+            // the archive for reading (which fails while the write handle is open),
+            // and a source file cannot be deleted while its read handle is open.
+            foreach (var stream in streams)
+            {
+                await stream.DisposeAsync().ConfigureAwait(false);
+            }
+
+            streams.Clear();
 
             var totalOriginalSize = filtered.Sum(f => f.Length);
-            var compressedSize = outputStream.Length;
 
             if (options.Verify && !await _archiveVerifier.VerifyAsync(outputPath, strategy.BundleFileExtension).ConfigureAwait(false))
             {

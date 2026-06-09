@@ -146,21 +146,28 @@ internal class CompressService
                 _fileSystem.CreateDirectory(options.OutputPath);
             }
 
-            await using var inputStream = _fileSystem.OpenRead(sourceFile.FullName);
-            await using var outputStream = _fileSystem.CreateWrite(outputPath);
+            long compressedSize;
 
-            await strategy.CompressFileAsync
-            (
-                inputStream,
-                outputStream,
-                sourceFile.Name,
-                cancellationToken
-            ).ConfigureAwait(false);
+            await using (var inputStream = _fileSystem.OpenRead(sourceFile.FullName))
+            await using (var outputStream = _fileSystem.CreateWrite(outputPath))
+            {
+                await strategy.CompressFileAsync
+                (
+                    inputStream,
+                    outputStream,
+                    sourceFile.Name,
+                    cancellationToken
+                ).ConfigureAwait(false);
 
-            await outputStream.FlushAsync(cancellationToken).ConfigureAwait(false);
+                await outputStream.FlushAsync(cancellationToken).ConfigureAwait(false);
 
-            var compressedSize = outputStream.Length;
+                compressedSize = outputStream.Length;
+            }
 
+            // Verify (and delete the original) only after the input/output streams
+            // are closed. The verifier opens the archive for reading, which fails
+            // while the write handle is still open, and the source can't be deleted
+            // while its read handle is open. Both must run after the using block.
             if (options.Verify && !await _archiveVerifier.VerifyAsync(outputPath, strategy.FileExtension).ConfigureAwait(false))
             {
                 _logger.LogError("Archive verification failed for {Output}, original file preserved", outputPath);

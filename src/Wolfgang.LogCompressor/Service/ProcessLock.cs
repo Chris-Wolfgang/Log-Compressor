@@ -123,8 +123,10 @@ internal sealed class ProcessLock : IDisposable
                 return true;
             }
         }
-        catch
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
         {
+            // Can't read the lock file to evaluate staleness — treat it as stale
+            // and take over rather than block on an unreadable lock.
             return true;
         }
     }

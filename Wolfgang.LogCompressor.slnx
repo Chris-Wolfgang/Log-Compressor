@@ -7,5 +7,6 @@
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/Wolfgang.LogCompressor.Tests.Unit/Wolfgang.LogCompressor.Tests.Unit.csproj" />
+    <Project Path="tests/Wolfgang.LogCompressor.Tests.Integration/Wolfgang.LogCompressor.Tests.Integration.csproj" />
   </Folder>
 </Solution>

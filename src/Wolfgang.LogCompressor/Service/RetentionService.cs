@@ -8,11 +8,13 @@ namespace Wolfgang.LogCompressor.Service;
 /// </summary>
 internal sealed class RetentionService
 {
-    private static readonly HashSet<string> ArchiveExtensions = new(StringComparer.OrdinalIgnoreCase)
-    {
+    // A plain array: IsArchiveFile suffix-matches each entry, so a HashSet's
+    // O(1) lookup gives no benefit here.
+    private static readonly string[] ArchiveExtensions =
+    [
         ".zip", ".gz", ".br", ".zst", ".lz4",
         ".tar.gz", ".tar.br", ".tar.zst", ".tar.lz4"
-    };
+    ];
 
     private readonly IFileSystem _fileSystem;
     private readonly ILogger<RetentionService> _logger;

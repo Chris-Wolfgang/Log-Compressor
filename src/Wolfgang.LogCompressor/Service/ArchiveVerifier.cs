@@ -40,16 +40,16 @@ internal sealed class ArchiveVerifier : IArchiveVerifier
                     await VerifyZipAsync(archivePath).ConfigureAwait(false);
                     break;
                 case "tar.gz":
-                    await VerifyTarStreamAsync<GZipStream>(archivePath).ConfigureAwait(false);
+                    await VerifyTarStreamAsync(archivePath, static s => new GZipStream(s, CompressionMode.Decompress, leaveOpen: true)).ConfigureAwait(false);
                     break;
                 case "tar.br":
-                    await VerifyTarStreamAsync<BrotliStream>(archivePath).ConfigureAwait(false);
+                    await VerifyTarStreamAsync(archivePath, static s => new BrotliStream(s, CompressionMode.Decompress, leaveOpen: true)).ConfigureAwait(false);
                     break;
                 case "gz":
-                    await VerifyDecompressionAsync<GZipStream>(archivePath).ConfigureAwait(false);
+                    await VerifyDecompressionAsync(archivePath, static s => new GZipStream(s, CompressionMode.Decompress, leaveOpen: true)).ConfigureAwait(false);
                     break;
                 case "br":
-                    await VerifyDecompressionAsync<BrotliStream>(archivePath).ConfigureAwait(false);
+                    await VerifyDecompressionAsync(archivePath, static s => new BrotliStream(s, CompressionMode.Decompress, leaveOpen: true)).ConfigureAwait(false);
                     break;
                 default:
                     await VerifyReadableAsync(archivePath).ConfigureAwait(false);
@@ -84,17 +84,10 @@ internal sealed class ArchiveVerifier : IArchiveVerifier
 
 
 
-    private static async Task VerifyTarStreamAsync<TStream>(string path)
-        where TStream : Stream
+    private static async Task VerifyTarStreamAsync(string path, Func<Stream, Stream> decompressorFactory)
     {
         await using var fileStream = File.OpenRead(path);
-        var decompressionStream = (Stream)Activator.CreateInstance
-        (
-            typeof(TStream),
-            fileStream,
-            CompressionMode.Decompress,
-            true
-        )!;
+        var decompressionStream = decompressorFactory(fileStream);
 
         await using (decompressionStream.ConfigureAwait(false))
         {
@@ -112,17 +105,10 @@ internal sealed class ArchiveVerifier : IArchiveVerifier
 
 
 
-    private static async Task VerifyDecompressionAsync<TStream>(string path)
-        where TStream : Stream
+    private static async Task VerifyDecompressionAsync(string path, Func<Stream, Stream> decompressorFactory)
     {
         await using var fileStream = File.OpenRead(path);
-        var decompressionStream = (Stream)Activator.CreateInstance
-        (
-            typeof(TStream),
-            fileStream,
-            CompressionMode.Decompress,
-            true
-        )!;
+        var decompressionStream = decompressorFactory(fileStream);
 
         await using (decompressionStream.ConfigureAwait(false))
         {

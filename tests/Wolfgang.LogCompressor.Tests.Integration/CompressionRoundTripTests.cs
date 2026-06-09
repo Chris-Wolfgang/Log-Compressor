@@ -223,4 +223,32 @@ public sealed class CompressionRoundTripTests
 
         Assert.Single(Directory.GetFiles(temp.Path, "*.zip"));   // the original archive is intact
     }
+
+
+
+    [Fact]
+    public async Task Compress_when_output_archive_already_exists_preserves_original_and_fails()
+    {
+        using var temp = new TempDirectory();
+        var source = temp.WriteFile("app.log", "source data");
+
+        // Pre-create a file at the exact output path the compressor will target.
+        var expectedName = new FileNamingService().GetCompressedFileName(new FileInfo(source), "zip");
+        var existing = temp.WriteFile(expectedName, "PRE-EXISTING ARCHIVE");
+
+        var sut = CreateCompressService();
+
+        var result = Assert.Single
+        (
+            await sut.ExecuteAsync
+            (
+                new CompressionOptions { SourcePath = source, Format = CompressionFormat.Zip, Verify = true }
+            )
+        );
+
+        Assert.False(result.Success);
+        Assert.Contains("already exists", result.ErrorMessage, StringComparison.OrdinalIgnoreCase);
+        Assert.True(File.Exists(source));                              // original preserved (not deleted)
+        Assert.Equal("PRE-EXISTING ARCHIVE", File.ReadAllText(existing)); // existing archive not overwritten
+    }
 }

@@ -149,6 +149,23 @@ internal class CompressService
                 _fileSystem.CreateDirectory(options.OutputPath);
             }
 
+            // Never overwrite an existing archive — a name collision (e.g. two
+            // same-named sources sharing a last-write second under --output) would
+            // otherwise clobber the first archive and then delete both originals.
+            if (_fileSystem.FileExists(outputPath))
+            {
+                _logger.LogError("Output archive already exists, skipping {Source} to avoid overwrite: {Output}", sourceFile.FullName, outputPath);
+
+                return new CompressionResult
+                {
+                    SourcePath = sourceFile.FullName,
+                    OutputPath = outputPath,
+                    OriginalSize = sourceFile.Length,
+                    Success = false,
+                    ErrorMessage = $"Output archive already exists: {outputPath}"
+                };
+            }
+
             long compressedSize;
 
             await using (var inputStream = _fileSystem.OpenRead(sourceFile.FullName))

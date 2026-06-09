@@ -1,10 +1,10 @@
 # Introduction
 
-Welcome to {{PROJECT_NAME}}!
+Welcome to Wolfgang.LogCompressor!
 
 ## Overview
 
-{{PROJECT_DESCRIPTION}}
+A cross-platform .NET CLI (`logc`) for compressing log files, built for unattended scheduled jobs on servers.
 
 <!-- Add your project overview here -->
 
@@ -18,9 +18,9 @@ Welcome to {{PROJECT_NAME}}!
 
 ## Getting Help
 
-If you need help with {{PROJECT_NAME}}, please:
+If you need help with Wolfgang.LogCompressor, please:
 
 - Check the [Getting Started](getting-started.md) guide
 - Review the [API Reference](../api/index.md)
-- Visit the [GitHub repository]({{GITHUB_REPO_URL}})
-- Open an issue on [GitHub Issues]({{GITHUB_REPO_URL}}/issues)
+- Visit the [GitHub repository](https://github.com/Chris-Wolfgang/Log-Compressor)
+- Open an issue on [GitHub Issues](https://github.com/Chris-Wolfgang/Log-Compressor/issues)

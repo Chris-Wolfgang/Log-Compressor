@@ -56,7 +56,7 @@ internal sealed class ZipCompressionStrategy : ICompressionStrategy
     /// <inheritdoc />
     public async Task CompressFilesAsync
     (
-        IReadOnlyList<(Stream Stream, string EntryName)> inputs,
+        IEnumerable<(Stream Stream, string EntryName)> inputs,
         Stream outputStream,
         CancellationToken cancellationToken = default
     )
@@ -65,13 +65,18 @@ internal sealed class ZipCompressionStrategy : ICompressionStrategy
 
         foreach (var (stream, entryName) in inputs)
         {
-            cancellationToken.ThrowIfCancellationRequested();
-
-            var entry = archive.CreateEntry(entryName, _level);
-            var entryStream = await entry.OpenAsync(cancellationToken).ConfigureAwait(false);
-            await using (entryStream.ConfigureAwait(false))
+            // Take ownership of the source stream: dispose it as soon as its entry
+            // is written so only one source handle is open at a time.
+            await using (stream.ConfigureAwait(false))
             {
-                await stream.CopyToAsync(entryStream, cancellationToken).ConfigureAwait(false);
+                cancellationToken.ThrowIfCancellationRequested();
+
+                var entry = archive.CreateEntry(entryName, _level);
+                var entryStream = await entry.OpenAsync(cancellationToken).ConfigureAwait(false);
+                await using (entryStream.ConfigureAwait(false))
+                {
+                    await stream.CopyToAsync(entryStream, cancellationToken).ConfigureAwait(false);
+                }
             }
         }
     }

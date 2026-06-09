@@ -53,7 +53,7 @@ internal sealed class BrotliCompressionStrategy : ICompressionStrategy
     /// <inheritdoc />
     public async Task CompressFilesAsync
     (
-        IReadOnlyList<(Stream Stream, string EntryName)> inputs,
+        IEnumerable<(Stream Stream, string EntryName)> inputs,
         Stream outputStream,
         CancellationToken cancellationToken = default
     )
@@ -63,14 +63,19 @@ internal sealed class BrotliCompressionStrategy : ICompressionStrategy
 
         foreach (var (stream, entryName) in inputs)
         {
-            cancellationToken.ThrowIfCancellationRequested();
-
-            var entry = new PaxTarEntry(TarEntryType.RegularFile, entryName)
+            // Take ownership of the source stream: dispose it as soon as its entry
+            // is written so only one source handle is open at a time.
+            await using (stream.ConfigureAwait(false))
             {
-                DataStream = stream
-            };
+                cancellationToken.ThrowIfCancellationRequested();
 
-            await tarWriter.WriteEntryAsync(entry, cancellationToken).ConfigureAwait(false);
+                var entry = new PaxTarEntry(TarEntryType.RegularFile, entryName)
+                {
+                    DataStream = stream
+                };
+
+                await tarWriter.WriteEntryAsync(entry, cancellationToken).ConfigureAwait(false);
+            }
         }
     }
 }

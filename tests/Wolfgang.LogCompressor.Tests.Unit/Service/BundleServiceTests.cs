@@ -26,6 +26,20 @@ public sealed class BundleServiceTests
         _strategy.BundleFileExtension.Returns("zip");
         _archiveVerifier.VerifyAsync(Arg.Any<string>(), Arg.Any<string>()).Returns(Task.FromResult(true));
 
+        // The real strategies enumerate (and dispose) the lazily-opened input
+        // sequence; the substitute must enumerate it too so BundleService records
+        // which files were actually bundled.
+        _strategy
+            .CompressFilesAsync(Arg.Any<IEnumerable<(Stream Stream, string EntryName)>>(), Arg.Any<Stream>(), Arg.Any<CancellationToken>())
+            .Returns(callInfo =>
+            {
+                foreach (var _ in callInfo.Arg<IEnumerable<(Stream Stream, string EntryName)>>())
+                {
+                }
+
+                return Task.CompletedTask;
+            });
+
         _sut = new BundleService
         (
             _fileSystem,

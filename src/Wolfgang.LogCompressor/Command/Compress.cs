@@ -89,7 +89,14 @@ internal class Compress : SharedOptions
 
             if (options.DeleteArchivesOlderThanDays.HasValue)
             {
-                var archiveDir = options.OutputPath ?? System.IO.Path.GetDirectoryName(options.SourcePath) ?? ".";
+                // Retention must scan where archives are actually written: alongside
+                // each source (the source directory itself when SourcePath is a
+                // directory), or the source's directory when SourcePath is a file.
+                var archiveDir = options.OutputPath
+                    ?? (Directory.Exists(options.SourcePath)
+                        ? options.SourcePath
+                        : System.IO.Path.GetDirectoryName(options.SourcePath))
+                    ?? ".";
                 retentionService.DeleteOldArchives(archiveDir, options.DeleteArchivesOlderThanDays.Value);
             }
 

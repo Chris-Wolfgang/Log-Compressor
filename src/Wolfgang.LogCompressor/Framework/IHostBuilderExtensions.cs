@@ -8,8 +8,7 @@ namespace Wolfgang.LogCompressor.Framework;
 internal enum ConfigurationFileMethod
 #pragma warning restore MA0048
 {
-    SingleFile,
-    OneFilePerEnvironment
+    SingleFile
 }
 
 
@@ -40,7 +39,6 @@ internal static class IHostBuilderExtensions
         return method switch
         {
             ConfigurationFileMethod.SingleFile => AddSingleConfigFile(builder, optional, reloadOnChange),
-            ConfigurationFileMethod.OneFilePerEnvironment => AddConfigFileForEnvironment(builder, optional, reloadOnChange),
             _ => throw new ArgumentOutOfRangeException(paramName: nameof(method), method, message: null)
         };
     }
@@ -63,32 +61,6 @@ internal static class IHostBuilderExtensions
                     .AddEnvironmentVariables();
             });
 
-        return builder;
-    }
-
-
-
-    private static IHostBuilder AddConfigFileForEnvironment
-    (
-        this IHostBuilder builder,
-        bool optional,
-        bool reloadOnChange
-    )
-    {
-        var environment = Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT");
-        if (string.IsNullOrWhiteSpace(environment))
-        {
-            Environment.FailFast("System variable DOTNET_ENVIRONMENT is not set.");
-        }
-
-        builder
-            .ConfigureAppConfiguration((_, configurationBuilder) =>
-            {
-                configurationBuilder
-                    .SetBasePath(AppContext.BaseDirectory)
-                    .AddJsonFile($"AppSettings.{environment}.json", optional, reloadOnChange)
-                    .AddEnvironmentVariables();
-            });
         return builder;
     }
 }

@@ -180,4 +180,23 @@ public sealed class CompressCommandTests : IDisposable
         Assert.Equal(ExitCode.Success, result);
         _retentionFileSystem.Received(1).DirectoryExists(Arg.Any<string>());
     }
+
+
+
+    [Fact]
+    public async Task OnExecuteAsync_when_sourceIsDirectory_expected_retentionScansSourceDirectory()
+    {
+        _compressService.ExecuteAsync(Arg.Any<CompressionOptions>(), Arg.Any<CancellationToken>())
+            .Returns(new List<CompressionResult>());
+
+        var command = new Compress { Path = _tempDir, NoLock = true, DeleteArchivesOlderThan = 30 };
+
+        var result = await command.OnExecuteAsync(_console, _logger, _compressService, _reportService, _retentionService);
+
+        Assert.Equal(ExitCode.Success, result);
+
+        // Retention must scan the source directory itself (where compress writes the
+        // archives), not its parent.
+        _retentionFileSystem.Received(1).DirectoryExists(System.IO.Path.GetFullPath(_tempDir));
+    }
 }

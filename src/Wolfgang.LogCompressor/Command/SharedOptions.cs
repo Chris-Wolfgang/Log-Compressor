@@ -11,8 +11,8 @@ namespace Wolfgang.LogCompressor.Command;
 /// </summary>
 internal abstract class SharedOptions
 {
-    private const int InvalidFormatSentinel = -1;
-    private const int InvalidLevelSentinel = -1;
+    // Sentinel for a failed enum parse, cast back to the enum then compared.
+    private const int InvalidEnumSentinel = -1;
 
 
 
@@ -202,11 +202,7 @@ internal abstract class SharedOptions
     /// <returns><see langword="true"/> if options are valid; otherwise, <see langword="false"/>.</returns>
     internal bool ValidateOptions(IConsole console)
     {
-        var resolvedPath = System.IO.Path.GetFullPath(Path);
-        if (!resolvedPath.Equals(Path, StringComparison.Ordinal))
-        {
-            Path = resolvedPath;
-        }
+        Path = System.IO.Path.GetFullPath(Path);
 
         if (Output != null)
         {
@@ -319,10 +315,10 @@ internal abstract class SharedOptions
             "zip" => CompressionFormat.Zip,
             "gz" or "gzip" => CompressionFormat.Gz,
             "br" or "brotli" => CompressionFormat.Brotli,
-            _ => (CompressionFormat)InvalidFormatSentinel
+            _ => (CompressionFormat)InvalidEnumSentinel
         };
 
-        return (int)format != InvalidFormatSentinel;
+        return (int)format != InvalidEnumSentinel;
     }
 
 
@@ -334,10 +330,10 @@ internal abstract class SharedOptions
             "fastest" => CompressionLevel.Fastest,
             "optimal" => CompressionLevel.Optimal,
             "smallest" => CompressionLevel.SmallestSize,
-            _ => (CompressionLevel)InvalidLevelSentinel
+            _ => (CompressionLevel)InvalidEnumSentinel
         };
 
-        return (int)level != InvalidLevelSentinel;
+        return (int)level != InvalidEnumSentinel;
     }
 
 

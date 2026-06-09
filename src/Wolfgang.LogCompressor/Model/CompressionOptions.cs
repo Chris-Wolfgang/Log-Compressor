@@ -29,7 +29,7 @@ internal record CompressionOptions
 
 
     /// <summary>
-    /// Gets the minimum file age in calendar days. Only files last modified this many days ago or more are included.
+    /// Gets the minimum file age in calendar days. Only files last modified more than this many days ago (before local midnight that many days back) are included.
     /// </summary>
     public int? OlderThanDays { get; init; }
 

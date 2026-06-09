@@ -37,14 +37,17 @@ internal interface ICompressionStrategy
 
 
     /// <summary>
-    /// Compresses multiple files into a single archive.
+    /// Compresses multiple files into a single archive. The sequence is enumerated
+    /// lazily and the implementation takes ownership of each input stream, disposing
+    /// it immediately after writing — so the caller can open one source at a time
+    /// rather than holding every file handle open for the duration of a large bundle.
     /// </summary>
-    /// <param name="inputs">A list of stream and entry name pairs.</param>
+    /// <param name="inputs">A lazily-enumerated sequence of stream and entry name pairs. Each stream is disposed by the implementation once it has been written.</param>
     /// <param name="outputStream">The destination archive stream.</param>
     /// <param name="cancellationToken">A token to cancel the operation.</param>
     Task CompressFilesAsync
     (
-        IReadOnlyList<(Stream Stream, string EntryName)> inputs,
+        IEnumerable<(Stream Stream, string EntryName)> inputs,
         Stream outputStream,
         CancellationToken cancellationToken = default
     );

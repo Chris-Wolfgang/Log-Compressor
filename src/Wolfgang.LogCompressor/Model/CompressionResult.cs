@@ -6,7 +6,8 @@ namespace Wolfgang.LogCompressor.Model;
 internal record CompressionResult
 {
     /// <summary>
-    /// Gets the source file path (or directory path for bundles).
+    /// Gets the source path: the file that was compressed, or — for bundles — the
+    /// bundle's source path, which may be a directory or a single file.
     /// </summary>
     public required string SourcePath { get; init; }
 

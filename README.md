@@ -142,8 +142,8 @@ The resulting binary in `bin/Release/net10.0/linux-x64/publish/` is a single fil
 
 | Metric | Value |
 |--------|-------|
-| Unit tests (xunit 2.9.3, NSubstitute) | 75+ |
-| Code coverage | 96.8%+ |
+| Unit tests (xunit 2.9.3, NSubstitute) | 163 |
+| Code coverage | 95.9% (line) |
 | Benchmarks | BenchmarkDotNet (compression-format throughput) |
 
 ---

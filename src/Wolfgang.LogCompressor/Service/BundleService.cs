@@ -121,6 +121,21 @@ internal class BundleService
         var outputFileName = _fileNamer.GetBundleFileName(folderName, filtered, strategy.BundleFileExtension);
         var outputPath = Path.Combine(outputDir, outputFileName);
 
+        // Never overwrite an existing archive — refuse rather than clobber it and
+        // delete the sources that were folded into the replacement.
+        if (_fileSystem.FileExists(outputPath))
+        {
+            _logger.LogError("Output archive already exists, refusing to overwrite: {Output}", outputPath);
+
+            return new CompressionResult
+            {
+                SourcePath = options.SourcePath,
+                OutputPath = outputPath,
+                Success = false,
+                ErrorMessage = $"Output archive already exists: {outputPath}"
+            };
+        }
+
         try
         {
             if (options.OutputPath != null && !_fileSystem.DirectoryExists(options.OutputPath))

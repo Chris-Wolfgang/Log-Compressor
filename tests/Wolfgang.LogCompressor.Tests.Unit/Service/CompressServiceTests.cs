@@ -283,6 +283,39 @@ public sealed class CompressServiceTests
 
 
 
+    [Fact]
+    public async Task ExecuteAsync_when_verificationFails_expected_originalPreservedAndFailure()
+    {
+        var tempFile = CreateTempFile();
+        var fileInfo = new FileInfo(tempFile);
+
+        _fileSystem.FileExists(tempFile).Returns(returnThis: true);
+        _fileSystem.GetFileInfo(tempFile).Returns(fileInfo);
+        _fileFilter.Apply
+        (
+            Arg.Any<IEnumerable<FileInfo>>(),
+            Arg.Any<int?>(),
+            Arg.Any<DateTime?>(),
+            Arg.Any<DateTime?>(),
+            Arg.Any<IReadOnlyList<string>>(),
+            Arg.Any<IReadOnlyList<string>>()
+        ).Returns([fileInfo]);
+        _fileNamer.GetCompressedFileName(fileInfo, "zip").Returns("out.zip");
+        _fileSystem.OpenRead(tempFile).Returns(new MemoryStream("content"u8.ToArray()));
+        _fileSystem.CreateWrite(Arg.Any<string>()).Returns(new MemoryStream());
+        _archiveVerifier.VerifyAsync(Arg.Any<string>(), Arg.Any<string>()).Returns(Task.FromResult(false));
+
+        var options = new CompressionOptions { SourcePath = tempFile, Verify = true };
+        var results = await _sut.ExecuteAsync(options);
+
+        Assert.Single(results);
+        Assert.False(results[0].Success);
+        Assert.Equal("Archive verification failed.", results[0].ErrorMessage);
+        _fileSystem.DidNotReceive().DeleteFile(tempFile);
+    }
+
+
+
     private static string CreateTempFile()
     {
         var path = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + ".log");

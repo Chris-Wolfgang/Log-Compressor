@@ -256,6 +256,31 @@ public sealed class BundleServiceTests
 
 
 
+    [Fact]
+    public async Task ExecuteAsync_when_verificationFails_expected_originalsPreservedAndFailure()
+    {
+        var dir = "/tmp/logs/MyApp";
+        var files = CreateTempFiles(2);
+        var fileInfos = files.Select(f => new FileInfo(f)).ToList();
+
+        SetupDirectory(dir, files, fileInfos);
+        _fileNamer.GetBundleFileName("MyApp", Arg.Any<IReadOnlyList<FileInfo>>(), "zip").Returns("bundle.zip");
+        _fileSystem.CreateWrite(Arg.Any<string>()).Returns(new MemoryStream());
+        _archiveVerifier.VerifyAsync(Arg.Any<string>(), Arg.Any<string>()).Returns(Task.FromResult(false));
+
+        var options = new CompressionOptions { SourcePath = dir, Verify = true };
+        var result = await _sut.ExecuteAsync(options);
+
+        Assert.False(result.Success);
+        Assert.Equal("Archive verification failed.", result.ErrorMessage);
+        foreach (var file in files)
+        {
+            _fileSystem.DidNotReceive().DeleteFile(file);
+        }
+    }
+
+
+
     private void SetupDirectory(string dir, string[] files, List<FileInfo> fileInfos)
     {
         _fileSystem.FileExists(dir).Returns(returnThis: false);

@@ -295,6 +295,76 @@ public sealed class BundleServiceTests
 
 
 
+    [Fact]
+    public async Task ExecuteAsync_when_someFilesUnreadable_expected_skippedNotDeletedAndPartialFailure()
+    {
+        var dir = "/tmp/logs/MyApp";
+        var files = CreateTempFiles(2);
+        var fileInfos = files.Select(f => new FileInfo(f)).ToList();
+
+        SetupDirectory(dir, files, fileInfos);
+        _fileSystem.OpenRead(files[0]).Returns(_ => throw new IOException("locked"));
+        _fileNamer.GetBundleFileName("MyApp", Arg.Any<IReadOnlyList<FileInfo>>(), "zip").Returns("bundle.zip");
+        _fileSystem.CreateWrite(Arg.Any<string>()).Returns(new MemoryStream());
+
+        var result = await _sut.ExecuteAsync(new CompressionOptions { SourcePath = dir });
+
+        Assert.False(result.Success);
+        Assert.Contains("skipped", result.ErrorMessage, StringComparison.OrdinalIgnoreCase);
+        _fileSystem.DidNotReceive().DeleteFile(files[0]);   // unreadable file preserved
+        _fileSystem.Received(1).DeleteFile(files[1]);        // readable file bundled + deleted
+    }
+
+
+
+    [Fact]
+    public async Task ExecuteAsync_when_allFilesUnreadable_expected_failureAndEmptyArchiveRemoved()
+    {
+        var dir = "/tmp/logs/MyApp";
+        var files = CreateTempFiles(2);
+        var fileInfos = files.Select(f => new FileInfo(f)).ToList();
+
+        SetupDirectory(dir, files, fileInfos);
+        foreach (var file in files)
+        {
+            _fileSystem.OpenRead(file).Returns(_ => throw new IOException("locked"));
+        }
+        _fileNamer.GetBundleFileName("MyApp", Arg.Any<IReadOnlyList<FileInfo>>(), "zip").Returns("bundle.zip");
+        _fileSystem.CreateWrite(Arg.Any<string>()).Returns(new MemoryStream());
+
+        var result = await _sut.ExecuteAsync(new CompressionOptions { SourcePath = dir });
+
+        Assert.False(result.Success);
+        Assert.Contains("No readable files", result.ErrorMessage);
+        _fileSystem.Received(1).DeleteFile(Arg.Is<string>(p => p.Contains("bundle.zip", StringComparison.Ordinal)));
+        foreach (var file in files)
+        {
+            _fileSystem.DidNotReceive().DeleteFile(file);   // no source deleted
+        }
+    }
+
+
+
+    [Fact]
+    public async Task ExecuteAsync_when_outputArchiveExists_expected_refuseAndNoDelete()
+    {
+        var dir = "/tmp/logs/MyApp";
+        var files = CreateTempFiles(1);
+        var fileInfos = files.Select(f => new FileInfo(f)).ToList();
+
+        SetupDirectory(dir, files, fileInfos);
+        _fileNamer.GetBundleFileName("MyApp", Arg.Any<IReadOnlyList<FileInfo>>(), "zip").Returns("bundle.zip");
+        _fileSystem.FileExists(Arg.Is<string>(p => p.Contains("bundle.zip", StringComparison.Ordinal))).Returns(returnThis: true);
+
+        var result = await _sut.ExecuteAsync(new CompressionOptions { SourcePath = dir });
+
+        Assert.False(result.Success);
+        Assert.Contains("already exists", result.ErrorMessage, StringComparison.OrdinalIgnoreCase);
+        _fileSystem.DidNotReceive().DeleteFile(files[0]);
+    }
+
+
+
     private void SetupDirectory(string dir, string[] files, List<FileInfo> fileInfos)
     {
         _fileSystem.FileExists(dir).Returns(returnThis: false);

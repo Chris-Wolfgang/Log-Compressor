@@ -63,10 +63,21 @@ internal sealed class ProcessLock : IDisposable
                 FileOptions.None
             );
 
-            using var writer = new StreamWriter(_lockStream, leaveOpen: true);
-            writer.WriteLine($"PID={Environment.ProcessId}");
-            writer.WriteLine($"Started={DateTimeOffset.Now:O}");
-            writer.Flush();
+            using (var writer = new StreamWriter(_lockStream, leaveOpen: true))
+            {
+                writer.WriteLine($"PID={Environment.ProcessId}");
+                writer.WriteLine($"Started={DateTimeOffset.Now:O}");
+                writer.Flush();
+            }
+
+            // StreamWriter.Flush only pushes the writer buffer into the
+            // FileStream buffer; the bytes still sit in the FileStream's
+            // 4096-byte buffer until something forces a disk write. Push
+            // them out explicitly so a second instance's IsLockStale call
+            // can read the PID rather than seeing an empty file and
+            // mis-classifying the live lock as stale (the original
+            // Linux-CI failure mode).
+            _lockStream.Flush(flushToDisk: true);
 
             _logger.LogDebug("Lock acquired: {Path}", _lockFilePath);
             return true;
@@ -142,9 +153,12 @@ internal sealed class ProcessLock : IDisposable
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
         {
-            // Can't read the lock file to evaluate staleness — treat it as stale
-            // and take over rather than block on an unreadable lock.
-            return true;
+            // Can't read the lock file — most likely because another instance
+            // is holding it open with FileShare.None. Treat as NOT stale (lock
+            // is held, refuse to take over) rather than deleting a live lock
+            // file out from under the existing owner.
+            _logger.LogDebug(ex, "Could not read lock file {Path} to evaluate staleness; treating as held.", _lockFilePath);
+            return false;
         }
     }
 }

@@ -27,14 +27,14 @@ A cross-platform .NET CLI (`logc`) for compressing log files. Built for **unatte
 
 ## 🚀 Quick Start
 
-> **Status:** v0.1.0 in active development on the [`initial-dev`](https://github.com/Chris-Wolfgang/Log-Compressor/tree/initial-dev) branch. Not yet released. Build from source for now.
+> **Status:** v0.1.0 — first release. Download the self-contained `logc` executable from [Releases](https://github.com/Chris-Wolfgang/Log-Compressor/releases), or build from source below.
 
 ### Build from source
 
 ```bash
 git clone https://github.com/Chris-Wolfgang/Log-Compressor.git
 cd Log-Compressor
-git checkout initial-dev
+git checkout v0.1.0
 dotnet restore
 dotnet build --configuration Release
 dotnet test
@@ -128,7 +128,7 @@ Compression strategies (`ZipStrategy`, `GZipStrategy`, `BrotliStrategy`) are dis
 - **Distribution:** self-contained single-file executable
 - **Runtimes:** `win-x64`, `linux-x64`, `osx-x64`
 
-> The `src/Wolfgang.LogCompressor` project lives on the [`initial-dev`](https://github.com/Chris-Wolfgang/Log-Compressor/tree/initial-dev) branch until v0.1.0 lands on `main`. Check it out first (see [Build from source](#build-from-source) above).
+Publish a self-contained single-file binary for your target runtime:
 
 ```bash
 dotnet publish src/Wolfgang.LogCompressor -c Release -r linux-x64 --self-contained -p:PublishSingleFile=true
@@ -142,8 +142,9 @@ The resulting binary in `bin/Release/net10.0/linux-x64/publish/` is a single fil
 
 | Metric | Value |
 |--------|-------|
-| Unit tests (xunit 2.9.3, NSubstitute) | 75+ |
-| Code coverage | 96.8%+ |
+| Unit tests (xunit 2.9.3, NSubstitute) | 170 |
+| Integration tests (real file system, all OSes) | 14 |
+| Code coverage | 95.9%+ (line); 90% per-module gate in CI |
 | Benchmarks | BenchmarkDotNet (compression-format throughput) |
 
 ---

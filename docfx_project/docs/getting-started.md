@@ -1,53 +1,53 @@
 # Getting Started
 
-This guide will help you quickly get up and running with {{PROJECT_NAME}}.
+This guide will help you quickly get up and running with Wolfgang.LogCompressor — the `logc` command-line tool for compressing log files.
 
 ## Prerequisites
 
-<!-- List any prerequisites needed. For example:
-- .NET 8.0 or later
-- Visual Studio 2022 or Visual Studio Code
--->
+- .NET 10.0 SDK or later (to build from source)
+- A terminal on Windows, Linux, or macOS
 
 ## Installation
 
-### Via NuGet Package Manager
+Wolfgang.LogCompressor ships as a self-contained single-file executable (`logc`) — no .NET runtime is required on the target machine. Until v0.1.0 is published, build it from source:
 
 ```bash
-dotnet add package {{PACKAGE_NAME}}
+git clone https://github.com/Chris-Wolfgang/Log-Compressor.git
+cd Log-Compressor
+git checkout initial-dev
+dotnet publish src/Wolfgang.LogCompressor -c Release -r linux-x64 --self-contained -p:PublishSingleFile=true
 ```
 
-### Via Package Manager Console
-
-```powershell
-Install-Package {{PACKAGE_NAME}}
-```
+Replace `linux-x64` with `win-x64` or `osx-x64` for your platform. The resulting `logc` binary is written to `bin/Release/net10.0/<rid>/publish/` — copy it to your server and run it.
 
 ## Quick Start
 
-<!-- Add a quick start example. For example: -->
+Compress a single log file (the original is deleted only after the archive is written successfully):
 
-```csharp
-// Add your quick start code example here
-// This should show the simplest way to use your library
+```bash
+logc compress /var/log/myapp/app.log
+```
 
-using {{PROJECT_NAME}};
+Compress every log older than 7 days in a directory, each to its own archive:
 
-// Example usage
+```bash
+logc compress /var/log/myapp --recurse --older-than 7
+```
+
+Bundle a date range of logs into a single archive:
+
+```bash
+logc bundle /var/log/myapp --min-datetime 2026-04-01 --max-datetime 2026-04-30 --format gz
 ```
 
 ## Next Steps
 
-- Explore the [API Reference](../api/index.md) for detailed documentation
-- Read the [Introduction](introduction.md) to learn more about {{PROJECT_NAME}}
-- Check out example projects in the [GitHub repository]({{GITHUB_REPO_URL}})
-
-## Common Issues
-
-<!-- Add common issues and their solutions here -->
+- Read the [Introduction](introduction.md) to learn more about what Wolfgang.LogCompressor does
+- Browse the [API Reference](../api/index.md) for the internal types
+- See the full CLI reference and response-file usage in the [README](https://github.com/Chris-Wolfgang/Log-Compressor#-cli-reference)
 
 ## Additional Resources
 
-- [GitHub Repository]({{GITHUB_REPO_URL}})
-- [Contributing Guidelines]({{GITHUB_REPO_URL}}/blob/main/CONTRIBUTING.md)
-- [Report an Issue]({{GITHUB_REPO_URL}}/issues)
+- [GitHub Repository](https://github.com/Chris-Wolfgang/Log-Compressor)
+- [Contributing Guidelines](https://github.com/Chris-Wolfgang/Log-Compressor/blob/main/CONTRIBUTING.md)
+- [Report an Issue](https://github.com/Chris-Wolfgang/Log-Compressor/issues)

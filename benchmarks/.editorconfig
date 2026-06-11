@@ -1,0 +1,19 @@
+# Analyzer rules relaxed for benchmark projects.
+#
+# Benchmark projects are still held to TreatWarningsAsErrors (Release) via
+# Directory.Build.props; this file only relaxes rules that conflict with
+# BenchmarkDotNet conventions so legitimate benchmark code is not flagged.
+
+[*.cs]
+
+# AsyncFixer01: Remove async/await — benchmark methods use BenchmarkDotNet conventions
+dotnet_diagnostic.AsyncFixer01.severity = none
+
+# MA0004: Use ConfigureAwait(false) — not needed in a benchmark harness
+dotnet_diagnostic.MA0004.severity = none
+
+# S1215: Remove use of GC.GetTotalMemory — required for memory benchmarks
+dotnet_diagnostic.S1215.severity = none
+
+# VSTHRD200: Use Async suffix — benchmark methods follow BenchmarkDotNet naming conventions
+dotnet_diagnostic.VSTHRD200.severity = none

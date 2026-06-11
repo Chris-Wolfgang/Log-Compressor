@@ -1,0 +1,20 @@
+{
+    "profiles": {
+        "<no options>": {
+            "commandName": "Project",
+            "commandLineArgs": ""
+        },
+        "-?": {
+            "commandName": "Project",
+            "commandLineArgs": "-?"
+        },
+        "compress -?": {
+            "commandName": "Project",
+            "commandLineArgs": "compress -?"
+        },
+        "bundle -?": {
+            "commandName": "Project",
+            "commandLineArgs": "bundle -?"
+        }
+    }
+}

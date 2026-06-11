@@ -775,3 +775,98 @@ jobs:
             ./nuget-packages/*.bom.json
             release-coverage.zip
 
+  # Build the self-contained single-file CLI for each runtime and attach the
+  # binaries to the GitHub Release. This is the primary distribution channel:
+  # logc ships as per-RID executables (no .NET runtime required on the target),
+  # NOT as a NuGet package (see IsPackable=false in the csproj). A self-contained
+  # single-file build is RID-specific, so one asset is produced per RID. All RIDs
+  # cross-compile from a single Linux runner.
+  publish-binaries:
+    name: Publish Self-Contained Binaries
+    needs: validate-release
+    if: github.repository != 'Chris-Wolfgang/repo-template'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write  # Required to upload assets to the GitHub Release
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - rid: win-x64
+            ext: ".exe"
+            archive: zip      # zip is the convention on Windows
+          - rid: linux-x64
+            ext: ""
+            archive: targz    # tar.gz preserves the executable bit on Unix
+          - rid: osx-x64
+            ext: ""
+            archive: targz
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Publish self-contained single-file binary (${{ matrix.rid }})
+        shell: pwsh
+        run: |
+          dotnet publish src/Wolfgang.LogCompressor/Wolfgang.LogCompressor.csproj `
+            --configuration Release `
+            --runtime ${{ matrix.rid }} `
+            --self-contained true `
+            -p:PublishSingleFile=true `
+            -p:EnableCompressionInSingleFile=true `
+            --output publish/${{ matrix.rid }}
+          if ($LASTEXITCODE -ne 0) { Write-Error "❌ Publish failed for ${{ matrix.rid }}"; exit $LASTEXITCODE }
+
+      - name: Stage release archive
+        shell: pwsh
+        run: |
+          $tag = '${{ github.event.release.tag_name }}'
+          $rid = '${{ matrix.rid }}'
+          $ext = '${{ matrix.ext }}'
+          $archive = '${{ matrix.archive }}'
+
+          $bin = "publish/$rid/logc$ext"
+          if (-not (Test-Path $bin)) {
+            Write-Error "❌ Expected binary not found: $bin"
+            exit 1
+          }
+
+          # logc loads AppSettings.json at startup (optional: false), and the
+          # single-file bundle does NOT embed it — it is emitted as a loose file.
+          # Ship it alongside the executable so the binary runs standalone.
+          $config = "publish/$rid/AppSettings.json"
+          if (-not (Test-Path $config)) {
+            Write-Error "❌ Expected AppSettings.json not found: $config"
+            exit 1
+          }
+
+          $pkg = "pkg/$rid"
+          New-Item -ItemType Directory -Force -Path $pkg | Out-Null
+          Copy-Item $bin $pkg -Force
+          Copy-Item $config $pkg -Force
+
+          New-Item -ItemType Directory -Force -Path artifacts | Out-Null
+          if ($archive -eq 'zip') {
+            $asset = "artifacts/logc-$tag-$rid.zip"
+            Compress-Archive -Path "$pkg/*" -DestinationPath $asset -Force
+          }
+          else {
+            $asset = "artifacts/logc-$tag-$rid.tar.gz"
+            tar -czf $asset -C $pkg .
+            if ($LASTEXITCODE -ne 0) { Write-Error "❌ tar failed for $rid"; exit $LASTEXITCODE }
+          }
+          Write-Host "✅ Staged $asset"
+
+      - name: Attach archive to release
+        uses: softprops/action-gh-release@b4309332981a82ec1c5618f44dd2e27cc8bfbfda  # v3.0.0
+        with:
+          tag_name: ${{ github.event.release.tag_name }}
+          files: artifacts/logc-${{ github.event.release.tag_name }}-${{ matrix.rid }}.*
+

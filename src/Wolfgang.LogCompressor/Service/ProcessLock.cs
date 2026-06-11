@@ -49,6 +49,10 @@ internal sealed class ProcessLock : IDisposable
                 }
             }
 
+            // Do NOT use FileOptions.DeleteOnClose: on Unix .NET unlinks the file
+            // immediately (open-then-unlink), so a second instance's File.Exists
+            // check sees nothing and its CreateNew succeeds — defeating the lock.
+            // The file is removed explicitly in Dispose instead.
             _lockStream = new FileStream
             (
                 _lockFilePath,
@@ -56,7 +60,7 @@ internal sealed class ProcessLock : IDisposable
                 FileAccess.Write,
                 FileShare.None,
                 bufferSize: 4096,
-                FileOptions.DeleteOnClose
+                FileOptions.None
             );
 
             using var writer = new StreamWriter(_lockStream, leaveOpen: true);
@@ -87,6 +91,19 @@ internal sealed class ProcessLock : IDisposable
         {
             _lockStream.Dispose();
             _lockStream = null;
+
+            // Remove the lock file now that the stream is closed. Best-effort: a
+            // lingering file (e.g. after a crash) is reclaimed by the next run's
+            // stale-lock check.
+            try
+            {
+                File.Delete(_lockFilePath);
+            }
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+            {
+                _logger.LogDebug(ex, "Could not delete lock file {Path}", _lockFilePath);
+            }
+
             _logger.LogDebug("Lock released: {Path}", _lockFilePath);
         }
     }

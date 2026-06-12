@@ -6,6 +6,11 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <Version>0.1.0</Version>
+    <!-- This is a self-contained CLI executable, not a library/tool. It is
+         distributed as per-RID binaries attached to the GitHub Release, not
+         pushed to NuGet. IsPackable=false makes the release.yaml NuGet path
+         (pack/smoke-test/publish) no-op gracefully via its has-packages gate. -->
+    <IsPackable>false</IsPackable>
     <LangVersion>latest</LangVersion>
     <Copyright>Copyright 2026 Chris Wolfgang</Copyright>
     <Description>Cross-platform CLI tool to compress log files</Description>

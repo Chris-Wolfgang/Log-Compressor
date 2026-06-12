@@ -6,7 +6,17 @@
         <Configuration>
           <Format>cobertura</Format>
           <ExcludeByFile>**/bin/**/*.cs;**/obj/**/*.cs</ExcludeByFile>
-          <ExcludeByAttribute>ExcludeFromCodeCoverageAttribute</ExcludeByAttribute>
+          <ExcludeByAttribute>ExcludeFromCodeCoverageAttribute;GeneratedCodeAttribute</ExcludeByAttribute>
+          <!-- Exclude the config-binder source-generator output. The
+               trim-safe code-based config path (this is the whole point of
+               the trim-safe logging work) makes the
+               Microsoft.Extensions.Configuration.Binder source generator
+               emit a BindingExtensions partial + an InterceptsLocation
+               attribute. These compile INTO the logc assembly under their
+               own namespaces, so ExcludeByFile/ExcludeByAttribute don't
+               catch them — exclude by namespace filter instead. Without
+               this they report 0% and drag the assembly from ~95% to 83%. -->
+          <Exclude>[*]Microsoft.Extensions.Configuration.Binder.SourceGeneration.*,[*]System.Runtime.CompilerServices.*BindingExtensions*</Exclude>
         </Configuration>
       </DataCollector>
     </DataCollectors>

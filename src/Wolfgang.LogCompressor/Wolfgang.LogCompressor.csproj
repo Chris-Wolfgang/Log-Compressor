@@ -20,7 +20,9 @@
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
     <AssemblyName>logc</AssemblyName>
     <PublishSingleFile>true</PublishSingleFile>
-    <NoWarn>$(NoWarn);SYSLIB1104</NoWarn>
+    <!-- Bind IConfiguration via the source generator (reflection-free) so single-file
+         and trimmed publishes are clean. This replaces the suppressed SYSLIB1104. -->
+    <EnableConfigurationBindingGenerator>true</EnableConfigurationBindingGenerator>
     <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
   </PropertyGroup>
 
@@ -40,19 +42,12 @@
     <PackageReference Include="Serilog.Exceptions" Version="8.4.0" />
     <PackageReference Include="Serilog.Extensions.Hosting" Version="10.0.0" />
     <PackageReference Include="Serilog.Extensions.Logging" Version="10.0.0" />
-    <PackageReference Include="Serilog.Settings.Configuration" Version="10.0.0" />
     <PackageReference Include="Serilog.Sinks.Console" Version="6.1.1" />
     <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
     <PackageReference Include="System.Configuration.ConfigurationManager" Version="10.0.9" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="AppSettings.Development.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="AppSettings.Production.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Update="AppSettings.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

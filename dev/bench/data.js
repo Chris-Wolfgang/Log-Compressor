@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1781223740209,
+  "lastUpdate": 1781230026161,
   "repoUrl": "https://github.com/Chris-Wolfgang/Log-Compressor",
   "entries": {
     "BenchmarkDotNet": [
@@ -720,6 +720,246 @@ window.BENCHMARK_DATA = {
             "value": 2645198643,
             "unit": "ns",
             "range": "± 2947011.837982162"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "210299580+Chris-Wolfgang@users.noreply.github.com",
+            "name": "Chris Wolfgang",
+            "username": "Chris-Wolfgang"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "b8135a91f34a8d3718a6e24ffed476bdbda529c2",
+          "message": "Merge pull request #123 from Chris-Wolfgang/feature/122-code-based-logging\n\nReplace Serilog.Settings.Configuration with code-based config (trim-safe, keep file config)",
+          "timestamp": "2026-06-11T21:58:16-04:00",
+          "tree_id": "3398cd843f85c273d1234164d1815828cbc1fb15",
+          "url": "https://github.com/Chris-Wolfgang/Log-Compressor/commit/b8135a91f34a8d3718a6e24ffed476bdbda529c2"
+        },
+        "date": 1781230025572,
+        "tool": "benchmarkdotnet",
+        "benches": [
+          {
+            "name": "Wolfgang.LogCompressor.Benchmarks.CompressionBenchmarks.CompressSingleFile(FileSize: 10485760, Format: \"brotli\", Level: \"fastest\")",
+            "value": 903218.8782552084,
+            "unit": "ns",
+            "range": "± 12133.509269119178"
+          },
+          {
+            "name": "Wolfgang.LogCompressor.Benchmarks.CompressionBenchmarks.CompressBundle(FileSize: 10485760, Format: \"brotli\", Level: \"fastest\")",
+            "value": 9126065.380208334,
+            "unit": "ns",
+            "range": "± 60897.54261057999"
+          },
+          {
+            "name": "Wolfgang.LogCompressor.Benchmarks.CompressionBenchmarks.CompressSingleFile(FileSize: 10485760, Format: \"brotli\", Level: \"optimal\")",
+            "value": 28627459.822916668,
+            "unit": "ns",
+            "range": "± 29895.65847101155"
+          },
+          {
+            "name": "Wolfgang.LogCompressor.Benchmarks.CompressionBenchmarks.CompressBundle(FileSize: 10485760, Format: \"brotli\", Level: \"optimal\")",
+            "value": 277707866,
+            "unit": "ns",
+            "range": "± 1067631.9260049318"
+          },
+          {
+            "name": "Wolfgang.LogCompressor.Benchmarks.CompressionBenchmarks.CompressSingleFile(FileSize: 10485760, Format: \"brotli\", Level: \"smallest\")",
+            "value": 189959767.11111113,
+            "unit": "ns",
+            "range": "± 125872.06120427419"
+          },
+          {
+            "name": "Wolfgang.LogCompressor.Benchmarks.CompressionBenchmarks.CompressBundle(FileSize: 10485760, Format: \"brotli\", Level: \"smallest\")",
+            "value": 2012228874.3333333,
+            "unit": "ns",
+            "range": "± 2376943.1991156903"
+          },
+          {
+            "name": "Wolfgang.LogCompressor.Benchmarks.CompressionBenchmarks.CompressSingleFile(FileSize: 10485760, Format: \"gz\", Level: \"fastest\")",
+            "value": 2198538.2890625,
+            "unit": "ns",
+            "range": "± 21029.887231058434"
+          },
+          {
+            "name": "Wolfgang.LogCompressor.Benchmarks.CompressionBenchmarks.CompressBundle(FileSize: 10485760, Format: \"gz\", Level: \"fastest\")",
+            "value": 22300193.338541668,
+            "unit": "ns",
+            "range": "± 61067.86135456397"
+          },
+          {
+            "name": "Wolfgang.LogCompressor.Benchmarks.CompressionBenchmarks.CompressSingleFile(FileSize: 10485760, Format: \"gz\", Level: \"optimal\")",
+            "value": 2699546.8561197915,
+            "unit": "ns",
+            "range": "± 37475.833773808416"
+          },
+          {
+            "name": "Wolfgang.LogCompressor.Benchmarks.CompressionBenchmarks.CompressBundle(FileSize: 10485760, Format: \"gz\", Level: \"optimal\")",
+            "value": 26930709.604166668,
+            "unit": "ns",
+            "range": "± 75392.02704981485"
+          },
+          {
+            "name": "Wolfgang.LogCompressor.Benchmarks.CompressionBenchmarks.CompressSingleFile(FileSize: 10485760, Format: \"gz\", Level: \"smallest\")",
+            "value": 28108575.890625,
+            "unit": "ns",
+            "range": "± 69992.12840537046"
+          },
+          {
+            "name": "Wolfgang.LogCompressor.Benchmarks.CompressionBenchmarks.CompressBundle(FileSize: 10485760, Format: \"gz\", Level: \"smallest\")",
+            "value": 282170540,
+            "unit": "ns",
+            "range": "± 185436.6046651793"
+          },
+          {
+            "name": "Wolfgang.LogCompressor.Benchmarks.CompressionBenchmarks.CompressSingleFile(FileSize: 10485760, Format: \"zip\", Level: \"fastest\")",
+            "value": 2618775.9049479165,
+            "unit": "ns",
+            "range": "± 29717.268625927172"
+          },
+          {
+            "name": "Wolfgang.LogCompressor.Benchmarks.CompressionBenchmarks.CompressBundle(FileSize: 10485760, Format: \"zip\", Level: \"fastest\")",
+            "value": 26482319.677083332,
+            "unit": "ns",
+            "range": "± 250076.5634303212"
+          },
+          {
+            "name": "Wolfgang.LogCompressor.Benchmarks.CompressionBenchmarks.CompressSingleFile(FileSize: 10485760, Format: \"zip\", Level: \"optimal\")",
+            "value": 3054488.716796875,
+            "unit": "ns",
+            "range": "± 40067.19547048522"
+          },
+          {
+            "name": "Wolfgang.LogCompressor.Benchmarks.CompressionBenchmarks.CompressBundle(FileSize: 10485760, Format: \"zip\", Level: \"optimal\")",
+            "value": 30424726.552083332,
+            "unit": "ns",
+            "range": "± 27613.37200316345"
+          },
+          {
+            "name": "Wolfgang.LogCompressor.Benchmarks.CompressionBenchmarks.CompressSingleFile(FileSize: 10485760, Format: \"zip\", Level: \"smallest\")",
+            "value": 28175719.072916668,
+            "unit": "ns",
+            "range": "± 112929.71942405867"
+          },
+          {
+            "name": "Wolfgang.LogCompressor.Benchmarks.CompressionBenchmarks.CompressBundle(FileSize: 10485760, Format: \"zip\", Level: \"smallest\")",
+            "value": 281123565.3333333,
+            "unit": "ns",
+            "range": "± 955433.2170607653"
+          },
+          {
+            "name": "Wolfgang.LogCompressor.Benchmarks.CompressionBenchmarks.CompressSingleFile(FileSize: 104857600, Format: \"brotli\", Level: \"fastest\")",
+            "value": 12700609.8828125,
+            "unit": "ns",
+            "range": "± 109386.0363524953"
+          },
+          {
+            "name": "Wolfgang.LogCompressor.Benchmarks.CompressionBenchmarks.CompressBundle(FileSize: 104857600, Format: \"brotli\", Level: \"fastest\")",
+            "value": 125254097.08333333,
+            "unit": "ns",
+            "range": "± 1144052.9000636656"
+          },
+          {
+            "name": "Wolfgang.LogCompressor.Benchmarks.CompressionBenchmarks.CompressSingleFile(FileSize: 104857600, Format: \"brotli\", Level: \"optimal\")",
+            "value": 282849514.5,
+            "unit": "ns",
+            "range": "± 337744.1068457006"
+          },
+          {
+            "name": "Wolfgang.LogCompressor.Benchmarks.CompressionBenchmarks.CompressBundle(FileSize: 104857600, Format: \"brotli\", Level: \"optimal\")",
+            "value": 2788572020.6666665,
+            "unit": "ns",
+            "range": "± 5498169.78951581"
+          },
+          {
+            "name": "Wolfgang.LogCompressor.Benchmarks.CompressionBenchmarks.CompressSingleFile(FileSize: 104857600, Format: \"brotli\", Level: \"smallest\")",
+            "value": 2045523076.6666667,
+            "unit": "ns",
+            "range": "± 932859.2052192729"
+          },
+          {
+            "name": "Wolfgang.LogCompressor.Benchmarks.CompressionBenchmarks.CompressBundle(FileSize: 104857600, Format: \"brotli\", Level: \"smallest\")",
+            "value": 19583981014.333332,
+            "unit": "ns",
+            "range": "± 37647012.644729"
+          },
+          {
+            "name": "Wolfgang.LogCompressor.Benchmarks.CompressionBenchmarks.CompressSingleFile(FileSize: 104857600, Format: \"gz\", Level: \"fastest\")",
+            "value": 26554089.692708332,
+            "unit": "ns",
+            "range": "± 101556.89436849556"
+          },
+          {
+            "name": "Wolfgang.LogCompressor.Benchmarks.CompressionBenchmarks.CompressBundle(FileSize: 104857600, Format: \"gz\", Level: \"fastest\")",
+            "value": 263083676,
+            "unit": "ns",
+            "range": "± 472342.16884664237"
+          },
+          {
+            "name": "Wolfgang.LogCompressor.Benchmarks.CompressionBenchmarks.CompressSingleFile(FileSize: 104857600, Format: \"gz\", Level: \"optimal\")",
+            "value": 32925934.979166668,
+            "unit": "ns",
+            "range": "± 128833.1481708138"
+          },
+          {
+            "name": "Wolfgang.LogCompressor.Benchmarks.CompressionBenchmarks.CompressBundle(FileSize: 104857600, Format: \"gz\", Level: \"optimal\")",
+            "value": 312919800.3333333,
+            "unit": "ns",
+            "range": "± 845372.2170358353"
+          },
+          {
+            "name": "Wolfgang.LogCompressor.Benchmarks.CompressionBenchmarks.CompressSingleFile(FileSize: 104857600, Format: \"gz\", Level: \"smallest\")",
+            "value": 283318619.1666667,
+            "unit": "ns",
+            "range": "± 108139.65415185742"
+          },
+          {
+            "name": "Wolfgang.LogCompressor.Benchmarks.CompressionBenchmarks.CompressBundle(FileSize: 104857600, Format: \"gz\", Level: \"smallest\")",
+            "value": 2817997072.3333335,
+            "unit": "ns",
+            "range": "± 5999670.212999406"
+          },
+          {
+            "name": "Wolfgang.LogCompressor.Benchmarks.CompressionBenchmarks.CompressSingleFile(FileSize: 104857600, Format: \"zip\", Level: \"fastest\")",
+            "value": 34520355.755555555,
+            "unit": "ns",
+            "range": "± 240569.2112852779"
+          },
+          {
+            "name": "Wolfgang.LogCompressor.Benchmarks.CompressionBenchmarks.CompressBundle(FileSize: 104857600, Format: \"zip\", Level: \"fastest\")",
+            "value": 339161523.6666667,
+            "unit": "ns",
+            "range": "± 92739.90571665109"
+          },
+          {
+            "name": "Wolfgang.LogCompressor.Benchmarks.CompressionBenchmarks.CompressSingleFile(FileSize: 104857600, Format: \"zip\", Level: \"optimal\")",
+            "value": 38443558.461538464,
+            "unit": "ns",
+            "range": "± 81357.50318023286"
+          },
+          {
+            "name": "Wolfgang.LogCompressor.Benchmarks.CompressionBenchmarks.CompressBundle(FileSize: 104857600, Format: \"zip\", Level: \"optimal\")",
+            "value": 382932837,
+            "unit": "ns",
+            "range": "± 4027177.684517409"
+          },
+          {
+            "name": "Wolfgang.LogCompressor.Benchmarks.CompressionBenchmarks.CompressSingleFile(FileSize: 104857600, Format: \"zip\", Level: \"smallest\")",
+            "value": 283381876.1666667,
+            "unit": "ns",
+            "range": "± 550510.6964188647"
+          },
+          {
+            "name": "Wolfgang.LogCompressor.Benchmarks.CompressionBenchmarks.CompressBundle(FileSize: 104857600, Format: \"zip\", Level: \"smallest\")",
+            "value": 2840944783.6666665,
+            "unit": "ns",
+            "range": "± 1716771.9751324966"
           }
         ]
       }

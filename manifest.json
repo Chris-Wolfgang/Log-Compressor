@@ -1,0 +1,744 @@
+{
+  "source_base_path": "D:/a/Log-Compressor/Log-Compressor/docfx_project",
+  "xrefmap": "xrefmap.yml",
+  "files": [
+    {
+      "type": "Resource",
+      "output": {
+        "resource": {
+          "relative_path": "index.json"
+        }
+      }
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/McMaster.Extensions.CommandLineUtils.GenerateMetadataAttribute.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/McMaster.Extensions.CommandLineUtils.GenerateMetadataAttribute.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "McMaster.Extensions.CommandLineUtils.GenerateMetadataAttribute",
+      "Summary": "<p sourcefile=\"api/McMaster.Extensions.CommandLineUtils.GenerateMetadataAttribute.yml\" sourcestartlinenumber=\"1\">Marker attribute to indicate that source generation should create\nan ICommandMetadataProvider for this command. This attribute is optional\nwhen the CommandLineUtils.Generators package is referenced - all [Command]\nclasses will automatically get generated providers.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/McMaster.Extensions.CommandLineUtils.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/McMaster.Extensions.CommandLineUtils.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "McMaster.Extensions.CommandLineUtils",
+      "Summary": null
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/README.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/README.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Wolfgang.LogCompressor.Abstraction.IArchiveVerifier.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Wolfgang.LogCompressor.Abstraction.IArchiveVerifier.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "Wolfgang.LogCompressor.Abstraction.IArchiveVerifier",
+      "Summary": "<p sourcefile=\"api/Wolfgang.LogCompressor.Abstraction.IArchiveVerifier.yml\" sourcestartlinenumber=\"1\">Verifies the integrity of compressed archives.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Wolfgang.LogCompressor.Abstraction.ICompressionStrategy.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Wolfgang.LogCompressor.Abstraction.ICompressionStrategy.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "Wolfgang.LogCompressor.Abstraction.ICompressionStrategy",
+      "Summary": "<p sourcefile=\"api/Wolfgang.LogCompressor.Abstraction.ICompressionStrategy.yml\" sourcestartlinenumber=\"1\">Defines a compression strategy for a specific format.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Wolfgang.LogCompressor.Abstraction.IFileFilter.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Wolfgang.LogCompressor.Abstraction.IFileFilter.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "Wolfgang.LogCompressor.Abstraction.IFileFilter",
+      "Summary": "<p sourcefile=\"api/Wolfgang.LogCompressor.Abstraction.IFileFilter.yml\" sourcestartlinenumber=\"1\">Filters files based on date and pattern criteria.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Wolfgang.LogCompressor.Abstraction.IFileNamer.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Wolfgang.LogCompressor.Abstraction.IFileNamer.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "Wolfgang.LogCompressor.Abstraction.IFileNamer",
+      "Summary": "<p sourcefile=\"api/Wolfgang.LogCompressor.Abstraction.IFileNamer.yml\" sourcestartlinenumber=\"1\">Generates output file names for compressed archives.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Wolfgang.LogCompressor.Abstraction.IFileSystem.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Wolfgang.LogCompressor.Abstraction.IFileSystem.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "Wolfgang.LogCompressor.Abstraction.IFileSystem",
+      "Summary": "<p sourcefile=\"api/Wolfgang.LogCompressor.Abstraction.IFileSystem.yml\" sourcestartlinenumber=\"1\">Abstracts file system operations for testability.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Wolfgang.LogCompressor.Abstraction.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Wolfgang.LogCompressor.Abstraction.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "Wolfgang.LogCompressor.Abstraction",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Wolfgang.LogCompressor.Command.Bundle.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Wolfgang.LogCompressor.Command.Bundle.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "Wolfgang.LogCompressor.Command.Bundle",
+      "Summary": "<p sourcefile=\"api/Wolfgang.LogCompressor.Command.Bundle.yml\" sourcestartlinenumber=\"1\">Bundles all matching files into a single compressed archive.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Wolfgang.LogCompressor.Command.Compress.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Wolfgang.LogCompressor.Command.Compress.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "Wolfgang.LogCompressor.Command.Compress",
+      "Summary": "<p sourcefile=\"api/Wolfgang.LogCompressor.Command.Compress.yml\" sourcestartlinenumber=\"1\">Compresses files individually, producing one archive per source file.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Wolfgang.LogCompressor.Command.Init.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Wolfgang.LogCompressor.Command.Init.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "Wolfgang.LogCompressor.Command.Init",
+      "Summary": "<p sourcefile=\"api/Wolfgang.LogCompressor.Command.Init.yml\" sourcestartlinenumber=\"1\">Parent <code>init</code> command that groups the configuration-file generators. It\nproduces nothing itself — the starter files are generated by the\n<xref href=\"Wolfgang.LogCompressor.Command.InitCompress\" data-throw-if-not-resolved=\"false\"></xref> and <xref href=\"Wolfgang.LogCompressor.Command.InitBundle\" data-throw-if-not-resolved=\"false\"></xref> subcommands; invoking\n<code>init</code> with no subcommand shows help.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Wolfgang.LogCompressor.Command.InitBundle.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Wolfgang.LogCompressor.Command.InitBundle.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "Wolfgang.LogCompressor.Command.InitBundle",
+      "Summary": "<p sourcefile=\"api/Wolfgang.LogCompressor.Command.InitBundle.yml\" sourcestartlinenumber=\"1\">Generates a bundle configuration file.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Wolfgang.LogCompressor.Command.InitCompress.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Wolfgang.LogCompressor.Command.InitCompress.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "Wolfgang.LogCompressor.Command.InitCompress",
+      "Summary": "<p sourcefile=\"api/Wolfgang.LogCompressor.Command.InitCompress.yml\" sourcestartlinenumber=\"1\">Generates a compress configuration file.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Wolfgang.LogCompressor.Command.SharedOptions.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Wolfgang.LogCompressor.Command.SharedOptions.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "Wolfgang.LogCompressor.Command.SharedOptions",
+      "Summary": "<p sourcefile=\"api/Wolfgang.LogCompressor.Command.SharedOptions.yml\" sourcestartlinenumber=\"1\">Base class providing shared CLI options for compression commands.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Wolfgang.LogCompressor.Command.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Wolfgang.LogCompressor.Command.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "Wolfgang.LogCompressor.Command",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Wolfgang.LogCompressor.ExitCode.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Wolfgang.LogCompressor.ExitCode.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "Wolfgang.LogCompressor.ExitCode",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Wolfgang.LogCompressor.Framework.ConfigurationFileMethod.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Wolfgang.LogCompressor.Framework.ConfigurationFileMethod.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "Wolfgang.LogCompressor.Framework.ConfigurationFileMethod",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Wolfgang.LogCompressor.Framework.ConsoleSinkOptions.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Wolfgang.LogCompressor.Framework.ConsoleSinkOptions.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "Wolfgang.LogCompressor.Framework.ConsoleSinkOptions",
+      "Summary": "<p sourcefile=\"api/Wolfgang.LogCompressor.Framework.ConsoleSinkOptions.yml\" sourcestartlinenumber=\"1\">Options for the Serilog console sink.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Wolfgang.LogCompressor.Framework.FileSinkOptions.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Wolfgang.LogCompressor.Framework.FileSinkOptions.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "Wolfgang.LogCompressor.Framework.FileSinkOptions",
+      "Summary": "<p sourcefile=\"api/Wolfgang.LogCompressor.Framework.FileSinkOptions.yml\" sourcestartlinenumber=\"1\">Options for the Serilog rolling-file sink.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Wolfgang.LogCompressor.Framework.IHostBuilderExtensions.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Wolfgang.LogCompressor.Framework.IHostBuilderExtensions.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "Wolfgang.LogCompressor.Framework.IHostBuilderExtensions",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Wolfgang.LogCompressor.Framework.LoggingOptions.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Wolfgang.LogCompressor.Framework.LoggingOptions.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "Wolfgang.LogCompressor.Framework.LoggingOptions",
+      "Summary": "<p sourcefile=\"api/Wolfgang.LogCompressor.Framework.LoggingOptions.yml\" sourcestartlinenumber=\"1\">Strongly-typed logging configuration bound from the <code>Logging</code> section of\n<code>AppSettings.json</code>. Replaces the reflection-based\n<code>Serilog.Settings.Configuration</code> schema so the binding is performed by the\nsource-generated configuration binder (trim- and single-file-safe).</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Wolfgang.LogCompressor.Framework.SerilogConfigurator.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Wolfgang.LogCompressor.Framework.SerilogConfigurator.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "Wolfgang.LogCompressor.Framework.SerilogConfigurator",
+      "Summary": "<p sourcefile=\"api/Wolfgang.LogCompressor.Framework.SerilogConfigurator.yml\" sourcestartlinenumber=\"1\">Applies a strongly-typed <xref href=\"Wolfgang.LogCompressor.Framework.LoggingOptions\" data-throw-if-not-resolved=\"false\"></xref> to a Serilog\n<xref href=\"Serilog.LoggerConfiguration\" data-throw-if-not-resolved=\"false\"></xref> in code. This replaces\n<code>LoggerConfiguration.ReadFrom.Configuration(...)</code> (which instantiates sinks\nby name via reflection) with an explicit, trim-safe configuration.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Wolfgang.LogCompressor.Framework.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Wolfgang.LogCompressor.Framework.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "Wolfgang.LogCompressor.Framework",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Wolfgang.LogCompressor.Model.CompressionFormat.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Wolfgang.LogCompressor.Model.CompressionFormat.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "Wolfgang.LogCompressor.Model.CompressionFormat",
+      "Summary": "<p sourcefile=\"api/Wolfgang.LogCompressor.Model.CompressionFormat.yml\" sourcestartlinenumber=\"1\">Supported compression formats.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Wolfgang.LogCompressor.Model.CompressionOptions.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Wolfgang.LogCompressor.Model.CompressionOptions.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "Wolfgang.LogCompressor.Model.CompressionOptions",
+      "Summary": "<p sourcefile=\"api/Wolfgang.LogCompressor.Model.CompressionOptions.yml\" sourcestartlinenumber=\"1\">Options for compression operations.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Wolfgang.LogCompressor.Model.CompressionResult.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Wolfgang.LogCompressor.Model.CompressionResult.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "Wolfgang.LogCompressor.Model.CompressionResult",
+      "Summary": "<p sourcefile=\"api/Wolfgang.LogCompressor.Model.CompressionResult.yml\" sourcestartlinenumber=\"1\">The result of a compression operation for a single source file or bundle.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Wolfgang.LogCompressor.Model.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Wolfgang.LogCompressor.Model.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "Wolfgang.LogCompressor.Model",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Wolfgang.LogCompressor.Program.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Wolfgang.LogCompressor.Program.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "Wolfgang.LogCompressor.Program",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Wolfgang.LogCompressor.Service.ArchiveVerifier.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Wolfgang.LogCompressor.Service.ArchiveVerifier.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "Wolfgang.LogCompressor.Service.ArchiveVerifier",
+      "Summary": "<p sourcefile=\"api/Wolfgang.LogCompressor.Service.ArchiveVerifier.yml\" sourcestartlinenumber=\"1\">Verifies compressed archive integrity by attempting to read the archive contents.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Wolfgang.LogCompressor.Service.BundleService.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Wolfgang.LogCompressor.Service.BundleService.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "Wolfgang.LogCompressor.Service.BundleService",
+      "Summary": "<p sourcefile=\"api/Wolfgang.LogCompressor.Service.BundleService.yml\" sourcestartlinenumber=\"1\">Bundles all matching files into a single compressed archive.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Wolfgang.LogCompressor.Service.CompressService.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Wolfgang.LogCompressor.Service.CompressService.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "Wolfgang.LogCompressor.Service.CompressService",
+      "Summary": "<p sourcefile=\"api/Wolfgang.LogCompressor.Service.CompressService.yml\" sourcestartlinenumber=\"1\">Compresses files individually, producing one archive per source file.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Wolfgang.LogCompressor.Service.Compression.BrotliCompressionStrategy.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Wolfgang.LogCompressor.Service.Compression.BrotliCompressionStrategy.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "Wolfgang.LogCompressor.Service.Compression.BrotliCompressionStrategy",
+      "Summary": "<p sourcefile=\"api/Wolfgang.LogCompressor.Service.Compression.BrotliCompressionStrategy.yml\" sourcestartlinenumber=\"1\">Compression strategy using the Brotli format. Bundles use tar+brotli.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Wolfgang.LogCompressor.Service.Compression.CompressionStrategyFactory.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Wolfgang.LogCompressor.Service.Compression.CompressionStrategyFactory.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "Wolfgang.LogCompressor.Service.Compression.CompressionStrategyFactory",
+      "Summary": "<p sourcefile=\"api/Wolfgang.LogCompressor.Service.Compression.CompressionStrategyFactory.yml\" sourcestartlinenumber=\"1\">Creates the appropriate <xref href=\"Wolfgang.LogCompressor.Abstraction.ICompressionStrategy\" data-throw-if-not-resolved=\"false\"></xref> for a given <xref href=\"Wolfgang.LogCompressor.Model.CompressionFormat\" data-throw-if-not-resolved=\"false\"></xref>.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Wolfgang.LogCompressor.Service.Compression.GZipCompressionStrategy.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Wolfgang.LogCompressor.Service.Compression.GZipCompressionStrategy.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "Wolfgang.LogCompressor.Service.Compression.GZipCompressionStrategy",
+      "Summary": "<p sourcefile=\"api/Wolfgang.LogCompressor.Service.Compression.GZipCompressionStrategy.yml\" sourcestartlinenumber=\"1\">Compression strategy using the GZip format. Bundles use tar+gzip.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Wolfgang.LogCompressor.Service.Compression.ZipCompressionStrategy.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Wolfgang.LogCompressor.Service.Compression.ZipCompressionStrategy.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "Wolfgang.LogCompressor.Service.Compression.ZipCompressionStrategy",
+      "Summary": "<p sourcefile=\"api/Wolfgang.LogCompressor.Service.Compression.ZipCompressionStrategy.yml\" sourcestartlinenumber=\"1\">Compression strategy using the ZIP archive format.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Wolfgang.LogCompressor.Service.Compression.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Wolfgang.LogCompressor.Service.Compression.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "Wolfgang.LogCompressor.Service.Compression",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Wolfgang.LogCompressor.Service.FileFilterService.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Wolfgang.LogCompressor.Service.FileFilterService.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "Wolfgang.LogCompressor.Service.FileFilterService",
+      "Summary": "<p sourcefile=\"api/Wolfgang.LogCompressor.Service.FileFilterService.yml\" sourcestartlinenumber=\"1\">Filters files based on last-modified date and glob pattern criteria.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Wolfgang.LogCompressor.Service.FileNamingService.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Wolfgang.LogCompressor.Service.FileNamingService.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "Wolfgang.LogCompressor.Service.FileNamingService",
+      "Summary": "<p sourcefile=\"api/Wolfgang.LogCompressor.Service.FileNamingService.yml\" sourcestartlinenumber=\"1\">Generates output file names with embedded timestamps.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Wolfgang.LogCompressor.Service.FileSystemWrapper.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Wolfgang.LogCompressor.Service.FileSystemWrapper.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "Wolfgang.LogCompressor.Service.FileSystemWrapper",
+      "Summary": "<p sourcefile=\"api/Wolfgang.LogCompressor.Service.FileSystemWrapper.yml\" sourcestartlinenumber=\"1\">Thin wrapper around <xref href=\"System.IO\" data-throw-if-not-resolved=\"false\"></xref> for testability.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Wolfgang.LogCompressor.Service.ProcessLock.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Wolfgang.LogCompressor.Service.ProcessLock.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "Wolfgang.LogCompressor.Service.ProcessLock",
+      "Summary": "<p sourcefile=\"api/Wolfgang.LogCompressor.Service.ProcessLock.yml\" sourcestartlinenumber=\"1\">Provides single-instance locking for a directory using a lock file.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Wolfgang.LogCompressor.Service.ReportService.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Wolfgang.LogCompressor.Service.ReportService.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "Wolfgang.LogCompressor.Service.ReportService",
+      "Summary": "<p sourcefile=\"api/Wolfgang.LogCompressor.Service.ReportService.yml\" sourcestartlinenumber=\"1\">Generates summary reports for compression operations.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Wolfgang.LogCompressor.Service.RetentionService.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Wolfgang.LogCompressor.Service.RetentionService.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "Wolfgang.LogCompressor.Service.RetentionService",
+      "Summary": "<p sourcefile=\"api/Wolfgang.LogCompressor.Service.RetentionService.yml\" sourcestartlinenumber=\"1\">Deletes old compressed archives based on a retention policy.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Wolfgang.LogCompressor.Service.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Wolfgang.LogCompressor.Service.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "Wolfgang.LogCompressor.Service",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Wolfgang.LogCompressor.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Wolfgang.LogCompressor.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "Wolfgang.LogCompressor",
+      "Summary": null
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/index.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/index.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Toc",
+      "source_relative_path": "api/toc.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/toc.html"
+        },
+        ".json": {
+          "relative_path": "api/toc.json"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "docs/getting-started.md",
+      "output": {
+        ".html": {
+          "relative_path": "docs/getting-started.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "docs/index.md",
+      "output": {
+        ".html": {
+          "relative_path": "docs/index.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "docs/introduction.md",
+      "output": {
+        ".html": {
+          "relative_path": "docs/introduction.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Toc",
+      "source_relative_path": "docs/toc.yml",
+      "output": {
+        ".html": {
+          "relative_path": "docs/toc.html"
+        },
+        ".json": {
+          "relative_path": "docs/toc.json"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "index.md",
+      "output": {
+        ".html": {
+          "relative_path": "index.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "logo.svg",
+      "output": {
+        "resource": {
+          "relative_path": "logo.svg"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Toc",
+      "source_relative_path": "toc.yml",
+      "output": {
+        ".html": {
+          "relative_path": "toc.html"
+        },
+        ".json": {
+          "relative_path": "toc.json"
+        }
+      },
+      "version": ""
+    }
+  ],
+  "groups": [
+    {
+      "xrefmap": "xrefmap.yml"
+    }
+  ]
+}

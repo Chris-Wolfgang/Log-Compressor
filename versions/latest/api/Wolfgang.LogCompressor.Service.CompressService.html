@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+      <title>Class CompressService | Wolfgang.LogCompressor Documentation </title>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta name="title" content="Class CompressService | Wolfgang.LogCompressor Documentation ">
+      
+      <meta name="description" content="Compresses files individually, producing one archive per source file.">
+      <link rel="icon" href="../favicon.ico">
+      <link rel="stylesheet" href="../public/docfx.min.css">
+      <link rel="stylesheet" href="../public/main.css">
+      <meta name="docfx:navrel" content="../toc.html">
+      <meta name="docfx:tocrel" content="../toc.html">
+      
+      <meta name="docfx:rel" content="../">
+      
+      
+      <meta name="docfx:docurl" content="https://github.com/Chris-Wolfgang/Log-Compressor/new/fix/docfx-internal-api/apiSpec/new?filename=Wolfgang_LogCompressor_Service_CompressService.md&amp;value=---%0Auid%3A%20Wolfgang.LogCompressor.Service.CompressService%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">
+      <meta name="loc:inThisArticle" content="In this article">
+      <meta name="loc:searchResultsCount" content="{count} results for &quot;{query}&quot;">
+      <meta name="loc:searchNoResults" content="No results for &quot;{query}&quot;">
+      <meta name="loc:tocFilter" content="Filter by title">
+      <meta name="loc:nextArticle" content="Next">
+      <meta name="loc:prevArticle" content="Previous">
+      <meta name="loc:themeLight" content="Light">
+      <meta name="loc:themeDark" content="Dark">
+      <meta name="loc:themeAuto" content="Auto">
+      <meta name="loc:changeTheme" content="Change theme">
+      <meta name="loc:copy" content="Copy">
+      <meta name="loc:downloadPdf" content="Download PDF">
+
+      <script type="module" src="./../public/docfx.min.js"></script>
+
+      <script>
+        const theme = localStorage.getItem('theme') || 'auto'
+        document.documentElement.setAttribute('data-bs-theme', theme === 'auto' ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : theme)
+      </script>
+
+  </head>
+
+  <body class="tex2jax_ignore" data-layout="" data-yaml-mime="ManagedReference">
+    <header class="bg-body border-bottom">
+      <nav id="autocollapse" class="navbar navbar-expand-md" role="navigation">
+        <div class="container-xxl flex-nowrap">
+          <a class="navbar-brand" href="../index.html">
+            <img id="logo" class="svg" src="../logo.svg" alt="Wolfgang.LogCompressor">
+            Wolfgang.LogCompressor
+          </a>
+          <button class="btn btn-lg d-md-none border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navpanel" aria-controls="navpanel" aria-expanded="false" aria-label="Toggle navigation">
+            <i class="bi bi-three-dots"></i>
+          </button>
+          <div class="collapse navbar-collapse" id="navpanel">
+            <div id="navbar">
+              <form class="search" role="search" id="search">
+                <i class="bi bi-search"></i>
+                <input class="form-control" id="search-query" type="search" disabled placeholder="Search" autocomplete="off" aria-label="Search">
+              </form>
+            </div>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <main class="container-xxl">
+
+      <div class="content">
+        <div class="actionbar">
+
+          <nav id="breadcrumb"></nav>
+        </div>
+
+        <article data-uid="Wolfgang.LogCompressor.Service.CompressService">
+
+
+
+  <h1 id="Wolfgang_LogCompressor_Service_CompressService" data-uid="Wolfgang.LogCompressor.Service.CompressService" class="text-break">
+Class CompressService  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/fix/docfx-internal-api/src/Wolfgang.LogCompressor/Service/CompressService.cs/#L11"><i class="bi bi-code-slash"></i></a>
+  </h1>
+
+  <div class="facts text-secondary">
+    <dl><dt>Namespace</dt><dd><a class="xref" href="Wolfgang.html">Wolfgang</a>.<a class="xref" href="Wolfgang.LogCompressor.html">LogCompressor</a>.<a class="xref" href="Wolfgang.LogCompressor.Service.html">Service</a></dd></dl>
+  <dl><dt>Assembly</dt><dd>logc.dll</dd></dl>
+  </div>
+
+  <div class="markdown summary"><p>Compresses files individually, producing one archive per source file.</p>
+</div>
+  <div class="markdown conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">internal class CompressService</code></pre>
+  </div>
+
+
+
+
+  <dl class="typelist inheritance">
+    <dt>Inheritance</dt>
+    <dd>
+      <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></div>
+      <div><span class="xref">CompressService</span></div>
+    </dd>
+  </dl>
+
+
+
+  <dl class="typelist inheritedMembers">
+    <dt>Inherited Members</dt>
+    <dd>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)">object.Equals(object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">object.Equals(object, object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gethashcode">object.GetHashCode()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gettype">object.GetType()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone">object.MemberwiseClone()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.referenceequals">object.ReferenceEquals(object, object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.tostring">object.ToString()</a>
+    </div>
+  </dd></dl>
+
+
+
+
+
+
+  <h2 class="section" id="constructors">Constructors
+</h2>
+
+
+  <a id="Wolfgang_LogCompressor_Service_CompressService__ctor_" data-uid="Wolfgang.LogCompressor.Service.CompressService.#ctor*"></a>
+
+  <h3 id="Wolfgang_LogCompressor_Service_CompressService__ctor_Wolfgang_LogCompressor_Abstraction_IFileSystem_Wolfgang_LogCompressor_Abstraction_IFileFilter_Wolfgang_LogCompressor_Abstraction_IFileNamer_Wolfgang_LogCompressor_Abstraction_IArchiveVerifier_Wolfgang_LogCompressor_Service_Compression_CompressionStrategyFactory_Microsoft_Extensions_Logging_ILogger_Wolfgang_LogCompressor_Service_CompressService__" data-uid="Wolfgang.LogCompressor.Service.CompressService.#ctor(Wolfgang.LogCompressor.Abstraction.IFileSystem,Wolfgang.LogCompressor.Abstraction.IFileFilter,Wolfgang.LogCompressor.Abstraction.IFileNamer,Wolfgang.LogCompressor.Abstraction.IArchiveVerifier,Wolfgang.LogCompressor.Service.Compression.CompressionStrategyFactory,Microsoft.Extensions.Logging.ILogger{Wolfgang.LogCompressor.Service.CompressService})">
+  CompressService(IFileSystem, IFileFilter, IFileNamer, IArchiveVerifier, CompressionStrategyFactory, ILogger&lt;CompressService&gt;)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/fix/docfx-internal-api/src/Wolfgang.LogCompressor/Service/CompressService.cs/#L31"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Initializes a new instance of the <a class="xref" href="Wolfgang.LogCompressor.Service.CompressService.html">CompressService</a> class.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public CompressService(IFileSystem fileSystem, IFileFilter fileFilter, IFileNamer fileNamer, IArchiveVerifier archiveVerifier, CompressionStrategyFactory strategyFactory, ILogger&lt;CompressService&gt; logger)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>fileSystem</code> <a class="xref" href="Wolfgang.LogCompressor.Abstraction.IFileSystem.html">IFileSystem</a></dt>
+    <dd><p>The file system abstraction.</p>
+</dd>
+    <dt><code>fileFilter</code> <a class="xref" href="Wolfgang.LogCompressor.Abstraction.IFileFilter.html">IFileFilter</a></dt>
+    <dd><p>The file filter service.</p>
+</dd>
+    <dt><code>fileNamer</code> <a class="xref" href="Wolfgang.LogCompressor.Abstraction.IFileNamer.html">IFileNamer</a></dt>
+    <dd><p>The file naming service.</p>
+</dd>
+    <dt><code>archiveVerifier</code> <a class="xref" href="Wolfgang.LogCompressor.Abstraction.IArchiveVerifier.html">IArchiveVerifier</a></dt>
+    <dd><p>The archive verifier.</p>
+</dd>
+    <dt><code>strategyFactory</code> <a class="xref" href="Wolfgang.LogCompressor.Service.Compression.CompressionStrategyFactory.html">CompressionStrategyFactory</a></dt>
+    <dd><p>The compression strategy factory.</p>
+</dd>
+    <dt><code>logger</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/microsoft.extensions.logging.ilogger-1">ILogger</a>&lt;<a class="xref" href="Wolfgang.LogCompressor.Service.CompressService.html">CompressService</a>&gt;</dt>
+    <dd><p>The logger.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+
+  <h2 class="section" id="fields">Fields
+</h2>
+
+
+
+  <h3 id="Wolfgang_LogCompressor_Service_CompressService__archiveVerifier" data-uid="Wolfgang.LogCompressor.Service.CompressService._archiveVerifier">
+  _archiveVerifier
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/fix/docfx-internal-api/src/Wolfgang.LogCompressor/Service/CompressService.cs/#L16"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">private readonly IArchiveVerifier _archiveVerifier</code></pre>
+  </div>
+
+
+
+
+  <h4 class="section">Field Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="Wolfgang.LogCompressor.Abstraction.IArchiveVerifier.html">IArchiveVerifier</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+  <h3 id="Wolfgang_LogCompressor_Service_CompressService__fileFilter" data-uid="Wolfgang.LogCompressor.Service.CompressService._fileFilter">
+  _fileFilter
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/fix/docfx-internal-api/src/Wolfgang.LogCompressor/Service/CompressService.cs/#L14"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">private readonly IFileFilter _fileFilter</code></pre>
+  </div>
+
+
+
+
+  <h4 class="section">Field Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="Wolfgang.LogCompressor.Abstraction.IFileFilter.html">IFileFilter</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+  <h3 id="Wolfgang_LogCompressor_Service_CompressService__fileNamer" data-uid="Wolfgang.LogCompressor.Service.CompressService._fileNamer">
+  _fileNamer
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/fix/docfx-internal-api/src/Wolfgang.LogCompressor/Service/CompressService.cs/#L15"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">private readonly IFileNamer _fileNamer</code></pre>
+  </div>
+
+
+
+
+  <h4 class="section">Field Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="Wolfgang.LogCompressor.Abstraction.IFileNamer.html">IFileNamer</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+  <h3 id="Wolfgang_LogCompressor_Service_CompressService__fileSystem" data-uid="Wolfgang.LogCompressor.Service.CompressService._fileSystem">
+  _fileSystem
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/fix/docfx-internal-api/src/Wolfgang.LogCompressor/Service/CompressService.cs/#L13"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">private readonly IFileSystem _fileSystem</code></pre>
+  </div>
+
+
+
+
+  <h4 class="section">Field Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="Wolfgang.LogCompressor.Abstraction.IFileSystem.html">IFileSystem</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+  <h3 id="Wolfgang_LogCompressor_Service_CompressService__logger" data-uid="Wolfgang.LogCompressor.Service.CompressService._logger">
+  _logger
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/fix/docfx-internal-api/src/Wolfgang.LogCompressor/Service/CompressService.cs/#L18"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">private readonly ILogger&lt;CompressService&gt; _logger</code></pre>
+  </div>
+
+
+
+
+  <h4 class="section">Field Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/microsoft.extensions.logging.ilogger-1">ILogger</a>&lt;<a class="xref" href="Wolfgang.LogCompressor.Service.CompressService.html">CompressService</a>&gt;</dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+  <h3 id="Wolfgang_LogCompressor_Service_CompressService__strategyFactory" data-uid="Wolfgang.LogCompressor.Service.CompressService._strategyFactory">
+  _strategyFactory
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/fix/docfx-internal-api/src/Wolfgang.LogCompressor/Service/CompressService.cs/#L17"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">private readonly CompressionStrategyFactory _strategyFactory</code></pre>
+  </div>
+
+
+
+
+  <h4 class="section">Field Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="Wolfgang.LogCompressor.Service.Compression.CompressionStrategyFactory.html">CompressionStrategyFactory</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+  <h2 class="section" id="methods">Methods
+</h2>
+
+
+  <a id="Wolfgang_LogCompressor_Service_CompressService_CompressFileAsync_" data-uid="Wolfgang.LogCompressor.Service.CompressService.CompressFileAsync*"></a>
+
+  <h3 id="Wolfgang_LogCompressor_Service_CompressService_CompressFileAsync_System_IO_FileInfo_Wolfgang_LogCompressor_Model_CompressionOptions_Wolfgang_LogCompressor_Abstraction_ICompressionStrategy_System_Threading_CancellationToken_" data-uid="Wolfgang.LogCompressor.Service.CompressService.CompressFileAsync(System.IO.FileInfo,Wolfgang.LogCompressor.Model.CompressionOptions,Wolfgang.LogCompressor.Abstraction.ICompressionStrategy,System.Threading.CancellationToken)">
+  CompressFileAsync(FileInfo, CompressionOptions, ICompressionStrategy, CancellationToken)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/fix/docfx-internal-api/src/Wolfgang.LogCompressor/Service/CompressService.cs/#L132"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">private Task&lt;CompressionResult&gt; CompressFileAsync(FileInfo sourceFile, CompressionOptions options, ICompressionStrategy strategy, CancellationToken cancellationToken)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>sourceFile</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.fileinfo">FileInfo</a></dt>
+    <dd></dd>
+    <dt><code>options</code> <a class="xref" href="Wolfgang.LogCompressor.Model.CompressionOptions.html">CompressionOptions</a></dt>
+    <dd></dd>
+    <dt><code>strategy</code> <a class="xref" href="Wolfgang.LogCompressor.Abstraction.ICompressionStrategy.html">ICompressionStrategy</a></dt>
+    <dd></dd>
+    <dt><code>cancellationToken</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></dt>
+    <dd></dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1">Task</a>&lt;<a class="xref" href="Wolfgang.LogCompressor.Model.CompressionResult.html">CompressionResult</a>&gt;</dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+  <a id="Wolfgang_LogCompressor_Service_CompressService_EnumerateSourceFiles_" data-uid="Wolfgang.LogCompressor.Service.CompressService.EnumerateSourceFiles*"></a>
+
+  <h3 id="Wolfgang_LogCompressor_Service_CompressService_EnumerateSourceFiles_Wolfgang_LogCompressor_Model_CompressionOptions_" data-uid="Wolfgang.LogCompressor.Service.CompressService.EnumerateSourceFiles(Wolfgang.LogCompressor.Model.CompressionOptions)">
+  EnumerateSourceFiles(CompressionOptions)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/fix/docfx-internal-api/src/Wolfgang.LogCompressor/Service/CompressService.cs/#L107"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">private List&lt;FileInfo&gt; EnumerateSourceFiles(CompressionOptions options)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>options</code> <a class="xref" href="Wolfgang.LogCompressor.Model.CompressionOptions.html">CompressionOptions</a></dt>
+    <dd></dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.list-1">List</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.fileinfo">FileInfo</a>&gt;</dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+  <a id="Wolfgang_LogCompressor_Service_CompressService_ExecuteAsync_" data-uid="Wolfgang.LogCompressor.Service.CompressService.ExecuteAsync*"></a>
+
+  <h3 id="Wolfgang_LogCompressor_Service_CompressService_ExecuteAsync_Wolfgang_LogCompressor_Model_CompressionOptions_System_Threading_CancellationToken_" data-uid="Wolfgang.LogCompressor.Service.CompressService.ExecuteAsync(Wolfgang.LogCompressor.Model.CompressionOptions,System.Threading.CancellationToken)">
+  ExecuteAsync(CompressionOptions, CancellationToken)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/fix/docfx-internal-api/src/Wolfgang.LogCompressor/Service/CompressService.cs/#L65"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Compresses files according to the specified options, one archive per source file.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public virtual Task&lt;IReadOnlyList&lt;CompressionResult&gt;&gt; ExecuteAsync(CompressionOptions options, CancellationToken cancellationToken = default)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>options</code> <a class="xref" href="Wolfgang.LogCompressor.Model.CompressionOptions.html">CompressionOptions</a></dt>
+    <dd><p>The compression options.</p>
+</dd>
+    <dt><code>cancellationToken</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></dt>
+    <dd><p>A token to cancel the operation.</p>
+</dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1">Task</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlylist-1">IReadOnlyList</a>&lt;<a class="xref" href="Wolfgang.LogCompressor.Model.CompressionResult.html">CompressionResult</a>&gt;&gt;</dt>
+    <dd><p>A list of compression results.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+
+</article>
+
+        <div class="contribution d-print-none">
+          <a href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/fix/docfx-internal-api/src/Wolfgang.LogCompressor/Service/CompressService.cs/#L11" class="edit-link">Edit this page</a>
+        </div>
+
+
+      </div>
+
+      <div class="affix">
+        <nav id="affix"></nav>
+      </div>
+    </main>
+
+    <div class="container-xxl search-results" id="search-results"></div>
+
+    <footer class="border-top text-secondary">
+      <div class="container-xxl">
+        <div class="flex-fill">
+          Made with DocFX
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

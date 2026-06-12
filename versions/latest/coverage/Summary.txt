@@ -1,0 +1,42 @@
+Summary
+  Generated on: 6/12/2026 - 2:46:21 AM
+  Coverage date: 6/12/2026 - 2:46:17 AM - 6/12/2026 - 2:46:18 AM
+  Parser: MultiReport (2x Cobertura)
+  Assemblies: 1
+  Classes: 20
+  Files: 20
+  Line coverage: 99.4%
+  Covered lines: 736
+  Uncovered lines: 4
+  Coverable lines: 740
+  Total lines: 2206
+  Branch coverage: 92.2% (225 of 244)
+  Covered branches: 225
+  Total branches: 244
+  Method coverage: 100% (105 of 105)
+  Full method coverage: 98% (103 of 105)
+  Covered methods: 105
+  Fully covered methods: 103
+  Total methods: 105
+
+logc                                                                      99.4%
+  Wolfgang.LogCompressor.Command.Bundle                                   94.5%
+  Wolfgang.LogCompressor.Command.Compress                                 95.1%
+  Wolfgang.LogCompressor.Command.SharedOptions                             100%
+  Wolfgang.LogCompressor.Framework.ConsoleSinkOptions                      100%
+  Wolfgang.LogCompressor.Framework.FileSinkOptions                         100%
+  Wolfgang.LogCompressor.Framework.LoggingOptions                          100%
+  Wolfgang.LogCompressor.Framework.SerilogConfigurator                     100%
+  Wolfgang.LogCompressor.Model.CompressionOptions                          100%
+  Wolfgang.LogCompressor.Model.CompressionResult                           100%
+  Wolfgang.LogCompressor.Service.ArchiveVerifier                           100%
+  Wolfgang.LogCompressor.Service.BundleService                             100%
+  Wolfgang.LogCompressor.Service.Compression.BrotliCompressionStrategy     100%
+  Wolfgang.LogCompressor.Service.Compression.CompressionStrategyFactory    100%
+  Wolfgang.LogCompressor.Service.Compression.GZipCompressionStrategy       100%
+  Wolfgang.LogCompressor.Service.Compression.ZipCompressionStrategy        100%
+  Wolfgang.LogCompressor.Service.CompressService                           100%
+  Wolfgang.LogCompressor.Service.FileFilterService                         100%
+  Wolfgang.LogCompressor.Service.FileNamingService                         100%
+  Wolfgang.LogCompressor.Service.ReportService                             100%
+  Wolfgang.LogCompressor.Service.RetentionService                          100%

@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+      <title>Class SharedOptions | Wolfgang.LogCompressor Documentation </title>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta name="title" content="Class SharedOptions | Wolfgang.LogCompressor Documentation ">
+      
+      <meta name="description" content="Base class providing shared CLI options for compression commands.">
+      <link rel="icon" href="../favicon.ico">
+      <link rel="stylesheet" href="../public/docfx.min.css">
+      <link rel="stylesheet" href="../public/main.css">
+      <meta name="docfx:navrel" content="../toc.html">
+      <meta name="docfx:tocrel" content="../toc.html">
+      
+      <meta name="docfx:rel" content="../">
+      
+      
+      <meta name="docfx:docurl" content="https://github.com/Chris-Wolfgang/Log-Compressor/new/fix/docfx-internal-api/apiSpec/new?filename=Wolfgang_LogCompressor_Command_SharedOptions.md&amp;value=---%0Auid%3A%20Wolfgang.LogCompressor.Command.SharedOptions%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">
+      <meta name="loc:inThisArticle" content="In this article">
+      <meta name="loc:searchResultsCount" content="{count} results for &quot;{query}&quot;">
+      <meta name="loc:searchNoResults" content="No results for &quot;{query}&quot;">
+      <meta name="loc:tocFilter" content="Filter by title">
+      <meta name="loc:nextArticle" content="Next">
+      <meta name="loc:prevArticle" content="Previous">
+      <meta name="loc:themeLight" content="Light">
+      <meta name="loc:themeDark" content="Dark">
+      <meta name="loc:themeAuto" content="Auto">
+      <meta name="loc:changeTheme" content="Change theme">
+      <meta name="loc:copy" content="Copy">
+      <meta name="loc:downloadPdf" content="Download PDF">
+
+      <script type="module" src="./../public/docfx.min.js"></script>
+
+      <script>
+        const theme = localStorage.getItem('theme') || 'auto'
+        document.documentElement.setAttribute('data-bs-theme', theme === 'auto' ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : theme)
+      </script>
+
+  </head>
+
+  <body class="tex2jax_ignore" data-layout="" data-yaml-mime="ManagedReference">
+    <header class="bg-body border-bottom">
+      <nav id="autocollapse" class="navbar navbar-expand-md" role="navigation">
+        <div class="container-xxl flex-nowrap">
+          <a class="navbar-brand" href="../index.html">
+            <img id="logo" class="svg" src="../logo.svg" alt="Wolfgang.LogCompressor">
+            Wolfgang.LogCompressor
+          </a>
+          <button class="btn btn-lg d-md-none border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navpanel" aria-controls="navpanel" aria-expanded="false" aria-label="Toggle navigation">
+            <i class="bi bi-three-dots"></i>
+          </button>
+          <div class="collapse navbar-collapse" id="navpanel">
+            <div id="navbar">
+              <form class="search" role="search" id="search">
+                <i class="bi bi-search"></i>
+                <input class="form-control" id="search-query" type="search" disabled placeholder="Search" autocomplete="off" aria-label="Search">
+              </form>
+            </div>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <main class="container-xxl">
+
+      <div class="content">
+        <div class="actionbar">
+
+          <nav id="breadcrumb"></nav>
+        </div>
+
+        <article data-uid="Wolfgang.LogCompressor.Command.SharedOptions">
+
+
+
+  <h1 id="Wolfgang_LogCompressor_Command_SharedOptions" data-uid="Wolfgang.LogCompressor.Command.SharedOptions" class="text-break">
+Class SharedOptions  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/fix/docfx-internal-api/src/Wolfgang.LogCompressor/Command/SharedOptions.cs/#L12"><i class="bi bi-code-slash"></i></a>
+  </h1>
+
+  <div class="facts text-secondary">
+    <dl><dt>Namespace</dt><dd><a class="xref" href="Wolfgang.html">Wolfgang</a>.<a class="xref" href="Wolfgang.LogCompressor.html">LogCompressor</a>.<a class="xref" href="Wolfgang.LogCompressor.Command.html">Command</a></dd></dl>
+  <dl><dt>Assembly</dt><dd>logc.dll</dd></dl>
+  </div>
+
+  <div class="markdown summary"><p>Base class providing shared CLI options for compression commands.</p>
+</div>
+  <div class="markdown conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">internal abstract class SharedOptions</code></pre>
+  </div>
+
+
+
+
+  <dl class="typelist inheritance">
+    <dt>Inheritance</dt>
+    <dd>
+      <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></div>
+      <div><span class="xref">SharedOptions</span></div>
+    </dd>
+  </dl>
+
+
+  <dl class="typelist derived">
+    <dt>Derived</dt>
+    <dd>
+      <div><a class="xref" href="Wolfgang.LogCompressor.Command.Bundle.html">Bundle</a></div>
+      <div><a class="xref" href="Wolfgang.LogCompressor.Command.Compress.html">Compress</a></div>
+    </dd>
+  </dl>
+
+  <dl class="typelist inheritedMembers">
+    <dt>Inherited Members</dt>
+    <dd>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)">object.Equals(object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">object.Equals(object, object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gethashcode">object.GetHashCode()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gettype">object.GetType()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone">object.MemberwiseClone()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.referenceequals">object.ReferenceEquals(object, object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.tostring">object.ToString()</a>
+    </div>
+  </dd></dl>
+
+
+
+
+
+
+  <h2 class="section" id="fields">Fields
+</h2>
+
+
+
+  <h3 id="Wolfgang_LogCompressor_Command_SharedOptions_InvalidEnumSentinel" data-uid="Wolfgang.LogCompressor.Command.SharedOptions.InvalidEnumSentinel">
+  InvalidEnumSentinel
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/fix/docfx-internal-api/src/Wolfgang.LogCompressor/Command/SharedOptions.cs/#L15"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">private const int InvalidEnumSentinel = -1</code></pre>
+  </div>
+
+
+
+
+  <h4 class="section">Field Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+  <h2 class="section" id="properties">Properties
+</h2>
+
+
+  <a id="Wolfgang_LogCompressor_Command_SharedOptions_DeleteArchivesOlderThan_" data-uid="Wolfgang.LogCompressor.Command.SharedOptions.DeleteArchivesOlderThan*"></a>
+
+  <h3 id="Wolfgang_LogCompressor_Command_SharedOptions_DeleteArchivesOlderThan" data-uid="Wolfgang.LogCompressor.Command.SharedOptions.DeleteArchivesOlderThan">
+  DeleteArchivesOlderThan
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/fix/docfx-internal-api/src/Wolfgang.LogCompressor/Command/SharedOptions.cs/#L188"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Gets or sets the number of days after which old archives are deleted.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[Option(&quot;--delete-archives-older-than&quot;, Description = &quot;Delete compressed archives older than N days after compression&quot;)]
+[Range(1, 2147483647)]
+public int? DeleteArchivesOlderThan { get; set; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a>?</dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <a id="Wolfgang_LogCompressor_Command_SharedOptions_Exclude_" data-uid="Wolfgang.LogCompressor.Command.SharedOptions.Exclude*"></a>
+
+  <h3 id="Wolfgang_LogCompressor_Command_SharedOptions_Exclude" data-uid="Wolfgang.LogCompressor.Command.SharedOptions.Exclude">
+  Exclude
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/fix/docfx-internal-api/src/Wolfgang.LogCompressor/Command/SharedOptions.cs/#L128"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Gets or sets the glob patterns to exclude.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[Option(&quot;--exclude&quot;, Description = &quot;Exclude files matching this glob pattern (can be specified multiple times)&quot;)]
+public string[]? Exclude { get; set; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a>[]</dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <a id="Wolfgang_LogCompressor_Command_SharedOptions_Format_" data-uid="Wolfgang.LogCompressor.Command.SharedOptions.Format*"></a>
+
+  <h3 id="Wolfgang_LogCompressor_Command_SharedOptions_Format" data-uid="Wolfgang.LogCompressor.Command.SharedOptions.Format">
+  Format
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/fix/docfx-internal-api/src/Wolfgang.LogCompressor/Command/SharedOptions.cs/#L92"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Gets or sets the compression format.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[Option(&quot;-f|--format&quot;, Description = &quot;Compression format: zip, gz, brotli (default: zip)&quot;)]
+public string Format { get; set; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <a id="Wolfgang_LogCompressor_Command_SharedOptions_Include_" data-uid="Wolfgang.LogCompressor.Command.SharedOptions.Include*"></a>
+
+  <h3 id="Wolfgang_LogCompressor_Command_SharedOptions_Include" data-uid="Wolfgang.LogCompressor.Command.SharedOptions.Include">
+  Include
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/fix/docfx-internal-api/src/Wolfgang.LogCompressor/Command/SharedOptions.cs/#L116"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Gets or sets the glob patterns to include.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[Option(&quot;--include&quot;, Description = &quot;Only include files matching this glob pattern (can be specified multiple times)&quot;)]
+public string[]? Include { get; set; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a>[]</dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <a id="Wolfgang_LogCompressor_Command_SharedOptions_Level_" data-uid="Wolfgang.LogCompressor.Command.SharedOptions.Level*"></a>
+
+  <h3 id="Wolfgang_LogCompressor_Command_SharedOptions_Level" data-uid="Wolfgang.LogCompressor.Command.SharedOptions.Level">
+  Level
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/fix/docfx-internal-api/src/Wolfgang.LogCompressor/Command/SharedOptions.cs/#L104"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Gets or sets the compression level.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[Option(&quot;-l|--level&quot;, Description = &quot;Compression level: fastest, optimal, smallest (default: smallest)&quot;)]
+public string Level { get; set; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <a id="Wolfgang_LogCompressor_Command_SharedOptions_MaxDateTime_" data-uid="Wolfgang.LogCompressor.Command.SharedOptions.MaxDateTime*"></a>
+
+  <h3 id="Wolfgang_LogCompressor_Command_SharedOptions_MaxDateTime" data-uid="Wolfgang.LogCompressor.Command.SharedOptions.MaxDateTime">
+  MaxDateTime
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/fix/docfx-internal-api/src/Wolfgang.LogCompressor/Command/SharedOptions.cs/#L80"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Gets or sets the maximum last-modified date filter.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[Option(&quot;--max-datetime&quot;, Description = &quot;Only include files modified on or before this date/time&quot;)]
+public string? MaxDateTime { get; set; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <a id="Wolfgang_LogCompressor_Command_SharedOptions_MinDateTime_" data-uid="Wolfgang.LogCompressor.Command.SharedOptions.MinDateTime*"></a>
+
+  <h3 id="Wolfgang_LogCompressor_Command_SharedOptions_MinDateTime" data-uid="Wolfgang.LogCompressor.Command.SharedOptions.MinDateTime">
+  MinDateTime
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/fix/docfx-internal-api/src/Wolfgang.LogCompressor/Command/SharedOptions.cs/#L68"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Gets or sets the minimum last-modified date filter.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[Option(&quot;--min-datetime&quot;, Description = &quot;Only include files modified on or after this date/time&quot;)]
+public string? MinDateTime { get; set; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <a id="Wolfgang_LogCompressor_Command_SharedOptions_NoLock_" data-uid="Wolfgang.LogCompressor.Command.SharedOptions.NoLock*"></a>
+
+  <h3 id="Wolfgang_LogCompressor_Command_SharedOptions_NoLock" data-uid="Wolfgang.LogCompressor.Command.SharedOptions.NoLock">
+  NoLock
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/fix/docfx-internal-api/src/Wolfgang.LogCompressor/Command/SharedOptions.cs/#L176"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Gets or sets a value indicating whether to disable directory locking.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[Option(&quot;--no-lock&quot;, Description = &quot;Disable single-instance directory locking&quot;)]
+public bool NoLock { get; set; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <a id="Wolfgang_LogCompressor_Command_SharedOptions_NoVerify_" data-uid="Wolfgang.LogCompressor.Command.SharedOptions.NoVerify*"></a>
+
+  <h3 id="Wolfgang_LogCompressor_Command_SharedOptions_NoVerify" data-uid="Wolfgang.LogCompressor.Command.SharedOptions.NoVerify">
+  NoVerify
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/fix/docfx-internal-api/src/Wolfgang.LogCompressor/Command/SharedOptions.cs/#L140"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Gets or sets a value indicating whether to skip archive verification.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[Option(&quot;--no-verify&quot;, Description = &quot;Skip archive integrity verification before deleting originals&quot;)]
+public bool NoVerify { get; set; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <a id="Wolfgang_LogCompressor_Command_SharedOptions_OlderThan_" data-uid="Wolfgang.LogCompressor.Command.SharedOptions.OlderThan*"></a>
+
+  <h3 id="Wolfgang_LogCompressor_Command_SharedOptions_OlderThan" data-uid="Wolfgang.LogCompressor.Command.SharedOptions.OlderThan">
+  OlderThan
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/fix/docfx-internal-api/src/Wolfgang.LogCompressor/Command/SharedOptions.cs/#L55"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Gets or sets the minimum file age in days.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[Option(&quot;--older-than&quot;, Description = &quot;Only include files last modified N+ calendar days ago&quot;)]
+[Range(1, 2147483647)]
+public int? OlderThan { get; set; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a>?</dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <a id="Wolfgang_LogCompressor_Command_SharedOptions_Output_" data-uid="Wolfgang.LogCompressor.Command.SharedOptions.Output*"></a>
+
+  <h3 id="Wolfgang_LogCompressor_Command_SharedOptions_Output" data-uid="Wolfgang.LogCompressor.Command.SharedOptions.Output">
+  Output
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/fix/docfx-internal-api/src/Wolfgang.LogCompressor/Command/SharedOptions.cs/#L43"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Gets or sets the output directory.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[Option(&quot;-o|--output&quot;, Description = &quot;Output directory for compressed files (defaults to source directory)&quot;)]
+public string? Output { get; set; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <a id="Wolfgang_LogCompressor_Command_SharedOptions_Path_" data-uid="Wolfgang.LogCompressor.Command.SharedOptions.Path*"></a>
+
+  <h3 id="Wolfgang_LogCompressor_Command_SharedOptions_Path" data-uid="Wolfgang.LogCompressor.Command.SharedOptions.Path">
+  Path
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/fix/docfx-internal-api/src/Wolfgang.LogCompressor/Command/SharedOptions.cs/#L22"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Gets or sets the path to a file or directory to process.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[Required]
+[Argument(0, Description = &quot;Path to a file or directory to process&quot;)]
+public required string Path { get; set; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <a id="Wolfgang_LogCompressor_Command_SharedOptions_Recurse_" data-uid="Wolfgang.LogCompressor.Command.SharedOptions.Recurse*"></a>
+
+  <h3 id="Wolfgang_LogCompressor_Command_SharedOptions_Recurse" data-uid="Wolfgang.LogCompressor.Command.SharedOptions.Recurse">
+  Recurse
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/fix/docfx-internal-api/src/Wolfgang.LogCompressor/Command/SharedOptions.cs/#L31"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Gets or sets a value indicating whether to recurse into subdirectories.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[Option(&quot;-r|--recurse&quot;, Description = &quot;Recurse into subdirectories&quot;)]
+public bool Recurse { get; set; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <a id="Wolfgang_LogCompressor_Command_SharedOptions_Report_" data-uid="Wolfgang.LogCompressor.Command.SharedOptions.Report*"></a>
+
+  <h3 id="Wolfgang_LogCompressor_Command_SharedOptions_Report" data-uid="Wolfgang.LogCompressor.Command.SharedOptions.Report">
+  Report
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/fix/docfx-internal-api/src/Wolfgang.LogCompressor/Command/SharedOptions.cs/#L152"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Gets or sets the report format.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[Option(&quot;--report&quot;, Description = &quot;Output a summary report: json or csv&quot;)]
+public string? Report { get; set; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <a id="Wolfgang_LogCompressor_Command_SharedOptions_ReportPath_" data-uid="Wolfgang.LogCompressor.Command.SharedOptions.ReportPath*"></a>
+
+  <h3 id="Wolfgang_LogCompressor_Command_SharedOptions_ReportPath" data-uid="Wolfgang.LogCompressor.Command.SharedOptions.ReportPath">
+  ReportPath
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/fix/docfx-internal-api/src/Wolfgang.LogCompressor/Command/SharedOptions.cs/#L164"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Gets or sets the report output path.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[Option(&quot;--report-path&quot;, Description = &quot;Path for the summary report file&quot;)]
+public string? ReportPath { get; set; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <h2 class="section" id="methods">Methods
+</h2>
+
+
+  <a id="Wolfgang_LogCompressor_Command_SharedOptions_BuildOptions_" data-uid="Wolfgang.LogCompressor.Command.SharedOptions.BuildOptions*"></a>
+
+  <h3 id="Wolfgang_LogCompressor_Command_SharedOptions_BuildOptions" data-uid="Wolfgang.LogCompressor.Command.SharedOptions.BuildOptions">
+  BuildOptions()
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/fix/docfx-internal-api/src/Wolfgang.LogCompressor/Command/SharedOptions.cs/#L263"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Builds a <a class="xref" href="Wolfgang.LogCompressor.Model.CompressionOptions.html">CompressionOptions</a> from the current CLI values.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">internal CompressionOptions BuildOptions()</code></pre>
+  </div>
+
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="Wolfgang.LogCompressor.Model.CompressionOptions.html">CompressionOptions</a></dt>
+    <dd><p>A populated <a class="xref" href="Wolfgang.LogCompressor.Model.CompressionOptions.html">CompressionOptions</a> instance.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+  <a id="Wolfgang_LogCompressor_Command_SharedOptions_IsValidDateTime_" data-uid="Wolfgang.LogCompressor.Command.SharedOptions.IsValidDateTime*"></a>
+
+  <h3 id="Wolfgang_LogCompressor_Command_SharedOptions_IsValidDateTime_System_String_" data-uid="Wolfgang.LogCompressor.Command.SharedOptions.IsValidDateTime(System.String)">
+  IsValidDateTime(string?)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/fix/docfx-internal-api/src/Wolfgang.LogCompressor/Command/SharedOptions.cs/#L304"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">internal static bool IsValidDateTime(string? value)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>value</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></dt>
+    <dd></dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+  <a id="Wolfgang_LogCompressor_Command_SharedOptions_IsValidReportFormat_" data-uid="Wolfgang.LogCompressor.Command.SharedOptions.IsValidReportFormat*"></a>
+
+  <h3 id="Wolfgang_LogCompressor_Command_SharedOptions_IsValidReportFormat_System_String_" data-uid="Wolfgang.LogCompressor.Command.SharedOptions.IsValidReportFormat(System.String)">
+  IsValidReportFormat(string)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/fix/docfx-internal-api/src/Wolfgang.LogCompressor/Command/SharedOptions.cs/#L341"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">private static bool IsValidReportFormat(string value)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>value</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></dt>
+    <dd></dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+  <a id="Wolfgang_LogCompressor_Command_SharedOptions_ParseDateTime_" data-uid="Wolfgang.LogCompressor.Command.SharedOptions.ParseDateTime*"></a>
+
+  <h3 id="Wolfgang_LogCompressor_Command_SharedOptions_ParseDateTime_System_String_" data-uid="Wolfgang.LogCompressor.Command.SharedOptions.ParseDateTime(System.String)">
+  ParseDateTime(string?)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/fix/docfx-internal-api/src/Wolfgang.LogCompressor/Command/SharedOptions.cs/#L290"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">private static DateTime? ParseDateTime(string? value)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>value</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></dt>
+    <dd></dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.datetime">DateTime</a>?</dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+  <a id="Wolfgang_LogCompressor_Command_SharedOptions_TryParseFormat_" data-uid="Wolfgang.LogCompressor.Command.SharedOptions.TryParseFormat*"></a>
+
+  <h3 id="Wolfgang_LogCompressor_Command_SharedOptions_TryParseFormat_System_String_Wolfgang_LogCompressor_Model_CompressionFormat__" data-uid="Wolfgang.LogCompressor.Command.SharedOptions.TryParseFormat(System.String,Wolfgang.LogCompressor.Model.CompressionFormat@)">
+  TryParseFormat(string, out CompressionFormat)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/fix/docfx-internal-api/src/Wolfgang.LogCompressor/Command/SharedOptions.cs/#L311"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">private static bool TryParseFormat(string value, out CompressionFormat format)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>value</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></dt>
+    <dd></dd>
+    <dt><code>format</code> <a class="xref" href="Wolfgang.LogCompressor.Model.CompressionFormat.html">CompressionFormat</a></dt>
+    <dd></dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+  <a id="Wolfgang_LogCompressor_Command_SharedOptions_TryParseLevel_" data-uid="Wolfgang.LogCompressor.Command.SharedOptions.TryParseLevel*"></a>
+
+  <h3 id="Wolfgang_LogCompressor_Command_SharedOptions_TryParseLevel_System_String_System_IO_Compression_CompressionLevel__" data-uid="Wolfgang.LogCompressor.Command.SharedOptions.TryParseLevel(System.String,System.IO.Compression.CompressionLevel@)">
+  TryParseLevel(string, out CompressionLevel)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/fix/docfx-internal-api/src/Wolfgang.LogCompressor/Command/SharedOptions.cs/#L326"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">private static bool TryParseLevel(string value, out CompressionLevel level)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>value</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></dt>
+    <dd></dd>
+    <dt><code>level</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.compression.compressionlevel">CompressionLevel</a></dt>
+    <dd></dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+  <a id="Wolfgang_LogCompressor_Command_SharedOptions_ValidateOptions_" data-uid="Wolfgang.LogCompressor.Command.SharedOptions.ValidateOptions*"></a>
+
+  <h3 id="Wolfgang_LogCompressor_Command_SharedOptions_ValidateOptions_McMaster_Extensions_CommandLineUtils_IConsole_" data-uid="Wolfgang.LogCompressor.Command.SharedOptions.ValidateOptions(McMaster.Extensions.CommandLineUtils.IConsole)">
+  ValidateOptions(IConsole)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/fix/docfx-internal-api/src/Wolfgang.LogCompressor/Command/SharedOptions.cs/#L203"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Validates command options and writes errors to the console.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">internal bool ValidateOptions(IConsole console)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>console</code> <span class="xref">IConsole</span></dt>
+    <dd><p>The console to write errors to.</p>
+</dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
+    <dd><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if options are valid; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+
+</article>
+
+        <div class="contribution d-print-none">
+          <a href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/fix/docfx-internal-api/src/Wolfgang.LogCompressor/Command/SharedOptions.cs/#L12" class="edit-link">Edit this page</a>
+        </div>
+
+
+      </div>
+
+      <div class="affix">
+        <nav id="affix"></nav>
+      </div>
+    </main>
+
+    <div class="container-xxl search-results" id="search-results"></div>
+
+    <footer class="border-top text-secondary">
+      <div class="container-xxl">
+        <div class="flex-fill">
+          Made with DocFX
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

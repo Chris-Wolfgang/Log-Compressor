@@ -27,7 +27,42 @@ A cross-platform .NET CLI (`logc`) for compressing log files. Built for **unatte
 
 ## 🚀 Quick Start
 
-> **Status:** v0.1.0 — first release. Download the self-contained `logc` executable from [Releases](https://github.com/Chris-Wolfgang/Log-Compressor/releases), or build from source below.
+> **Status:** v0.1.0 — first release. Download a prebuilt archive from [Releases](https://github.com/Chris-Wolfgang/Log-Compressor/releases), or build from source below.
+
+### Download & run (no .NET runtime required)
+
+Each release attaches one self-contained archive per platform. Pick the one for your OS:
+
+| Platform | Asset |
+|----------|-------|
+| Windows (x64) | `logc-v0.1.0-win-x64.zip` |
+| Linux (x64) | `logc-v0.1.0-linux-x64.tar.gz` |
+| macOS (Intel, x64) | `logc-v0.1.0-osx-x64.tar.gz` |
+
+Each archive contains the `logc` executable **and** its `AppSettings.json` — keep the two together in the same folder (`logc` reads `AppSettings.json` from beside itself at startup).
+
+**Linux / macOS**
+
+```bash
+# Download the archive for your platform from the Releases page, then:
+tar -xzf logc-v0.1.0-linux-x64.tar.gz -C ~/logc
+cd ~/logc
+chmod +x logc            # first run only
+./logc compress /var/log/myapp --recurse --older-than 7
+```
+
+> macOS may quarantine a downloaded binary. If you see *"cannot be opened because the developer cannot be verified,"* run `xattr -d com.apple.quarantine ./logc` once.
+
+**Windows (PowerShell)**
+
+```powershell
+# Download logc-v0.1.0-win-x64.zip from the Releases page, then:
+Expand-Archive logc-v0.1.0-win-x64.zip -DestinationPath C:\Tools\logc
+cd C:\Tools\logc
+.\logc.exe compress C:\Logs\myapp --recurse --older-than 7
+```
+
+Put the folder on your `PATH` to call `logc` from anywhere.
 
 ### Build from source
 
@@ -125,16 +160,26 @@ Compression strategies (`ZipStrategy`, `GZipStrategy`, `BrotliStrategy`) are dis
 ## 🎯 Target Framework & Distribution
 
 - **TFM:** `net10.0`
-- **Distribution:** self-contained single-file executable
+- **Distribution:** self-contained, per-platform archive attached to each GitHub Release (no .NET runtime required on the target)
 - **Runtimes:** `win-x64`, `linux-x64`, `osx-x64`
+- **Not on NuGet:** `logc` is an application, not a library, so it is not published as a NuGet package.
 
-Publish a self-contained single-file binary for your target runtime:
+Releases are produced by the `publish-binaries` job in [`.github/workflows/release.yaml`](.github/workflows/release.yaml), which cross-compiles all three runtimes and uploads one archive each (`.zip` for Windows, `.tar.gz` for Linux/macOS).
+
+Each archive contains two files:
+
+| File | Purpose |
+|------|---------|
+| `logc` (`logc.exe` on Windows) | the self-contained single-file executable |
+| `AppSettings.json` | runtime configuration (logging sinks/levels) — loaded from beside the executable at startup; required |
+
+To build the same artifact locally for one runtime:
 
 ```bash
 dotnet publish src/Wolfgang.LogCompressor -c Release -r linux-x64 --self-contained -p:PublishSingleFile=true
 ```
 
-The resulting binary in `bin/Release/net10.0/linux-x64/publish/` is a single file — copy it to your server and run.
+The output lands in `bin/Release/net10.0/linux-x64/publish/` as `logc` alongside `AppSettings.json` — copy **both** to your server (keep them together) and run `./logc`.
 
 ---
 

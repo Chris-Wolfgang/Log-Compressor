@@ -2,5 +2,9 @@
   {
     "version": "latest",
     "url": "/Log-Compressor/versions/latest/"
+  },
+  {
+    "version": "v0.1.0",
+    "url": "/Log-Compressor/versions/v0.1.0/"
   }
 ]

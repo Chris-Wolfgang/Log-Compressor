@@ -827,7 +827,6 @@ jobs:
       - name: Stage release archive
         shell: pwsh
         run: |
-          $tag = '${{ github.event.release.tag_name }}'
           $rid = '${{ matrix.rid }}'
           $ext = '${{ matrix.ext }}'
           $archive = '${{ matrix.archive }}'
@@ -853,12 +852,15 @@ jobs:
           Copy-Item $config $pkg -Force
 
           New-Item -ItemType Directory -Force -Path artifacts | Out-Null
+          # Version-less asset names so the stable
+          # https://github.com/<owner>/<repo>/releases/latest/download/<asset>
+          # URLs in the README keep working across every release.
           if ($archive -eq 'zip') {
-            $asset = "artifacts/logc-$tag-$rid.zip"
+            $asset = "artifacts/logc-$rid.zip"
             Compress-Archive -Path "$pkg/*" -DestinationPath $asset -Force
           }
           else {
-            $asset = "artifacts/logc-$tag-$rid.tar.gz"
+            $asset = "artifacts/logc-$rid.tar.gz"
             tar -czf $asset -C $pkg .
             if ($LASTEXITCODE -ne 0) { Write-Error "❌ tar failed for $rid"; exit $LASTEXITCODE }
           }
@@ -868,5 +870,5 @@ jobs:
         uses: softprops/action-gh-release@b4309332981a82ec1c5618f44dd2e27cc8bfbfda  # v3.0.0
         with:
           tag_name: ${{ github.event.release.tag_name }}
-          files: artifacts/logc-${{ github.event.release.tag_name }}-${{ matrix.rid }}.*
+          files: artifacts/logc-${{ matrix.rid }}.*
 

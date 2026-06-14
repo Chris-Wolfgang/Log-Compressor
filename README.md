@@ -31,21 +31,25 @@ A cross-platform .NET CLI (`logc`) for compressing log files. Built for **unatte
 
 ### Download & run (no .NET runtime required)
 
-Each release attaches one self-contained archive per platform. Pick the one for your OS:
+Each release attaches one self-contained archive per platform. Download the one for your OS (these links always resolve to the **latest** release):
 
-| Platform | Asset |
-|----------|-------|
-| Windows (x64) | `logc-v0.1.0-win-x64.zip` |
-| Linux (x64) | `logc-v0.1.0-linux-x64.tar.gz` |
-| macOS (Intel, x64) | `logc-v0.1.0-osx-x64.tar.gz` |
+| Platform | Download |
+|----------|----------|
+| Windows (x64) | **[logc-win-x64.zip](https://github.com/Chris-Wolfgang/Log-Compressor/releases/latest/download/logc-win-x64.zip)** |
+| Linux (x64) | **[logc-linux-x64.tar.gz](https://github.com/Chris-Wolfgang/Log-Compressor/releases/latest/download/logc-linux-x64.tar.gz)** |
+| macOS (Intel, x64) | **[logc-osx-x64.tar.gz](https://github.com/Chris-Wolfgang/Log-Compressor/releases/latest/download/logc-osx-x64.tar.gz)** |
+
+Or browse every release on the [Releases page](https://github.com/Chris-Wolfgang/Log-Compressor/releases).
 
 Each archive contains the `logc` executable **and** its `AppSettings.json` — keep the two together in the same folder (`logc` reads `AppSettings.json` from beside itself at startup).
 
 **Linux / macOS**
 
 ```bash
-# Download the archive for your platform from the Releases page, then:
-tar -xzf logc-v0.1.0-linux-x64.tar.gz -C ~/logc
+# Download + extract (Linux x64 shown; swap in osx-x64 for macOS):
+curl -L -o logc-linux-x64.tar.gz \
+  https://github.com/Chris-Wolfgang/Log-Compressor/releases/latest/download/logc-linux-x64.tar.gz
+mkdir -p ~/logc && tar -xzf logc-linux-x64.tar.gz -C ~/logc
 cd ~/logc
 chmod +x logc            # first run only
 ./logc compress /var/log/myapp --recurse --older-than 7
@@ -56,8 +60,9 @@ chmod +x logc            # first run only
 **Windows (PowerShell)**
 
 ```powershell
-# Download logc-v0.1.0-win-x64.zip from the Releases page, then:
-Expand-Archive logc-v0.1.0-win-x64.zip -DestinationPath C:\Tools\logc
+# Download + extract:
+Invoke-WebRequest -Uri https://github.com/Chris-Wolfgang/Log-Compressor/releases/latest/download/logc-win-x64.zip -OutFile logc-win-x64.zip
+Expand-Archive logc-win-x64.zip -DestinationPath C:\Tools\logc
 cd C:\Tools\logc
 .\logc.exe compress C:\Logs\myapp --recurse --older-than 7
 ```

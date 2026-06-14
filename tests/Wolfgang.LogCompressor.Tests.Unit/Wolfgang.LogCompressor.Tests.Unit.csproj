@@ -7,6 +7,11 @@
     <LangVersion>latest</LangVersion>
     <IsPackable>false</IsPackable>
     <IsTestProject>true</IsTestProject>
+    <!-- Default coverage run settings (excludes the config-binder source-generator
+         output) so coverage collection applies the same exclusions even when a
+         workflow does not pass an explicit settings file (e.g. release.yaml). An
+         explicit settings file on the CLI still overrides this. -->
+    <RunSettingsFilePath>$(MSBuildThisFileDirectory)..\..\coverlet.runsettings</RunSettingsFilePath>
   </PropertyGroup>
 
   <ItemGroup>

@@ -12,7 +12,9 @@
       ],
       "dest": "api",
       "disableGitFeatures": false,
-      "disableDefaultFilter": false
+      "disableDefaultFilter": false,
+      "includePrivateMembers": true,
+      "filter": "filterConfig.yml"
     }
   ],
   "build": {
@@ -22,7 +24,8 @@
           "**/*.{md,yml}"
         ],
         "exclude": [
-          "_site/**"
+          "_site/**",
+          "filterConfig.yml"
         ]
       }
     ],

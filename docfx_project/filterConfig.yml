@@ -1,0 +1,11 @@
+# DocFX metadata filter. includePrivateMembers is enabled so the all-internal
+# CLI app actually produces API docs, but that also drags in source-generated
+# types compiled into the assembly. Exclude them so the API reference shows only
+# Wolfgang.LogCompressor's own types.
+apiRules:
+  # Configuration-binding source generator output (EnableConfigurationBindingGenerator).
+  - exclude:
+      uidRegex: ^Microsoft\.Extensions\.Configuration\.Binder\.SourceGeneration
+  # The interceptor attribute the same generator emits.
+  - exclude:
+      uidRegex: ^System\.Runtime\.CompilerServices

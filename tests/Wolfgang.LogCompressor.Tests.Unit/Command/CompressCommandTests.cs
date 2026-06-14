@@ -199,4 +199,79 @@ public sealed class CompressCommandTests : IDisposable
         // archives), not its parent.
         _retentionFileSystem.Received(1).DirectoryExists(System.IO.Path.GetFullPath(_tempDir));
     }
+
+
+
+    [Fact]
+    public async Task OnExecuteAsync_when_lockNotHeld_expected_acquiresLockAndSucceeds()
+    {
+        _compressService.ExecuteAsync(Arg.Any<CompressionOptions>(), Arg.Any<CancellationToken>())
+            .Returns
+            (
+                new List<CompressionResult>
+                {
+                    new() { SourcePath = "a.log", OutputPath = "a.zip", Success = true }
+                }
+            );
+
+        // NoLock omitted -> the real ProcessLock acquires a lock in the source
+        // directory (a clean temp dir, so acquisition succeeds and is released).
+        var command = new Compress { Path = Path.Combine(_tempDir, "test.log") };
+
+        var result = await command.OnExecuteAsync(_console, _logger, _compressService, _reportService, _retentionService);
+
+        Assert.Equal(ExitCode.Success, result);
+    }
+
+
+
+    [Fact]
+    public async Task OnExecuteAsync_when_lockAlreadyHeld_expected_alreadyRunning()
+    {
+        // Pre-create a live (non-stale) lock file in the source directory naming the
+        // current process, so the command's ProcessLock.TryAcquire fails.
+        var lockFile = Path.Combine(_tempDir, ".logc.lock");
+        await File.WriteAllTextAsync(lockFile, $"PID={Environment.ProcessId}{Environment.NewLine}");
+
+        var command = new Compress { Path = Path.Combine(_tempDir, "test.log") };
+
+        var result = await command.OnExecuteAsync(_console, _logger, _compressService, _reportService, _retentionService);
+
+        Assert.Equal(ExitCode.AlreadyRunning, result);
+    }
+
+
+
+    [Fact]
+    public async Task OnExecuteAsync_when_reportPathNotSet_expected_defaultReportNameUsed()
+    {
+        _compressService.ExecuteAsync(Arg.Any<CompressionOptions>(), Arg.Any<CancellationToken>())
+            .Returns
+            (
+                new List<CompressionResult>
+                {
+                    new() { SourcePath = "a.log", OutputPath = "a.zip", Success = true }
+                }
+            );
+
+        // Report set but ReportPath omitted -> the default "compress-report.<fmt>"
+        // name (relative to the working directory) is used.
+        const string defaultReport = "compress-report.json";
+        try
+        {
+            var command = new Compress { Path = "/tmp/test.log", NoLock = true, Report = "json" };
+
+            var result = await command.OnExecuteAsync(_console, _logger, _compressService, _reportService, _retentionService);
+
+            Assert.Equal(ExitCode.Success, result);
+            Assert.True(File.Exists(defaultReport));
+        }
+        finally
+        {
+            if (File.Exists(defaultReport))
+            {
+                File.Delete(defaultReport);
+            }
+        }
+    }
 }

@@ -40,6 +40,26 @@ public sealed class CompressionStrategyFactoryTests
 
 
     [Fact]
+    public void Create_when_zstd_expected_ZstdCompressionStrategy()
+    {
+        var result = _sut.Create(CompressionFormat.Zstd);
+
+        Assert.IsType<ZstdCompressionStrategy>(result);
+    }
+
+
+
+    [Fact]
+    public void Create_when_lz4_expected_Lz4CompressionStrategy()
+    {
+        var result = _sut.Create(CompressionFormat.Lz4);
+
+        Assert.IsType<Lz4CompressionStrategy>(result);
+    }
+
+
+
+    [Fact]
     public void Create_when_invalidFormat_expected_throwsArgumentOutOfRangeException()
     {
         Assert.Throws<ArgumentOutOfRangeException>(() => _sut.Create((CompressionFormat)99));

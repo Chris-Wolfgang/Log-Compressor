@@ -12,5 +12,11 @@ internal enum CompressionFormat
     Gz,
 
     /// <summary>Brotli compression format.</summary>
-    Brotli
+    Brotli,
+
+    /// <summary>Zstandard (zstd) compression format.</summary>
+    Zstd,
+
+    /// <summary>LZ4 compression format.</summary>
+    Lz4
 }

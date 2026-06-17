@@ -13,7 +13,7 @@ A cross-platform .NET CLI (`logc`) for compressing log files. Built for **unatte
 - **Two compression modes:**
   - `logc compress <path>` — produces **one archive per source file** (each log gets its own `.zip` / `.tar.gz` / `.tar.br`)
   - `logc bundle <path>` — produces **one archive containing many files** (good for end-of-month rollups)
-- **Three formats:** ZIP (default), GZip (`.tar.gz`), Brotli (`.tar.br`)
+- **Five formats:** ZIP (default), GZip (`.tar.gz`), Brotli (`.tar.br`), Zstandard (`.tar.zst`), LZ4 (`.tar.lz4`)
 - **Filtering:**
   - `-r|--recurse` — descend into subdirectories
   - `--older-than <days>` — only files modified N+ calendar days ago
@@ -121,7 +121,9 @@ logc bundle /var/log/myapp --recurse --min-datetime 2026-04-01 --max-datetime 20
 | `--older-than <days>` | Only files modified N+ days ago | (no filter) |
 | `--min-datetime <dt>` | Inclusive lower bound on last-modified date | (no filter) |
 | `--max-datetime <dt>` | Inclusive upper bound on last-modified date | (no filter) |
-| `-f`, `--format <fmt>` | `zip` \| `gz` \| `brotli` | `zip` |
+| `-f`, `--format <fmt>` | `zip` \| `gz` \| `brotli` \| `zstd` \| `lz4` | `zip` |
+| `--include <glob>` | Only process files matching this glob (repeatable) | (no filter) |
+| `--exclude <glob>` | Skip files matching this glob (repeatable; applied after `--include`) | (no filter) |
 
 `--older-than` is mutually exclusive with `--min-datetime` / `--max-datetime`. DateTime values are parsed using the local culture.
 
@@ -158,7 +160,7 @@ Three layers, all `internal` and exposed to the test project via `InternalsVisib
 | **Service** | `CompressService`, `BundleService`, `FileFilterService`, `FileNamingService`, compression strategies |
 | **Abstraction** | `IFileSystem`, `ICompressionStrategy`, `IFileFilter`, `IFileNamer` |
 
-Compression strategies (`ZipStrategy`, `GZipStrategy`, `BrotliStrategy`) are dispatched via `CompressionStrategyFactory`. GZip and Brotli bundles use `System.Formats.Tar.TarWriter` to wrap many files into a single tar before compressing — `.tar.gz` and `.tar.br` respectively.
+Compression strategies (`ZipCompressionStrategy`, `GZipCompressionStrategy`, `BrotliCompressionStrategy`, `ZstdCompressionStrategy`, `Lz4CompressionStrategy`) are dispatched via `CompressionStrategyFactory`. The non-ZIP formats use `System.Formats.Tar.TarWriter` to wrap many files into a single tar before compressing — `.tar.gz`, `.tar.br`, `.tar.zst`, and `.tar.lz4` respectively. Zstandard uses [ZstdSharp.Port](https://www.nuget.org/packages/ZstdSharp.Port/) and LZ4 uses [K4os.Compression.LZ4](https://www.nuget.org/packages/K4os.Compression.LZ4.Streams/) (both pure-managed, cross-platform).
 
 ---
 

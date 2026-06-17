@@ -217,7 +217,6 @@ Items deferred from v0.1.0:
 - `decompress` sub-command
 - Compressed-timestamp naming mode (`{name}-{now}` instead of `{name}-{lastModified}`)
 - Custom name prefix (`--name`)
-- Glob-pattern input (`*.log`, `app-*.log`)
 - Mid-batch error-handling strategies (currently: skip & continue for `compress`, fail-fast for `bundle`)
 
 ---

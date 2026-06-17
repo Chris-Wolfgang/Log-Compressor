@@ -30,7 +30,7 @@ public class CompressionBenchmarks
     /// <summary>
     /// Gets or sets the compression format name to benchmark.
     /// </summary>
-    [Params("zip", "gz", "brotli")]
+    [Params("zip", "gz", "brotli", "zstd", "lz4")]
     public string Format { get; set; } = "zip";
 
 
@@ -54,6 +54,8 @@ public class CompressionBenchmarks
             "zip" => CompressionFormat.Zip,
             "gz" => CompressionFormat.Gz,
             "brotli" => CompressionFormat.Brotli,
+            "zstd" => CompressionFormat.Zstd,
+            "lz4" => CompressionFormat.Lz4,
             _ => CompressionFormat.Zip
         };
 

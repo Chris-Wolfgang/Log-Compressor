@@ -16,7 +16,9 @@ public static class CompressionRatioBenchmarks
     [
         ("ZIP", CompressionFormat.Zip),
         ("GZip", CompressionFormat.Gz),
-        ("Brotli", CompressionFormat.Brotli)
+        ("Brotli", CompressionFormat.Brotli),
+        ("Zstd", CompressionFormat.Zstd),
+        ("LZ4", CompressionFormat.Lz4)
     ];
 
     private static readonly (string Name, CompressionLevel Level)[] Levels =

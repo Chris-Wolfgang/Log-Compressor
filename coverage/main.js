@@ -290,8 +290,8 @@ var assemblies = [
   {
     "name": "logc",
     "classes": [
-      { "name": "Wolfgang.LogCompressor.Command.Bundle", "rp": "logc_Bundle.html", "cl": 35, "ucl": 2, "cal": 37, "tl": 110, "cb": 17, "tb": 22, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
-      { "name": "Wolfgang.LogCompressor.Command.Compress", "rp": "logc_Compress.html", "cl": 39, "ucl": 2, "cal": 41, "tl": 116, "cb": 19, "tb": 24, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
+      { "name": "Wolfgang.LogCompressor.Command.Bundle", "rp": "logc_Bundle.html", "cl": 37, "ucl": 0, "cal": 37, "tl": 110, "cb": 20, "tb": 22, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
+      { "name": "Wolfgang.LogCompressor.Command.Compress", "rp": "logc_Compress.html", "cl": 41, "ucl": 0, "cal": 41, "tl": 116, "cb": 22, "tb": 24, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
       { "name": "Wolfgang.LogCompressor.Command.SharedOptions", "rp": "logc_SharedOptions.html", "cl": 83, "ucl": 0, "cal": 83, "tl": 345, "cb": 55, "tb": 56, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
       { "name": "Wolfgang.LogCompressor.Framework.ConsoleSinkOptions", "rp": "logc_ConsoleSinkOptions.html", "cl": 4, "ucl": 0, "cal": 4, "tl": 29, "cb": 0, "tb": 0, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
       { "name": "Wolfgang.LogCompressor.Framework.FileSinkOptions", "rp": "logc_FileSinkOptions.html", "cl": 8, "ucl": 0, "cal": 8, "tl": 58, "cb": 0, "tb": 0, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
@@ -308,7 +308,7 @@ var assemblies = [
       { "name": "Wolfgang.LogCompressor.Service.CompressService", "rp": "logc_CompressService.html", "cl": 124, "ucl": 0, "cal": 124, "tl": 240, "cb": 21, "tb": 22, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
       { "name": "Wolfgang.LogCompressor.Service.FileFilterService", "rp": "logc_FileFilterService.html", "cl": 20, "ucl": 0, "cal": 20, "tl": 66, "cb": 17, "tb": 18, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
       { "name": "Wolfgang.LogCompressor.Service.FileNamingService", "rp": "logc_FileNamingService.html", "cl": 13, "ucl": 0, "cal": 13, "tl": 45, "cb": 2, "tb": 2, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
-      { "name": "Wolfgang.LogCompressor.Service.ReportService", "rp": "logc_ReportService.html", "cl": 49, "ucl": 0, "cal": 49, "tl": 110, "cb": 11, "tb": 12, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
+      { "name": "Wolfgang.LogCompressor.Service.ReportService", "rp": "logc_ReportService.html", "cl": 49, "ucl": 0, "cal": 49, "tl": 110, "cb": 12, "tb": 12, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
       { "name": "Wolfgang.LogCompressor.Service.RetentionService", "rp": "logc_RetentionService.html", "cl": 37, "ucl": 0, "cal": 37, "tl": 104, "cb": 12, "tb": 12, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
     ]},
 ];

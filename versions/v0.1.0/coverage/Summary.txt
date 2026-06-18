@@ -1,27 +1,27 @@
 Summary
-  Generated on: 6/14/2026 - 11:15:36 PM
-  Coverage date: 6/14/2026 - 11:15:33 PM
+  Generated on: 6/18/2026 - 10:38:40 PM
+  Coverage date: 6/18/2026 - 10:38:36 PM
   Parser: MultiReport (2x Cobertura)
   Assemblies: 1
   Classes: 20
   Files: 20
-  Line coverage: 99.4%
-  Covered lines: 736
-  Uncovered lines: 4
+  Line coverage: 100%
+  Covered lines: 740
+  Uncovered lines: 0
   Coverable lines: 740
   Total lines: 2206
-  Branch coverage: 92.2% (225 of 244)
-  Covered branches: 225
+  Branch coverage: 95% (232 of 244)
+  Covered branches: 232
   Total branches: 244
   Method coverage: 100% (105 of 105)
-  Full method coverage: 98% (103 of 105)
+  Full method coverage: 100% (105 of 105)
   Covered methods: 105
-  Fully covered methods: 103
+  Fully covered methods: 105
   Total methods: 105
 
-logc                                                                      99.4%
-  Wolfgang.LogCompressor.Command.Bundle                                   94.5%
-  Wolfgang.LogCompressor.Command.Compress                                 95.1%
+logc                                                                       100%
+  Wolfgang.LogCompressor.Command.Bundle                                    100%
+  Wolfgang.LogCompressor.Command.Compress                                  100%
   Wolfgang.LogCompressor.Command.SharedOptions                             100%
   Wolfgang.LogCompressor.Framework.ConsoleSinkOptions                      100%
   Wolfgang.LogCompressor.Framework.FileSinkOptions                         100%

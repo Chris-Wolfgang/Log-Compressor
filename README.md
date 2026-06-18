@@ -192,9 +192,9 @@ The output lands in `bin/Release/net10.0/linux-x64/publish/` as `logc` alongside
 
 | Metric | Value |
 |--------|-------|
-| Unit tests (xunit 2.9.3, NSubstitute) | 170 |
+| Unit tests (xunit 2.9.3, NSubstitute) | 183 |
 | Integration tests (real file system, all OSes) | 14 |
-| Code coverage | 95.9%+ (line); 90% per-module gate in CI |
+| Code coverage | 100% line, 95% branch; 90% per-module gate in CI |
 | Benchmarks | BenchmarkDotNet (compression-format throughput) |
 
 ---

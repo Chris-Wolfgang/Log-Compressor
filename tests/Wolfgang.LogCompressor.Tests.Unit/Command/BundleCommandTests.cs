@@ -194,4 +194,87 @@ public sealed class BundleCommandTests : IDisposable
         Assert.Equal(ExitCode.Success, result);
         _retentionFileSystem.Received(1).DirectoryExists(Arg.Any<string>());
     }
+
+
+
+    [Fact]
+    public async Task OnExecuteAsync_when_lockNotHeld_expected_acquiresLockAndSucceeds()
+    {
+        _bundleService.ExecuteAsync(Arg.Any<CompressionOptions>(), Arg.Any<CancellationToken>())
+            .Returns
+            (
+                new CompressionResult
+                {
+                    SourcePath = _tempDir,
+                    OutputPath = Path.Combine(_tempDir, "bundle.zip"),
+                    Success = true,
+                    OriginalSize = 1000,
+                    CompressedSize = 200
+                }
+            );
+
+        // NoLock omitted -> the real ProcessLock acquires a lock in the source
+        // directory (a clean temp dir, so acquisition succeeds and is released).
+        var command = new Bundle { Path = Path.Combine(_tempDir, "logs") };
+
+        var result = await command.OnExecuteAsync(_console, _logger, _bundleService, _reportService, _retentionService);
+
+        Assert.Equal(ExitCode.Success, result);
+    }
+
+
+
+    [Fact]
+    public async Task OnExecuteAsync_when_lockAlreadyHeld_expected_alreadyRunning()
+    {
+        // Pre-create a live (non-stale) lock file in the source directory naming the
+        // current process, so the command's ProcessLock.TryAcquire fails.
+        var lockFile = Path.Combine(_tempDir, ".logc.lock");
+        await File.WriteAllTextAsync(lockFile, $"PID={Environment.ProcessId}{Environment.NewLine}");
+
+        var command = new Bundle { Path = Path.Combine(_tempDir, "logs") };
+
+        var result = await command.OnExecuteAsync(_console, _logger, _bundleService, _reportService, _retentionService);
+
+        Assert.Equal(ExitCode.AlreadyRunning, result);
+    }
+
+
+
+    [Fact]
+    public async Task OnExecuteAsync_when_reportPathNotSet_expected_defaultReportNameUsed()
+    {
+        _bundleService.ExecuteAsync(Arg.Any<CompressionOptions>(), Arg.Any<CancellationToken>())
+            .Returns
+            (
+                new CompressionResult
+                {
+                    SourcePath = "/tmp/logs",
+                    OutputPath = "/tmp/logs/bundle.zip",
+                    Success = true,
+                    OriginalSize = 1000,
+                    CompressedSize = 200
+                }
+            );
+
+        // Report set but ReportPath omitted -> the default "bundle-report.<fmt>"
+        // name (relative to the working directory) is used.
+        const string defaultReport = "bundle-report.json";
+        try
+        {
+            var command = new Bundle { Path = "/tmp/logs", NoLock = true, Report = "json" };
+
+            var result = await command.OnExecuteAsync(_console, _logger, _bundleService, _reportService, _retentionService);
+
+            Assert.Equal(ExitCode.Success, result);
+            Assert.True(File.Exists(defaultReport));
+        }
+        finally
+        {
+            if (File.Exists(defaultReport))
+            {
+                File.Delete(defaultReport);
+            }
+        }
+    }
 }

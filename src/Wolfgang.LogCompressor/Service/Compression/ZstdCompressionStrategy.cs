@@ -84,7 +84,10 @@ internal sealed class ZstdCompressionStrategy : ICompressionStrategy
 
     // Map the framework CompressionLevel onto zstd's 1..22 scale. SmallestSize uses
     // 19 (the practical maximum before zstd's "ultra" levels); Optimal uses zstd's
-    // own default of 3; Fastest uses 1.
+    // own default of 3; Fastest uses 1. NoCompression also maps to 1: zstd has no
+    // true "store" level — its valid range starts at 1 — and emitting raw bytes
+    // would break the .zst frame contract, so 1 (the cheapest valid level) is the
+    // closest honest approximation.
     private static int MapLevel(CompressionLevel level)
     {
         return level switch

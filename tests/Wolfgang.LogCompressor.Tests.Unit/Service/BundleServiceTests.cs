@@ -33,7 +33,7 @@ public sealed class BundleServiceTests
             .CompressFilesAsync(Arg.Any<IEnumerable<(Stream Stream, string EntryName)>>(), Arg.Any<Stream>(), Arg.Any<CancellationToken>())
             .Returns(callInfo =>
             {
-                foreach (var _ in callInfo.Arg<IEnumerable<(Stream Stream, string EntryName)>>())
+                foreach (var _ in callInfo.Arg<IEnumerable<(Stream Stream, string EntryName)>>()!)
                 {
                 }
 
@@ -336,7 +336,7 @@ public sealed class BundleServiceTests
 
         Assert.False(result.Success);
         Assert.Contains("No readable files", result.ErrorMessage);
-        _fileSystem.Received(1).DeleteFile(Arg.Is<string>(p => p.Contains("bundle.zip", StringComparison.Ordinal)));
+        _fileSystem.Received(1).DeleteFile(Arg.Is<string>(p => p != null && p.Contains("bundle.zip", StringComparison.Ordinal)));
         foreach (var file in files)
         {
             _fileSystem.DidNotReceive().DeleteFile(file);   // no source deleted
@@ -354,7 +354,7 @@ public sealed class BundleServiceTests
 
         SetupDirectory(dir, files, fileInfos);
         _fileNamer.GetBundleFileName("MyApp", Arg.Any<IReadOnlyList<FileInfo>>(), "zip").Returns("bundle.zip");
-        _fileSystem.FileExists(Arg.Is<string>(p => p.Contains("bundle.zip", StringComparison.Ordinal))).Returns(returnThis: true);
+        _fileSystem.FileExists(Arg.Is<string>(p => p != null && p.Contains("bundle.zip", StringComparison.Ordinal))).Returns(returnThis: true);
 
         var result = await _sut.ExecuteAsync(new CompressionOptions { SourcePath = dir });
 

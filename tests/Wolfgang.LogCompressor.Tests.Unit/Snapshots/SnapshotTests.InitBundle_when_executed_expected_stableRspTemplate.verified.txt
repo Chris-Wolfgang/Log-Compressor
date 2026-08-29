@@ -1,0 +1,42 @@
+﻿# logc bundle configuration
+# Usage: logc bundle @bundle.rsp
+#
+# Uncomment and modify the options below.
+
+# Source path (required)
+# C:\Logs\MyApp
+
+# Recurse into subdirectories
+# --recurse
+
+# Output directory (defaults to source parent directory)
+# --output C:\ArchivedLogs
+
+# Compression format: zip, gz, brotli
+# --format zip
+
+# Compression level: fastest, optimal, smallest
+# --level optimal
+
+# Only bundle files older than N days
+# --older-than 7
+
+# Date range filter (mutually exclusive with --older-than)
+# --min-datetime 2026-01-01
+# --max-datetime 2026-12-31
+
+# Include only specific file patterns
+# --include *.log
+
+# Exclude specific file patterns
+# --exclude current.log
+
+# Skip archive verification before deleting originals
+# --no-verify
+
+# Generate a summary report
+# --report json
+# --report-path ./bundle-report.json
+
+# Delete old archives after bundling
+# --delete-archives-older-than 365

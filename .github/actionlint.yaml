@@ -1,0 +1,12 @@
+# actionlint baseline configuration.
+#
+# Suppress accepted-as-intentional findings here, one per `paths:` entry,
+# with a rationale comment. Empty today — accumulate suppressions as
+# real findings are reviewed and either fixed or formally accepted.
+#
+# Reference: https://github.com/rhysd/actionlint/blob/main/docs/config.md
+
+self-hosted-runner:
+  # We don't use any self-hosted runners on this repo. If a workflow ever
+  # adds one, list its label here.
+  labels: []

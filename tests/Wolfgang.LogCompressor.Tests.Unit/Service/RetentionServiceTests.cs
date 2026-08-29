@@ -5,8 +5,9 @@ using Wolfgang.LogCompressor.Service;
 
 namespace Wolfgang.LogCompressor.Tests.Unit.Service;
 
-public sealed class RetentionServiceTests
+public sealed class RetentionServiceTests : IDisposable
 {
+    private readonly TempDirectory _tempDir = new();
     private readonly IFileSystem _fileSystem = Substitute.For<IFileSystem>();
     private readonly RetentionService _sut;
 
@@ -65,8 +66,7 @@ public sealed class RetentionServiceTests
         _fileSystem.EnumerateFiles(dir, "*", SearchOption.TopDirectoryOnly)
             .Returns([oldArchive, newArchive]);
 
-        var tempDir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
-        Directory.CreateDirectory(tempDir);
+        var tempDir = _tempDir.CreateSubdirectory();
 
         var oldTempPath = Path.Combine(tempDir, "old.zip");
         File.WriteAllText(oldTempPath, "old");
@@ -99,8 +99,7 @@ public sealed class RetentionServiceTests
         _fileSystem.DirectoryExists(dir).Returns(returnThis: true);
         _fileSystem.EnumerateFiles(dir, "*", SearchOption.TopDirectoryOnly).Returns([logFile]);
 
-        var tempDir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
-        Directory.CreateDirectory(tempDir);
+        var tempDir = _tempDir.CreateSubdirectory();
         var tempPath = Path.Combine(tempDir, "old.log");
         File.WriteAllText(tempPath, "log content");
         File.SetLastWriteTime(tempPath, DateTime.Today.AddDays(-60));
@@ -143,5 +142,12 @@ public sealed class RetentionServiceTests
         var result = _sut.DeleteOldArchives(dir, 30);
 
         Assert.Equal(0, result);
+    }
+
+
+
+    public void Dispose()
+    {
+        _tempDir.Dispose();
     }
 }

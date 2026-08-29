@@ -7,8 +7,9 @@ using Wolfgang.LogCompressor.Service.Compression;
 
 namespace Wolfgang.LogCompressor.Tests.Unit.Service;
 
-public sealed class CompressServiceTests
+public sealed class CompressServiceTests : IDisposable
 {
+    private readonly TempDirectory _tempDir = new();
     private readonly IFileSystem _fileSystem = Substitute.For<IFileSystem>();
     private readonly IFileFilter _fileFilter = Substitute.For<IFileFilter>();
     private readonly IFileNamer _fileNamer = Substitute.For<IFileNamer>();
@@ -316,10 +317,15 @@ public sealed class CompressServiceTests
 
 
 
-    private static string CreateTempFile()
+    private string CreateTempFile()
     {
-        var path = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + ".log");
-        File.WriteAllText(path, "test content");
-        return path;
+        return _tempDir.WriteFile(Guid.NewGuid() + ".log", "test content");
+    }
+
+
+
+    public void Dispose()
+    {
+        _tempDir.Dispose();
     }
 }

@@ -19,8 +19,12 @@ one) on the machine where the job runs.
 writes `31.01.2026`, a US operator writes `1/31/2026`, and both mean the same
 day; forcing invariant (US-shaped) parsing would silently misread or reject
 the local format. ISO 8601 (`2026-01-31`) parses correctly under every
-culture, so scripts that want culture-independence simply use ISO — which is
-what the documentation and examples show.
+Gregorian-calendar culture, so scripts that want culture-independence use ISO
+— which is what the documentation and examples show. The exception is
+cultures whose default calendar is non-Gregorian (verified: ar-SA's Umm
+al-Qura calendar cannot represent Gregorian year 2026, so even ISO input is
+rejected there); operators on those locales supply dates in the local
+calendar, which is exactly what culture-aware parsing is for.
 
 This is a **documented allowlist entry**: these two flags are the
 intentionally culture-sensitive surface of the CLI. Everything else (file
@@ -32,6 +36,8 @@ contract.
 - Human-entered dates behave the way the operator's own OS does — least
   surprise for the interactive case.
 - The same `.rsp` file can parse differently on machines with different
-  locales. Mitigation: examples use ISO 8601, which is locale-proof.
+  locales. Mitigation: examples use ISO 8601, which is locale-proof across
+  Gregorian-calendar cultures (not under non-Gregorian defaults like ar-SA —
+  see above).
 - Culture-invariance tests (fleet issue #83) must exempt these two flags and
   assert the rest of the surface is invariant.

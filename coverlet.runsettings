@@ -5,6 +5,11 @@
       <DataCollector friendlyName="XPlat Code Coverage">
         <Configuration>
           <Format>cobertura</Format>
+          <!-- Test code is held to the same bar as src (fleet policy: 100%
+               line coverage on test classes — dead test helpers should be
+               exercised or deleted). Without this flag only src rows appear
+               in Summary.txt and test-code coverage is invisible. -->
+          <IncludeTestAssembly>true</IncludeTestAssembly>
           <ExcludeByFile>**/bin/**/*.cs;**/obj/**/*.cs</ExcludeByFile>
           <ExcludeByAttribute>ExcludeFromCodeCoverageAttribute;GeneratedCodeAttribute</ExcludeByAttribute>
           <!-- Exclude the config-binder source-generator output. The

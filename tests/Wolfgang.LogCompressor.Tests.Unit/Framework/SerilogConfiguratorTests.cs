@@ -154,6 +154,19 @@ public sealed class SerilogConfiguratorTests : IDisposable
 
 
 
+    [Fact]
+    public void Dispose_when_tempDirAlreadyDeleted_expected_noThrow()
+    {
+        // Exercises the DirectoryNotFoundException catch in this fixture's own
+        // Dispose: deleting the directory here means xunit's dispose call after
+        // the test hits the already-gone path.
+        Directory.Delete(_tempDir, recursive: true);
+
+        Assert.False(Directory.Exists(_tempDir));
+    }
+
+
+
     private static LoggingOptions NewOptions(bool consoleEnabled, string filePath)
     {
         return new LoggingOptions

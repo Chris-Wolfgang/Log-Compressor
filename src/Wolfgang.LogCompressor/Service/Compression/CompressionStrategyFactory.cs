@@ -27,6 +27,8 @@ internal class CompressionStrategyFactory
             CompressionFormat.Zip => new ZipCompressionStrategy(level),
             CompressionFormat.Gz => new GZipCompressionStrategy(level),
             CompressionFormat.Brotli => new BrotliCompressionStrategy(level),
+            CompressionFormat.Zstd => new ZstdCompressionStrategy(level),
+            CompressionFormat.Lz4 => new Lz4CompressionStrategy(level),
             _ => throw new ArgumentOutOfRangeException(nameof(format), format, "Unsupported compression format.")
         };
     }

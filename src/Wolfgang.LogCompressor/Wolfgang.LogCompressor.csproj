@@ -35,6 +35,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="K4os.Compression.LZ4.Streams" Version="1.3.8" />
     <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="5.1.0" />
     <PackageReference Include="McMaster.Extensions.Hosting.CommandLine" Version="5.1.0" />
     <PackageReference Include="Microsoft.Extensions.FileSystemGlobbing" Version="10.0.11" />
@@ -50,6 +51,7 @@
          longer fails on truncated input, so the verifier checks the stream's
          own trailer itself. -->
     <PackageReference Include="System.IO.Hashing" Version="10.0.11" />
+    <PackageReference Include="ZstdSharp.Port" Version="0.8.8" />
   </ItemGroup>
 
   <ItemGroup>

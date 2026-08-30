@@ -426,6 +426,65 @@ public sealed class BundleServiceTests : IDisposable
 
 
 
+    [Fact]
+    public async Task ExecuteAsync_when_verifyDisabled_expected_verifierNotCalled()
+    {
+        var dir = "/tmp/logs/MyApp";
+        var file = CreateTempFiles(1)[0];
+        var fileInfo = new FileInfo(file);
+
+        _fileSystem.FileExists(dir).Returns(returnThis: false);
+        _fileSystem.DirectoryExists(dir).Returns(returnThis: true);
+        _fileSystem.EnumerateFiles(dir, "*", SearchOption.TopDirectoryOnly).Returns([file]);
+        _fileSystem.GetFileInfo(file).Returns(fileInfo);
+        _fileFilter.Apply
+        (
+            Arg.Any<IEnumerable<FileInfo>>(),
+            Arg.Any<int?>(),
+            Arg.Any<DateTime?>(),
+            Arg.Any<DateTime?>(),
+            Arg.Any<IReadOnlyList<string>>(),
+            Arg.Any<IReadOnlyList<string>>()
+        ).Returns([fileInfo]);
+        _fileNamer.GetBundleFileName("MyApp", Arg.Any<IReadOnlyList<FileInfo>>(), "zip").Returns("bundle.zip");
+        _fileSystem.OpenRead(Arg.Any<string>()).Returns(new MemoryStream("content"u8.ToArray()));
+        _fileSystem.CreateWrite(Arg.Any<string>()).Returns(new MemoryStream());
+
+        var options = new CompressionOptions { SourcePath = dir, Verify = false };
+        var result = await _sut.ExecuteAsync(options);
+
+        Assert.True(result.Success);
+        await _archiveVerifier.DidNotReceive().VerifyAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<long?>());
+    }
+
+
+
+    [Fact]
+    public async Task ExecuteAsync_when_recurseDisabled_expected_topDirectoryOnlyEnumeration()
+    {
+        var dir = "/tmp/logs/MyApp";
+
+        _fileSystem.FileExists(dir).Returns(returnThis: false);
+        _fileSystem.DirectoryExists(dir).Returns(returnThis: true);
+        _fileSystem.EnumerateFiles(dir, "*", Arg.Any<SearchOption>()).Returns([]);
+        _fileFilter.Apply
+        (
+            Arg.Any<IEnumerable<FileInfo>>(),
+            Arg.Any<int?>(),
+            Arg.Any<DateTime?>(),
+            Arg.Any<DateTime?>(),
+            Arg.Any<IReadOnlyList<string>>(),
+            Arg.Any<IReadOnlyList<string>>()
+        ).Returns([]);
+
+        await _sut.ExecuteAsync(new CompressionOptions { SourcePath = dir, Recurse = false });
+
+        _fileSystem.Received(1).EnumerateFiles(dir, "*", SearchOption.TopDirectoryOnly);
+        _fileSystem.DidNotReceive().EnumerateFiles(dir, "*", SearchOption.AllDirectories);
+    }
+
+
+
     private string[] CreateTempFiles(int count)
     {
         var files = new string[count];

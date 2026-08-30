@@ -12,8 +12,18 @@
     ],
     "thresholds": {
       "high": 90,
-      "low": 75,
-      "break": 71
-    }
+      "low": 85,
+      "break": 83
+    },
+    "ignore-methods": [
+      "LogTrace",
+      "LogDebug",
+      "LogInformation",
+      "LogWarning",
+      "LogError",
+      "LogCritical",
+      "WriteLine",
+      "WriteLineAsync"
+    ]
   }
 }

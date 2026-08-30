@@ -1,16 +1,19 @@
 {
   "$comment": "Mutation-score floor for the Stryker gate (#74). stryker-config.json's thresholds.break MUST equal 'floor' — Stryker exits non-zero below it, failing the weekly stryker.yaml run, which auto-files an issue. Ratchet policy: the floor only moves UP, in a PR that shows the new sustained score; lowering it requires a written rationale in the same PR. History lives in this file's git log.",
   "project": "src/Wolfgang.LogCompressor/Wolfgang.LogCompressor.csproj",
-  "floor": 71,
+  "floor": 83,
   "measured": {
     "date": "2026-08-29",
-    "score": 71.99,
-    "killed": 287,
-    "survived": 137,
-    "timeout": 55,
-    "testedMutants": 479,
+    "score": 84.50,
+    "killed": 300,
+    "survived": 61,
+    "timeout": 49,
     "runtimeMinutes": 10,
-    "environment": "local win-x64, dotnet-stryker latest, Release test suite (236 unit tests)"
+    "environment": "local win-x64, dotnet-stryker latest, Release unit suite (254 tests)"
   },
-  "survivorProfile": "Dominated by Statement (52) and String (41) mutations — removed logging calls and altered log/console message text, which the tests deliberately do not assert. Top files: Bundle.cs (24), Compress.cs (18), ArchiveVerifier.cs (18), SharedOptions.cs (15), CompressService.cs (15). Raising the floor meaningfully means either asserting key log output or configuring Stryker to ignore logging statements."
+  "history": [
+    { "date": "2026-08-29", "score": 71.99, "floor": 71, "note": "first real run (stryker.yaml had been a config-less no-op)" },
+    { "date": "2026-08-29", "score": 84.50, "floor": 83, "note": "#176 pass: 18 behavioural killing tests (verify/recurse flags, exit codes, retention dir + boundary, report counts, filter order, sink defaults) + ignore-methods for Log*/WriteLine* — log-statement mutants are unassertable by design, excluding them turns the score into signal" }
+  ],
+  "survivorProfile": "61 survivors, led by ArchiveVerifier (18) and the services — dominated by leaveOpen:true argument booleans and similar equivalent-behaviour mutants (disposal semantics indistinguishable in context). Raising the floor past ~87 means hunting those case-by-case; check the HTML report from the weekly stryker.yaml artifact."
 }

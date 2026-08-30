@@ -147,7 +147,7 @@ public sealed class ReportServiceTests : IDisposable
     [Fact]
     public async Task WriteReportAsync_when_emptyResults_expected_validJsonWithZeroCounts()
     {
-        var results = new List<CompressionResult>();
+        IReadOnlyList<CompressionResult> results = [];
         var outputPath = Path.Combine(_tempDir, "empty.json");
 
         await _sut.WriteReportAsync(results, "json", outputPath, TimeSpan.Zero);

@@ -7,8 +7,9 @@ using Wolfgang.LogCompressor.Service.Compression;
 
 namespace Wolfgang.LogCompressor.Tests.Unit.Service;
 
-public sealed class BundleServiceTests
+public sealed class BundleServiceTests : IDisposable
 {
+    private readonly TempDirectory _tempDir = new();
     private readonly IFileSystem _fileSystem = Substitute.For<IFileSystem>();
     private readonly IFileFilter _fileFilter = Substitute.For<IFileFilter>();
     private readonly IFileNamer _fileNamer = Substitute.For<IFileNamer>();
@@ -390,17 +391,22 @@ public sealed class BundleServiceTests
 
 
 
-    private static string[] CreateTempFiles(int count)
+    private string[] CreateTempFiles(int count)
     {
         var files = new string[count];
 
         for (var i = 0; i < count; i++)
         {
-            var path = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + ".log");
-            File.WriteAllText(path, $"content {i}");
-            files[i] = path;
+            files[i] = _tempDir.WriteFile(Guid.NewGuid() + ".log", $"content {i}");
         }
 
         return files;
+    }
+
+
+
+    public void Dispose()
+    {
+        _tempDir.Dispose();
     }
 }

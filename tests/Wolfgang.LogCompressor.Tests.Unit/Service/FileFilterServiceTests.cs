@@ -2,8 +2,9 @@ using Wolfgang.LogCompressor.Service;
 
 namespace Wolfgang.LogCompressor.Tests.Unit.Service;
 
-public sealed class FileFilterServiceTests
+public sealed class FileFilterServiceTests : IDisposable
 {
+    private readonly TempDirectory _tempDir = new();
     private readonly FileFilterService _sut = new();
 
 
@@ -277,10 +278,9 @@ public sealed class FileFilterServiceTests
 
 
 
-    private static List<FileInfo> CreateFiles(params DateTime[] lastWriteTimes)
+    private List<FileInfo> CreateFiles(params DateTime[] lastWriteTimes)
     {
-        var tempDir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
-        Directory.CreateDirectory(tempDir);
+        var tempDir = _tempDir.CreateSubdirectory();
 
         var files = new List<FileInfo>();
 
@@ -297,10 +297,9 @@ public sealed class FileFilterServiceTests
 
 
 
-    private static List<FileInfo> CreateNamedFiles(params string[] fileNames)
+    private List<FileInfo> CreateNamedFiles(params string[] fileNames)
     {
-        var tempDir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
-        Directory.CreateDirectory(tempDir);
+        var tempDir = _tempDir.CreateSubdirectory();
 
         var files = new List<FileInfo>();
 
@@ -312,5 +311,12 @@ public sealed class FileFilterServiceTests
         }
 
         return files;
+    }
+
+
+
+    public void Dispose()
+    {
+        _tempDir.Dispose();
     }
 }

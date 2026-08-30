@@ -191,7 +191,9 @@ internal class CompressService
             // are closed. The verifier opens the archive for reading, which fails
             // while the write handle is still open, and the source can't be deleted
             // while its read handle is open. Both must run after the using block.
-            if (options.Verify && !await _archiveVerifier.VerifyAsync(outputPath, strategy.FileExtension).ConfigureAwait(false))
+            // The source length lets the verifier catch truncated gz/br output
+            // (their decompressors return partial data instead of failing).
+            if (options.Verify && !await _archiveVerifier.VerifyAsync(outputPath, strategy.FileExtension, sourceFile.Length).ConfigureAwait(false))
             {
                 _logger.LogError("Archive verification failed for {Output}, original file preserved", outputPath);
 

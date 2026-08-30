@@ -25,7 +25,7 @@ public sealed class CompressServiceTests : IDisposable
         _strategyFactory = Substitute.For<CompressionStrategyFactory>();
         _strategyFactory.Create(Arg.Any<CompressionFormat>(), Arg.Any<System.IO.Compression.CompressionLevel>()).Returns(_strategy);
         _strategy.FileExtension.Returns("zip");
-        _archiveVerifier.VerifyAsync(Arg.Any<string>(), Arg.Any<string>()).Returns(Task.FromResult(true));
+        _archiveVerifier.VerifyAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<long?>()).Returns(Task.FromResult(true));
 
         _sut = new CompressService
         (
@@ -304,7 +304,7 @@ public sealed class CompressServiceTests : IDisposable
         _fileNamer.GetCompressedFileName(fileInfo, "zip").Returns("out.zip");
         _fileSystem.OpenRead(tempFile).Returns(new MemoryStream("content"u8.ToArray()));
         _fileSystem.CreateWrite(Arg.Any<string>()).Returns(new MemoryStream());
-        _archiveVerifier.VerifyAsync(Arg.Any<string>(), Arg.Any<string>()).Returns(Task.FromResult(false));
+        _archiveVerifier.VerifyAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<long?>()).Returns(Task.FromResult(false));
 
         var options = new CompressionOptions { SourcePath = tempFile, Verify = true };
         var results = await _sut.ExecuteAsync(options);

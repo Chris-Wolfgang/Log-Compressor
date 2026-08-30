@@ -25,7 +25,7 @@ public sealed class BundleServiceTests : IDisposable
         _strategyFactory = Substitute.For<CompressionStrategyFactory>();
         _strategyFactory.Create(Arg.Any<CompressionFormat>(), Arg.Any<System.IO.Compression.CompressionLevel>()).Returns(_strategy);
         _strategy.BundleFileExtension.Returns("zip");
-        _archiveVerifier.VerifyAsync(Arg.Any<string>(), Arg.Any<string>()).Returns(Task.FromResult(true));
+        _archiveVerifier.VerifyAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<long?>()).Returns(Task.FromResult(true));
 
         // The real strategies enumerate (and dispose) the lazily-opened input
         // sequence; the substitute must enumerate it too so BundleService records
@@ -281,7 +281,7 @@ public sealed class BundleServiceTests : IDisposable
         SetupDirectory(dir, files, fileInfos);
         _fileNamer.GetBundleFileName("MyApp", Arg.Any<IReadOnlyList<FileInfo>>(), "zip").Returns("bundle.zip");
         _fileSystem.CreateWrite(Arg.Any<string>()).Returns(new MemoryStream());
-        _archiveVerifier.VerifyAsync(Arg.Any<string>(), Arg.Any<string>()).Returns(Task.FromResult(false));
+        _archiveVerifier.VerifyAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<long?>()).Returns(Task.FromResult(false));
 
         var options = new CompressionOptions { SourcePath = dir, Verify = true };
         var result = await _sut.ExecuteAsync(options);

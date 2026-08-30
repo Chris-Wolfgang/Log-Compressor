@@ -1,0 +1,126 @@
+name: PR Benchmarks
+
+# Per-PR benchmark delta (#92): runs the curated PerfSmoke subset on the PR's
+# as-if-merged tree AND on the base commit, compares the BenchmarkDotNet JSON,
+# and posts (replaces) a delta-table comment on the PR.
+#
+# Gate policy (fleet-validated): allocated bytes per operation are
+# deterministic, so an allocation regression beyond ×1.5 FAILS the job unless
+# the PR carries the `perf-impact-acknowledged` label. Wall-clock deltas are
+# advisory only — shared-runner timing is too noisy to block on. The full
+# benchmark matrix stays in benchmarks.yaml (weekly gh-pages chart); this
+# workflow only runs the fast subset, path-filtered to perf-relevant changes.
+#
+# NOTE: the label snapshot comes from the triggering event — after adding the
+# label, re-trigger with a push (or close/reopen), not `gh run rerun`, which
+# replays the stale snapshot.
+
+on:
+  pull_request:
+    paths:
+      - 'src/**'
+      - 'benchmarks/**'
+      - '.github/workflows/pr-benchmarks.yaml'
+      - 'scripts/Compare-Benchmarks.py'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pr-benchmarks-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  benchmark-delta:
+    name: Benchmark delta vs base
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    permissions:
+      contents: read
+      pull-requests: write   # post/replace the delta comment
+    steps:
+      - name: Checkout (full history for base commit)
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Run PerfSmoke on PR (as-if-merged)
+        run: |
+          dotnet run -c Release \
+            --project benchmarks/Wolfgang.LogCompressor.Benchmarks/Wolfgang.LogCompressor.Benchmarks.csproj \
+            -- --filter '*PerfSmokeBenchmarks*' --job short --memory \
+            --exporters json --artifacts "$RUNNER_TEMP/bdn-head"
+
+      - name: Run PerfSmoke on base
+        id: base
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          # Keep the compare script from the PR side before switching trees.
+          cp scripts/Compare-Benchmarks.py "$RUNNER_TEMP/compare.py"
+
+          git checkout --force "$BASE_SHA"
+
+          if [ ! -f benchmarks/Wolfgang.LogCompressor.Benchmarks/PerfSmokeBenchmarks.cs ]; then
+            echo "::notice::Base commit has no PerfSmokeBenchmarks — first delta run has no baseline; skipping comparison."
+            echo "baseline=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          echo "baseline=true" >> "$GITHUB_OUTPUT"
+
+          dotnet run -c Release \
+            --project benchmarks/Wolfgang.LogCompressor.Benchmarks/Wolfgang.LogCompressor.Benchmarks.csproj \
+            -- --filter '*PerfSmokeBenchmarks*' --job short --memory \
+            --exporters json --artifacts "$RUNNER_TEMP/bdn-base"
+
+      - name: Compare and gate
+        id: compare
+        if: steps.base.outputs.baseline == 'true'
+        env:
+          ACKNOWLEDGED: ${{ contains(github.event.pull_request.labels.*.name, 'perf-impact-acknowledged') }}
+        run: |
+          head_json=$(find "$RUNNER_TEMP/bdn-head/results" -name '*-report*.json' | head -1)
+          base_json=$(find "$RUNNER_TEMP/bdn-base/results" -name '*-report*.json' | head -1)
+
+          set +e
+          python3 "$RUNNER_TEMP/compare.py" "$base_json" "$head_json" "$RUNNER_TEMP/delta.md"
+          result=$?
+          set -e
+
+          if [ "$result" -ne 0 ] && [ "$ACKNOWLEDGED" = "true" ]; then
+            echo "::warning::Allocation gate exceeded, but the PR carries perf-impact-acknowledged — passing."
+            printf '\n**Allocation gate exceeded — accepted via `perf-impact-acknowledged`.**\n' >> "$RUNNER_TEMP/delta.md"
+            result=0
+          fi
+
+          echo "result=$result" >> "$GITHUB_OUTPUT"
+
+      - name: Post (replace) the delta comment
+        if: always() && steps.base.outputs.baseline == 'true' && steps.compare.outcome != 'skipped'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR: ${{ github.event.pull_request.number }}
+        run: |
+          # One rolling comment per PR, identified by the marker the compare
+          # script writes as its first line.
+          existing=$(gh api "repos/${GITHUB_REPOSITORY}/issues/${PR}/comments" \
+            --jq '[.[] | select(.body | startswith("<!-- pr-benchmarks -->"))][0].id // empty')
+          if [ -n "$existing" ]; then
+            gh api -X PATCH "repos/${GITHUB_REPOSITORY}/issues/comments/${existing}" \
+              -F body=@"$RUNNER_TEMP/delta.md" > /dev/null
+          else
+            gh api "repos/${GITHUB_REPOSITORY}/issues/${PR}/comments" \
+              -F body=@"$RUNNER_TEMP/delta.md" > /dev/null
+          fi
+
+      - name: Fail on gated regression
+        if: steps.base.outputs.baseline == 'true' && steps.compare.outputs.result != '0'
+        run: |
+          echo "::error::Allocation regression beyond the gate — see the PR comment. Label the PR perf-impact-acknowledged (and re-push) to accept it deliberately."
+          exit 1

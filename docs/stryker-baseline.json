@@ -1,0 +1,16 @@
+{
+  "$comment": "Mutation-score floor for the Stryker gate (#74). stryker-config.json's thresholds.break MUST equal 'floor' — Stryker exits non-zero below it, failing the weekly stryker.yaml run, which auto-files an issue. Ratchet policy: the floor only moves UP, in a PR that shows the new sustained score; lowering it requires a written rationale in the same PR. History lives in this file's git log.",
+  "project": "src/Wolfgang.LogCompressor/Wolfgang.LogCompressor.csproj",
+  "floor": 71,
+  "measured": {
+    "date": "2026-08-29",
+    "score": 71.99,
+    "killed": 287,
+    "survived": 137,
+    "timeout": 55,
+    "testedMutants": 479,
+    "runtimeMinutes": 10,
+    "environment": "local win-x64, dotnet-stryker latest, Release test suite (236 unit tests)"
+  },
+  "survivorProfile": "Dominated by Statement (52) and String (41) mutations — removed logging calls and altered log/console message text, which the tests deliberately do not assert. Top files: Bundle.cs (24), Compress.cs (18), ArchiveVerifier.cs (18), SharedOptions.cs (15), CompressService.cs (15). Raising the floor meaningfully means either asserting key log output or configuring Stryker to ignore logging statements."
+}

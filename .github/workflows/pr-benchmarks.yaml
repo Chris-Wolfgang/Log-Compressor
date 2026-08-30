@@ -95,7 +95,7 @@ jobs:
 
           if [ "$result" -ne 0 ] && [ "$ACKNOWLEDGED" = "true" ]; then
             echo "::warning::Allocation gate exceeded, but the PR carries perf-impact-acknowledged — passing."
-            printf '\n**Allocation gate exceeded — accepted via `perf-impact-acknowledged`.**\n' >> "$RUNNER_TEMP/delta.md"
+            printf '\n**Allocation gate exceeded — accepted via the perf-impact-acknowledged label.**\n' >> "$RUNNER_TEMP/delta.md"
             result=0
           fi
 

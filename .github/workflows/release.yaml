@@ -928,6 +928,24 @@ jobs:
           dotnet CycloneDX src/Wolfgang.LogCompressor/Wolfgang.LogCompressor.csproj \
             --output supply-chain --filename logc.bom.json --json
 
+      - name: Generate THIRD-PARTY-NOTICES (#86)
+        # License attribution for everything that ships in the logc binaries
+        # (the shipped project's graph, direct + transitive — not the
+        # test/benchmark tooling). Generated fresh per release so it can't
+        # drift from the actual dependency set; the per-PR allowlist gate
+        # lives in license-audit.yaml.
+        run: |
+          dotnet restore src/Wolfgang.LogCompressor/Wolfgang.LogCompressor.csproj
+          dotnet tool install --global nuget-license
+          {
+            echo "# Third-party notices"
+            echo
+            echo "Licenses of all NuGet packages (direct and transitive) in the \`logc\` dependency graph,"
+            echo "generated at release time for tag ${{ github.event.release.tag_name }} by nuget-license."
+            echo
+            nuget-license -i src/Wolfgang.LogCompressor/Wolfgang.LogCompressor.csproj -t -o Markdown
+          } > supply-chain/THIRD-PARTY-NOTICES.md
+
       - name: Build deterministic assembly and generate manifest
         env:
           GH_TOKEN: ${{ github.token }}
@@ -988,4 +1006,5 @@ jobs:
           files: |
             supply-chain/logc.bom.json
             supply-chain/reproducible-build-manifest.json
+            supply-chain/THIRD-PARTY-NOTICES.md
 

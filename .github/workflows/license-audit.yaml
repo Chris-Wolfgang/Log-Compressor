@@ -1,0 +1,72 @@
+name: License Audit
+
+# Audits the license of every NuGet dependency — direct AND transitive —
+# against the allowlist in .github/allowed-licenses.json (#86). Dependabot
+# tracks versions and CVEs; it does not check licenses, so an incompatible
+# license (GPL/AGPL/business-source) in a new transitive dependency would
+# otherwise land silently in an MIT-licensed distribution.
+#
+# A new package with a license outside the allowlist fails this job; approve
+# it by adding the license to the allowlist in the same PR, with the
+# reasoning in the PR description. Release-time attribution is separate:
+# release.yaml generates THIRD-PARTY-NOTICES.md from the shipped project's
+# dependency graph and attaches it to the GitHub Release.
+
+on:
+  pull_request:
+    paths:
+      - '**/*.csproj'
+      - 'Directory.Build.props'
+      - '.github/allowed-licenses.json'
+      - '.github/workflows/license-audit.yaml'
+  schedule:
+    # Sunday 06:00 UTC — matches scorecard.yaml's weekly cadence; catches
+    # license changes in re-published package versions between PRs.
+    - cron: '0 6 * * 0'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: license-audit-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  audit:
+    name: License audit
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Restore
+        run: dotnet restore Wolfgang.LogCompressor.slnx
+
+      - name: Install nuget-license
+        run: dotnet tool install --global nuget-license
+
+      - name: Audit licenses against allowlist
+        # -t includes transitive packages; the tool exits non-zero when any
+        # package's license is not in the allowlist. The JSON report is
+        # uploaded either way for inspection.
+        run: |
+          nuget-license -i Wolfgang.LogCompressor.slnx -t \
+            -a .github/allowed-licenses.json \
+            -o JsonPretty > license-report.json
+
+      - name: Upload license report
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        if: always()
+        with:
+          name: license-report
+          path: license-report.json
+          retention-days: 30

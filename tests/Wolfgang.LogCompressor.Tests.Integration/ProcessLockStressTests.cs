@@ -66,13 +66,50 @@ public sealed class ProcessLockStressTests
 
 
 
-    // NOTE deliberately absent: a stale-lock-file contention stress. The
-    // stale-takeover path (check → delete → CreateNew) has a TOCTOU window
-    // that Windows closes via sharing violations but Linux does not (unlink
-    // succeeds on a file another process holds open), so that stress can
-    // legitimately observe two winners on Linux. Stressing it before the
-    // race is fixed would ship a known-flaky test; the race is tracked as
-    // its own issue.
+    [Fact]
+    public async Task TryAcquire_when_leftoverFileContended_expected_exactlyOneWinner()
+    {
+        // The #172 regression case: a leftover (unheld) lock file exists and
+        // the whole field races the takeover. Under the OpenOrCreate protocol
+        // every contender opens the same file and exactly one wins the
+        // exclusive share — the old check/delete/create sequence could
+        // produce two winners here on Linux.
+        for (var i = 0; i < Iterations; i++)
+        {
+            using var temp = new TempDirectory();
+            temp.WriteFile(ProcessLock.LockFileName, "PID=0\nStarted=2020-01-01T00:00:00Z\n");
+
+            var locks = Enumerable
+                .Range(0, Contenders)
+                .Select(_ => new ProcessLock(temp.Path, NullLogger.Instance))
+                .ToList();
+
+            try
+            {
+                using var barrier = new Barrier(Contenders);
+
+                var results = await Task.WhenAll
+                (
+                    locks.Select(l => Task.Run(() =>
+                    {
+                        barrier.SignalAndWait();
+                        return l.TryAcquire();
+                    }))
+                );
+
+                Assert.Equal(1, results.Count(r => r));
+            }
+            finally
+            {
+                foreach (var l in locks)
+                {
+                    l.Dispose();
+                }
+            }
+        }
+    }
+
+
 
     [Fact]
     public async Task TryAcquire_when_contendedHandoffCycles_expected_everyCycleHasOneHolder()

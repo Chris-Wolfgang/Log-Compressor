@@ -228,10 +228,17 @@ public sealed class CompressCommandTests : IDisposable
     [Fact]
     public async Task OnExecuteAsync_when_lockAlreadyHeld_expected_alreadyRunning()
     {
-        // Pre-create a live (non-stale) lock file in the source directory naming the
-        // current process, so the command's ProcessLock.TryAcquire fails.
+        // Hold the lock file open with FileShare.None — an open handle IS the
+        // lock under the OpenOrCreate protocol (a mere leftover file no longer
+        // blocks; see #172) — so the command's ProcessLock.TryAcquire fails.
         var lockFile = Path.Combine(_tempDir, ".logc.lock");
-        await File.WriteAllTextAsync(lockFile, $"PID={Environment.ProcessId}{Environment.NewLine}");
+        await using var heldLock = new FileStream
+        (
+            lockFile,
+            FileMode.OpenOrCreate,
+            FileAccess.Write,
+            FileShare.None
+        );
 
         var command = new Compress { Path = Path.Combine(_tempDir, "test.log") };
 

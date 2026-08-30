@@ -120,8 +120,11 @@ internal class CompressService
         return _fileSystem
             .EnumerateFiles(options.SourcePath, "*", searchOption)
             // Skip files that are already compressed archives so a repeated run over
-            // the same directory does not re-compress (and then delete) its own output.
-            .Where(p => !RetentionService.IsArchiveFile(p))
+            // the same directory does not re-compress (and then delete) its own
+            // output, and the single-instance lock file — this run's own live lock
+            // sits in the source directory and must never be compressed/deleted
+            // (#172).
+            .Where(p => !RetentionService.IsArchiveFile(p) && !ProcessLock.IsLockFile(p))
             .Select(p => _fileSystem.GetFileInfo(p))
             .ToList();
     }

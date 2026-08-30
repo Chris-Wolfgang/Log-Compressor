@@ -29,6 +29,7 @@
   <ItemGroup>
     <InternalsVisibleTo Include="Wolfgang.LogCompressor.Tests.Unit" />
     <InternalsVisibleTo Include="Wolfgang.LogCompressor.Tests.Integration" />
+    <InternalsVisibleTo Include="Wolfgang.LogCompressor.Tests.Fuzz" />
     <InternalsVisibleTo Include="Wolfgang.LogCompressor.Benchmarks" />
     <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
   </ItemGroup>
@@ -45,6 +46,10 @@
     <PackageReference Include="Serilog.Sinks.Console" Version="6.1.1" />
     <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
     <PackageReference Include="System.Configuration.ConfigurationManager" Version="10.0.11" />
+    <!-- CRC-32 for gzip trailer validation in ArchiveVerifier: GZipStream no
+         longer fails on truncated input, so the verifier checks the stream's
+         own trailer itself. -->
+    <PackageReference Include="System.IO.Hashing" Version="10.0.11" />
   </ItemGroup>
 
   <ItemGroup>

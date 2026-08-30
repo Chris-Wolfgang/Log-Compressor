@@ -278,6 +278,22 @@ public sealed class FileFilterServiceTests : IDisposable
 
 
 
+    [Fact]
+    public void Apply_when_noFiltersSpecified_expected_inputOrderPreserved()
+    {
+        var files = CreateNamedFiles("b.log", "a.log", "c.log");
+
+        var result = _sut.Apply(files, null, null, null);
+
+        Assert.Equal
+        (
+            files.Select(f => f.Name),
+            result.Select(f => f.Name)
+        );
+    }
+
+
+
     private List<FileInfo> CreateFiles(params DateTime[] lastWriteTimes)
     {
         var tempDir = _tempDir.CreateSubdirectory();

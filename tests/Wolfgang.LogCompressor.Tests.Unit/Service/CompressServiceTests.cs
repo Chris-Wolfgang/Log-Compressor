@@ -352,6 +352,63 @@ public sealed class CompressServiceTests : IDisposable
 
 
 
+    [Fact]
+    public async Task ExecuteAsync_when_verifyDisabled_expected_verifierNotCalledAndOriginalDeleted()
+    {
+        var tempFile = CreateTempFile();
+        var fileInfo = new FileInfo(tempFile);
+
+        _fileSystem.FileExists(tempFile).Returns(returnThis: true);
+        _fileSystem.GetFileInfo(tempFile).Returns(fileInfo);
+        _fileFilter.Apply
+        (
+            Arg.Any<IEnumerable<FileInfo>>(),
+            Arg.Any<int?>(),
+            Arg.Any<DateTime?>(),
+            Arg.Any<DateTime?>(),
+            Arg.Any<IReadOnlyList<string>>(),
+            Arg.Any<IReadOnlyList<string>>()
+        ).Returns([fileInfo]);
+        _fileNamer.GetCompressedFileName(fileInfo, "zip").Returns("out.zip");
+        _fileSystem.OpenRead(tempFile).Returns(new MemoryStream("content"u8.ToArray()));
+        _fileSystem.CreateWrite(Arg.Any<string>()).Returns(new MemoryStream());
+
+        var options = new CompressionOptions { SourcePath = tempFile, Verify = false };
+        var results = await _sut.ExecuteAsync(options);
+
+        Assert.True(Assert.Single(results).Success);
+        await _archiveVerifier.DidNotReceive().VerifyAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<long?>());
+        _fileSystem.Received(1).DeleteFile(tempFile);
+    }
+
+
+
+    [Fact]
+    public async Task ExecuteAsync_when_recurseDisabled_expected_topDirectoryOnlyEnumeration()
+    {
+        var dir = Path.GetTempPath();
+
+        _fileSystem.FileExists(dir).Returns(returnThis: false);
+        _fileSystem.DirectoryExists(dir).Returns(returnThis: true);
+        _fileSystem.EnumerateFiles(dir, "*", Arg.Any<SearchOption>()).Returns([]);
+        _fileFilter.Apply
+        (
+            Arg.Any<IEnumerable<FileInfo>>(),
+            Arg.Any<int?>(),
+            Arg.Any<DateTime?>(),
+            Arg.Any<DateTime?>(),
+            Arg.Any<IReadOnlyList<string>>(),
+            Arg.Any<IReadOnlyList<string>>()
+        ).Returns([]);
+
+        await _sut.ExecuteAsync(new CompressionOptions { SourcePath = dir, Recurse = false });
+
+        _fileSystem.Received(1).EnumerateFiles(dir, "*", SearchOption.TopDirectoryOnly);
+        _fileSystem.DidNotReceive().EnumerateFiles(dir, "*", SearchOption.AllDirectories);
+    }
+
+
+
     private string CreateTempFile()
     {
         return _tempDir.WriteFile(Guid.NewGuid() + ".log", "test content");

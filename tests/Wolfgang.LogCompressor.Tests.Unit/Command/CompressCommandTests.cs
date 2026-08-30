@@ -281,4 +281,87 @@ public sealed class CompressCommandTests : IDisposable
             }
         }
     }
+
+    [Fact]
+    public async Task OnExecuteAsync_when_allSucceed_withoutReport_expected_success()
+    {
+        _compressService.ExecuteAsync(Arg.Any<CompressionOptions>(), Arg.Any<CancellationToken>())
+            .Returns([new CompressionResult { SourcePath = "a.log", OutputPath = "a.zip", Success = true }]);
+
+        var command = new Compress { Path = Path.Combine(_tempDir, "test.log"), NoLock = true };
+
+        var result = await command.OnExecuteAsync(_console, _logger, _compressService, _reportService, _retentionService);
+
+        Assert.Equal(ExitCode.Success, result);
+    }
+
+
+
+    [Fact]
+    public async Task OnExecuteAsync_when_anyFileFails_expected_applicationError()
+    {
+        _compressService.ExecuteAsync(Arg.Any<CompressionOptions>(), Arg.Any<CancellationToken>())
+            .Returns(
+            [
+                new CompressionResult { SourcePath = "a.log", OutputPath = "a.zip", Success = true },
+                new CompressionResult { SourcePath = "b.log", OutputPath = "b.zip", Success = false, ErrorMessage = "boom" }
+            ]);
+
+        var command = new Compress { Path = Path.Combine(_tempDir, "test.log"), NoLock = true };
+
+        var result = await command.OnExecuteAsync(_console, _logger, _compressService, _reportService, _retentionService);
+
+        Assert.Equal(ExitCode.ApplicationError, result);
+    }
+
+
+
+    [Fact]
+    public async Task OnExecuteAsync_when_retention_withFileSource_expected_parentDirectoryScanned()
+    {
+        _compressService.ExecuteAsync(Arg.Any<CompressionOptions>(), Arg.Any<CancellationToken>())
+            .Returns([new CompressionResult { SourcePath = "a.log", OutputPath = "a.zip", Success = true }]);
+        var sourceFile = Path.Combine(_tempDir, "test.log");
+        await File.WriteAllTextAsync(sourceFile, "x");
+
+        var command = new Compress { Path = sourceFile, NoLock = true, DeleteArchivesOlderThan = 30 };
+
+        await command.OnExecuteAsync(_console, _logger, _compressService, _reportService, _retentionService);
+
+        // SourcePath is a FILE, so retention must scan its parent directory.
+        _retentionFileSystem.Received(1).DirectoryExists(Path.GetFullPath(_tempDir));
+    }
+
+
+
+    [Fact]
+    public async Task OnExecuteAsync_when_retention_withDirectorySource_expected_sourceDirectoryScanned()
+    {
+        _compressService.ExecuteAsync(Arg.Any<CompressionOptions>(), Arg.Any<CancellationToken>())
+            .Returns([new CompressionResult { SourcePath = "a.log", OutputPath = "a.zip", Success = true }]);
+
+        var command = new Compress { Path = _tempDir, NoLock = true, DeleteArchivesOlderThan = 30 };
+
+        await command.OnExecuteAsync(_console, _logger, _compressService, _reportService, _retentionService);
+
+        _retentionFileSystem.Received(1).DirectoryExists(Path.GetFullPath(_tempDir));
+    }
+
+
+
+    [Fact]
+    public async Task OnExecuteAsync_when_retention_withOutputPath_expected_outputDirectoryScanned()
+    {
+        _compressService.ExecuteAsync(Arg.Any<CompressionOptions>(), Arg.Any<CancellationToken>())
+            .Returns([new CompressionResult { SourcePath = "a.log", OutputPath = "a.zip", Success = true }]);
+        var outputDir = Path.Combine(_tempDir, "archives");
+        Directory.CreateDirectory(outputDir);
+
+        var command = new Compress { Path = _tempDir, Output = outputDir, NoLock = true, DeleteArchivesOlderThan = 30 };
+
+        await command.OnExecuteAsync(_console, _logger, _compressService, _reportService, _retentionService);
+
+        _retentionFileSystem.Received(1).DirectoryExists(Path.GetFullPath(outputDir));
+    }
+
 }

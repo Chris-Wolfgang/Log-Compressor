@@ -41,7 +41,6 @@ public class PerfSmokeBenchmarks
     {
         var format = Format switch
         {
-            "zip" => CompressionFormat.Zip,
             "gz" => CompressionFormat.Gz,
             "brotli" => CompressionFormat.Brotli,
             _ => CompressionFormat.Zip

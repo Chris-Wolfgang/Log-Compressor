@@ -794,7 +794,9 @@ jobs:
     if: github.repository != 'Chris-Wolfgang/repo-template'
     runs-on: ubuntu-latest
     permissions:
-      contents: write  # Required to upload assets to the GitHub Release
+      contents: write       # Required to upload assets to the GitHub Release
+      id-token: write       # Required for OIDC signing of the SLSA provenance attestation (#77)
+      attestations: write   # Required to record the attestation on GitHub (#77)
     strategy:
       fail-fast: false
       matrix:
@@ -873,9 +875,117 @@ jobs:
           }
           Write-Host "✅ Staged $asset"
 
+      # SLSA build provenance (#77): sign an attestation binding each staged
+      # archive (by SHA-256 digest) to this exact repo, commit and workflow
+      # run. Keyless — uses the workflow's OIDC identity, no signing key to
+      # manage. Attest BEFORE attaching so the provenance covers the exact
+      # bytes published; consumers verify with `gh attestation verify` (see
+      # docs/REPRODUCIBLE-BUILD.md). Authenticode signing of the executables
+      # themselves is intentionally out of scope until the code-signing
+      # certificate lands (#153).
+      - name: Attest build provenance (${{ matrix.rid }})
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
+        with:
+          subject-path: artifacts/logc-${{ matrix.rid }}.*
+
       - name: Attach archive to release
         uses: softprops/action-gh-release@3d0d9888cb7fd7b750713d6e236d1fcb99157228  # v3.0.2
         with:
           tag_name: ${{ github.event.release.tag_name }}
           files: artifacts/logc-${{ matrix.rid }}.*
+
+  # SBOM + reproducible-build manifest (#77, #93). One SBOM per release (the
+  # dependency graph is RID-independent) plus a manifest recording the
+  # byte-reproducible logc.dll hash and reference hashes for every attached
+  # archive. Runs after the binaries are attached so it can hash the real
+  # published assets.
+  sbom-and-manifest:
+    name: SBOM + Reproducible-Build Manifest
+    needs: [validate-release, publish-binaries]
+    if: github.repository != 'Chris-Wolfgang/repo-template'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write  # Required to upload assets to the GitHub Release
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Generate SBOM (CycloneDX)
+        # The pack-and-validate SBOM step is gated on has-packages and never
+        # runs for this repo (IsPackable=false — ADR-0001). The binary
+        # distribution gets its own: one CycloneDX JSON SBOM for the logc
+        # project's full dependency graph, attached to the release.
+        run: |
+          dotnet tool install --global CycloneDX
+          mkdir -p supply-chain
+          dotnet CycloneDX src/Wolfgang.LogCompressor/Wolfgang.LogCompressor.csproj \
+            --output supply-chain --filename logc.bom.json --json
+
+      - name: Build deterministic assembly and generate manifest
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.event.release.tag_name }}
+        # The managed logc.dll is the byte-reproducible artifact (verified on
+        # every PR by reproducible-build.yaml). The per-RID single-file
+        # bundles embed the runtime and archive timestamps, so their hashes
+        # are recorded for reference/integrity only — verification of the
+        # *build* happens against the assembly. See docs/REPRODUCIBLE-BUILD.md.
+        run: |
+          set -euo pipefail
+          dotnet build src/Wolfgang.LogCompressor/Wolfgang.LogCompressor.csproj \
+            -c Release -p:ContinuousIntegrationBuild=true
+          ASM=src/Wolfgang.LogCompressor/bin/Release/net10.0/logc.dll
+          if [ ! -f "$ASM" ]; then
+            echo "::error::logc.dll not found at $ASM — failing instead of writing an empty manifest."
+            exit 1
+          fi
+          asm_hash=$(sha256sum "$ASM" | cut -d' ' -f1)
+
+          mkdir -p assets
+          gh release download "$TAG" --pattern 'logc-*' --dir assets
+          # capture() instead of split: sha256sum separates with two spaces in
+          # text mode but " *" in binary mode depending on platform/build.
+          assets_json=$(cd assets && sha256sum logc-* | \
+            jq -R -s '[split("\n")[] | select(length > 0)
+              | capture("^(?<sha256>[0-9a-f]{64})[ *]+(?<file>.+)$")]')
+
+          sbom_hash=$(sha256sum supply-chain/logc.bom.json | cut -d' ' -f1)
+
+          jq -n \
+            --arg tag "$TAG" \
+            --arg commit "$GITHUB_SHA" \
+            --arg sdk "$(dotnet --version)" \
+            --arg runnerOs "$RUNNER_OS" \
+            --arg asmHash "$asm_hash" \
+            --arg sbomHash "$sbom_hash" \
+            --argjson assets "$assets_json" \
+            '{
+              tag: $tag,
+              commit: $commit,
+              dotnetSdk: $sdk,
+              runnerOs: $runnerOs,
+              buildConfiguration: "Release",
+              assemblies: [
+                { tfm: "net10.0", file: "logc.dll", sha256: $asmHash }
+              ],
+              releaseAssets: $assets,
+              sbom: { file: "logc.bom.json", sha256: $sbomHash },
+              note: "Verify the managed assembly hash; the per-RID single-file bundles embed the runtime and archive timestamps and are not byte-reproducible. See docs/REPRODUCIBLE-BUILD.md."
+            }' > supply-chain/reproducible-build-manifest.json
+          cat supply-chain/reproducible-build-manifest.json
+
+      - name: Attach SBOM and manifest to release
+        uses: softprops/action-gh-release@3d0d9888cb7fd7b750713d6e236d1fcb99157228  # v3.0.2
+        with:
+          tag_name: ${{ github.event.release.tag_name }}
+          files: |
+            supply-chain/logc.bom.json
+            supply-chain/reproducible-build-manifest.json
 

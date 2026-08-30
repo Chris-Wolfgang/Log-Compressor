@@ -69,6 +69,20 @@ cd C:\Tools\logc
 
 Put the folder on your `PATH` to call `logc` from anywhere.
 
+### Verify the build
+
+Every release archive carries a keyless SLSA provenance attestation binding it
+to this repo, commit and workflow run:
+
+```bash
+gh attestation verify logc-win-x64.zip --repo Chris-Wolfgang/Log-Compressor
+```
+
+Each release also attaches an SBOM (`logc.bom.json`) and a
+`reproducible-build-manifest.json` with the deterministic-build hash —
+[docs/REPRODUCIBLE-BUILD.md](docs/REPRODUCIBLE-BUILD.md) shows how to rebuild
+from source and confirm the release matches it byte for byte.
+
 ### Build from source
 
 ```bash

@@ -11,3 +11,4 @@ Start from [TEMPLATE.md](TEMPLATE.md).
 | [0002](0002-mcmaster-commandlineutils-over-system-commandline.md) | McMaster.Extensions.CommandLineUtils over System.CommandLine | Accepted |
 | [0003](0003-verify-then-delete-original.md) | Compress → verify → only then delete the original | Accepted |
 | [0004](0004-locale-aware-datetime-parsing.md) | `--min-datetime` / `--max-datetime` parse with the local culture | Accepted |
+| [0005](0005-no-trimmed-or-aot-binaries.md) | Ship untrimmed self-contained binaries — no PublishTrimmed / PublishAot | Accepted |

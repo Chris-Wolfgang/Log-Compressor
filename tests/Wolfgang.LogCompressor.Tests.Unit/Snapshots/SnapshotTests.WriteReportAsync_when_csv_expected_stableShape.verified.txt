@@ -1,0 +1,3 @@
+﻿SourcePath,OutputPath,OriginalSize,CompressedSize,Success,ErrorMessage
+"/logs/app.log","/logs/app-2026-01-05_09-30-00.zip",1234567,98765,True,""
+"/logs/locked, ""quoted"".log","/logs/locked-2026-01-06_10-00-00.zip",4096,0,False,"Archive verification failed."

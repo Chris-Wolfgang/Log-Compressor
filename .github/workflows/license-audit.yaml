@@ -58,9 +58,19 @@ jobs:
         # -t includes transitive packages; the tool exits non-zero when any
         # package's license is not in the allowlist. The JSON report is
         # uploaded either way for inspection.
+        #
+        # license-overrides.json: packages whose metadata carries a license
+        # FILE or legacy URL the tool cannot classify, mapped to their known
+        # SPDX expression (xunit.abstractions 2.0.3 → Apache-2.0).
+        # license-ignored-packages.json: SonarAnalyzer.CSharp is LGPL-3.0-only
+        # but is a build-time-only Roslyn analyzer (PrivateAssets) — it is
+        # never distributed with the logc binaries, so it sits outside the
+        # distribution-license policy this audit enforces.
         run: |
           nuget-license -i Wolfgang.LogCompressor.slnx -t \
             -a .github/allowed-licenses.json \
+            -override .github/license-overrides.json \
+            -ignore .github/license-ignored-packages.json \
             -o JsonPretty > license-report.json
 
       - name: Upload license report

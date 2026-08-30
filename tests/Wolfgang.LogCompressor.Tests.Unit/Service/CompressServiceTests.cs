@@ -15,15 +15,14 @@ public sealed class CompressServiceTests : IDisposable
     private readonly IFileNamer _fileNamer = Substitute.For<IFileNamer>();
     private readonly IArchiveVerifier _archiveVerifier = Substitute.For<IArchiveVerifier>();
     private readonly ICompressionStrategy _strategy = Substitute.For<ICompressionStrategy>();
-    private readonly CompressionStrategyFactory _strategyFactory;
     private readonly CompressService _sut;
 
 
 
     public CompressServiceTests()
     {
-        _strategyFactory = Substitute.For<CompressionStrategyFactory>();
-        _strategyFactory.Create(Arg.Any<CompressionFormat>(), Arg.Any<System.IO.Compression.CompressionLevel>()).Returns(_strategy);
+        var strategyFactory = Substitute.For<CompressionStrategyFactory>();
+        strategyFactory.Create(Arg.Any<CompressionFormat>(), Arg.Any<System.IO.Compression.CompressionLevel>()).Returns(_strategy);
         _strategy.FileExtension.Returns("zip");
         _archiveVerifier.VerifyAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<long?>()).Returns(Task.FromResult(true));
 
@@ -33,7 +32,7 @@ public sealed class CompressServiceTests : IDisposable
             _fileFilter,
             _fileNamer,
             _archiveVerifier,
-            _strategyFactory,
+            strategyFactory,
             Substitute.For<ILogger<CompressService>>()
         );
     }
@@ -255,7 +254,7 @@ public sealed class CompressServiceTests : IDisposable
     {
         var tempFile = CreateTempFile();
         var fileInfo = new FileInfo(tempFile);
-        var cts = new CancellationTokenSource();
+        using var cts = new CancellationTokenSource();
 
         _fileSystem.FileExists(tempFile).Returns(returnThis: true);
         _fileSystem.GetFileInfo(tempFile).Returns(fileInfo);

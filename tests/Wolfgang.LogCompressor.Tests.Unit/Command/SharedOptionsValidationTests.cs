@@ -60,11 +60,11 @@ public sealed class SharedOptionsValidationTests
         var options = new TestOptions
         {
             Path = "/tmp",
-            Output = System.IO.Path.Combine("relative", "out")
+            Output = Path.Combine("relative", "out")
         };
 
         Assert.True(options.ValidateOptions(console));
-        Assert.Equal(System.IO.Path.GetFullPath(System.IO.Path.Combine("relative", "out")), options.Output);
+        Assert.Equal(Path.GetFullPath(Path.Combine("relative", "out")), options.Output);
     }
 
 
@@ -229,8 +229,8 @@ public sealed class SharedOptionsValidationTests
     [Fact]
     public void BuildOptions_when_allFieldsSet_expected_correctMapping()
     {
-        var sourcePath = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "logs");
-        var outputPath = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "output");
+        var sourcePath = Path.Combine(Path.GetTempPath(), "logs");
+        var outputPath = Path.Combine(Path.GetTempPath(), "output");
 
         var options = new TestOptions
         {
@@ -244,8 +244,8 @@ public sealed class SharedOptionsValidationTests
 
         var result = options.BuildOptions();
 
-        Assert.Equal(System.IO.Path.GetFullPath(sourcePath), result.SourcePath);
-        Assert.Equal(System.IO.Path.GetFullPath(outputPath), result.OutputPath);
+        Assert.Equal(Path.GetFullPath(sourcePath), result.SourcePath);
+        Assert.Equal(Path.GetFullPath(outputPath), result.OutputPath);
         Assert.True(result.Recurse);
         Assert.Equal(30, result.OlderThanDays);
         Assert.Equal(CompressionFormat.Gz, result.Format);

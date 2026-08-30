@@ -91,14 +91,6 @@ internal sealed class RetentionService
 
     internal static bool IsArchiveFile(string fileName)
     {
-        foreach (var ext in ArchiveExtensions)
-        {
-            if (fileName.EndsWith(ext, StringComparison.OrdinalIgnoreCase))
-            {
-                return true;
-            }
-        }
-
-        return false;
+        return ArchiveExtensions.Any(ext => fileName.EndsWith(ext, StringComparison.OrdinalIgnoreCase));
     }
 }

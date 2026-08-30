@@ -197,7 +197,7 @@ public sealed class CompressCommandTests : IDisposable
 
         // Retention must scan the source directory itself (where compress writes the
         // archives), not its parent.
-        _retentionFileSystem.Received(1).DirectoryExists(System.IO.Path.GetFullPath(_tempDir));
+        _retentionFileSystem.Received(1).DirectoryExists(Path.GetFullPath(_tempDir));
     }
 
 

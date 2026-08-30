@@ -52,9 +52,7 @@ internal class Bundle : SharedOptions
 
         if (!options.NoLock && !processLock.TryAcquire())
         {
-#pragma warning disable CA1849, VSTHRD103 // McMaster IConsole has no async overloads
-            console.Error.WriteLine("Another instance is already processing this directory.");
-#pragma warning restore CA1849, VSTHRD103
+            await console.Error.WriteLineAsync("Another instance is already processing this directory.");
             return ExitCode.AlreadyRunning;
         }
 
@@ -64,18 +62,16 @@ internal class Bundle : SharedOptions
             var result = await bundleService.ExecuteAsync(options).ConfigureAwait(false);
             sw.Stop();
 
-#pragma warning disable CA1849, VSTHRD103
             if (result.Success)
             {
-                console.WriteLine($"Bundled files to {result.OutputPath}");
-                console.WriteLine($"  Original: {result.OriginalSize:N0} bytes");
-                console.WriteLine($"  Compressed: {result.CompressedSize:N0} bytes");
+                await console.Out.WriteLineAsync($"Bundled files to {result.OutputPath}");
+                await console.Out.WriteLineAsync($"  Original: {result.OriginalSize:N0} bytes");
+                await console.Out.WriteLineAsync($"  Compressed: {result.CompressedSize:N0} bytes");
             }
             else
             {
-                console.Error.WriteLine($"Bundle failed: {result.ErrorMessage}");
+                await console.Error.WriteLineAsync($"Bundle failed: {result.ErrorMessage}");
             }
-#pragma warning restore CA1849, VSTHRD103
 
             if (options.ReportFormat != null)
             {
@@ -101,9 +97,7 @@ internal class Bundle : SharedOptions
         catch (Exception e)
         {
             logger.LogCritical(e, "Unhandled error: {Message}", e.Message);
-#pragma warning disable CA1849, VSTHRD103
-            console.Error.WriteLine(e.Message);
-#pragma warning restore CA1849, VSTHRD103
+            await console.Error.WriteLineAsync(e.Message);
             return ExitCode.ApplicationError;
         }
     }

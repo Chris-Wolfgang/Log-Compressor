@@ -1,0 +1,19 @@
+{
+  "stryker-config": {
+    "project": "src/Wolfgang.LogCompressor/Wolfgang.LogCompressor.csproj",
+    "test-projects": [
+      "tests/Wolfgang.LogCompressor.Tests.Unit/Wolfgang.LogCompressor.Tests.Unit.csproj"
+    ],
+    "target-framework": "net10.0",
+    "reporters": [
+      "html",
+      "json",
+      "progress"
+    ],
+    "thresholds": {
+      "high": 90,
+      "low": 75,
+      "break": 71
+    }
+  }
+}

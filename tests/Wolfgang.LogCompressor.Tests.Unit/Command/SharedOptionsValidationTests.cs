@@ -171,8 +171,12 @@ public sealed class SharedOptionsValidationTests
     [InlineData("gzip")]
     [InlineData("br")]
     [InlineData("brotli")]
+    [InlineData("zst")]
+    [InlineData("zstd")]
+    [InlineData("lz4")]
     [InlineData("ZIP")]
     [InlineData("Brotli")]
+    [InlineData("ZSTD")]
     public void ValidateOptions_when_validFormat_expected_true(string format)
     {
         var console = Substitute.For<IConsole>();
@@ -184,6 +188,22 @@ public sealed class SharedOptionsValidationTests
         };
 
         Assert.True(options.ValidateOptions(console));
+    }
+
+
+
+    [Theory]
+    [InlineData("zstd", "Zstd")]
+    [InlineData("lz4", "Lz4")]
+    public void BuildOptions_when_newFormat_expected_mappedToEnum(string format, string expected)
+    {
+        var options = new TestOptions
+        {
+            Path = "/tmp",
+            Format = format
+        };
+
+        Assert.Equal(expected, options.BuildOptions().Format.ToString());
     }
 
 

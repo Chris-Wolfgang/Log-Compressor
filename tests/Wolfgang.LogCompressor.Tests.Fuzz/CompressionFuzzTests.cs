@@ -243,15 +243,89 @@ public class CompressionFuzzTests
 
 
     [Fact]
+    public void Zstd_single_file_round_trips_through_decompression()
+    {
+        Content.Sample(
+            content =>
+            {
+                var archive = CompressSingle(new ZstdCompressionStrategy(), content, "any.log");
+
+                using var extracted = new MemoryStream();
+                using (var zstd = new ZstdSharp.DecompressionStream(new MemoryStream(archive)))
+                {
+                    zstd.CopyTo(extracted);
+                }
+
+                Assert.Equal(content, extracted.ToArray());
+            },
+            iter: Iterations);
+    }
+
+
+
+    [Fact]
+    public void Lz4_single_file_round_trips_through_decompression()
+    {
+        Content.Sample(
+            content =>
+            {
+                var archive = CompressSingle(new Lz4CompressionStrategy(), content, "any.log");
+
+                using var extracted = new MemoryStream();
+                using (var lz4 = K4os.Compression.LZ4.Streams.LZ4Stream.Decode(new MemoryStream(archive)))
+                {
+                    lz4.CopyTo(extracted);
+                }
+
+                Assert.Equal(content, extracted.ToArray());
+            },
+            iter: Iterations);
+    }
+
+
+
+    [Fact]
+    public void Zstd_bundle_round_trips_every_entry_through_tar_reader()
+    {
+        BundleEntries.Sample(
+            entries => AssertTarBundleRoundTrips
+            (
+                entries,
+                CompressBundle(new ZstdCompressionStrategy(), entries),
+                s => new ZstdSharp.DecompressionStream(s)
+            ),
+            iter: Iterations);
+    }
+
+
+
+    [Fact]
+    public void Lz4_bundle_round_trips_every_entry_through_tar_reader()
+    {
+        BundleEntries.Sample(
+            entries => AssertTarBundleRoundTrips
+            (
+                entries,
+                CompressBundle(new Lz4CompressionStrategy(), entries),
+                s => K4os.Compression.LZ4.Streams.LZ4Stream.Decode(s)
+            ),
+            iter: Iterations);
+    }
+
+
+
+    [Fact]
     public void Verifier_accepts_every_archive_the_strategies_produce()
     {
-        Gen.Select(Content, Gen.OneOfConst("zip", "gz", "br")).Sample(
+        Gen.Select(Content, Gen.OneOfConst("zip", "gz", "br", "zst", "lz4")).Sample(
             (content, format) =>
             {
                 ICompressionStrategy strategy = format switch
                 {
                     "zip" => new ZipCompressionStrategy(),
                     "gz" => new GZipCompressionStrategy(),
+                    "zst" => new ZstdCompressionStrategy(),
+                    "lz4" => new Lz4CompressionStrategy(),
                     _ => new BrotliCompressionStrategy()
                 };
 

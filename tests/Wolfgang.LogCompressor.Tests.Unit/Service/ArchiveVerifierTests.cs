@@ -414,4 +414,56 @@ public sealed class ArchiveVerifierTests : IDisposable
 
         await tarWriter.WriteEntryAsync(entry);
     }
+
+    [Theory]
+    [InlineData("zst")]
+    [InlineData("lz4")]
+    public async Task VerifyAsync_when_validZstdOrLz4_expected_true(string format)
+    {
+        var archivePath = Path.Combine(_tempDir, "test." + format);
+        await using (var fileStream = File.Create(archivePath))
+        {
+            Stream compressor = string.Equals(format, "zst", StringComparison.Ordinal)
+                ? new ZstdSharp.CompressionStream(fileStream, leaveOpen: true)
+                : K4os.Compression.LZ4.Streams.LZ4Stream.Encode(fileStream, leaveOpen: true);
+            await using (compressor)
+            {
+                await compressor.WriteAsync("test content"u8.ToArray());
+            }
+        }
+
+        var result = await _sut.VerifyAsync(archivePath, format, "test content"u8.Length);
+
+        Assert.True(result);
+    }
+
+
+
+    [Theory]
+    [InlineData("zst")]
+    [InlineData("lz4")]
+    public async Task VerifyAsync_when_truncatedZstdOrLz4_with_expectedSize_expected_false(string format)
+    {
+        // Neither format guarantees a content checksum, so — like brotli —
+        // the expected-size comparison is the completeness gate (#3/#4
+        // revival on top of the hardened verifier).
+        var archivePath = Path.Combine(_tempDir, "test." + format);
+        await using (var fileStream = File.Create(archivePath))
+        {
+            Stream compressor = string.Equals(format, "zst", StringComparison.Ordinal)
+                ? new ZstdSharp.CompressionStream(fileStream, leaveOpen: true)
+                : K4os.Compression.LZ4.Streams.LZ4Stream.Encode(fileStream, leaveOpen: true);
+            await using (compressor)
+            {
+                await compressor.WriteAsync("test content"u8.ToArray());
+            }
+        }
+
+        await TruncateAsync(archivePath, bytesToRemove: 4);
+
+        var result = await _sut.VerifyAsync(archivePath, format, "test content"u8.Length);
+
+        Assert.False(result);
+    }
+
 }

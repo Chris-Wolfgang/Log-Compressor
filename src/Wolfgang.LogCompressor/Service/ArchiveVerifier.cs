@@ -53,43 +53,68 @@ internal sealed class ArchiveVerifier : IArchiveVerifier
 
         try
         {
-            switch (format.ToLowerInvariant())
-            {
-                case "zip":
-                    // ZipArchive validates each entry's recorded CRC-32 as the
-                    // entry stream is drained, and a truncated central
-                    // directory fails construction — no extra checks needed.
-                    await VerifyZipAsync(archivePath).ConfigureAwait(false);
-                    break;
-                case "tar.gz":
-                    await VerifyTarStreamAsync(archivePath, static s => new GZipStream(s, CompressionMode.Decompress, leaveOpen: true)).ConfigureAwait(false);
-                    // The tar walk proves structure; this pass proves the gzip
-                    // stream is complete and uncorrupted via its own trailer.
-                    await VerifyGZipAsync(archivePath, expectedSize: null).ConfigureAwait(false);
-                    break;
-                case "tar.br":
-                    // Brotli carries no checksum; the 512-byte tar structure is
-                    // the completeness signal (a truncation mid-entry breaks
-                    // the walk).
-                    await VerifyTarStreamAsync(archivePath, static s => new BrotliStream(s, CompressionMode.Decompress, leaveOpen: true)).ConfigureAwait(false);
-                    break;
-                case "gz":
-                    await VerifyGZipAsync(archivePath, expectedUncompressedSize).ConfigureAwait(false);
-                    break;
-                case "br":
-                    await VerifyBrotliAsync(archivePath, expectedUncompressedSize).ConfigureAwait(false);
-                    break;
-                default:
-                    await VerifyReadableAsync(archivePath).ConfigureAwait(false);
-                    break;
-            }
-
+            await VerifyByFormatAsync(archivePath, format, expectedUncompressedSize).ConfigureAwait(false);
             return true;
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Archive verification failed for {Path}: {Message}", archivePath, ex.Message);
             return false;
+        }
+    }
+
+
+
+    private static async Task VerifyByFormatAsync(string archivePath, string format, long? expectedUncompressedSize)
+    {
+        switch (format.ToLowerInvariant())
+        {
+            case "zip":
+                // ZipArchive validates each entry's recorded CRC-32 as the
+                // entry stream is drained, and a truncated central
+                // directory fails construction — no extra checks needed.
+                await VerifyZipAsync(archivePath).ConfigureAwait(false);
+                break;
+            case "tar.gz":
+                await VerifyTarStreamAsync(archivePath, static s => new GZipStream(s, CompressionMode.Decompress, leaveOpen: true)).ConfigureAwait(false);
+                // The tar walk proves structure; this pass proves the gzip
+                // stream is complete and uncorrupted via its own trailer.
+                await VerifyGZipAsync(archivePath, expectedSize: null).ConfigureAwait(false);
+                break;
+            case "tar.br":
+                // Brotli carries no checksum; the 512-byte tar structure is
+                // the completeness signal (a truncation mid-entry breaks
+                // the walk).
+                await VerifyTarStreamAsync(archivePath, static s => new BrotliStream(s, CompressionMode.Decompress, leaveOpen: true)).ConfigureAwait(false);
+                break;
+            case "gz":
+                await VerifyGZipAsync(archivePath, expectedUncompressedSize).ConfigureAwait(false);
+                break;
+            case "br":
+                await VerifySizedDecompressionAsync(archivePath, static s => new BrotliStream(s, CompressionMode.Decompress, leaveOpen: true), expectedUncompressedSize).ConfigureAwait(false);
+                break;
+            case "tar.zst":
+                // ZstdSharp validates each frame's checksum when present;
+                // the tar structure is the completeness signal.
+                await VerifyTarStreamAsync(archivePath, static s => new ZstdSharp.DecompressionStream(s, leaveOpen: true)).ConfigureAwait(false);
+                break;
+            case "tar.lz4":
+                await VerifyTarStreamAsync(archivePath, static s => K4os.Compression.LZ4.Streams.LZ4Stream.Decode(s, leaveOpen: true)).ConfigureAwait(false);
+                break;
+            case "zst":
+                // Like brotli: decompress fully and compare against the
+                // expected size — zstd's optional content checksum is
+                // validated by ZstdSharp when the frame carries one, but
+                // presence isn't guaranteed, so the size check is the
+                // completeness gate.
+                await VerifySizedDecompressionAsync(archivePath, static s => new ZstdSharp.DecompressionStream(s, leaveOpen: true), expectedUncompressedSize).ConfigureAwait(false);
+                break;
+            case "lz4":
+                await VerifySizedDecompressionAsync(archivePath, static s => K4os.Compression.LZ4.Streams.LZ4Stream.Decode(s, leaveOpen: true), expectedUncompressedSize).ConfigureAwait(false);
+                break;
+            default:
+                await VerifyReadableAsync(archivePath).ConfigureAwait(false);
+                break;
         }
     }
 
@@ -176,19 +201,20 @@ internal sealed class ArchiveVerifier : IArchiveVerifier
 
 
 
-    private static async Task VerifyBrotliAsync(string path, long? expectedSize)
+    private static async Task VerifySizedDecompressionAsync(string path, Func<Stream, Stream> decompressorFactory, long? expectedSize)
     {
-        // Brotli has no checksum or length trailer, so decompressing without
-        // error proves very little on a truncated stream. The expected-size
-        // comparison (available whenever the caller compressed a known source)
-        // is the completeness check.
+        // For formats without a mandatory checksum/length trailer (brotli;
+        // zstd and lz4 make theirs optional), decompressing without error
+        // proves very little on a truncated stream. The expected-size
+        // comparison (available whenever the caller compressed a known
+        // source) is the completeness check.
         await using var fileStream = File.OpenRead(path);
 
         long count;
-        var brotliStream = new BrotliStream(fileStream, CompressionMode.Decompress, leaveOpen: true);
-        await using (brotliStream.ConfigureAwait(false))
+        var decompressionStream = decompressorFactory(fileStream);
+        await using (decompressionStream.ConfigureAwait(false))
         {
-            count = await DrainAsync(brotliStream, hasher: null).ConfigureAwait(false);
+            count = await DrainAsync(decompressionStream, hasher: null).ConfigureAwait(false);
         }
 
         EnsureExpectedSize(count, expectedSize);

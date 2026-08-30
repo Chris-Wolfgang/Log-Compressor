@@ -1,0 +1,130 @@
+name: OSSF Scorecard
+
+# Runs the OpenSSF Scorecard automated security-posture audit and uploads
+# the results to the Security tab (Code scanning). Provides a public scorecard
+# badge consumers can use to evaluate this package's supply-chain posture.
+#
+# References:
+# - https://github.com/ossf/scorecard-action
+# - https://securityscorecards.dev/
+
+on:
+  schedule:
+    # Sunday 06:00 UTC — matches stryker.yaml's weekly cadence.
+    - cron: '0 6 * * 0'
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Workflow-level default is explicitly `contents: read` only (zizmor
+# `excessive-permissions` prefers an explicit narrow list over `read-all`,
+# which grants read on every scope including packages / pages / issues that
+# this workflow does not need). The single `analysis` job below declares the
+# narrower writes it actually requires.
+permissions:
+  contents: read
+
+jobs:
+  analysis:
+    name: Scorecard analysis
+    runs-on: ubuntu-latest
+
+    permissions:
+      # Required for uploading results to the code-scanning dashboard.
+      security-events: write
+      # Required to read the repository content for the analysis.
+      id-token: write
+      contents: read
+      actions: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Run Scorecard analysis
+        # SHA-pinned per repo convention for third-party actions.
+        uses: ossf/scorecard-action@2d1146689b8cda280b9bc96326124645441f03bc  # v2.4.4
+        with:
+          results_file: results.sarif
+          results_format: sarif
+          # publish_results: true uploads to the public Scorecard registry so
+          # the badge resolves on the README. Safe — only summary metrics are
+          # published, never code.
+          publish_results: true
+
+      - name: Filter accepted findings from SARIF
+        # Strip findings the maintainer has accepted-as-intentional before
+        # uploading to Code Scanning. Doing this in the SARIF (rather than
+        # via `gh api ... /alerts/N` dismissals) is durable across the
+        # weekly re-runs — Scorecard's SARIF fingerprints drift, so
+        # dismissed alerts silently re-open on the next scan. See
+        # reference_scorecard_dismissal_not_durable.
+        #
+        # Accepted findings:
+        #
+        # - DangerousWorkflowID on .github/workflows/pr.yaml — pr.yaml
+        #   deliberately uses `pull_request_target` with a trusted-config
+        #   re-fetch step so the workflow YAML that runs always comes
+        #   from `main`, while `refs/pull/N/head` is separately checked
+        #   out only for the actual test steps. See the SECURITY NOTE at
+        #   the top of pr.yaml. This is the same intent already documented
+        #   for zizmor in .github/zizmor.yml under `dangerous-triggers`. The
+        #   accepted-as-intentional set stays in ONE place per tool.
+        #
+        # - PinnedDependenciesID for nugetCommand and pipCommand — the
+        #   .NET tooling (`dotnet restore`, `dotnet tool install`) has no
+        #   first-class hash-pin verification analogous to `go.sum` /
+        #   requirements.txt --require-hashes; NuGet package integrity is
+        #   verified via signed .nupkg + PackageVersion pinning in the
+        #   csproj/globaljson (already in place). pipCommand fires on the
+        #   single-package `pip install --user 'zizmor==1.5.2'` in
+        #   workflow-security.yaml — an exact-version pin against a
+        #   PyPI-published tool; no requirements.txt exists to add
+        #   --require-hashes to. Only the nuget/pip subclasses are
+        #   filtered; a future PinnedDependenciesID against something
+        #   else (e.g. an unpinned action) will still surface.
+        #
+        # - BranchProtectionID / CIIBestPracticesID / CodeReviewID —
+        #   solo-maintainer repo. No second reviewer to require, no
+        #   CODEOWNERS to enforce (nobody else has commit access), and
+        #   the OpenSSF Best Practices badge program requires ongoing
+        #   process work that doesn't scale to a personal .NET library
+        #   fleet. All three are visibility findings, not defects.
+        #
+        # - FuzzingID — Scorecard has no .NET fuzzer detector (see
+        #   reference_scorecard_fuzzing_unfixable_for_dotnet). Continuous
+        #   fuzz for this repo is tracked separately in issue #68; even
+        #   once it lands, the check cannot see it.
+        run: |
+          set -euo pipefail
+          jq '.runs[].results |= map(select(
+            (
+              (
+                (.ruleId == "DangerousWorkflowID")
+                and (.locations[0].physicalLocation.artifactLocation.uri == ".github/workflows/pr.yaml")
+              )
+              or (
+                (.ruleId == "PinnedDependenciesID")
+                and (.message.text | test("(nuget|pip)Command not pinned by hash"))
+              )
+              or (.ruleId == "BranchProtectionID")
+              or (.ruleId == "CIIBestPracticesID")
+              or (.ruleId == "CodeReviewID")
+              or (.ruleId == "FuzzingID")
+            ) | not
+          ))' results.sarif > results.filtered.sarif
+          mv results.filtered.sarif results.sarif
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: SARIF file
+          path: results.sarif
+          retention-days: 5
+
+      - name: Upload to code-scanning dashboard
+        uses: github/codeql-action/upload-sarif@db488ddef3bf6cb639b32c2e9a7c0a7ea8271d28 # v4.37.8
+        with:
+          sarif_file: results.sarif

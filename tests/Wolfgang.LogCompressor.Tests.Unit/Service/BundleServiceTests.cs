@@ -391,6 +391,42 @@ public sealed class BundleServiceTests : IDisposable
 
 
 
+    [Fact]
+    public async Task ExecuteAsync_when_directoryContainsLockFile_expected_lockFileSkipped()
+    {
+        // The run's own live .logc.lock sits in the source directory; it must
+        // never be bundled (and then deleted) — #172.
+        var dir = "/tmp/logs/MyApp";
+        var file = CreateTempFiles(1)[0];
+        var fileInfo = new FileInfo(file);
+        var lockPath = "/tmp/logs/MyApp/.logc.lock";
+
+        _fileSystem.FileExists(dir).Returns(returnThis: false);
+        _fileSystem.DirectoryExists(dir).Returns(returnThis: true);
+        _fileSystem.EnumerateFiles(dir, "*", SearchOption.TopDirectoryOnly).Returns([file, lockPath]);
+        _fileSystem.GetFileInfo(file).Returns(fileInfo);
+        _fileFilter.Apply
+        (
+            Arg.Any<IEnumerable<FileInfo>>(),
+            Arg.Any<int?>(),
+            Arg.Any<DateTime?>(),
+            Arg.Any<DateTime?>(),
+            Arg.Any<IReadOnlyList<string>>(),
+            Arg.Any<IReadOnlyList<string>>()
+        ).Returns([fileInfo]);
+        _fileNamer.GetBundleFileName("MyApp", Arg.Any<IReadOnlyList<FileInfo>>(), "zip").Returns("bundle.zip");
+        _fileSystem.OpenRead(Arg.Any<string>()).Returns(new MemoryStream("content"u8.ToArray()));
+        _fileSystem.CreateWrite(Arg.Any<string>()).Returns(new MemoryStream());
+
+        var options = new CompressionOptions { SourcePath = dir };
+        var result = await _sut.ExecuteAsync(options);
+
+        Assert.True(result.Success);
+        _fileSystem.DidNotReceive().GetFileInfo(lockPath);
+    }
+
+
+
     private string[] CreateTempFiles(int count)
     {
         var files = new string[count];

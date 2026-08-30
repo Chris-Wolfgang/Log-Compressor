@@ -317,6 +317,42 @@ public sealed class CompressServiceTests : IDisposable
 
 
 
+    [Fact]
+    public async Task ExecuteAsync_when_directoryContainsLockFile_expected_lockFileSkipped()
+    {
+        // The run's own live .logc.lock sits in the source directory; it must
+        // never be compressed (and then deleted) — #172.
+        var dir = Path.GetTempPath();
+        var file = CreateTempFile();
+        var fileInfo = new FileInfo(file);
+        var lockPath = Path.Combine(dir, ".logc.lock");
+
+        _fileSystem.FileExists(dir).Returns(returnThis: false);
+        _fileSystem.DirectoryExists(dir).Returns(returnThis: true);
+        _fileSystem.EnumerateFiles(dir, "*", SearchOption.TopDirectoryOnly).Returns([file, lockPath]);
+        _fileSystem.GetFileInfo(file).Returns(fileInfo);
+        _fileFilter.Apply
+        (
+            Arg.Any<IEnumerable<FileInfo>>(),
+            Arg.Any<int?>(),
+            Arg.Any<DateTime?>(),
+            Arg.Any<DateTime?>(),
+            Arg.Any<IReadOnlyList<string>>(),
+            Arg.Any<IReadOnlyList<string>>()
+        ).Returns([fileInfo]);
+        _fileNamer.GetCompressedFileName(Arg.Any<FileInfo>(), "zip").Returns("out.zip");
+        _fileSystem.OpenRead(Arg.Any<string>()).Returns(_ => new MemoryStream("content"u8.ToArray()));
+        _fileSystem.CreateWrite(Arg.Any<string>()).Returns(_ => new MemoryStream());
+
+        var options = new CompressionOptions { SourcePath = dir };
+        var results = await _sut.ExecuteAsync(options);
+
+        Assert.Single(results);
+        _fileSystem.DidNotReceive().GetFileInfo(lockPath);
+    }
+
+
+
     private string CreateTempFile()
     {
         return _tempDir.WriteFile(Guid.NewGuid() + ".log", "test content");

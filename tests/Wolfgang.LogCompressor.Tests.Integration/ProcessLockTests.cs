@@ -52,4 +52,45 @@ public sealed class ProcessLockTests
         Assert.True(lockA.TryAcquire());
         Assert.True(lockB.TryAcquire());
     }
+
+
+
+    [Fact]
+    public void TryAcquire_when_leftoverFileFromCrashedRun_expected_true()
+    {
+        // A crashed holder leaves the file behind but no open handle. Under
+        // the OpenOrCreate protocol (#172) the leftover never blocks — no
+        // stale-PID parsing, no delete-based takeover.
+        using var temp = new TempDirectory();
+        temp.WriteFile(ProcessLock.LockFileName, $"PID={int.MaxValue}\nStarted=2020-01-01T00:00:00Z\n");
+
+        using var sut = new ProcessLock(temp.Path, NullLogger.Instance);
+
+        Assert.True(sut.TryAcquire());
+    }
+
+
+
+    [Fact]
+    public void TryAcquire_when_fileHeldByAnotherHandle_expected_false()
+    {
+        // An OPEN handle is the lock, regardless of file content.
+        using var temp = new TempDirectory();
+        var lockPath = Path.Combine(temp.Path, ProcessLock.LockFileName);
+        using var held = new FileStream(lockPath, FileMode.OpenOrCreate, FileAccess.Write, FileShare.None);
+
+        using var sut = new ProcessLock(temp.Path, NullLogger.Instance);
+
+        Assert.False(sut.TryAcquire());
+    }
+
+
+
+    [Fact]
+    public void IsLockFile_when_lockFileNameAnyCase_expected_true()
+    {
+        Assert.True(ProcessLock.IsLockFile("/some/dir/.logc.lock"));
+        Assert.True(ProcessLock.IsLockFile(@"C:\logs\.LOGC.LOCK"));
+        Assert.False(ProcessLock.IsLockFile("/some/dir/app.log"));
+    }
 }

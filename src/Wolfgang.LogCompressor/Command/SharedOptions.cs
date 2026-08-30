@@ -262,8 +262,8 @@ internal abstract class SharedOptions
     /// <returns>A populated <see cref="CompressionOptions"/> instance.</returns>
     internal CompressionOptions BuildOptions()
     {
-        TryParseFormat(Format, out var format);
-        TryParseLevel(Level, out var level);
+        _ = TryParseFormat(Format, out var format);
+        _ = TryParseLevel(Level, out var level);
 
         return new CompressionOptions
         {

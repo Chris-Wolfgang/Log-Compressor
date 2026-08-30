@@ -24,9 +24,11 @@ internal class Init
     /// </summary>
     /// <param name="application">The command line application.</param>
     /// <returns>The exit code.</returns>
+#pragma warning disable S2325 // Instance method by McMaster convention: CommandLineUtils resolves OnExecute via instance reflection — a static method is not discovered (verified: 'No method named OnExecute could be found').
     internal int OnExecute(CommandLineApplication application)
     {
         application.ShowHelp();
         return ExitCode.Success;
     }
+#pragma warning restore S2325
 }

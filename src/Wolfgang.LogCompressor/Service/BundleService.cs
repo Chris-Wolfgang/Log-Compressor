@@ -109,7 +109,7 @@ internal class BundleService
         if (_fileSystem.FileExists(options.SourcePath))
         {
             var fileInfo = _fileSystem.GetFileInfo(options.SourcePath);
-            folderName = System.IO.Path.GetFileNameWithoutExtension(fileInfo.Name);
+            folderName = Path.GetFileNameWithoutExtension(fileInfo.Name);
             outputDir = options.OutputPath ?? fileInfo.DirectoryName ?? Directory.GetCurrentDirectory();
         }
         else
@@ -193,7 +193,7 @@ internal class BundleService
                 catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
                 {
                     skipped++;
-                    _logger.LogWarning("Skipping unreadable file {File}: {Message}", file.FullName, ex.Message);
+                    _logger.LogWarning(ex, "Skipping unreadable file {File}: {Message}", file.FullName, ex.Message);
                     continue;
                 }
 

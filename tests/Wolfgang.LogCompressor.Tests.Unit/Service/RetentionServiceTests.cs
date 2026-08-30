@@ -150,4 +150,31 @@ public sealed class RetentionServiceTests : IDisposable
     {
         _tempDir.Dispose();
     }
+
+    [Fact]
+    public void DeleteOldArchives_when_fileExactlyAtThreshold_expected_kept()
+    {
+        // Boundary contract: the cutoff is exclusive — a file whose write time
+        // equals Today-N is NOT older than N days and must be kept (#176:
+        // the >= vs > equality mutant survived without this case).
+        var dir = "/tmp/archives";
+        var archive = "/tmp/archives/edge.zip";
+
+        _fileSystem.DirectoryExists(dir).Returns(returnThis: true);
+        _fileSystem.EnumerateFiles(dir, "*", SearchOption.TopDirectoryOnly).Returns([archive]);
+
+        var tempDir = _tempDir.CreateSubdirectory();
+        var tempPath = Path.Combine(tempDir, "edge.zip");
+        File.WriteAllText(tempPath, "edge");
+        File.SetLastWriteTime(tempPath, DateTime.Today.AddDays(-30));
+        var fi = new FileInfo(tempPath);
+
+        _fileSystem.GetFileInfo(archive).Returns(fi);
+
+        var result = _sut.DeleteOldArchives(dir, 30);
+
+        Assert.Equal(0, result);
+        _fileSystem.DidNotReceive().DeleteFile(Arg.Any<string>());
+    }
+
 }

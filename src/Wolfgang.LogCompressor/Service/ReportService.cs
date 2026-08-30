@@ -27,7 +27,9 @@ internal sealed class ReportService
     /// <param name="outputPath">The output path for the report file.</param>
     /// <param name="duration">The total operation duration.</param>
     /// <exception cref="ArgumentException">Thrown when <paramref name="format"/> is not supported.</exception>
+#pragma warning disable S2325 // Instance method by design: ReportService is injected into the commands as a service alongside their other dependencies; a static method would force the DI parameter out of the command signatures for zero behavioural gain.
     public Task WriteReportAsync
+#pragma warning restore S2325
     (
         IReadOnlyList<CompressionResult> results,
         string format,
@@ -46,7 +48,7 @@ internal sealed class ReportService
             _ => throw new ArgumentException($"Unsupported report format: {format}", nameof(format))
         };
 
-        var directory = System.IO.Path.GetDirectoryName(outputPath);
+        var directory = Path.GetDirectoryName(outputPath);
         if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory))
         {
             Directory.CreateDirectory(directory);

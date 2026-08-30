@@ -22,7 +22,7 @@ internal sealed class FileNamingService : IFileNamer
         ArgumentNullException.ThrowIfNull(sourceFile);
         ArgumentException.ThrowIfNullOrWhiteSpace(extension);
 
-        var baseName = System.IO.Path.GetFileNameWithoutExtension(sourceFile.Name);
+        var baseName = Path.GetFileNameWithoutExtension(sourceFile.Name);
         var modified = sourceFile.LastWriteTime.ToString(DateTimeFormat, CultureInfo.InvariantCulture);
 
         return $"{baseName}-{modified}.{extension}";

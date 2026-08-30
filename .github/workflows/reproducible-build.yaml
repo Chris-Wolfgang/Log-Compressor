@@ -1,0 +1,79 @@
+name: Build Reproducibility
+
+# Deterministic-build verification (#84).
+#
+# logc builds with Deterministic + ContinuousIntegrationBuild + SourceLink,
+# which makes the compiled managed assembly byte-for-byte reproducible
+# regardless of the checkout path. This job proves it on every PR: check the
+# same commit out to two different directories, build each with
+# ContinuousIntegrationBuild=true (which normalises source paths to /_/), and
+# fail if the produced assemblies don't hash identically.
+#
+# The unit of verification is logc.dll — the managed assembly. The shipped
+# single-file per-RID bundles are NOT byte-reproducible (they embed the
+# runtime and archive timestamps); docs/REPRODUCIBLE-BUILD.md explains the
+# split and how a third party verifies a release out-of-band.
+#
+# Premise verified locally 2026-08-29: two clean checkouts of the same commit
+# produced identical logc.dll hashes on win-x64.
+
+on:
+  pull_request:
+    branches:
+      - main
+      - vNext
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: reproducible-build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  reproducible:
+    name: Reproducible build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      ASM: src/Wolfgang.LogCompressor/bin/Release/net10.0/logc.dll
+      PROJ: src/Wolfgang.LogCompressor/Wolfgang.LogCompressor.csproj
+    steps:
+      - name: Checkout (copy A)
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          path: a
+          persist-credentials: false
+
+      - name: Checkout (copy B)
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          path: b
+          persist-credentials: false
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Build copy A
+        run: dotnet build "a/${{ env.PROJ }}" -c Release -p:ContinuousIntegrationBuild=true
+
+      - name: Build copy B
+        run: dotnet build "b/${{ env.PROJ }}" -c Release -p:ContinuousIntegrationBuild=true
+
+      - name: Compare assembly hashes
+        run: |
+          ha=$(sha256sum "a/${ASM}" | cut -d' ' -f1)
+          hb=$(sha256sum "b/${ASM}" | cut -d' ' -f1)
+          echo "A: $ha"
+          echo "B: $hb"
+          if [ "$ha" != "$hb" ]; then
+            echo "::error::Build is not reproducible — assembly hashes differ."
+            exit 1
+          fi
+          echo "✅ Reproducible: $ha"

@@ -164,6 +164,68 @@ logc @example.rsp
 
 ---
 
+## 📊 Choosing a format
+
+Measured on synthetic realistic log text (varied timestamps, ids, paths — deterministically seeded), single-file compression, Windows x64 / .NET 10, 2026-08-31. Regenerate on your own hardware with:
+
+```bash
+dotnet run -c Release --project benchmarks/Wolfgang.LogCompressor.Benchmarks -- --ratio
+```
+
+| Format | Ratio* | Compress | Decompress | Best for |
+|--------|--------|----------|------------|----------|
+| **ZIP** (default) | 14.2% | 77 MB/s | 895 MB/s | Universal compatibility — every OS opens it |
+| **GZip** | 14.2% | 79 MB/s | 885 MB/s | Linux/Unix tooling (`zcat`, `gunzip`, pipelines) |
+| **Brotli** | 14.1%† | 83 MB/s | 621 MB/s | Best ratio when CPU time is cheap |
+| **Zstd** | 15.9% | 179 MB/s | 1.07 GB/s | Ratio/speed balance at scale |
+| **LZ4** | 18.4% | 414 MB/s‡ | 1.49 GB/s | Maximum throughput; ratio is the trade |
+
+\* compressed size as % of original, 100 MB corpus, `optimal` level (logc's CLI default is `smallest`).
+† brotli at `smallest` reaches 10.6% but drops to ~0.5 MB/s — use it when archive size matters far more than job duration.
+‡ LZ4's headline speed is at `fastest` (its `optimal`/`smallest` levels trade most of that speed for only ~6 points of ratio).
+
+<details>
+<summary>Full measurements (5 formats × 3 levels × 2 sizes)</summary>
+
+| Format | Level | File Size | Compressed | Ratio | Compress (MB/s) | Decompress (MB/s) |
+|--------|-------|-----------|------------|-------|-----------------|-------------------|
+| ZIP    | Fastest |   10.0 MB |     2.2 MB | 22.3% |           297.2 |             680.0 |
+| ZIP    | Optimal |   10.0 MB |     1.4 MB | 14.2% |            68.3 |             793.4 |
+| ZIP    | Smallest |   10.0 MB |     1.3 MB | 13.4% |            35.2 |             793.8 |
+| GZip   | Fastest |   10.0 MB |     2.2 MB | 22.3% |           298.9 |             678.4 |
+| GZip   | Optimal |   10.0 MB |     1.4 MB | 14.2% |            73.5 |             806.8 |
+| GZip   | Smallest |   10.0 MB |     1.3 MB | 13.4% |            38.5 |             798.9 |
+| Brotli | Fastest |   10.0 MB |     1.6 MB | 16.5% |           312.2 |             369.0 |
+| Brotli | Optimal |   10.0 MB |     1.4 MB | 14.1% |            79.6 |             567.8 |
+| Brotli | Smallest |   10.0 MB |     1.1 MB | 10.6% |             0.5 |             547.8 |
+| Zstd   | Fastest |   10.0 MB |     1.5 MB | 15.1% |           122.9 |             500.9 |
+| Zstd   | Optimal |   10.0 MB |     1.6 MB | 15.9% |            76.5 |             559.9 |
+| Zstd   | Smallest |   10.0 MB |     1.1 MB | 10.8% |             1.5 |             434.2 |
+| LZ4    | Fastest |   10.0 MB |     2.5 MB | 24.5% |           165.7 |             535.8 |
+| LZ4    | Optimal |   10.0 MB |     1.8 MB | 18.4% |            16.3 |             595.9 |
+| LZ4    | Smallest |   10.0 MB |     1.8 MB | 18.1% |             8.3 |            1047.2 |
+| ZIP    | Fastest |  100.0 MB |    22.3 MB | 22.3% |           224.8 |             640.2 |
+| ZIP    | Optimal |  100.0 MB |    14.2 MB | 14.2% |            76.8 |             895.4 |
+| ZIP    | Smallest |  100.0 MB |    13.4 MB | 13.4% |            42.1 |             928.7 |
+| GZip   | Fastest |  100.0 MB |    22.3 MB | 22.3% |           365.9 |             814.6 |
+| GZip   | Optimal |  100.0 MB |    14.2 MB | 14.2% |            78.6 |             884.6 |
+| GZip   | Smallest |  100.0 MB |    13.4 MB | 13.4% |            39.1 |             871.7 |
+| Brotli | Fastest |  100.0 MB |    16.5 MB | 16.5% |           301.2 |             450.4 |
+| Brotli | Optimal |  100.0 MB |    14.1 MB | 14.1% |            82.9 |             621.4 |
+| Brotli | Smallest |  100.0 MB |    10.6 MB | 10.6% |             0.5 |             597.0 |
+| Zstd   | Fastest |  100.0 MB |    15.1 MB | 15.1% |           321.3 |             877.0 |
+| Zstd   | Optimal |  100.0 MB |    15.9 MB | 15.9% |           178.8 |            1068.6 |
+| Zstd   | Smallest |  100.0 MB |    10.7 MB | 10.7% |             1.6 |            1382.0 |
+| LZ4    | Fastest |  100.0 MB |    24.5 MB | 24.5% |           413.9 |            1493.1 |
+| LZ4    | Optimal |  100.0 MB |    18.4 MB | 18.4% |            28.4 |            1094.6 |
+| LZ4    | Smallest |  100.0 MB |    18.1 MB | 18.1% |             8.2 |            1562.7 |
+
+</details>
+
+Numbers are single-run wall-clock on one machine — treat relative differences as guidance, not absolutes. Highly repetitive logs compress far better than shown; already-compressed or binary content far worse.
+
+---
+
 ## 🧩 Architecture
 
 Three layers, all `internal` and exposed to the test project via `InternalsVisibleTo`:

@@ -7,6 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Zstandard (`zstd`) and LZ4 (`lz4`) compression formats** (#3, #4) — singles as `.zst`/`.lz4`, bundles as `.tar.zst`/`.tar.lz4`, selectable via `-f zstd` / `-f lz4`.
+- Compression comparison chart in the README with measured ratio, compression and decompression throughput for all five formats (#5); regenerate with `dotnet run -c Release --project benchmarks/Wolfgang.LogCompressor.Benchmarks -- --ratio`.
+- Supply-chain artifacts attached to every release (#77, #86, #93): SLSA build-provenance attestation for each binary archive (verify with `gh attestation verify`), a CycloneDX SBOM (`logc.bom.json`), a reproducible-build manifest (`reproducible-build-manifest.json`), and generated `THIRD-PARTY-NOTICES.md`.
+- Documentation: Architecture Decision Records under `docs/adr/` (#88), a major-version migration-guide template (#87), `docs/REPRODUCIBLE-BUILD.md` (#93), and a "Release path & compromise scope" appendix in `SECURITY.md` (#89).
+
+### Fixed
+
+- **Archive verification now detects truncated archives.** Modern .NET's `GZipStream`/`BrotliStream` silently return partial data on truncated input, so a torn write could previously pass verification — and verify-then-delete would remove the original. Gzip archives are now validated against their CRC-32/length trailer; brotli, zstd and LZ4 are checked against the source file's size. Found by the new property-fuzz suite.
+- **`ProcessLock` race conditions on Linux** (#172): the stale-lock takeover and release paths each had a window where two instances could hold the lock simultaneously; acquisition is now a single atomic open. The `.logc.lock` file is also excluded from compression, so a run can no longer compress-and-delete its own live lock.
+- **Archive names are now locale-invariant** (#83): on hosts with a non-Gregorian default calendar (e.g. `ar-SA`), embedded timestamps previously used that calendar (Hijri dates in archive names). Note: this changes generated archive names on such systems.
+- Exit-code and retention-directory edge cases pinned by new tests; retention's age cutoff is exclusive by contract (a file exactly N days old is kept).
+
+### Changed
+
+- Test and CI hardening across the board: property-based fuzzing (CsCheck, weekly deep sweep), mutation testing enabled with a gated score floor (Stryker, floor 83%), per-PR benchmark deltas with an allocation-regression gate, OSSF Scorecard, workflow security linting (zizmor + actionlint), a transitive-dependency license audit, reproducible-build verification, and 100% line coverage across all assemblies (test code included).
+
 ## [0.1.0] - 2026-06-11
 
 First release of `logc`, a cross-platform .NET CLI for compressing log files.

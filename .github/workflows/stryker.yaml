@@ -22,6 +22,9 @@ jobs:
     name: Run Stryker
     runs-on: ubuntu-latest
     timeout-minutes: 60
+    permissions:
+      contents: read
+      issues: write   # auto-file an issue when the score drops below the floor
     steps:
       - name: Check out repo
         uses: actions/checkout@v7
@@ -105,3 +108,24 @@ jobs:
             **/StrykerOutput/**
           if-no-files-found: ignore
           retention-days: 30
+
+      - name: File issue on score regression
+        # The gate itself is stryker-config.json's thresholds.break — Stryker
+        # exits non-zero when the mutation score falls below the documented
+        # floor (docs/stryker-baseline.json), which fails the Run step above.
+        # A weekly cron failure is easy to miss, so surface it as an issue.
+        if: failure() && steps.check.outputs.found == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          {
+            echo "The weekly Stryker run failed — most likely the mutation score dropped below the floor in docs/stryker-baseline.json (thresholds.break in stryker-config.json)."
+            echo ""
+            echo "Run: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+            echo ""
+            echo "Triage: download the stryker-report artifact, review surviving mutants, and either add killing tests or (if the floor was set optimistically) lower it in BOTH stryker-config.json and docs/stryker-baseline.json with a rationale."
+          } > issue-body.txt
+          gh issue create \
+            --title "Stryker score regression ($(date -u +%Y-%m-%d))" \
+            --label bug \
+            --body-file issue-body.txt

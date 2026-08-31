@@ -89,8 +89,12 @@ public sealed class ProcessLockTests
     [Fact]
     public void IsLockFile_when_lockFileNameAnyCase_expected_true()
     {
+        // Forward slashes only: Path.GetFileName treats backslash as a
+        // separator on Windows but as an ordinary character on Unix, so a
+        // Windows-style literal here fails on Linux (caught by the v0.2.0
+        // release PR's Stage 1 — the first Linux run of the cycle).
         Assert.True(ProcessLock.IsLockFile("/some/dir/.logc.lock"));
-        Assert.True(ProcessLock.IsLockFile(@"C:\logs\.LOGC.LOCK"));
+        Assert.True(ProcessLock.IsLockFile("/logs/.LOGC.LOCK"));
         Assert.False(ProcessLock.IsLockFile("/some/dir/app.log"));
     }
 }

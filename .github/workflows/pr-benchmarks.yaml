@@ -50,7 +50,21 @@ jobs:
         with:
           dotnet-version: '10.0.x'
 
+      - name: Check the PR tree has the smoke class
+        id: smoke
+        # A PR whose tree predates PerfSmokeBenchmarks (e.g. a protected-file
+        # split branched from an older main) has nothing to measure — skip
+        # instead of letting the BDN filter match nothing and fail.
+        run: |
+          if [ -f benchmarks/Wolfgang.LogCompressor.Benchmarks/PerfSmokeBenchmarks.cs ]; then
+            echo "present=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "::notice::PR tree has no PerfSmokeBenchmarks - skipping benchmark delta."
+            echo "present=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Run PerfSmoke on PR (as-if-merged)
+        if: steps.smoke.outputs.present == 'true'
         run: |
           dotnet run -c Release \
             --project benchmarks/Wolfgang.LogCompressor.Benchmarks/Wolfgang.LogCompressor.Benchmarks.csproj \
@@ -59,6 +73,7 @@ jobs:
 
       - name: Run PerfSmoke on base
         id: base
+        if: steps.smoke.outputs.present == 'true'
         env:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
         run: |
@@ -102,7 +117,7 @@ jobs:
           echo "result=$result" >> "$GITHUB_OUTPUT"
 
       - name: Post (replace) the delta comment
-        if: always() && steps.base.outputs.baseline == 'true' && steps.compare.outcome != 'skipped'
+        if: always() && steps.smoke.outputs.present == 'true' && steps.base.outputs.baseline == 'true' && steps.compare.outcome != 'skipped'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR: ${{ github.event.pull_request.number }}
@@ -120,7 +135,7 @@ jobs:
           fi
 
       - name: Fail on gated regression
-        if: steps.base.outputs.baseline == 'true' && steps.compare.outputs.result != '0'
+        if: steps.smoke.outputs.present == 'true' && steps.base.outputs.baseline == 'true' && steps.compare.outputs.result != '0'
         run: |
           echo "::error::Allocation regression beyond the gate — see the PR comment. Label the PR perf-impact-acknowledged (and re-push) to accept it deliberately."
           exit 1

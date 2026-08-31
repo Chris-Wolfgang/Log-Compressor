@@ -48,13 +48,31 @@ jobs:
         with:
           dotnet-version: '10.0.x'
 
+      - name: Detect audit configuration
+        id: config
+        # The allowlist/override/ignore files are NOT protected files, so a
+        # protected-file split PR (or any branch state where the workflow
+        # arrives ahead of its configuration) can run this workflow without
+        # them. Skip gracefully instead of failing the audit on a missing
+        # config — the same pattern stryker.yaml uses for its config.
+        run: |
+          if [ -f .github/allowed-licenses.json ] && [ -f .github/license-overrides.json ] && [ -f .github/license-ignored-packages.json ]; then
+            echo "found=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "::notice::License-audit configuration files missing on this ref - skipping audit."
+            echo "found=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Restore
+        if: steps.config.outputs.found == 'true'
         run: dotnet restore Wolfgang.LogCompressor.slnx
 
       - name: Install nuget-license
+        if: steps.config.outputs.found == 'true'
         run: dotnet tool install --global nuget-license
 
       - name: Audit licenses against allowlist
+        if: steps.config.outputs.found == 'true'
         # -t includes transitive packages; the tool exits non-zero when any
         # package's license is not in the allowlist. The JSON report is
         # uploaded either way for inspection.
@@ -74,8 +92,8 @@ jobs:
             -o JsonPretty > license-report.json
 
       - name: Upload license report
+        if: always() && steps.config.outputs.found == 'true'
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-        if: always()
         with:
           name: license-report
           path: license-report.json

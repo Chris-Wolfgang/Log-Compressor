@@ -5,7 +5,7 @@
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <Version>0.1.0</Version>
+    <Version>0.2.0</Version>
     <!-- This is a self-contained CLI executable, not a library/tool. It is
          distributed as per-RID binaries attached to the GitHub Release, not
          pushed to NuGet. IsPackable=false makes the release.yaml NuGet path

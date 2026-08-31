@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-08-31
+
 ### Added
 
 - **Zstandard (`zstd`) and LZ4 (`lz4`) compression formats** (#3, #4) — singles as `.zst`/`.lz4`, bundles as `.tar.zst`/`.tar.lz4`, selectable via `-f zstd` / `-f lz4`.
@@ -46,5 +48,6 @@ First release of `logc`, a cross-platform .NET CLI for compressing log files.
 - Structured logging via Serilog (console + file sinks).
 - Self-contained, per-platform release archives for `win-x64`, `linux-x64`, and `osx-x64` (each bundles the single-file `logc` executable plus its `AppSettings.json`); no .NET runtime required on the target. Distributed via GitHub Releases, not NuGet.
 
-[Unreleased]: https://github.com/Chris-Wolfgang/Log-Compressor/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/Chris-Wolfgang/Log-Compressor/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/Chris-Wolfgang/Log-Compressor/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/Chris-Wolfgang/Log-Compressor/releases/tag/v0.1.0

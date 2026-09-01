@@ -99,6 +99,14 @@ internal class Decompress
 
 
     /// <summary>
+    /// Gets or sets the batch error policy.
+    /// </summary>
+    [Option("--on-error <POLICY>", Description = "When an archive fails: skip, fail, or retry:N (1-100, then skip) (default: skip)")]
+    public string OnError { get; set; } = "skip";
+
+
+
+    /// <summary>
     /// Executes the decompress command.
     /// </summary>
     /// <param name="console">The console.</param>
@@ -124,6 +132,12 @@ internal class Decompress
             return ExitCode.InvalidArguments;
         }
 
+        if (!ErrorPolicy.TryParse(OnError, out var onError))
+        {
+            await console.Error.WriteLineAsync($"Error: Unsupported error policy: '{OnError}'. Supported: skip, fail, retry:N (1-100)");
+            return ExitCode.InvalidArguments;
+        }
+
         if (ReportPath != null && Report == null)
         {
             await console.Error.WriteLineAsync("Error: --report-path requires --report (matches compress/bundle validation).");
@@ -141,7 +155,8 @@ internal class Decompress
             KeepArchives = KeepArchives,
             NoLock = NoLock,
             ReportFormat = Report,
-            ReportPath = ReportPath
+            ReportPath = ReportPath,
+            OnError = onError
         };
 
         using var processLock = new ProcessLock
@@ -185,7 +200,14 @@ internal class Decompress
 
             logger.LogDebug("Completed {Command}", GetType().Name);
 
-            return failed > 0 ? ExitCode.ApplicationError : ExitCode.Success;
+            if (failed > 0)
+            {
+                return onError.Mode == OnErrorMode.Fail
+                    ? ExitCode.ApplicationError
+                    : ExitCode.CompletedWithSkips;
+            }
+
+            return ExitCode.Success;
         }
         catch (Exception e)
         {

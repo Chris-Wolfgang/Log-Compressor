@@ -334,6 +334,52 @@ public sealed class DecompressServiceTests : IDisposable
 
 
     [Fact]
+    public async Task ExecuteAsync_when_onErrorRetry_expected_secondAttemptSucceeds()
+    {
+        var bytes = ZipBytes(("a.log", "hello"));
+        var archive = SetupSingleArchive("flaky.zip", bytes);
+        // Unreadable once (transient lock), readable on the retry.
+        var attempts = 0;
+        _fileSystem.OpenRead(archive).Returns(_ =>
+            ++attempts == 1 ? throw new IOException("locked") : new MemoryStream(bytes));
+
+        var results = await _sut.ExecuteAsync(new DecompressionOptions
+        {
+            SourcePath = archive,
+            OnError = new ErrorPolicy { RetryCount = 1 }
+        });
+
+        var result = Assert.Single(results);
+        Assert.True(result.Success);
+        Assert.Equal(2, attempts);
+    }
+
+
+
+    [Fact]
+    public async Task ExecuteAsync_when_onErrorFail_expected_stopsAtFirstFailure()
+    {
+        var dir = _tempDir.Path;
+        // First archive is corrupt (garbage after the zip magic), second is valid.
+        var bad = SetupSingleArchive("bad.zip", [0x50, 0x4B, 0x03, 0x04, 0xFF, 0xFF]);
+        var good = SetupSingleArchive("good.zip", ZipBytes(("a.log", "a")));
+        _fileSystem.FileExists(dir).Returns(returnThis: false);
+        _fileSystem.EnumerateFiles(dir, "*", SearchOption.TopDirectoryOnly).Returns([bad, good]);
+
+        var results = await _sut.ExecuteAsync(new DecompressionOptions
+        {
+            SourcePath = dir,
+            OnError = new ErrorPolicy { Mode = OnErrorMode.Fail }
+        });
+
+        var result = Assert.Single(results);
+        Assert.False(result.Success);
+        _fileSystem.DidNotReceive().OpenRead(good);
+    }
+
+
+
+    [Fact]
     public async Task ExecuteAsync_when_directorySource_expected_onlyRecognizedArchivesSelected()
     {
         var dir = _tempDir.Path;

@@ -150,6 +150,7 @@ logc decompress /var/log/archives --keep-archives
 | `--force` | Overwrite existing files at extraction targets | off |
 | `--keep-archives` | Keep archives after successful extraction | off (archives deleted) |
 | `--no-lock` | Skip the single-instance directory lock | off |
+| `--on-error <policy>` | `skip` \| `fail` \| `retry:N` (1–100; retries then skips) | `skip` |
 | `--report <fmt>` / `--report-path` | Summary report (`json` \| `csv`) | none |
 
 ### Shared flags (apply to both `compress` and `bundle`)
@@ -166,8 +167,22 @@ logc decompress /var/log/archives --keep-archives
 | `-f`, `--format <fmt>` | `zip` \| `gz` \| `brotli` \| `zstd` \| `lz4` | `zip` |
 | `--include <glob>` | Only process files matching this glob (repeatable) | (no filter) |
 | `--exclude <glob>` | Skip files matching this glob (repeatable; applied after `--include`) | (no filter) |
+| `--on-error <policy>` | `skip` \| `fail` \| `retry:N` (1–100; retries then skips) | `skip` |
 
 `--older-than` is mutually exclusive with `--min-datetime` / `--max-datetime`. DateTime values are parsed using the local culture.
+
+### Exit codes
+
+| Code | Meaning |
+|------|---------|
+| 0 | Success — every item processed |
+| 1 | Invalid arguments |
+| 2 | Another instance already holds the directory lock |
+| 3 | Completed with skips — the run finished but one or more items failed and were skipped (`--on-error skip`, or `retry:N` exhausted) |
+| 10 | Unhandled exception |
+| 11 | Application error — the run failed (`--on-error fail` stopped at the first failure, or a fatal error) |
+
+Under `--on-error fail`, the first item that still fails after any retries stops the run and exits 11. Under the default `skip`, failures are logged, the item is left in place, and the run continues — ending in exit 3 so schedulers can tell a degraded run from a clean one.
 
 ### Response files
 
@@ -316,11 +331,7 @@ The output lands in `bin/Release/net10.0/linux-x64/publish/` as `logc` alongside
 
 ## 🛣️ Roadmap
 
-Tracked as issues:
-
-- Compressed-timestamp naming mode (`{name}-{now}` instead of `{name}-{lastModified}`) — [#188](https://github.com/Chris-Wolfgang/Log-Compressor/issues/188)
-- Custom name prefix (`--name`) — [#189](https://github.com/Chris-Wolfgang/Log-Compressor/issues/189)
-- Mid-batch error-handling strategies (currently: skip & continue for `compress` and `decompress`, fail-fast for `bundle`) — [#190](https://github.com/Chris-Wolfgang/Log-Compressor/issues/190)
+Planned work is tracked in the [issue tracker](https://github.com/Chris-Wolfgang/Log-Compressor/issues) — see issues labeled `enhancement`.
 
 ---
 

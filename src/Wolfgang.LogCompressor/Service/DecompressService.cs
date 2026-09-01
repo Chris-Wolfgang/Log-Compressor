@@ -100,7 +100,21 @@ internal class DecompressService
         foreach (var archive in archives)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            results.Add(await DecompressOneAsync(archive, options, cancellationToken).ConfigureAwait(false));
+            var result = await DecompressOneAsync(archive, options, cancellationToken).ConfigureAwait(false);
+
+            for (var attempt = 1; !result.Success && attempt <= options.OnError.RetryCount; attempt++)
+            {
+                _logger.LogWarning("Retrying {Archive} (attempt {Attempt} of {Max})", archive.FullName, attempt, options.OnError.RetryCount);
+                result = await DecompressOneAsync(archive, options, cancellationToken).ConfigureAwait(false);
+            }
+
+            results.Add(result);
+
+            if (!result.Success && options.OnError.Mode == OnErrorMode.Fail)
+            {
+                _logger.LogError("Stopping after failure of {Archive} (--on-error fail)", archive.FullName);
+                break;
+            }
         }
 
         return results;
@@ -222,7 +236,10 @@ internal class DecompressService
             ArchiveKind.RawBrotli => await ExtractRawAsync(archive, outputDir, options, static s => new BrotliStream(s, CompressionMode.Decompress, leaveOpen: true), cancellationToken).ConfigureAwait(false),
             ArchiveKind.RawZstd => await ExtractRawAsync(archive, outputDir, options, static s => new ZstdSharp.DecompressionStream(s, leaveOpen: true), cancellationToken).ConfigureAwait(false),
             ArchiveKind.RawLz4 => await ExtractRawAsync(archive, outputDir, options, static s => K4os.Compression.LZ4.Streams.LZ4Stream.Decode(s, leaveOpen: true), cancellationToken).ConfigureAwait(false),
-            _ => throw new NotSupportedException($"Unrecognized archive format: {archive.Name}")
+            // ArchiveKind.Unknown lands here: DetectByName and SniffKind both
+            // failed to identify the file.
+            _ => throw new NotSupportedException(
+                $"Cannot identify the archive format of {archive.FullName} — no known extension and no recognizable signature (note: brotli has no signature and requires a .br extension).")
         };
     }
 
@@ -264,8 +281,9 @@ internal class DecompressService
             [0x1F, 0x8B, _, _] => ArchiveKind.RawGz,
             [0x28, 0xB5, 0x2F, 0xFD] => ArchiveKind.RawZstd,
             [0x04, 0x22, 0x4D, 0x18] => ArchiveKind.RawLz4,
-            _ => throw new NotSupportedException(
-                $"Cannot identify the archive format of {path} — no known extension and no recognizable signature (note: brotli has no signature and requires a .br extension).")
+            // Unrecognizable signature — ExtractAsync's Unknown arm raises the
+            // descriptive error so there is a single unidentified-format path.
+            _ => ArchiveKind.Unknown
         };
     }
 

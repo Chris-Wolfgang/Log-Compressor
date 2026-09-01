@@ -102,7 +102,20 @@ internal class CompressService
         {
             cancellationToken.ThrowIfCancellationRequested();
             var result = await CompressFileAsync(file, options, strategy, usedNames, cancellationToken).ConfigureAwait(false);
+
+            for (var attempt = 1; !result.Success && attempt <= options.OnError.RetryCount; attempt++)
+            {
+                _logger.LogWarning("Retrying {File} (attempt {Attempt} of {Max})", file.FullName, attempt, options.OnError.RetryCount);
+                result = await CompressFileAsync(file, options, strategy, usedNames, cancellationToken).ConfigureAwait(false);
+            }
+
             results.Add(result);
+
+            if (!result.Success && options.OnError.Mode == OnErrorMode.Fail)
+            {
+                _logger.LogError("Stopping after failure of {File} (--on-error fail)", file.FullName);
+                break;
+            }
         }
 
         return results;

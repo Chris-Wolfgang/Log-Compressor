@@ -184,16 +184,37 @@ internal class BundleService
         {
             foreach (var file in filtered)
             {
-                Stream stream;
+                Stream? stream = null;
 
-                try
+                for (var attempt = 0; stream is null; attempt++)
                 {
-                    stream = _fileSystem.OpenRead(file.FullName);
+                    try
+                    {
+                        stream = _fileSystem.OpenRead(file.FullName);
+                    }
+                    catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+                    {
+                        if (attempt < options.OnError.RetryCount)
+                        {
+                            _logger.LogWarning(ex, "Retrying unreadable file {File} (attempt {Attempt} of {Max})", file.FullName, attempt + 1, options.OnError.RetryCount);
+                            continue;
+                        }
+
+                        if (options.OnError.Mode == OnErrorMode.Fail)
+                        {
+                            // Strict mode: an unreadable input aborts the whole
+                            // bundle rather than shipping an incomplete archive.
+                            throw new IOException($"Unreadable input aborted the bundle (--on-error fail): {file.FullName}", ex);
+                        }
+
+                        skipped++;
+                        _logger.LogWarning(ex, "Skipping unreadable file {File}: {Message}", file.FullName, ex.Message);
+                        break;
+                    }
                 }
-                catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+
+                if (stream is null)
                 {
-                    skipped++;
-                    _logger.LogWarning(ex, "Skipping unreadable file {File}: {Message}", file.FullName, ex.Message);
                     continue;
                 }
 

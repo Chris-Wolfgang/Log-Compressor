@@ -13,6 +13,7 @@ A cross-platform .NET CLI (`logc`) for compressing log files. Built for **unatte
 - **Two compression modes:**
   - `logc compress <path>` — produces **one archive per source file** (each log gets its own `.zip` / `.tar.gz` / `.tar.br`)
   - `logc bundle <path>` — produces **one archive containing many files** (good for end-of-month rollups)
+  - `logc decompress <path>` — **extracts** logc archives (all formats, singles and bundles); archives are deleted only after every entry extracted successfully
 - **Five formats:** ZIP (default), GZip (`.tar.gz`), Brotli (`.tar.br`), Zstandard (`.tar.zst`), LZ4 (`.tar.lz4`)
 - **Filtering:**
   - `-r|--recurse` — descend into subdirectories
@@ -115,6 +116,18 @@ logc bundle /var/log/myapp --recurse --min-datetime 2026-04-01 --max-datetime 20
 # Produces: /var/log/myapp/myapp-2026-04-01 to 2026-04-30.tar.gz
 ```
 
+### Extract archives back out
+
+```bash
+# Extract every archive in a directory (archives are deleted after successful extraction):
+logc decompress /var/log/archives --recurse --output /var/log/restored
+
+# Keep the archives, refuse to overwrite anything that already exists:
+logc decompress /var/log/archives --keep-archives
+```
+
+`decompress` handles every format logc produces — `.zip`, `.gz`, `.br`, `.zst`, `.lz4` and the `.tar.*` bundles. ZIP and tar entries restore their original names; raw single-stream formats extract to the archive name minus its compression suffix (the original file extension is not stored in those formats). Entries are confined to the output directory (zip-slip protected), an existing file fails that archive unless `--force`, and an archive is deleted only after every entry extracted successfully (`--keep-archives` to opt out) — the safety mirror of compress's verify-then-delete.
+
 ### Output filename conventions
 
 | Mode | Pattern |
@@ -125,6 +138,19 @@ logc bundle /var/log/myapp --recurse --min-datetime 2026-04-01 --max-datetime 20
 ---
 
 ## 🔧 CLI Reference
+
+### `decompress` flags
+
+| Flag | Meaning | Default |
+|------|---------|---------|
+| `<path>` | Archive file, or directory containing archives | required |
+| `-o`, `--output <dir>` | Extraction destination | alongside each archive |
+| `-r`, `--recurse` | Recurse into subdirectories | off |
+| `--include` / `--exclude <pattern>` | Select archives by glob (repeatable) | all recognized archives |
+| `--force` | Overwrite existing files at extraction targets | off |
+| `--keep-archives` | Keep archives after successful extraction | off (archives deleted) |
+| `--no-lock` | Skip the single-instance directory lock | off |
+| `--report <fmt>` / `--report-path` | Summary report (`json` \| `csv`) | none |
 
 ### Shared flags (apply to both `compress` and `bundle`)
 
@@ -288,12 +314,11 @@ The output lands in `bin/Release/net10.0/linux-x64/publish/` as `logc` alongside
 
 ## 🛣️ Roadmap
 
-Items deferred from v0.1.0:
+Tracked as issues:
 
-- `decompress` sub-command
-- Compressed-timestamp naming mode (`{name}-{now}` instead of `{name}-{lastModified}`)
-- Custom name prefix (`--name`)
-- Mid-batch error-handling strategies (currently: skip & continue for `compress`, fail-fast for `bundle`)
+- Compressed-timestamp naming mode (`{name}-{now}` instead of `{name}-{lastModified}`) — [#188](https://github.com/Chris-Wolfgang/Log-Compressor/issues/188)
+- Custom name prefix (`--name`) — [#189](https://github.com/Chris-Wolfgang/Log-Compressor/issues/189)
+- Mid-batch error-handling strategies (currently: skip & continue for `compress` and `decompress`, fail-fast for `bundle`) — [#190](https://github.com/Chris-Wolfgang/Log-Compressor/issues/190)
 
 ---
 

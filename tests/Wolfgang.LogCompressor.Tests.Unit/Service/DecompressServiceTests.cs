@@ -313,6 +313,27 @@ public sealed class DecompressServiceTests : IDisposable
 
 
     [Fact]
+    public async Task ExecuteAsync_when_outputPathHasTrailingSeparator_expected_entriesExtracted()
+    {
+        // Regression (review finding): GetFullPath preserves a trailing
+        // separator, and the old prefix check built "root//" which rejected
+        // every valid entry as an escape.
+        var archive = SetupSingleArchive("t.zip", ZipBytes(("a.log", "x")));
+        var outputDir = Path.Combine(_tempDir.Path, "out") + Path.DirectorySeparatorChar;
+
+        var results = await _sut.ExecuteAsync(new DecompressionOptions
+        {
+            SourcePath = archive,
+            OutputPath = outputDir
+        });
+
+        Assert.True(Assert.Single(results).Success);
+        Assert.Single(_written);
+    }
+
+
+
+    [Fact]
     public async Task ExecuteAsync_when_directorySource_expected_onlyRecognizedArchivesSelected()
     {
         var dir = _tempDir.Path;

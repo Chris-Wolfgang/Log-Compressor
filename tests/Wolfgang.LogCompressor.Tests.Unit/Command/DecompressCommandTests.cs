@@ -103,6 +103,19 @@ public sealed class DecompressCommandTests : IDisposable
 
 
     [Fact]
+    public async Task OnExecuteAsync_when_reportPathWithoutReport_expected_invalidArguments()
+    {
+        var command = new Decompress { Path = _tempDir, NoLock = true, ReportPath = "somewhere.json" };
+
+        var result = await command.OnExecuteAsync(_console, _logger, _decompressService, _reportService);
+
+        Assert.Equal(ExitCode.InvalidArguments, result);
+        await _decompressService.DidNotReceive().ExecuteAsync(Arg.Any<DecompressionOptions>(), Arg.Any<CancellationToken>());
+    }
+
+
+
+    [Fact]
     public async Task OnExecuteAsync_when_reportRequested_expected_reportWritten()
     {
         _decompressService.ExecuteAsync(Arg.Any<DecompressionOptions>(), Arg.Any<CancellationToken>())

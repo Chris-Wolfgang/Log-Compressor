@@ -124,6 +124,12 @@ internal class Decompress
             return ExitCode.InvalidArguments;
         }
 
+        if (ReportPath != null && Report == null)
+        {
+            await console.Error.WriteLineAsync("Error: --report-path requires --report (matches compress/bundle validation).");
+            return ExitCode.InvalidArguments;
+        }
+
         var options = new DecompressionOptions
         {
             SourcePath = System.IO.Path.GetFullPath(Path),

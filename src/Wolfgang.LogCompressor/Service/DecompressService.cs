@@ -275,7 +275,11 @@ internal class DecompressService
     {
         // Confine every entry to the destination (zip-slip / tar-slip guard):
         // the resolved full path must stay under the destination directory.
-        var destinationRoot = Path.GetFullPath(outputDir);
+        // Trim any trailing separator first — GetFullPath preserves it, and a
+        // root of "/out/" would build a "/out//" prefix that rejects every
+        // valid entry as an escape (review finding on --output paths with a
+        // trailing slash).
+        var destinationRoot = Path.TrimEndingDirectorySeparator(Path.GetFullPath(outputDir));
         var destination = Path.GetFullPath(Path.Combine(destinationRoot, entryName));
 
         if (!destination.StartsWith(destinationRoot + Path.DirectorySeparatorChar, StringComparison.Ordinal)

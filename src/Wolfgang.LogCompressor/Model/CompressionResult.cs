@@ -45,4 +45,15 @@ internal record CompressionResult
     /// Gets the error message if the operation failed.
     /// </summary>
     public string? ErrorMessage { get; init; }
+
+
+
+    /// <summary>
+    /// Gets the number of input items that were skipped after failing (the
+    /// <c>--on-error</c> skip / exhausted-retry outcome). Non-zero with
+    /// <see cref="Success"/> <see langword="false"/> means the operation
+    /// completed degraded rather than failed outright — commands map this to
+    /// exit code 3 (completed with skips) instead of 11.
+    /// </summary>
+    public int SkippedCount { get; init; }
 }

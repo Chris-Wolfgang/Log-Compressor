@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-09-01
+
+### Added
+
+- **Naming controls** (#188, #189): `--timestamp <modified|compressed>` selects whether archive names embed the source's last-modified time (default, stable across re-runs) or the compression time; `--name <prefix>` replaces the source file/folder name in generated archive names. Two sources resolving to the same archive name in one run are uniquified (`-2`, `-3`, ...) — this also fixes a pre-existing edge where recursed same-named files with identical modification times could silently overwrite each other's archives.
+- **`--on-error <skip|fail|retry:N>`** (#190) on `compress`, `bundle` and `decompress`: `skip` (default) logs a failing item and continues; `fail` stops at the first failure and exits 11; `retry:N` (1–100) re-attempts a failing item N times before skipping it. For `bundle`, `fail` aborts the whole archive instead of shipping one that silently omits an unreadable input.
+- New exit code **3 — completed with skips**: a run that finishes but skipped one or more failed items now exits 3 instead of 11, so schedulers can distinguish a degraded run from a broken one. **Migration note:** scripts that treated exit 11 as "some files failed" should also (or instead) check for exit 3; exit 11 now means the run itself failed (`--on-error fail` or a fatal error).
+- **`decompress` sub-command** (#187) — extracts logc archives back out: every format (`zip`/`gz`/`brotli`/`zstd`/`lz4`), single archives and tar bundles, with `--output`, `--recurse`, `--include`/`--exclude`, `--force`, `--keep-archives`, `--no-lock` and `--report`. Safety mirrors compress's verify-then-delete: entries are confined to the destination (zip-slip protected), collisions fail the archive unless `--force`, and an archive is deleted only after every entry extracted successfully. An explicitly named file with an unknown extension falls back to magic-byte sniffing (directory scans select recognized archive extensions only; brotli excepted — the format has no signature).
+
+### Changed
+
+- CI: weekly cross-platform differential run (Linux/macOS/Windows × x64/ARM64 output-equivalence checks, #78) and nightly shadow testing against sampled consumer workloads (#69). No consumer-visible behavior change.
+
 ## [0.2.0] - 2026-08-31
 
 ### Added
@@ -48,6 +61,7 @@ First release of `logc`, a cross-platform .NET CLI for compressing log files.
 - Structured logging via Serilog (console + file sinks).
 - Self-contained, per-platform release archives for `win-x64`, `linux-x64`, and `osx-x64` (each bundles the single-file `logc` executable plus its `AppSettings.json`); no .NET runtime required on the target. Distributed via GitHub Releases, not NuGet.
 
-[Unreleased]: https://github.com/Chris-Wolfgang/Log-Compressor/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/Chris-Wolfgang/Log-Compressor/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/Chris-Wolfgang/Log-Compressor/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/Chris-Wolfgang/Log-Compressor/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/Chris-Wolfgang/Log-Compressor/releases/tag/v0.1.0

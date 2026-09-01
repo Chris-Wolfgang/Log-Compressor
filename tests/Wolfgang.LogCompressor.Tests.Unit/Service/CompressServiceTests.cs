@@ -409,6 +409,46 @@ public sealed class CompressServiceTests : IDisposable
 
 
 
+    [Fact]
+    public async Task ExecuteAsync_when_twoSourcesResolveToSameArchiveName_expected_secondUniquified()
+    {
+        // With --name (or same-named, same-mtime files under --recurse) two
+        // sources can produce one archive name; the second must be
+        // uniquified, never overwrite the first's archive.
+        var dir = Path.GetTempPath();
+        var files = new[] { CreateTempFile(), CreateTempFile() };
+        var fileInfos = files.Select(f => new FileInfo(f)).ToList();
+
+        _fileSystem.FileExists(dir).Returns(returnThis: false);
+        _fileSystem.DirectoryExists(dir).Returns(returnThis: true);
+        _fileSystem.EnumerateFiles(dir, "*", SearchOption.TopDirectoryOnly).Returns(files);
+        _fileSystem.GetFileInfo(files[0]).Returns(fileInfos[0]);
+        _fileSystem.GetFileInfo(files[1]).Returns(fileInfos[1]);
+        _fileFilter.Apply
+        (
+            Arg.Any<IEnumerable<FileInfo>>(),
+            Arg.Any<int?>(),
+            Arg.Any<DateTime?>(),
+            Arg.Any<DateTime?>(),
+            Arg.Any<IReadOnlyList<string>>(),
+            Arg.Any<IReadOnlyList<string>>()
+        ).Returns(fileInfos);
+        _fileNamer.GetCompressedFileName(Arg.Any<FileInfo>(), "zip", Arg.Any<TimestampSource>(), Arg.Any<string?>())
+            .Returns("weblogs-2026-01-01_12-00-00.zip");
+        _fileSystem.OpenRead(Arg.Any<string>()).Returns(_ => new MemoryStream("content"u8.ToArray()));
+        _fileSystem.CreateWrite(Arg.Any<string>()).Returns(_ => new MemoryStream());
+
+        var options = new CompressionOptions { SourcePath = dir, NamePrefix = "weblogs" };
+        var results = await _sut.ExecuteAsync(options);
+
+        Assert.Equal(2, results.Count);
+        Assert.All(results, r => Assert.True(r.Success));
+        Assert.EndsWith("weblogs-2026-01-01_12-00-00.zip", results[0].OutputPath, StringComparison.Ordinal);
+        Assert.EndsWith("weblogs-2026-01-01_12-00-00-2.zip", results[1].OutputPath, StringComparison.Ordinal);
+    }
+
+
+
     private string CreateTempFile()
     {
         return _tempDir.WriteFile(Guid.NewGuid() + ".log", "test content");

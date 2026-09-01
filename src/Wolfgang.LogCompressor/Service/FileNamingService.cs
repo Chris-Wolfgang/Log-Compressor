@@ -1,5 +1,6 @@
 using System.Globalization;
 using Wolfgang.LogCompressor.Abstraction;
+using Wolfgang.LogCompressor.Model;
 
 namespace Wolfgang.LogCompressor.Service;
 
@@ -17,21 +18,23 @@ internal sealed class FileNamingService : IFileNamer
 
 
     /// <inheritdoc />
-    public string GetCompressedFileName(FileInfo sourceFile, string extension)
+    public string GetCompressedFileName(FileInfo sourceFile, string extension, TimestampSource timestampSource = TimestampSource.Modified, string? namePrefix = null)
     {
         ArgumentNullException.ThrowIfNull(sourceFile);
         ArgumentException.ThrowIfNullOrWhiteSpace(extension);
 
-        var baseName = Path.GetFileNameWithoutExtension(sourceFile.Name);
-        var modified = sourceFile.LastWriteTime.ToString(DateTimeFormat, CultureInfo.InvariantCulture);
+        var baseName = namePrefix ?? Path.GetFileNameWithoutExtension(sourceFile.Name);
+        var timestamp = timestampSource == TimestampSource.Compressed
+            ? DateTimeOffset.Now.DateTime
+            : sourceFile.LastWriteTime;
 
-        return $"{baseName}-{modified}.{extension}";
+        return $"{baseName}-{timestamp.ToString(DateTimeFormat, CultureInfo.InvariantCulture)}.{extension}";
     }
 
 
 
     /// <inheritdoc />
-    public string GetBundleFileName(string folderName, IReadOnlyList<FileInfo> files, string extension)
+    public string GetBundleFileName(string folderName, IReadOnlyList<FileInfo> files, string extension, TimestampSource timestampSource = TimestampSource.Modified, string? namePrefix = null)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(folderName);
         ArgumentNullException.ThrowIfNull(files);
@@ -42,9 +45,18 @@ internal sealed class FileNamingService : IFileNamer
             throw new ArgumentException("At least one file is required to generate a bundle name.", nameof(files));
         }
 
+        var baseName = namePrefix ?? folderName;
+
+        if (timestampSource == TimestampSource.Compressed)
+        {
+            // One archive, one job time — a min/max range adds nothing here.
+            var now = DateTimeOffset.Now.DateTime.ToString(DateTimeFormat, CultureInfo.InvariantCulture);
+            return $"{baseName}-{now}.{extension}";
+        }
+
         var minModified = files.Min(f => f.LastWriteTime).ToString(DateTimeFormat, CultureInfo.InvariantCulture);
         var maxModified = files.Max(f => f.LastWriteTime).ToString(DateTimeFormat, CultureInfo.InvariantCulture);
 
-        return $"{folderName}-{minModified} to {maxModified}.{extension}";
+        return $"{baseName}-{minModified} to {maxModified}.{extension}";
     }
 }

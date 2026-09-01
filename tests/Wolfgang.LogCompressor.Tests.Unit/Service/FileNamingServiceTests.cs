@@ -1,3 +1,4 @@
+using Wolfgang.LogCompressor.Model;
 using Wolfgang.LogCompressor.Service;
 
 namespace Wolfgang.LogCompressor.Tests.Unit.Service;
@@ -150,6 +151,45 @@ public sealed class FileNamingServiceTests : IDisposable
         var files = new List<FileInfo> { CreateFileInfo(DateTime.Now) };
 
         Assert.Throws<ArgumentNullException>(() => _sut.GetBundleFileName("Logs", files, null!));
+    }
+
+
+
+    [Fact]
+    public void GetCompressedFileName_when_namePrefix_expected_prefixReplacesBaseName()
+    {
+        var file = new FileInfo(CreateTempFileWithWriteTime(new DateTime(2026, 1, 1, 12, 0, 0)));
+
+        var result = _sut.GetCompressedFileName(file, "zip", namePrefix: "weblogs");
+
+        Assert.Equal("weblogs-2026-01-01_12-00-00.zip", result);
+    }
+
+
+
+    [Fact]
+    public void GetCompressedFileName_when_compressedTimestamp_expected_nowShapedName()
+    {
+        var file = new FileInfo(CreateTempFileWithWriteTime(new DateTime(2020, 1, 1)));
+
+        var result = _sut.GetCompressedFileName(file, "gz", TimestampSource.Compressed);
+
+        // The job time, not 2020: shape-asserted since "now" moves.
+        Assert.Matches(@"^test-\d{4}-\d{2}-\d{2}_\d{2}-\d{2}-\d{2}\.gz$", result);
+        Assert.DoesNotContain("2020", result, StringComparison.Ordinal);
+    }
+
+
+
+    [Fact]
+    public void GetBundleFileName_when_compressedTimestamp_expected_singleTimestampNoRange()
+    {
+        var files = new List<FileInfo> { CreateFileInfo(new DateTime(2020, 1, 1)) };
+
+        var result = _sut.GetBundleFileName("MyApp", files, "zip", TimestampSource.Compressed, namePrefix: "rollup");
+
+        Assert.Matches(@"^rollup-\d{4}-\d{2}-\d{2}_\d{2}-\d{2}-\d{2}\.zip$", result);
+        Assert.DoesNotContain(" to ", result, StringComparison.Ordinal);
     }
 
 

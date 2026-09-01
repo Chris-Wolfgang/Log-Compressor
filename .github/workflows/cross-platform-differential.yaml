@@ -1,0 +1,153 @@
+name: Cross-Platform Differential
+
+# Multi-arch differential (#78): pr.yaml's stages verify the suite PASSES on
+# each OS; this workflow verifies it passes the SAME WAY everywhere — the
+# same tests run, pass, fail and skip identically across OS *and CPU
+# architecture*. Each leg runs the full suite and reduces its TRX to a
+# normalized "<outcome>\t<test name>" list; the diff job fails on any
+# divergence from the linux-x64 reference. ARM64 coverage comes free from
+# GitHub-hosted runners (ubuntu-24.04-arm is x64-priced-at-zero for public
+# repos; macos-latest has been Apple-silicon since macOS 14).
+#
+# Weekly + dispatch, not per-PR: four full-suite legs are too heavy for every
+# PR, and platform-behaviour drift is slow-moving.
+
+on:
+  schedule:
+    - cron: '30 5 * * 0'   # Sunday 05:30 UTC, between fuzz (05:00) and scorecard (06:00)
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cross-platform-differential-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test-leg:
+    name: ${{ matrix.leg }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - leg: linux-x64
+            os: ubuntu-latest
+          - leg: linux-arm64
+            os: ubuntu-24.04-arm
+          - leg: macos-arm64
+            os: macos-latest
+          - leg: windows-x64
+            os: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Run full test suite
+        shell: bash
+        env:
+          DiffEngine_Disabled: 'true'
+        run: |
+          dotnet test Wolfgang.LogCompressor.slnx -c Release \
+            --logger "trx;LogFilePrefix=results" \
+            --results-directory TestResults-diff
+
+      - name: Normalize outcomes
+        shell: bash
+        run: |
+          mkdir -p normalized
+          : > normalized/${{ matrix.leg }}.txt
+          for trx in TestResults-diff/*.trx; do
+            python3 scripts/Normalize-TestResults.py "$trx" /tmp/part.txt
+            cat /tmp/part.txt >> normalized/${{ matrix.leg }}.txt
+          done
+          sort -o normalized/${{ matrix.leg }}.txt normalized/${{ matrix.leg }}.txt
+          wc -l normalized/${{ matrix.leg }}.txt
+
+      - name: Upload normalized outcomes
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: outcomes-${{ matrix.leg }}
+          path: normalized/${{ matrix.leg }}.txt
+          retention-days: 14
+
+  differential:
+    name: Diff outcomes across legs
+    needs: test-leg
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      issues: write   # auto-file an issue on divergence
+    steps:
+      - name: Download all legs
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
+        with:
+          pattern: outcomes-*
+          merge-multiple: true
+          path: outcomes
+
+      - name: Compare against the linux-x64 reference
+        id: compare
+        run: |
+          set -euo pipefail
+          ls -l outcomes/
+          ref=outcomes/linux-x64.txt
+          [ -s "$ref" ] || { echo "::error::Reference leg produced no outcomes"; exit 1; }
+
+          divergent=0
+          {
+            echo "## Cross-platform differential"
+            echo ""
+            echo "Reference: linux-x64 ($(wc -l < "$ref") outcomes)"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          for leg in linux-arm64 macos-arm64 windows-x64; do
+            f="outcomes/$leg.txt"
+            if [ ! -s "$f" ]; then
+              echo "::error::$leg produced no outcomes file"
+              divergent=1
+              continue
+            fi
+            if diff -u "$ref" "$f" > "/tmp/$leg.diff"; then
+              echo "- $leg: identical" >> "$GITHUB_STEP_SUMMARY"
+            else
+              divergent=1
+              echo "::error::$leg diverges from linux-x64"
+              {
+                echo "- **$leg: DIVERGES**"
+                echo '```diff'
+                head -60 "/tmp/$leg.diff"
+                echo '```'
+              } >> "$GITHUB_STEP_SUMMARY"
+            fi
+          done
+
+          echo "divergent=$divergent" >> "$GITHUB_OUTPUT"
+          exit "$divergent"
+
+      - name: File issue on divergence
+        if: failure()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          {
+            echo "The weekly cross-platform differential found platform-divergent test outcomes (or a leg that produced none)."
+            echo ""
+            echo "Run: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+            echo ""
+            echo "See the run's step summary for the per-leg diff against the linux-x64 reference."
+          } > issue-body.txt
+          gh issue create \
+            --title "Cross-platform differential divergence ($(date -u +%Y-%m-%d))" \
+            --label bug \
+            --body-file issue-body.txt

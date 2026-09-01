@@ -31,15 +31,15 @@ references:
   commentId: T:Wolfgang.LogCompressor.Abstraction.IArchiveVerifier
   fullName: Wolfgang.LogCompressor.Abstraction.IArchiveVerifier
   nameWithType: IArchiveVerifier
-- uid: Wolfgang.LogCompressor.Abstraction.IArchiveVerifier.VerifyAsync(System.String,System.String)
-  name: VerifyAsync(string, string)
-  href: api/Wolfgang.LogCompressor.Abstraction.IArchiveVerifier.html#Wolfgang_LogCompressor_Abstraction_IArchiveVerifier_VerifyAsync_System_String_System_String_
-  commentId: M:Wolfgang.LogCompressor.Abstraction.IArchiveVerifier.VerifyAsync(System.String,System.String)
-  name.vb: VerifyAsync(String, String)
-  fullName: Wolfgang.LogCompressor.Abstraction.IArchiveVerifier.VerifyAsync(string, string)
-  fullName.vb: Wolfgang.LogCompressor.Abstraction.IArchiveVerifier.VerifyAsync(String, String)
-  nameWithType: IArchiveVerifier.VerifyAsync(string, string)
-  nameWithType.vb: IArchiveVerifier.VerifyAsync(String, String)
+- uid: Wolfgang.LogCompressor.Abstraction.IArchiveVerifier.VerifyAsync(System.String,System.String,System.Nullable{System.Int64})
+  name: VerifyAsync(string, string, long?)
+  href: api/Wolfgang.LogCompressor.Abstraction.IArchiveVerifier.html#Wolfgang_LogCompressor_Abstraction_IArchiveVerifier_VerifyAsync_System_String_System_String_System_Nullable_System_Int64__
+  commentId: M:Wolfgang.LogCompressor.Abstraction.IArchiveVerifier.VerifyAsync(System.String,System.String,System.Nullable{System.Int64})
+  name.vb: VerifyAsync(String, String, Long?)
+  fullName: Wolfgang.LogCompressor.Abstraction.IArchiveVerifier.VerifyAsync(string, string, long?)
+  fullName.vb: Wolfgang.LogCompressor.Abstraction.IArchiveVerifier.VerifyAsync(String, String, Long?)
+  nameWithType: IArchiveVerifier.VerifyAsync(string, string, long?)
+  nameWithType.vb: IArchiveVerifier.VerifyAsync(String, String, Long?)
 - uid: Wolfgang.LogCompressor.Abstraction.IArchiveVerifier.VerifyAsync*
   name: VerifyAsync
   href: api/Wolfgang.LogCompressor.Abstraction.IArchiveVerifier.html#Wolfgang_LogCompressor_Abstraction_IArchiveVerifier_VerifyAsync_
@@ -1092,12 +1092,24 @@ references:
   commentId: F:Wolfgang.LogCompressor.Model.CompressionFormat.Gz
   fullName: Wolfgang.LogCompressor.Model.CompressionFormat.Gz
   nameWithType: CompressionFormat.Gz
+- uid: Wolfgang.LogCompressor.Model.CompressionFormat.Lz4
+  name: Lz4
+  href: api/Wolfgang.LogCompressor.Model.CompressionFormat.html#Wolfgang_LogCompressor_Model_CompressionFormat_Lz4
+  commentId: F:Wolfgang.LogCompressor.Model.CompressionFormat.Lz4
+  fullName: Wolfgang.LogCompressor.Model.CompressionFormat.Lz4
+  nameWithType: CompressionFormat.Lz4
 - uid: Wolfgang.LogCompressor.Model.CompressionFormat.Zip
   name: Zip
   href: api/Wolfgang.LogCompressor.Model.CompressionFormat.html#Wolfgang_LogCompressor_Model_CompressionFormat_Zip
   commentId: F:Wolfgang.LogCompressor.Model.CompressionFormat.Zip
   fullName: Wolfgang.LogCompressor.Model.CompressionFormat.Zip
   nameWithType: CompressionFormat.Zip
+- uid: Wolfgang.LogCompressor.Model.CompressionFormat.Zstd
+  name: Zstd
+  href: api/Wolfgang.LogCompressor.Model.CompressionFormat.html#Wolfgang_LogCompressor_Model_CompressionFormat_Zstd
+  commentId: F:Wolfgang.LogCompressor.Model.CompressionFormat.Zstd
+  fullName: Wolfgang.LogCompressor.Model.CompressionFormat.Zstd
+  nameWithType: CompressionFormat.Zstd
 - uid: Wolfgang.LogCompressor.Model.CompressionOptions
   name: CompressionOptions
   href: api/Wolfgang.LogCompressor.Model.CompressionOptions.html
@@ -1452,15 +1464,47 @@ references:
   fullName.vb: Wolfgang.LogCompressor.Service.ArchiveVerifier.New
   nameWithType: ArchiveVerifier.ArchiveVerifier
   nameWithType.vb: ArchiveVerifier.New
-- uid: Wolfgang.LogCompressor.Service.ArchiveVerifier.VerifyAsync(System.String,System.String)
-  name: VerifyAsync(string, string)
-  href: api/Wolfgang.LogCompressor.Service.ArchiveVerifier.html#Wolfgang_LogCompressor_Service_ArchiveVerifier_VerifyAsync_System_String_System_String_
-  commentId: M:Wolfgang.LogCompressor.Service.ArchiveVerifier.VerifyAsync(System.String,System.String)
-  name.vb: VerifyAsync(String, String)
-  fullName: Wolfgang.LogCompressor.Service.ArchiveVerifier.VerifyAsync(string, string)
-  fullName.vb: Wolfgang.LogCompressor.Service.ArchiveVerifier.VerifyAsync(String, String)
-  nameWithType: ArchiveVerifier.VerifyAsync(string, string)
-  nameWithType.vb: ArchiveVerifier.VerifyAsync(String, String)
+- uid: Wolfgang.LogCompressor.Service.ArchiveVerifier.DrainAsync(System.IO.Stream,System.IO.Hashing.Crc32)
+  name: DrainAsync(Stream, Crc32?)
+  href: api/Wolfgang.LogCompressor.Service.ArchiveVerifier.html#Wolfgang_LogCompressor_Service_ArchiveVerifier_DrainAsync_System_IO_Stream_System_IO_Hashing_Crc32_
+  commentId: M:Wolfgang.LogCompressor.Service.ArchiveVerifier.DrainAsync(System.IO.Stream,System.IO.Hashing.Crc32)
+  name.vb: DrainAsync(Stream, Crc32)
+  fullName: Wolfgang.LogCompressor.Service.ArchiveVerifier.DrainAsync(System.IO.Stream, System.IO.Hashing.Crc32?)
+  fullName.vb: Wolfgang.LogCompressor.Service.ArchiveVerifier.DrainAsync(System.IO.Stream, System.IO.Hashing.Crc32)
+  nameWithType: ArchiveVerifier.DrainAsync(Stream, Crc32?)
+  nameWithType.vb: ArchiveVerifier.DrainAsync(Stream, Crc32)
+- uid: Wolfgang.LogCompressor.Service.ArchiveVerifier.DrainAsync*
+  name: DrainAsync
+  href: api/Wolfgang.LogCompressor.Service.ArchiveVerifier.html#Wolfgang_LogCompressor_Service_ArchiveVerifier_DrainAsync_
+  commentId: Overload:Wolfgang.LogCompressor.Service.ArchiveVerifier.DrainAsync
+  isSpec: "True"
+  fullName: Wolfgang.LogCompressor.Service.ArchiveVerifier.DrainAsync
+  nameWithType: ArchiveVerifier.DrainAsync
+- uid: Wolfgang.LogCompressor.Service.ArchiveVerifier.EnsureExpectedSize(System.Int64,System.Nullable{System.Int64})
+  name: EnsureExpectedSize(long, long?)
+  href: api/Wolfgang.LogCompressor.Service.ArchiveVerifier.html#Wolfgang_LogCompressor_Service_ArchiveVerifier_EnsureExpectedSize_System_Int64_System_Nullable_System_Int64__
+  commentId: M:Wolfgang.LogCompressor.Service.ArchiveVerifier.EnsureExpectedSize(System.Int64,System.Nullable{System.Int64})
+  name.vb: EnsureExpectedSize(Long, Long?)
+  fullName: Wolfgang.LogCompressor.Service.ArchiveVerifier.EnsureExpectedSize(long, long?)
+  fullName.vb: Wolfgang.LogCompressor.Service.ArchiveVerifier.EnsureExpectedSize(Long, Long?)
+  nameWithType: ArchiveVerifier.EnsureExpectedSize(long, long?)
+  nameWithType.vb: ArchiveVerifier.EnsureExpectedSize(Long, Long?)
+- uid: Wolfgang.LogCompressor.Service.ArchiveVerifier.EnsureExpectedSize*
+  name: EnsureExpectedSize
+  href: api/Wolfgang.LogCompressor.Service.ArchiveVerifier.html#Wolfgang_LogCompressor_Service_ArchiveVerifier_EnsureExpectedSize_
+  commentId: Overload:Wolfgang.LogCompressor.Service.ArchiveVerifier.EnsureExpectedSize
+  isSpec: "True"
+  fullName: Wolfgang.LogCompressor.Service.ArchiveVerifier.EnsureExpectedSize
+  nameWithType: ArchiveVerifier.EnsureExpectedSize
+- uid: Wolfgang.LogCompressor.Service.ArchiveVerifier.VerifyAsync(System.String,System.String,System.Nullable{System.Int64})
+  name: VerifyAsync(string, string, long?)
+  href: api/Wolfgang.LogCompressor.Service.ArchiveVerifier.html#Wolfgang_LogCompressor_Service_ArchiveVerifier_VerifyAsync_System_String_System_String_System_Nullable_System_Int64__
+  commentId: M:Wolfgang.LogCompressor.Service.ArchiveVerifier.VerifyAsync(System.String,System.String,System.Nullable{System.Int64})
+  name.vb: VerifyAsync(String, String, Long?)
+  fullName: Wolfgang.LogCompressor.Service.ArchiveVerifier.VerifyAsync(string, string, long?)
+  fullName.vb: Wolfgang.LogCompressor.Service.ArchiveVerifier.VerifyAsync(String, String, Long?)
+  nameWithType: ArchiveVerifier.VerifyAsync(string, string, long?)
+  nameWithType.vb: ArchiveVerifier.VerifyAsync(String, String, Long?)
 - uid: Wolfgang.LogCompressor.Service.ArchiveVerifier.VerifyAsync*
   name: VerifyAsync
   href: api/Wolfgang.LogCompressor.Service.ArchiveVerifier.html#Wolfgang_LogCompressor_Service_ArchiveVerifier_VerifyAsync_
@@ -1468,22 +1512,38 @@ references:
   isSpec: "True"
   fullName: Wolfgang.LogCompressor.Service.ArchiveVerifier.VerifyAsync
   nameWithType: ArchiveVerifier.VerifyAsync
-- uid: Wolfgang.LogCompressor.Service.ArchiveVerifier.VerifyDecompressionAsync(System.String,System.Func{System.IO.Stream,System.IO.Stream})
-  name: VerifyDecompressionAsync(string, Func<Stream, Stream>)
-  href: api/Wolfgang.LogCompressor.Service.ArchiveVerifier.html#Wolfgang_LogCompressor_Service_ArchiveVerifier_VerifyDecompressionAsync_System_String_System_Func_System_IO_Stream_System_IO_Stream__
-  commentId: M:Wolfgang.LogCompressor.Service.ArchiveVerifier.VerifyDecompressionAsync(System.String,System.Func{System.IO.Stream,System.IO.Stream})
-  name.vb: VerifyDecompressionAsync(String, Func(Of Stream, Stream))
-  fullName: Wolfgang.LogCompressor.Service.ArchiveVerifier.VerifyDecompressionAsync(string, System.Func<System.IO.Stream, System.IO.Stream>)
-  fullName.vb: Wolfgang.LogCompressor.Service.ArchiveVerifier.VerifyDecompressionAsync(String, System.Func(Of System.IO.Stream, System.IO.Stream))
-  nameWithType: ArchiveVerifier.VerifyDecompressionAsync(string, Func<Stream, Stream>)
-  nameWithType.vb: ArchiveVerifier.VerifyDecompressionAsync(String, Func(Of Stream, Stream))
-- uid: Wolfgang.LogCompressor.Service.ArchiveVerifier.VerifyDecompressionAsync*
-  name: VerifyDecompressionAsync
-  href: api/Wolfgang.LogCompressor.Service.ArchiveVerifier.html#Wolfgang_LogCompressor_Service_ArchiveVerifier_VerifyDecompressionAsync_
-  commentId: Overload:Wolfgang.LogCompressor.Service.ArchiveVerifier.VerifyDecompressionAsync
+- uid: Wolfgang.LogCompressor.Service.ArchiveVerifier.VerifyByFormatAsync(System.String,System.String,System.Nullable{System.Int64})
+  name: VerifyByFormatAsync(string, string, long?)
+  href: api/Wolfgang.LogCompressor.Service.ArchiveVerifier.html#Wolfgang_LogCompressor_Service_ArchiveVerifier_VerifyByFormatAsync_System_String_System_String_System_Nullable_System_Int64__
+  commentId: M:Wolfgang.LogCompressor.Service.ArchiveVerifier.VerifyByFormatAsync(System.String,System.String,System.Nullable{System.Int64})
+  name.vb: VerifyByFormatAsync(String, String, Long?)
+  fullName: Wolfgang.LogCompressor.Service.ArchiveVerifier.VerifyByFormatAsync(string, string, long?)
+  fullName.vb: Wolfgang.LogCompressor.Service.ArchiveVerifier.VerifyByFormatAsync(String, String, Long?)
+  nameWithType: ArchiveVerifier.VerifyByFormatAsync(string, string, long?)
+  nameWithType.vb: ArchiveVerifier.VerifyByFormatAsync(String, String, Long?)
+- uid: Wolfgang.LogCompressor.Service.ArchiveVerifier.VerifyByFormatAsync*
+  name: VerifyByFormatAsync
+  href: api/Wolfgang.LogCompressor.Service.ArchiveVerifier.html#Wolfgang_LogCompressor_Service_ArchiveVerifier_VerifyByFormatAsync_
+  commentId: Overload:Wolfgang.LogCompressor.Service.ArchiveVerifier.VerifyByFormatAsync
   isSpec: "True"
-  fullName: Wolfgang.LogCompressor.Service.ArchiveVerifier.VerifyDecompressionAsync
-  nameWithType: ArchiveVerifier.VerifyDecompressionAsync
+  fullName: Wolfgang.LogCompressor.Service.ArchiveVerifier.VerifyByFormatAsync
+  nameWithType: ArchiveVerifier.VerifyByFormatAsync
+- uid: Wolfgang.LogCompressor.Service.ArchiveVerifier.VerifyGZipAsync(System.String,System.Nullable{System.Int64})
+  name: VerifyGZipAsync(string, long?)
+  href: api/Wolfgang.LogCompressor.Service.ArchiveVerifier.html#Wolfgang_LogCompressor_Service_ArchiveVerifier_VerifyGZipAsync_System_String_System_Nullable_System_Int64__
+  commentId: M:Wolfgang.LogCompressor.Service.ArchiveVerifier.VerifyGZipAsync(System.String,System.Nullable{System.Int64})
+  name.vb: VerifyGZipAsync(String, Long?)
+  fullName: Wolfgang.LogCompressor.Service.ArchiveVerifier.VerifyGZipAsync(string, long?)
+  fullName.vb: Wolfgang.LogCompressor.Service.ArchiveVerifier.VerifyGZipAsync(String, Long?)
+  nameWithType: ArchiveVerifier.VerifyGZipAsync(string, long?)
+  nameWithType.vb: ArchiveVerifier.VerifyGZipAsync(String, Long?)
+- uid: Wolfgang.LogCompressor.Service.ArchiveVerifier.VerifyGZipAsync*
+  name: VerifyGZipAsync
+  href: api/Wolfgang.LogCompressor.Service.ArchiveVerifier.html#Wolfgang_LogCompressor_Service_ArchiveVerifier_VerifyGZipAsync_
+  commentId: Overload:Wolfgang.LogCompressor.Service.ArchiveVerifier.VerifyGZipAsync
+  isSpec: "True"
+  fullName: Wolfgang.LogCompressor.Service.ArchiveVerifier.VerifyGZipAsync
+  nameWithType: ArchiveVerifier.VerifyGZipAsync
 - uid: Wolfgang.LogCompressor.Service.ArchiveVerifier.VerifyReadableAsync(System.String)
   name: VerifyReadableAsync(string)
   href: api/Wolfgang.LogCompressor.Service.ArchiveVerifier.html#Wolfgang_LogCompressor_Service_ArchiveVerifier_VerifyReadableAsync_System_String_
@@ -1500,6 +1560,22 @@ references:
   isSpec: "True"
   fullName: Wolfgang.LogCompressor.Service.ArchiveVerifier.VerifyReadableAsync
   nameWithType: ArchiveVerifier.VerifyReadableAsync
+- uid: Wolfgang.LogCompressor.Service.ArchiveVerifier.VerifySizedDecompressionAsync(System.String,System.Func{System.IO.Stream,System.IO.Stream},System.Nullable{System.Int64})
+  name: VerifySizedDecompressionAsync(string, Func<Stream, Stream>, long?)
+  href: api/Wolfgang.LogCompressor.Service.ArchiveVerifier.html#Wolfgang_LogCompressor_Service_ArchiveVerifier_VerifySizedDecompressionAsync_System_String_System_Func_System_IO_Stream_System_IO_Stream__System_Nullable_System_Int64__
+  commentId: M:Wolfgang.LogCompressor.Service.ArchiveVerifier.VerifySizedDecompressionAsync(System.String,System.Func{System.IO.Stream,System.IO.Stream},System.Nullable{System.Int64})
+  name.vb: VerifySizedDecompressionAsync(String, Func(Of Stream, Stream), Long?)
+  fullName: Wolfgang.LogCompressor.Service.ArchiveVerifier.VerifySizedDecompressionAsync(string, System.Func<System.IO.Stream, System.IO.Stream>, long?)
+  fullName.vb: Wolfgang.LogCompressor.Service.ArchiveVerifier.VerifySizedDecompressionAsync(String, System.Func(Of System.IO.Stream, System.IO.Stream), Long?)
+  nameWithType: ArchiveVerifier.VerifySizedDecompressionAsync(string, Func<Stream, Stream>, long?)
+  nameWithType.vb: ArchiveVerifier.VerifySizedDecompressionAsync(String, Func(Of Stream, Stream), Long?)
+- uid: Wolfgang.LogCompressor.Service.ArchiveVerifier.VerifySizedDecompressionAsync*
+  name: VerifySizedDecompressionAsync
+  href: api/Wolfgang.LogCompressor.Service.ArchiveVerifier.html#Wolfgang_LogCompressor_Service_ArchiveVerifier_VerifySizedDecompressionAsync_
+  commentId: Overload:Wolfgang.LogCompressor.Service.ArchiveVerifier.VerifySizedDecompressionAsync
+  isSpec: "True"
+  fullName: Wolfgang.LogCompressor.Service.ArchiveVerifier.VerifySizedDecompressionAsync
+  nameWithType: ArchiveVerifier.VerifySizedDecompressionAsync
 - uid: Wolfgang.LogCompressor.Service.ArchiveVerifier.VerifyTarStreamAsync(System.String,System.Func{System.IO.Stream,System.IO.Stream})
   name: VerifyTarStreamAsync(string, Func<Stream, Stream>)
   href: api/Wolfgang.LogCompressor.Service.ArchiveVerifier.html#Wolfgang_LogCompressor_Service_ArchiveVerifier_VerifyTarStreamAsync_System_String_System_Func_System_IO_Stream_System_IO_Stream__
@@ -1944,6 +2020,108 @@ references:
   commentId: F:Wolfgang.LogCompressor.Service.Compression.GZipCompressionStrategy._level
   fullName: Wolfgang.LogCompressor.Service.Compression.GZipCompressionStrategy._level
   nameWithType: GZipCompressionStrategy._level
+- uid: Wolfgang.LogCompressor.Service.Compression.Lz4CompressionStrategy
+  name: Lz4CompressionStrategy
+  href: api/Wolfgang.LogCompressor.Service.Compression.Lz4CompressionStrategy.html
+  commentId: T:Wolfgang.LogCompressor.Service.Compression.Lz4CompressionStrategy
+  fullName: Wolfgang.LogCompressor.Service.Compression.Lz4CompressionStrategy
+  nameWithType: Lz4CompressionStrategy
+- uid: Wolfgang.LogCompressor.Service.Compression.Lz4CompressionStrategy.#ctor(System.IO.Compression.CompressionLevel)
+  name: Lz4CompressionStrategy(CompressionLevel)
+  href: api/Wolfgang.LogCompressor.Service.Compression.Lz4CompressionStrategy.html#Wolfgang_LogCompressor_Service_Compression_Lz4CompressionStrategy__ctor_System_IO_Compression_CompressionLevel_
+  commentId: M:Wolfgang.LogCompressor.Service.Compression.Lz4CompressionStrategy.#ctor(System.IO.Compression.CompressionLevel)
+  name.vb: New(CompressionLevel)
+  fullName: Wolfgang.LogCompressor.Service.Compression.Lz4CompressionStrategy.Lz4CompressionStrategy(System.IO.Compression.CompressionLevel)
+  fullName.vb: Wolfgang.LogCompressor.Service.Compression.Lz4CompressionStrategy.New(System.IO.Compression.CompressionLevel)
+  nameWithType: Lz4CompressionStrategy.Lz4CompressionStrategy(CompressionLevel)
+  nameWithType.vb: Lz4CompressionStrategy.New(CompressionLevel)
+- uid: Wolfgang.LogCompressor.Service.Compression.Lz4CompressionStrategy.#ctor*
+  name: Lz4CompressionStrategy
+  href: api/Wolfgang.LogCompressor.Service.Compression.Lz4CompressionStrategy.html#Wolfgang_LogCompressor_Service_Compression_Lz4CompressionStrategy__ctor_
+  commentId: Overload:Wolfgang.LogCompressor.Service.Compression.Lz4CompressionStrategy.#ctor
+  isSpec: "True"
+  name.vb: New
+  fullName: Wolfgang.LogCompressor.Service.Compression.Lz4CompressionStrategy.Lz4CompressionStrategy
+  fullName.vb: Wolfgang.LogCompressor.Service.Compression.Lz4CompressionStrategy.New
+  nameWithType: Lz4CompressionStrategy.Lz4CompressionStrategy
+  nameWithType.vb: Lz4CompressionStrategy.New
+- uid: Wolfgang.LogCompressor.Service.Compression.Lz4CompressionStrategy.BundleFileExtension
+  name: BundleFileExtension
+  href: api/Wolfgang.LogCompressor.Service.Compression.Lz4CompressionStrategy.html#Wolfgang_LogCompressor_Service_Compression_Lz4CompressionStrategy_BundleFileExtension
+  commentId: P:Wolfgang.LogCompressor.Service.Compression.Lz4CompressionStrategy.BundleFileExtension
+  fullName: Wolfgang.LogCompressor.Service.Compression.Lz4CompressionStrategy.BundleFileExtension
+  nameWithType: Lz4CompressionStrategy.BundleFileExtension
+- uid: Wolfgang.LogCompressor.Service.Compression.Lz4CompressionStrategy.BundleFileExtension*
+  name: BundleFileExtension
+  href: api/Wolfgang.LogCompressor.Service.Compression.Lz4CompressionStrategy.html#Wolfgang_LogCompressor_Service_Compression_Lz4CompressionStrategy_BundleFileExtension_
+  commentId: Overload:Wolfgang.LogCompressor.Service.Compression.Lz4CompressionStrategy.BundleFileExtension
+  isSpec: "True"
+  fullName: Wolfgang.LogCompressor.Service.Compression.Lz4CompressionStrategy.BundleFileExtension
+  nameWithType: Lz4CompressionStrategy.BundleFileExtension
+- uid: Wolfgang.LogCompressor.Service.Compression.Lz4CompressionStrategy.CompressFileAsync(System.IO.Stream,System.IO.Stream,System.String,System.Threading.CancellationToken)
+  name: CompressFileAsync(Stream, Stream, string, CancellationToken)
+  href: api/Wolfgang.LogCompressor.Service.Compression.Lz4CompressionStrategy.html#Wolfgang_LogCompressor_Service_Compression_Lz4CompressionStrategy_CompressFileAsync_System_IO_Stream_System_IO_Stream_System_String_System_Threading_CancellationToken_
+  commentId: M:Wolfgang.LogCompressor.Service.Compression.Lz4CompressionStrategy.CompressFileAsync(System.IO.Stream,System.IO.Stream,System.String,System.Threading.CancellationToken)
+  name.vb: CompressFileAsync(Stream, Stream, String, CancellationToken)
+  fullName: Wolfgang.LogCompressor.Service.Compression.Lz4CompressionStrategy.CompressFileAsync(System.IO.Stream, System.IO.Stream, string, System.Threading.CancellationToken)
+  fullName.vb: Wolfgang.LogCompressor.Service.Compression.Lz4CompressionStrategy.CompressFileAsync(System.IO.Stream, System.IO.Stream, String, System.Threading.CancellationToken)
+  nameWithType: Lz4CompressionStrategy.CompressFileAsync(Stream, Stream, string, CancellationToken)
+  nameWithType.vb: Lz4CompressionStrategy.CompressFileAsync(Stream, Stream, String, CancellationToken)
+- uid: Wolfgang.LogCompressor.Service.Compression.Lz4CompressionStrategy.CompressFileAsync*
+  name: CompressFileAsync
+  href: api/Wolfgang.LogCompressor.Service.Compression.Lz4CompressionStrategy.html#Wolfgang_LogCompressor_Service_Compression_Lz4CompressionStrategy_CompressFileAsync_
+  commentId: Overload:Wolfgang.LogCompressor.Service.Compression.Lz4CompressionStrategy.CompressFileAsync
+  isSpec: "True"
+  fullName: Wolfgang.LogCompressor.Service.Compression.Lz4CompressionStrategy.CompressFileAsync
+  nameWithType: Lz4CompressionStrategy.CompressFileAsync
+- uid: Wolfgang.LogCompressor.Service.Compression.Lz4CompressionStrategy.CompressFilesAsync(System.Collections.Generic.IEnumerable{System.ValueTuple{System.IO.Stream,System.String}},System.IO.Stream,System.Threading.CancellationToken)
+  name: CompressFilesAsync(IEnumerable<(Stream Stream, string EntryName)>, Stream, CancellationToken)
+  href: api/Wolfgang.LogCompressor.Service.Compression.Lz4CompressionStrategy.html#Wolfgang_LogCompressor_Service_Compression_Lz4CompressionStrategy_CompressFilesAsync_System_Collections_Generic_IEnumerable_System_ValueTuple_System_IO_Stream_System_String___System_IO_Stream_System_Threading_CancellationToken_
+  commentId: M:Wolfgang.LogCompressor.Service.Compression.Lz4CompressionStrategy.CompressFilesAsync(System.Collections.Generic.IEnumerable{System.ValueTuple{System.IO.Stream,System.String}},System.IO.Stream,System.Threading.CancellationToken)
+  name.vb: CompressFilesAsync(IEnumerable(Of (Stream As Stream, EntryName As String)), Stream, CancellationToken)
+  fullName: Wolfgang.LogCompressor.Service.Compression.Lz4CompressionStrategy.CompressFilesAsync(System.Collections.Generic.IEnumerable<(System.IO.Stream Stream, string EntryName)>, System.IO.Stream, System.Threading.CancellationToken)
+  fullName.vb: Wolfgang.LogCompressor.Service.Compression.Lz4CompressionStrategy.CompressFilesAsync(System.Collections.Generic.IEnumerable(Of (Stream As System.IO.Stream, EntryName As String)), System.IO.Stream, System.Threading.CancellationToken)
+  nameWithType: Lz4CompressionStrategy.CompressFilesAsync(IEnumerable<(Stream Stream, string EntryName)>, Stream, CancellationToken)
+  nameWithType.vb: Lz4CompressionStrategy.CompressFilesAsync(IEnumerable(Of (Stream As Stream, EntryName As String)), Stream, CancellationToken)
+- uid: Wolfgang.LogCompressor.Service.Compression.Lz4CompressionStrategy.CompressFilesAsync*
+  name: CompressFilesAsync
+  href: api/Wolfgang.LogCompressor.Service.Compression.Lz4CompressionStrategy.html#Wolfgang_LogCompressor_Service_Compression_Lz4CompressionStrategy_CompressFilesAsync_
+  commentId: Overload:Wolfgang.LogCompressor.Service.Compression.Lz4CompressionStrategy.CompressFilesAsync
+  isSpec: "True"
+  fullName: Wolfgang.LogCompressor.Service.Compression.Lz4CompressionStrategy.CompressFilesAsync
+  nameWithType: Lz4CompressionStrategy.CompressFilesAsync
+- uid: Wolfgang.LogCompressor.Service.Compression.Lz4CompressionStrategy.FileExtension
+  name: FileExtension
+  href: api/Wolfgang.LogCompressor.Service.Compression.Lz4CompressionStrategy.html#Wolfgang_LogCompressor_Service_Compression_Lz4CompressionStrategy_FileExtension
+  commentId: P:Wolfgang.LogCompressor.Service.Compression.Lz4CompressionStrategy.FileExtension
+  fullName: Wolfgang.LogCompressor.Service.Compression.Lz4CompressionStrategy.FileExtension
+  nameWithType: Lz4CompressionStrategy.FileExtension
+- uid: Wolfgang.LogCompressor.Service.Compression.Lz4CompressionStrategy.FileExtension*
+  name: FileExtension
+  href: api/Wolfgang.LogCompressor.Service.Compression.Lz4CompressionStrategy.html#Wolfgang_LogCompressor_Service_Compression_Lz4CompressionStrategy_FileExtension_
+  commentId: Overload:Wolfgang.LogCompressor.Service.Compression.Lz4CompressionStrategy.FileExtension
+  isSpec: "True"
+  fullName: Wolfgang.LogCompressor.Service.Compression.Lz4CompressionStrategy.FileExtension
+  nameWithType: Lz4CompressionStrategy.FileExtension
+- uid: Wolfgang.LogCompressor.Service.Compression.Lz4CompressionStrategy.MapLevel(System.IO.Compression.CompressionLevel)
+  name: MapLevel(CompressionLevel)
+  href: api/Wolfgang.LogCompressor.Service.Compression.Lz4CompressionStrategy.html#Wolfgang_LogCompressor_Service_Compression_Lz4CompressionStrategy_MapLevel_System_IO_Compression_CompressionLevel_
+  commentId: M:Wolfgang.LogCompressor.Service.Compression.Lz4CompressionStrategy.MapLevel(System.IO.Compression.CompressionLevel)
+  fullName: Wolfgang.LogCompressor.Service.Compression.Lz4CompressionStrategy.MapLevel(System.IO.Compression.CompressionLevel)
+  nameWithType: Lz4CompressionStrategy.MapLevel(CompressionLevel)
+- uid: Wolfgang.LogCompressor.Service.Compression.Lz4CompressionStrategy.MapLevel*
+  name: MapLevel
+  href: api/Wolfgang.LogCompressor.Service.Compression.Lz4CompressionStrategy.html#Wolfgang_LogCompressor_Service_Compression_Lz4CompressionStrategy_MapLevel_
+  commentId: Overload:Wolfgang.LogCompressor.Service.Compression.Lz4CompressionStrategy.MapLevel
+  isSpec: "True"
+  fullName: Wolfgang.LogCompressor.Service.Compression.Lz4CompressionStrategy.MapLevel
+  nameWithType: Lz4CompressionStrategy.MapLevel
+- uid: Wolfgang.LogCompressor.Service.Compression.Lz4CompressionStrategy._level
+  name: _level
+  href: api/Wolfgang.LogCompressor.Service.Compression.Lz4CompressionStrategy.html#Wolfgang_LogCompressor_Service_Compression_Lz4CompressionStrategy__level
+  commentId: F:Wolfgang.LogCompressor.Service.Compression.Lz4CompressionStrategy._level
+  fullName: Wolfgang.LogCompressor.Service.Compression.Lz4CompressionStrategy._level
+  nameWithType: Lz4CompressionStrategy._level
 - uid: Wolfgang.LogCompressor.Service.Compression.ZipCompressionStrategy
   name: ZipCompressionStrategy
   href: api/Wolfgang.LogCompressor.Service.Compression.ZipCompressionStrategy.html
@@ -2033,6 +2211,108 @@ references:
   commentId: F:Wolfgang.LogCompressor.Service.Compression.ZipCompressionStrategy._level
   fullName: Wolfgang.LogCompressor.Service.Compression.ZipCompressionStrategy._level
   nameWithType: ZipCompressionStrategy._level
+- uid: Wolfgang.LogCompressor.Service.Compression.ZstdCompressionStrategy
+  name: ZstdCompressionStrategy
+  href: api/Wolfgang.LogCompressor.Service.Compression.ZstdCompressionStrategy.html
+  commentId: T:Wolfgang.LogCompressor.Service.Compression.ZstdCompressionStrategy
+  fullName: Wolfgang.LogCompressor.Service.Compression.ZstdCompressionStrategy
+  nameWithType: ZstdCompressionStrategy
+- uid: Wolfgang.LogCompressor.Service.Compression.ZstdCompressionStrategy.#ctor(System.IO.Compression.CompressionLevel)
+  name: ZstdCompressionStrategy(CompressionLevel)
+  href: api/Wolfgang.LogCompressor.Service.Compression.ZstdCompressionStrategy.html#Wolfgang_LogCompressor_Service_Compression_ZstdCompressionStrategy__ctor_System_IO_Compression_CompressionLevel_
+  commentId: M:Wolfgang.LogCompressor.Service.Compression.ZstdCompressionStrategy.#ctor(System.IO.Compression.CompressionLevel)
+  name.vb: New(CompressionLevel)
+  fullName: Wolfgang.LogCompressor.Service.Compression.ZstdCompressionStrategy.ZstdCompressionStrategy(System.IO.Compression.CompressionLevel)
+  fullName.vb: Wolfgang.LogCompressor.Service.Compression.ZstdCompressionStrategy.New(System.IO.Compression.CompressionLevel)
+  nameWithType: ZstdCompressionStrategy.ZstdCompressionStrategy(CompressionLevel)
+  nameWithType.vb: ZstdCompressionStrategy.New(CompressionLevel)
+- uid: Wolfgang.LogCompressor.Service.Compression.ZstdCompressionStrategy.#ctor*
+  name: ZstdCompressionStrategy
+  href: api/Wolfgang.LogCompressor.Service.Compression.ZstdCompressionStrategy.html#Wolfgang_LogCompressor_Service_Compression_ZstdCompressionStrategy__ctor_
+  commentId: Overload:Wolfgang.LogCompressor.Service.Compression.ZstdCompressionStrategy.#ctor
+  isSpec: "True"
+  name.vb: New
+  fullName: Wolfgang.LogCompressor.Service.Compression.ZstdCompressionStrategy.ZstdCompressionStrategy
+  fullName.vb: Wolfgang.LogCompressor.Service.Compression.ZstdCompressionStrategy.New
+  nameWithType: ZstdCompressionStrategy.ZstdCompressionStrategy
+  nameWithType.vb: ZstdCompressionStrategy.New
+- uid: Wolfgang.LogCompressor.Service.Compression.ZstdCompressionStrategy.BundleFileExtension
+  name: BundleFileExtension
+  href: api/Wolfgang.LogCompressor.Service.Compression.ZstdCompressionStrategy.html#Wolfgang_LogCompressor_Service_Compression_ZstdCompressionStrategy_BundleFileExtension
+  commentId: P:Wolfgang.LogCompressor.Service.Compression.ZstdCompressionStrategy.BundleFileExtension
+  fullName: Wolfgang.LogCompressor.Service.Compression.ZstdCompressionStrategy.BundleFileExtension
+  nameWithType: ZstdCompressionStrategy.BundleFileExtension
+- uid: Wolfgang.LogCompressor.Service.Compression.ZstdCompressionStrategy.BundleFileExtension*
+  name: BundleFileExtension
+  href: api/Wolfgang.LogCompressor.Service.Compression.ZstdCompressionStrategy.html#Wolfgang_LogCompressor_Service_Compression_ZstdCompressionStrategy_BundleFileExtension_
+  commentId: Overload:Wolfgang.LogCompressor.Service.Compression.ZstdCompressionStrategy.BundleFileExtension
+  isSpec: "True"
+  fullName: Wolfgang.LogCompressor.Service.Compression.ZstdCompressionStrategy.BundleFileExtension
+  nameWithType: ZstdCompressionStrategy.BundleFileExtension
+- uid: Wolfgang.LogCompressor.Service.Compression.ZstdCompressionStrategy.CompressFileAsync(System.IO.Stream,System.IO.Stream,System.String,System.Threading.CancellationToken)
+  name: CompressFileAsync(Stream, Stream, string, CancellationToken)
+  href: api/Wolfgang.LogCompressor.Service.Compression.ZstdCompressionStrategy.html#Wolfgang_LogCompressor_Service_Compression_ZstdCompressionStrategy_CompressFileAsync_System_IO_Stream_System_IO_Stream_System_String_System_Threading_CancellationToken_
+  commentId: M:Wolfgang.LogCompressor.Service.Compression.ZstdCompressionStrategy.CompressFileAsync(System.IO.Stream,System.IO.Stream,System.String,System.Threading.CancellationToken)
+  name.vb: CompressFileAsync(Stream, Stream, String, CancellationToken)
+  fullName: Wolfgang.LogCompressor.Service.Compression.ZstdCompressionStrategy.CompressFileAsync(System.IO.Stream, System.IO.Stream, string, System.Threading.CancellationToken)
+  fullName.vb: Wolfgang.LogCompressor.Service.Compression.ZstdCompressionStrategy.CompressFileAsync(System.IO.Stream, System.IO.Stream, String, System.Threading.CancellationToken)
+  nameWithType: ZstdCompressionStrategy.CompressFileAsync(Stream, Stream, string, CancellationToken)
+  nameWithType.vb: ZstdCompressionStrategy.CompressFileAsync(Stream, Stream, String, CancellationToken)
+- uid: Wolfgang.LogCompressor.Service.Compression.ZstdCompressionStrategy.CompressFileAsync*
+  name: CompressFileAsync
+  href: api/Wolfgang.LogCompressor.Service.Compression.ZstdCompressionStrategy.html#Wolfgang_LogCompressor_Service_Compression_ZstdCompressionStrategy_CompressFileAsync_
+  commentId: Overload:Wolfgang.LogCompressor.Service.Compression.ZstdCompressionStrategy.CompressFileAsync
+  isSpec: "True"
+  fullName: Wolfgang.LogCompressor.Service.Compression.ZstdCompressionStrategy.CompressFileAsync
+  nameWithType: ZstdCompressionStrategy.CompressFileAsync
+- uid: Wolfgang.LogCompressor.Service.Compression.ZstdCompressionStrategy.CompressFilesAsync(System.Collections.Generic.IEnumerable{System.ValueTuple{System.IO.Stream,System.String}},System.IO.Stream,System.Threading.CancellationToken)
+  name: CompressFilesAsync(IEnumerable<(Stream Stream, string EntryName)>, Stream, CancellationToken)
+  href: api/Wolfgang.LogCompressor.Service.Compression.ZstdCompressionStrategy.html#Wolfgang_LogCompressor_Service_Compression_ZstdCompressionStrategy_CompressFilesAsync_System_Collections_Generic_IEnumerable_System_ValueTuple_System_IO_Stream_System_String___System_IO_Stream_System_Threading_CancellationToken_
+  commentId: M:Wolfgang.LogCompressor.Service.Compression.ZstdCompressionStrategy.CompressFilesAsync(System.Collections.Generic.IEnumerable{System.ValueTuple{System.IO.Stream,System.String}},System.IO.Stream,System.Threading.CancellationToken)
+  name.vb: CompressFilesAsync(IEnumerable(Of (Stream As Stream, EntryName As String)), Stream, CancellationToken)
+  fullName: Wolfgang.LogCompressor.Service.Compression.ZstdCompressionStrategy.CompressFilesAsync(System.Collections.Generic.IEnumerable<(System.IO.Stream Stream, string EntryName)>, System.IO.Stream, System.Threading.CancellationToken)
+  fullName.vb: Wolfgang.LogCompressor.Service.Compression.ZstdCompressionStrategy.CompressFilesAsync(System.Collections.Generic.IEnumerable(Of (Stream As System.IO.Stream, EntryName As String)), System.IO.Stream, System.Threading.CancellationToken)
+  nameWithType: ZstdCompressionStrategy.CompressFilesAsync(IEnumerable<(Stream Stream, string EntryName)>, Stream, CancellationToken)
+  nameWithType.vb: ZstdCompressionStrategy.CompressFilesAsync(IEnumerable(Of (Stream As Stream, EntryName As String)), Stream, CancellationToken)
+- uid: Wolfgang.LogCompressor.Service.Compression.ZstdCompressionStrategy.CompressFilesAsync*
+  name: CompressFilesAsync
+  href: api/Wolfgang.LogCompressor.Service.Compression.ZstdCompressionStrategy.html#Wolfgang_LogCompressor_Service_Compression_ZstdCompressionStrategy_CompressFilesAsync_
+  commentId: Overload:Wolfgang.LogCompressor.Service.Compression.ZstdCompressionStrategy.CompressFilesAsync
+  isSpec: "True"
+  fullName: Wolfgang.LogCompressor.Service.Compression.ZstdCompressionStrategy.CompressFilesAsync
+  nameWithType: ZstdCompressionStrategy.CompressFilesAsync
+- uid: Wolfgang.LogCompressor.Service.Compression.ZstdCompressionStrategy.FileExtension
+  name: FileExtension
+  href: api/Wolfgang.LogCompressor.Service.Compression.ZstdCompressionStrategy.html#Wolfgang_LogCompressor_Service_Compression_ZstdCompressionStrategy_FileExtension
+  commentId: P:Wolfgang.LogCompressor.Service.Compression.ZstdCompressionStrategy.FileExtension
+  fullName: Wolfgang.LogCompressor.Service.Compression.ZstdCompressionStrategy.FileExtension
+  nameWithType: ZstdCompressionStrategy.FileExtension
+- uid: Wolfgang.LogCompressor.Service.Compression.ZstdCompressionStrategy.FileExtension*
+  name: FileExtension
+  href: api/Wolfgang.LogCompressor.Service.Compression.ZstdCompressionStrategy.html#Wolfgang_LogCompressor_Service_Compression_ZstdCompressionStrategy_FileExtension_
+  commentId: Overload:Wolfgang.LogCompressor.Service.Compression.ZstdCompressionStrategy.FileExtension
+  isSpec: "True"
+  fullName: Wolfgang.LogCompressor.Service.Compression.ZstdCompressionStrategy.FileExtension
+  nameWithType: ZstdCompressionStrategy.FileExtension
+- uid: Wolfgang.LogCompressor.Service.Compression.ZstdCompressionStrategy.MapLevel(System.IO.Compression.CompressionLevel)
+  name: MapLevel(CompressionLevel)
+  href: api/Wolfgang.LogCompressor.Service.Compression.ZstdCompressionStrategy.html#Wolfgang_LogCompressor_Service_Compression_ZstdCompressionStrategy_MapLevel_System_IO_Compression_CompressionLevel_
+  commentId: M:Wolfgang.LogCompressor.Service.Compression.ZstdCompressionStrategy.MapLevel(System.IO.Compression.CompressionLevel)
+  fullName: Wolfgang.LogCompressor.Service.Compression.ZstdCompressionStrategy.MapLevel(System.IO.Compression.CompressionLevel)
+  nameWithType: ZstdCompressionStrategy.MapLevel(CompressionLevel)
+- uid: Wolfgang.LogCompressor.Service.Compression.ZstdCompressionStrategy.MapLevel*
+  name: MapLevel
+  href: api/Wolfgang.LogCompressor.Service.Compression.ZstdCompressionStrategy.html#Wolfgang_LogCompressor_Service_Compression_ZstdCompressionStrategy_MapLevel_
+  commentId: Overload:Wolfgang.LogCompressor.Service.Compression.ZstdCompressionStrategy.MapLevel
+  isSpec: "True"
+  fullName: Wolfgang.LogCompressor.Service.Compression.ZstdCompressionStrategy.MapLevel
+  nameWithType: ZstdCompressionStrategy.MapLevel
+- uid: Wolfgang.LogCompressor.Service.Compression.ZstdCompressionStrategy._level
+  name: _level
+  href: api/Wolfgang.LogCompressor.Service.Compression.ZstdCompressionStrategy.html#Wolfgang_LogCompressor_Service_Compression_ZstdCompressionStrategy__level
+  commentId: F:Wolfgang.LogCompressor.Service.Compression.ZstdCompressionStrategy._level
+  fullName: Wolfgang.LogCompressor.Service.Compression.ZstdCompressionStrategy._level
+  nameWithType: ZstdCompressionStrategy._level
 - uid: Wolfgang.LogCompressor.Service.FileFilterService
   name: FileFilterService
   href: api/Wolfgang.LogCompressor.Service.FileFilterService.html
@@ -2271,19 +2551,28 @@ references:
   isSpec: "True"
   fullName: Wolfgang.LogCompressor.Service.ProcessLock.Dispose
   nameWithType: ProcessLock.Dispose
-- uid: Wolfgang.LogCompressor.Service.ProcessLock.IsLockStale
-  name: IsLockStale()
-  href: api/Wolfgang.LogCompressor.Service.ProcessLock.html#Wolfgang_LogCompressor_Service_ProcessLock_IsLockStale
-  commentId: M:Wolfgang.LogCompressor.Service.ProcessLock.IsLockStale
-  fullName: Wolfgang.LogCompressor.Service.ProcessLock.IsLockStale()
-  nameWithType: ProcessLock.IsLockStale()
-- uid: Wolfgang.LogCompressor.Service.ProcessLock.IsLockStale*
-  name: IsLockStale
-  href: api/Wolfgang.LogCompressor.Service.ProcessLock.html#Wolfgang_LogCompressor_Service_ProcessLock_IsLockStale_
-  commentId: Overload:Wolfgang.LogCompressor.Service.ProcessLock.IsLockStale
+- uid: Wolfgang.LogCompressor.Service.ProcessLock.IsLockFile(System.String)
+  name: IsLockFile(string)
+  href: api/Wolfgang.LogCompressor.Service.ProcessLock.html#Wolfgang_LogCompressor_Service_ProcessLock_IsLockFile_System_String_
+  commentId: M:Wolfgang.LogCompressor.Service.ProcessLock.IsLockFile(System.String)
+  name.vb: IsLockFile(String)
+  fullName: Wolfgang.LogCompressor.Service.ProcessLock.IsLockFile(string)
+  fullName.vb: Wolfgang.LogCompressor.Service.ProcessLock.IsLockFile(String)
+  nameWithType: ProcessLock.IsLockFile(string)
+  nameWithType.vb: ProcessLock.IsLockFile(String)
+- uid: Wolfgang.LogCompressor.Service.ProcessLock.IsLockFile*
+  name: IsLockFile
+  href: api/Wolfgang.LogCompressor.Service.ProcessLock.html#Wolfgang_LogCompressor_Service_ProcessLock_IsLockFile_
+  commentId: Overload:Wolfgang.LogCompressor.Service.ProcessLock.IsLockFile
   isSpec: "True"
-  fullName: Wolfgang.LogCompressor.Service.ProcessLock.IsLockStale
-  nameWithType: ProcessLock.IsLockStale
+  fullName: Wolfgang.LogCompressor.Service.ProcessLock.IsLockFile
+  nameWithType: ProcessLock.IsLockFile
+- uid: Wolfgang.LogCompressor.Service.ProcessLock.LockFileName
+  name: LockFileName
+  href: api/Wolfgang.LogCompressor.Service.ProcessLock.html#Wolfgang_LogCompressor_Service_ProcessLock_LockFileName
+  commentId: F:Wolfgang.LogCompressor.Service.ProcessLock.LockFileName
+  fullName: Wolfgang.LogCompressor.Service.ProcessLock.LockFileName
+  nameWithType: ProcessLock.LockFileName
 - uid: Wolfgang.LogCompressor.Service.ProcessLock.TryAcquire
   name: TryAcquire()
   href: api/Wolfgang.LogCompressor.Service.ProcessLock.html#Wolfgang_LogCompressor_Service_ProcessLock_TryAcquire
@@ -2297,6 +2586,19 @@ references:
   isSpec: "True"
   fullName: Wolfgang.LogCompressor.Service.ProcessLock.TryAcquire
   nameWithType: ProcessLock.TryAcquire
+- uid: Wolfgang.LogCompressor.Service.ProcessLock.TryDeleteLockFile
+  name: TryDeleteLockFile()
+  href: api/Wolfgang.LogCompressor.Service.ProcessLock.html#Wolfgang_LogCompressor_Service_ProcessLock_TryDeleteLockFile
+  commentId: M:Wolfgang.LogCompressor.Service.ProcessLock.TryDeleteLockFile
+  fullName: Wolfgang.LogCompressor.Service.ProcessLock.TryDeleteLockFile()
+  nameWithType: ProcessLock.TryDeleteLockFile()
+- uid: Wolfgang.LogCompressor.Service.ProcessLock.TryDeleteLockFile*
+  name: TryDeleteLockFile
+  href: api/Wolfgang.LogCompressor.Service.ProcessLock.html#Wolfgang_LogCompressor_Service_ProcessLock_TryDeleteLockFile_
+  commentId: Overload:Wolfgang.LogCompressor.Service.ProcessLock.TryDeleteLockFile
+  isSpec: "True"
+  fullName: Wolfgang.LogCompressor.Service.ProcessLock.TryDeleteLockFile
+  nameWithType: ProcessLock.TryDeleteLockFile
 - uid: Wolfgang.LogCompressor.Service.ProcessLock._lockFilePath
   name: _lockFilePath
   href: api/Wolfgang.LogCompressor.Service.ProcessLock.html#Wolfgang_LogCompressor_Service_ProcessLock__lockFilePath

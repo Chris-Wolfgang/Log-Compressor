@@ -16,7 +16,7 @@
       <meta name="docfx:rel" content="../">
       
       
-      <meta name="docfx:docurl" content="https://github.com/Chris-Wolfgang/Log-Compressor/new/main/apiSpec/new?filename=Wolfgang_LogCompressor_Command_SharedOptions.md&amp;value=---%0Auid%3A%20Wolfgang.LogCompressor.Command.SharedOptions%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">
+      <meta name="docfx:docurl" content="https://github.com/Chris-Wolfgang/Log-Compressor/new/v0.2.0/apiSpec/new?filename=Wolfgang_LogCompressor_Command_SharedOptions.md&amp;value=---%0Auid%3A%20Wolfgang.LogCompressor.Command.SharedOptions%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">
       <meta name="loc:inThisArticle" content="In this article">
       <meta name="loc:searchResultsCount" content="{count} results for &quot;{query}&quot;">
       <meta name="loc:searchNoResults" content="No results for &quot;{query}&quot;">
@@ -75,7 +75,7 @@
 
 
   <h1 id="Wolfgang_LogCompressor_Command_SharedOptions" data-uid="Wolfgang.LogCompressor.Command.SharedOptions" class="text-break">
-Class SharedOptions  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/main/src/Wolfgang.LogCompressor/Command/SharedOptions.cs/#L12"><i class="bi bi-code-slash"></i></a>
+Class SharedOptions  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/v0.2.0/src/Wolfgang.LogCompressor/Command/SharedOptions.cs/#L12"><i class="bi bi-code-slash"></i></a>
   </h1>
 
   <div class="facts text-secondary">
@@ -149,7 +149,7 @@ Class SharedOptions  <a class="header-action link-secondary" title="View source"
 
   <h3 id="Wolfgang_LogCompressor_Command_SharedOptions_InvalidEnumSentinel" data-uid="Wolfgang.LogCompressor.Command.SharedOptions.InvalidEnumSentinel">
   InvalidEnumSentinel
-  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/main/src/Wolfgang.LogCompressor/Command/SharedOptions.cs/#L15"><i class="bi bi-code-slash"></i></a>
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/v0.2.0/src/Wolfgang.LogCompressor/Command/SharedOptions.cs/#L15"><i class="bi bi-code-slash"></i></a>
   </h3>
 
   <div class="markdown level1 summary"></div>
@@ -184,7 +184,7 @@ Class SharedOptions  <a class="header-action link-secondary" title="View source"
 
   <h3 id="Wolfgang_LogCompressor_Command_SharedOptions_DeleteArchivesOlderThan" data-uid="Wolfgang.LogCompressor.Command.SharedOptions.DeleteArchivesOlderThan">
   DeleteArchivesOlderThan
-  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/main/src/Wolfgang.LogCompressor/Command/SharedOptions.cs/#L188"><i class="bi bi-code-slash"></i></a>
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/v0.2.0/src/Wolfgang.LogCompressor/Command/SharedOptions.cs/#L188"><i class="bi bi-code-slash"></i></a>
   </h3>
 
   <div class="markdown level1 summary"><p>Gets or sets the number of days after which old archives are deleted.</p>
@@ -218,7 +218,7 @@ public int? DeleteArchivesOlderThan { get; set; }</code></pre>
 
   <h3 id="Wolfgang_LogCompressor_Command_SharedOptions_Exclude" data-uid="Wolfgang.LogCompressor.Command.SharedOptions.Exclude">
   Exclude
-  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/main/src/Wolfgang.LogCompressor/Command/SharedOptions.cs/#L128"><i class="bi bi-code-slash"></i></a>
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/v0.2.0/src/Wolfgang.LogCompressor/Command/SharedOptions.cs/#L128"><i class="bi bi-code-slash"></i></a>
   </h3>
 
   <div class="markdown level1 summary"><p>Gets or sets the glob patterns to exclude.</p>
@@ -251,7 +251,7 @@ public string[]? Exclude { get; set; }</code></pre>
 
   <h3 id="Wolfgang_LogCompressor_Command_SharedOptions_Format" data-uid="Wolfgang.LogCompressor.Command.SharedOptions.Format">
   Format
-  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/main/src/Wolfgang.LogCompressor/Command/SharedOptions.cs/#L92"><i class="bi bi-code-slash"></i></a>
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/v0.2.0/src/Wolfgang.LogCompressor/Command/SharedOptions.cs/#L92"><i class="bi bi-code-slash"></i></a>
   </h3>
 
   <div class="markdown level1 summary"><p>Gets or sets the compression format.</p>
@@ -259,7 +259,7 @@ public string[]? Exclude { get; set; }</code></pre>
   <div class="markdown level1 conceptual"></div>
 
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">[Option(&quot;-f|--format&quot;, Description = &quot;Compression format: zip, gz, brotli (default: zip)&quot;)]
+    <pre><code class="lang-csharp hljs">[Option(&quot;-f|--format&quot;, Description = &quot;Compression format: zip, gz, brotli, zstd, lz4 (default: zip)&quot;)]
 public string Format { get; set; }</code></pre>
   </div>
 
@@ -284,7 +284,7 @@ public string Format { get; set; }</code></pre>
 
   <h3 id="Wolfgang_LogCompressor_Command_SharedOptions_Include" data-uid="Wolfgang.LogCompressor.Command.SharedOptions.Include">
   Include
-  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/main/src/Wolfgang.LogCompressor/Command/SharedOptions.cs/#L116"><i class="bi bi-code-slash"></i></a>
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/v0.2.0/src/Wolfgang.LogCompressor/Command/SharedOptions.cs/#L116"><i class="bi bi-code-slash"></i></a>
   </h3>
 
   <div class="markdown level1 summary"><p>Gets or sets the glob patterns to include.</p>
@@ -317,7 +317,7 @@ public string[]? Include { get; set; }</code></pre>
 
   <h3 id="Wolfgang_LogCompressor_Command_SharedOptions_Level" data-uid="Wolfgang.LogCompressor.Command.SharedOptions.Level">
   Level
-  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/main/src/Wolfgang.LogCompressor/Command/SharedOptions.cs/#L104"><i class="bi bi-code-slash"></i></a>
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/v0.2.0/src/Wolfgang.LogCompressor/Command/SharedOptions.cs/#L104"><i class="bi bi-code-slash"></i></a>
   </h3>
 
   <div class="markdown level1 summary"><p>Gets or sets the compression level.</p>
@@ -350,7 +350,7 @@ public string Level { get; set; }</code></pre>
 
   <h3 id="Wolfgang_LogCompressor_Command_SharedOptions_MaxDateTime" data-uid="Wolfgang.LogCompressor.Command.SharedOptions.MaxDateTime">
   MaxDateTime
-  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/main/src/Wolfgang.LogCompressor/Command/SharedOptions.cs/#L80"><i class="bi bi-code-slash"></i></a>
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/v0.2.0/src/Wolfgang.LogCompressor/Command/SharedOptions.cs/#L80"><i class="bi bi-code-slash"></i></a>
   </h3>
 
   <div class="markdown level1 summary"><p>Gets or sets the maximum last-modified date filter.</p>
@@ -383,7 +383,7 @@ public string? MaxDateTime { get; set; }</code></pre>
 
   <h3 id="Wolfgang_LogCompressor_Command_SharedOptions_MinDateTime" data-uid="Wolfgang.LogCompressor.Command.SharedOptions.MinDateTime">
   MinDateTime
-  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/main/src/Wolfgang.LogCompressor/Command/SharedOptions.cs/#L68"><i class="bi bi-code-slash"></i></a>
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/v0.2.0/src/Wolfgang.LogCompressor/Command/SharedOptions.cs/#L68"><i class="bi bi-code-slash"></i></a>
   </h3>
 
   <div class="markdown level1 summary"><p>Gets or sets the minimum last-modified date filter.</p>
@@ -416,7 +416,7 @@ public string? MinDateTime { get; set; }</code></pre>
 
   <h3 id="Wolfgang_LogCompressor_Command_SharedOptions_NoLock" data-uid="Wolfgang.LogCompressor.Command.SharedOptions.NoLock">
   NoLock
-  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/main/src/Wolfgang.LogCompressor/Command/SharedOptions.cs/#L176"><i class="bi bi-code-slash"></i></a>
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/v0.2.0/src/Wolfgang.LogCompressor/Command/SharedOptions.cs/#L176"><i class="bi bi-code-slash"></i></a>
   </h3>
 
   <div class="markdown level1 summary"><p>Gets or sets a value indicating whether to disable directory locking.</p>
@@ -449,7 +449,7 @@ public bool NoLock { get; set; }</code></pre>
 
   <h3 id="Wolfgang_LogCompressor_Command_SharedOptions_NoVerify" data-uid="Wolfgang.LogCompressor.Command.SharedOptions.NoVerify">
   NoVerify
-  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/main/src/Wolfgang.LogCompressor/Command/SharedOptions.cs/#L140"><i class="bi bi-code-slash"></i></a>
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/v0.2.0/src/Wolfgang.LogCompressor/Command/SharedOptions.cs/#L140"><i class="bi bi-code-slash"></i></a>
   </h3>
 
   <div class="markdown level1 summary"><p>Gets or sets a value indicating whether to skip archive verification.</p>
@@ -482,7 +482,7 @@ public bool NoVerify { get; set; }</code></pre>
 
   <h3 id="Wolfgang_LogCompressor_Command_SharedOptions_OlderThan" data-uid="Wolfgang.LogCompressor.Command.SharedOptions.OlderThan">
   OlderThan
-  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/main/src/Wolfgang.LogCompressor/Command/SharedOptions.cs/#L55"><i class="bi bi-code-slash"></i></a>
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/v0.2.0/src/Wolfgang.LogCompressor/Command/SharedOptions.cs/#L55"><i class="bi bi-code-slash"></i></a>
   </h3>
 
   <div class="markdown level1 summary"><p>Gets or sets the minimum file age in days.</p>
@@ -516,7 +516,7 @@ public int? OlderThan { get; set; }</code></pre>
 
   <h3 id="Wolfgang_LogCompressor_Command_SharedOptions_Output" data-uid="Wolfgang.LogCompressor.Command.SharedOptions.Output">
   Output
-  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/main/src/Wolfgang.LogCompressor/Command/SharedOptions.cs/#L43"><i class="bi bi-code-slash"></i></a>
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/v0.2.0/src/Wolfgang.LogCompressor/Command/SharedOptions.cs/#L43"><i class="bi bi-code-slash"></i></a>
   </h3>
 
   <div class="markdown level1 summary"><p>Gets or sets the output directory.</p>
@@ -549,7 +549,7 @@ public string? Output { get; set; }</code></pre>
 
   <h3 id="Wolfgang_LogCompressor_Command_SharedOptions_Path" data-uid="Wolfgang.LogCompressor.Command.SharedOptions.Path">
   Path
-  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/main/src/Wolfgang.LogCompressor/Command/SharedOptions.cs/#L22"><i class="bi bi-code-slash"></i></a>
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/v0.2.0/src/Wolfgang.LogCompressor/Command/SharedOptions.cs/#L22"><i class="bi bi-code-slash"></i></a>
   </h3>
 
   <div class="markdown level1 summary"><p>Gets or sets the path to a file or directory to process.</p>
@@ -583,7 +583,7 @@ public required string Path { get; set; }</code></pre>
 
   <h3 id="Wolfgang_LogCompressor_Command_SharedOptions_Recurse" data-uid="Wolfgang.LogCompressor.Command.SharedOptions.Recurse">
   Recurse
-  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/main/src/Wolfgang.LogCompressor/Command/SharedOptions.cs/#L31"><i class="bi bi-code-slash"></i></a>
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/v0.2.0/src/Wolfgang.LogCompressor/Command/SharedOptions.cs/#L31"><i class="bi bi-code-slash"></i></a>
   </h3>
 
   <div class="markdown level1 summary"><p>Gets or sets a value indicating whether to recurse into subdirectories.</p>
@@ -616,7 +616,7 @@ public bool Recurse { get; set; }</code></pre>
 
   <h3 id="Wolfgang_LogCompressor_Command_SharedOptions_Report" data-uid="Wolfgang.LogCompressor.Command.SharedOptions.Report">
   Report
-  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/main/src/Wolfgang.LogCompressor/Command/SharedOptions.cs/#L152"><i class="bi bi-code-slash"></i></a>
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/v0.2.0/src/Wolfgang.LogCompressor/Command/SharedOptions.cs/#L152"><i class="bi bi-code-slash"></i></a>
   </h3>
 
   <div class="markdown level1 summary"><p>Gets or sets the report format.</p>
@@ -649,7 +649,7 @@ public string? Report { get; set; }</code></pre>
 
   <h3 id="Wolfgang_LogCompressor_Command_SharedOptions_ReportPath" data-uid="Wolfgang.LogCompressor.Command.SharedOptions.ReportPath">
   ReportPath
-  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/main/src/Wolfgang.LogCompressor/Command/SharedOptions.cs/#L164"><i class="bi bi-code-slash"></i></a>
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/v0.2.0/src/Wolfgang.LogCompressor/Command/SharedOptions.cs/#L164"><i class="bi bi-code-slash"></i></a>
   </h3>
 
   <div class="markdown level1 summary"><p>Gets or sets the report output path.</p>
@@ -686,7 +686,7 @@ public string? ReportPath { get; set; }</code></pre>
 
   <h3 id="Wolfgang_LogCompressor_Command_SharedOptions_BuildOptions" data-uid="Wolfgang.LogCompressor.Command.SharedOptions.BuildOptions">
   BuildOptions()
-  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/main/src/Wolfgang.LogCompressor/Command/SharedOptions.cs/#L263"><i class="bi bi-code-slash"></i></a>
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/v0.2.0/src/Wolfgang.LogCompressor/Command/SharedOptions.cs/#L263"><i class="bi bi-code-slash"></i></a>
   </h3>
 
   <div class="markdown level1 summary"><p>Builds a <a class="xref" href="Wolfgang.LogCompressor.Model.CompressionOptions.html">CompressionOptions</a> from the current CLI values.</p>
@@ -719,7 +719,7 @@ public string? ReportPath { get; set; }</code></pre>
 
   <h3 id="Wolfgang_LogCompressor_Command_SharedOptions_IsValidDateTime_System_String_" data-uid="Wolfgang.LogCompressor.Command.SharedOptions.IsValidDateTime(System.String)">
   IsValidDateTime(string?)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/main/src/Wolfgang.LogCompressor/Command/SharedOptions.cs/#L304"><i class="bi bi-code-slash"></i></a>
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/v0.2.0/src/Wolfgang.LogCompressor/Command/SharedOptions.cs/#L304"><i class="bi bi-code-slash"></i></a>
   </h3>
 
   <div class="markdown level1 summary"></div>
@@ -755,7 +755,7 @@ public string? ReportPath { get; set; }</code></pre>
 
   <h3 id="Wolfgang_LogCompressor_Command_SharedOptions_IsValidReportFormat_System_String_" data-uid="Wolfgang.LogCompressor.Command.SharedOptions.IsValidReportFormat(System.String)">
   IsValidReportFormat(string)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/main/src/Wolfgang.LogCompressor/Command/SharedOptions.cs/#L341"><i class="bi bi-code-slash"></i></a>
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/v0.2.0/src/Wolfgang.LogCompressor/Command/SharedOptions.cs/#L343"><i class="bi bi-code-slash"></i></a>
   </h3>
 
   <div class="markdown level1 summary"></div>
@@ -791,7 +791,7 @@ public string? ReportPath { get; set; }</code></pre>
 
   <h3 id="Wolfgang_LogCompressor_Command_SharedOptions_ParseDateTime_System_String_" data-uid="Wolfgang.LogCompressor.Command.SharedOptions.ParseDateTime(System.String)">
   ParseDateTime(string?)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/main/src/Wolfgang.LogCompressor/Command/SharedOptions.cs/#L290"><i class="bi bi-code-slash"></i></a>
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/v0.2.0/src/Wolfgang.LogCompressor/Command/SharedOptions.cs/#L290"><i class="bi bi-code-slash"></i></a>
   </h3>
 
   <div class="markdown level1 summary"></div>
@@ -827,7 +827,7 @@ public string? ReportPath { get; set; }</code></pre>
 
   <h3 id="Wolfgang_LogCompressor_Command_SharedOptions_TryParseFormat_System_String_Wolfgang_LogCompressor_Model_CompressionFormat__" data-uid="Wolfgang.LogCompressor.Command.SharedOptions.TryParseFormat(System.String,Wolfgang.LogCompressor.Model.CompressionFormat@)">
   TryParseFormat(string, out CompressionFormat)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/main/src/Wolfgang.LogCompressor/Command/SharedOptions.cs/#L311"><i class="bi bi-code-slash"></i></a>
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/v0.2.0/src/Wolfgang.LogCompressor/Command/SharedOptions.cs/#L311"><i class="bi bi-code-slash"></i></a>
   </h3>
 
   <div class="markdown level1 summary"></div>
@@ -865,7 +865,7 @@ public string? ReportPath { get; set; }</code></pre>
 
   <h3 id="Wolfgang_LogCompressor_Command_SharedOptions_TryParseLevel_System_String_System_IO_Compression_CompressionLevel__" data-uid="Wolfgang.LogCompressor.Command.SharedOptions.TryParseLevel(System.String,System.IO.Compression.CompressionLevel@)">
   TryParseLevel(string, out CompressionLevel)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/main/src/Wolfgang.LogCompressor/Command/SharedOptions.cs/#L326"><i class="bi bi-code-slash"></i></a>
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/v0.2.0/src/Wolfgang.LogCompressor/Command/SharedOptions.cs/#L328"><i class="bi bi-code-slash"></i></a>
   </h3>
 
   <div class="markdown level1 summary"></div>
@@ -903,7 +903,7 @@ public string? ReportPath { get; set; }</code></pre>
 
   <h3 id="Wolfgang_LogCompressor_Command_SharedOptions_ValidateOptions_McMaster_Extensions_CommandLineUtils_IConsole_" data-uid="Wolfgang.LogCompressor.Command.SharedOptions.ValidateOptions(McMaster.Extensions.CommandLineUtils.IConsole)">
   ValidateOptions(IConsole)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/main/src/Wolfgang.LogCompressor/Command/SharedOptions.cs/#L203"><i class="bi bi-code-slash"></i></a>
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/v0.2.0/src/Wolfgang.LogCompressor/Command/SharedOptions.cs/#L203"><i class="bi bi-code-slash"></i></a>
   </h3>
 
   <div class="markdown level1 summary"><p>Validates command options and writes errors to the console.</p>
@@ -942,7 +942,7 @@ public string? ReportPath { get; set; }</code></pre>
 </article>
 
         <div class="contribution d-print-none">
-          <a href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/main/src/Wolfgang.LogCompressor/Command/SharedOptions.cs/#L12" class="edit-link">Edit this page</a>
+          <a href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/v0.2.0/src/Wolfgang.LogCompressor/Command/SharedOptions.cs/#L12" class="edit-link">Edit this page</a>
         </div>
 
 
@@ -958,7 +958,7 @@ public string? ReportPath { get; set; }</code></pre>
     <footer class="border-top text-secondary">
       <div class="container-xxl">
         <div class="flex-fill">
-          Made with DocFX
+          Made with DocFX <script>(function(){var r='/';if(window.location.hostname.endsWith('.github.io')){var s=window.location.pathname.split('/').filter(Boolean);if(s.length)r='/'+s[0]+'/';}var t=document.createElement('script');t.src=r+'public/version-picker.js';t.async=true;document.head.appendChild(t);})();</script>
         </div>
       </div>
     </footer>

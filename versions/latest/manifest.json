@@ -424,7 +424,7 @@
       "Uid": null,
       "IsMRef": true,
       "Title": "Wolfgang.LogCompressor.Service.ArchiveVerifier",
-      "Summary": "<p sourcefile=\"api/Wolfgang.LogCompressor.Service.ArchiveVerifier.yml\" sourcestartlinenumber=\"1\">Verifies compressed archive integrity by attempting to read the archive contents.</p>\n"
+      "Summary": "<p sourcefile=\"api/Wolfgang.LogCompressor.Service.ArchiveVerifier.yml\" sourcestartlinenumber=\"1\">Verifies compressed archive integrity by reading the archive contents and\nchecking format-level completeness.</p>\n"
     },
     {
       "type": "ManagedReference",
@@ -498,6 +498,20 @@
     },
     {
       "type": "ManagedReference",
+      "source_relative_path": "api/Wolfgang.LogCompressor.Service.Compression.Lz4CompressionStrategy.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Wolfgang.LogCompressor.Service.Compression.Lz4CompressionStrategy.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "Wolfgang.LogCompressor.Service.Compression.Lz4CompressionStrategy",
+      "Summary": "<p sourcefile=\"api/Wolfgang.LogCompressor.Service.Compression.Lz4CompressionStrategy.yml\" sourcestartlinenumber=\"1\">Compression strategy using the LZ4 format. Bundles use tar+lz4.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
       "source_relative_path": "api/Wolfgang.LogCompressor.Service.Compression.ZipCompressionStrategy.yml",
       "output": {
         ".html": {
@@ -509,6 +523,20 @@
       "IsMRef": true,
       "Title": "Wolfgang.LogCompressor.Service.Compression.ZipCompressionStrategy",
       "Summary": "<p sourcefile=\"api/Wolfgang.LogCompressor.Service.Compression.ZipCompressionStrategy.yml\" sourcestartlinenumber=\"1\">Compression strategy using the ZIP archive format.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Wolfgang.LogCompressor.Service.Compression.ZstdCompressionStrategy.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Wolfgang.LogCompressor.Service.Compression.ZstdCompressionStrategy.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "Wolfgang.LogCompressor.Service.Compression.ZstdCompressionStrategy",
+      "Summary": "<p sourcefile=\"api/Wolfgang.LogCompressor.Service.Compression.ZstdCompressionStrategy.yml\" sourcestartlinenumber=\"1\">Compression strategy using the Zstandard (zstd) format. Bundles use tar+zstd.</p>\n"
     },
     {
       "type": "ManagedReference",

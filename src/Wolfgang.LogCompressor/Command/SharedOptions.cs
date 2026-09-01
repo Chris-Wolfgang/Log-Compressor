@@ -135,6 +135,18 @@ internal abstract class SharedOptions
 
 
     /// <summary>
+    /// Gets or sets the batch error policy.
+    /// </summary>
+    [Option
+    (
+        "--on-error",
+        Description = "When an item fails: skip, fail, or retry:N (1-100, then skip) (default: skip)"
+    )]
+    public string OnError { get; set; } = "skip";
+
+
+
+    /// <summary>
     /// Gets or sets the glob patterns to include.
     /// </summary>
     [Option
@@ -294,6 +306,7 @@ internal abstract class SharedOptions
         _ = TryParseFormat(Format, out var format);
         _ = TryParseLevel(Level, out var level);
         _ = TryParseTimestampSource(Timestamp, out var timestampSource);
+        _ = ErrorPolicy.TryParse(OnError, out var onError);
 
         return new CompressionOptions
         {
@@ -307,6 +320,7 @@ internal abstract class SharedOptions
             Level = level,
             TimestampSource = timestampSource,
             NamePrefix = Name,
+            OnError = onError,
             IncludePatterns = Include ?? [],
             ExcludePatterns = Exclude ?? [],
             Verify = !NoVerify,
@@ -368,6 +382,12 @@ internal abstract class SharedOptions
         if (Name != null && (Name.Length == 0 || Name.IndexOfAny(System.IO.Path.GetInvalidFileNameChars()) >= 0))
         {
             console.Error.WriteLine("Error: --name must be a valid file name fragment (no path separators or reserved characters).");
+            return false;
+        }
+
+        if (!ErrorPolicy.TryParse(OnError, out _))
+        {
+            console.Error.WriteLine($"Error: Unsupported error policy: '{OnError}'. Supported: skip, fail, retry:N (1-100)");
             return false;
         }
 

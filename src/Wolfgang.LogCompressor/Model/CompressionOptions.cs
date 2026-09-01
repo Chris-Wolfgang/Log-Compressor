@@ -44,6 +44,13 @@ internal record CompressionOptions
 
 
     /// <summary>
+    /// Gets the batch error policy (skip / fail / retry-then-skip).
+    /// </summary>
+    public ErrorPolicy OnError { get; init; } = ErrorPolicy.Default;
+
+
+
+    /// <summary>
     /// Gets the minimum file age in calendar days. Only files last modified more than this many days ago (before local midnight that many days back) are included.
     /// </summary>
     public int? OlderThanDays { get; init; }

@@ -92,7 +92,15 @@ internal class Bundle : SharedOptions
 
             logger.LogDebug("Completed {Command}", GetType().Name);
 
-            return result.Success ? ExitCode.Success : ExitCode.ApplicationError;
+            if (result.Success)
+            {
+                return ExitCode.Success;
+            }
+
+            // Unreadable inputs were skipped but the bundle itself was written
+            // and verified — degraded, not broken (fail mode throws instead of
+            // reaching here).
+            return result.SkippedCount > 0 ? ExitCode.CompletedWithSkips : ExitCode.ApplicationError;
         }
         catch (Exception e)
         {

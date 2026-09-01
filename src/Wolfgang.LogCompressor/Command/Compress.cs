@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using McMaster.Extensions.CommandLineUtils;
 using Microsoft.Extensions.Logging;
+using Wolfgang.LogCompressor.Model;
 using Wolfgang.LogCompressor.Service;
 
 namespace Wolfgang.LogCompressor.Command;
@@ -98,7 +99,17 @@ internal class Compress : SharedOptions
 
             logger.LogDebug("Completed {Command}", GetType().Name);
 
-            return failed > 0 ? ExitCode.ApplicationError : ExitCode.Success;
+            if (failed > 0)
+            {
+                // Under skip/retry the run completed by policy: signal a
+                // partial outcome distinctly so schedulers can tell degraded
+                // from broken (--on-error fail keeps the hard error).
+                return options.OnError.Mode == OnErrorMode.Fail
+                    ? ExitCode.ApplicationError
+                    : ExitCode.CompletedWithSkips;
+            }
+
+            return ExitCode.Success;
         }
         catch (Exception e)
         {

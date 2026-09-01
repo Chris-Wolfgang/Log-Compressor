@@ -79,7 +79,7 @@ public sealed class CompressCommandTests : IDisposable
 
 
     [Fact]
-    public async Task OnExecuteAsync_when_someFilesFail_expected_applicationError()
+    public async Task OnExecuteAsync_when_someFilesFail_expected_completedWithSkips()
     {
         _compressService.ExecuteAsync(Arg.Any<CompressionOptions>(), Arg.Any<CancellationToken>())
             .Returns
@@ -95,7 +95,9 @@ public sealed class CompressCommandTests : IDisposable
 
         var result = await command.OnExecuteAsync(_console, _logger, _compressService, _reportService, _retentionService);
 
-        Assert.Equal(ExitCode.ApplicationError, result);
+        // Default skip mode: partial failure is "completed with skips" (3), not
+        // ApplicationError (11) — schedulers must distinguish degraded from broken.
+        Assert.Equal(ExitCode.CompletedWithSkips, result);
     }
 
 
@@ -298,7 +300,7 @@ public sealed class CompressCommandTests : IDisposable
 
 
     [Fact]
-    public async Task OnExecuteAsync_when_anyFileFails_expected_applicationError()
+    public async Task OnExecuteAsync_when_onErrorFail_and_anyFileFails_expected_applicationError()
     {
         _compressService.ExecuteAsync(Arg.Any<CompressionOptions>(), Arg.Any<CancellationToken>())
             .Returns(
@@ -307,7 +309,7 @@ public sealed class CompressCommandTests : IDisposable
                 new CompressionResult { SourcePath = "b.log", OutputPath = "b.zip", Success = false, ErrorMessage = "boom" }
             ]);
 
-        var command = new Compress { Path = Path.Combine(_tempDir, "test.log"), NoLock = true };
+        var command = new Compress { Path = Path.Combine(_tempDir, "test.log"), NoLock = true, OnError = "fail" };
 
         var result = await command.OnExecuteAsync(_console, _logger, _compressService, _reportService, _retentionService);
 

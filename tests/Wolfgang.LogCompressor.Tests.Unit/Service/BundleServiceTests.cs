@@ -310,6 +310,7 @@ public sealed class BundleServiceTests : IDisposable
         var result = await _sut.ExecuteAsync(new CompressionOptions { SourcePath = dir });
 
         Assert.False(result.Success);
+        Assert.Equal(1, result.SkippedCount);                // lets the command exit 3, not 11
         Assert.Contains("skipped", result.ErrorMessage, StringComparison.OrdinalIgnoreCase);
         _fileSystem.DidNotReceive().DeleteFile(files[0]);   // unreadable file preserved
         _fileSystem.Received(1).DeleteFile(files[1]);        // readable file bundled + deleted
@@ -481,6 +482,86 @@ public sealed class BundleServiceTests : IDisposable
 
         _fileSystem.Received(1).EnumerateFiles(dir, "*", SearchOption.TopDirectoryOnly);
         _fileSystem.DidNotReceive().EnumerateFiles(dir, "*", SearchOption.AllDirectories);
+    }
+
+
+
+    [Fact]
+    public async Task ExecuteAsync_when_onErrorFail_withUnreadableInput_expected_bundleFails()
+    {
+        var dir = "/tmp/logs/MyApp";
+        var files = CreateTempFiles(2);
+        var infos = files.Select(f => new FileInfo(f)).ToList();
+
+        _fileSystem.FileExists(dir).Returns(returnThis: false);
+        _fileSystem.DirectoryExists(dir).Returns(returnThis: true);
+        _fileSystem.EnumerateFiles(dir, "*", SearchOption.TopDirectoryOnly).Returns(files);
+        _fileSystem.GetFileInfo(files[0]).Returns(infos[0]);
+        _fileSystem.GetFileInfo(files[1]).Returns(infos[1]);
+        _fileFilter.Apply
+        (
+            Arg.Any<IEnumerable<FileInfo>>(),
+            Arg.Any<int?>(),
+            Arg.Any<DateTime?>(),
+            Arg.Any<DateTime?>(),
+            Arg.Any<IReadOnlyList<string>>(),
+            Arg.Any<IReadOnlyList<string>>()
+        ).Returns(infos);
+        _fileNamer.GetBundleFileName("MyApp", Arg.Any<IReadOnlyList<FileInfo>>(), "zip", Arg.Any<TimestampSource>(), Arg.Any<string?>()).Returns("bundle.zip");
+        _fileSystem.OpenRead(files[0]).Returns(_ => throw new IOException("locked"));
+        _fileSystem.OpenRead(files[1]).Returns(new MemoryStream("content"u8.ToArray()));
+        _fileSystem.CreateWrite(Arg.Any<string>()).Returns(new MemoryStream());
+
+        var options = new CompressionOptions
+        {
+            SourcePath = dir,
+            OnError = new ErrorPolicy { Mode = OnErrorMode.Fail }
+        };
+        var result = await _sut.ExecuteAsync(options);
+
+        Assert.False(result.Success);
+        Assert.Contains("--on-error fail", result.ErrorMessage, StringComparison.Ordinal);
+        _fileSystem.DidNotReceive().DeleteFile(Arg.Any<string>());
+    }
+
+
+
+    [Fact]
+    public async Task ExecuteAsync_when_onErrorRetry_withTransientUnreadable_expected_inputBundled()
+    {
+        var dir = "/tmp/logs/MyApp";
+        var file = CreateTempFiles(1)[0];
+        var info = new FileInfo(file);
+
+        _fileSystem.FileExists(dir).Returns(returnThis: false);
+        _fileSystem.DirectoryExists(dir).Returns(returnThis: true);
+        _fileSystem.EnumerateFiles(dir, "*", SearchOption.TopDirectoryOnly).Returns([file]);
+        _fileSystem.GetFileInfo(file).Returns(info);
+        _fileFilter.Apply
+        (
+            Arg.Any<IEnumerable<FileInfo>>(),
+            Arg.Any<int?>(),
+            Arg.Any<DateTime?>(),
+            Arg.Any<DateTime?>(),
+            Arg.Any<IReadOnlyList<string>>(),
+            Arg.Any<IReadOnlyList<string>>()
+        ).Returns([info]);
+        _fileNamer.GetBundleFileName("MyApp", Arg.Any<IReadOnlyList<FileInfo>>(), "zip", Arg.Any<TimestampSource>(), Arg.Any<string?>()).Returns("bundle.zip");
+        // Throws once, then readable — the transient sharing-violation shape.
+        var attempts = 0;
+        _fileSystem.OpenRead(file).Returns(_ =>
+            ++attempts == 1 ? throw new IOException("locked") : new MemoryStream("content"u8.ToArray()));
+        _fileSystem.CreateWrite(Arg.Any<string>()).Returns(new MemoryStream());
+
+        var options = new CompressionOptions
+        {
+            SourcePath = dir,
+            OnError = new ErrorPolicy { RetryCount = 2 }
+        };
+        var result = await _sut.ExecuteAsync(options);
+
+        Assert.True(result.Success);
+        _fileSystem.Received(1).DeleteFile(file);
     }
 
 

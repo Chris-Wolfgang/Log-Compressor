@@ -71,7 +71,7 @@ public sealed class DecompressCommandTests : IDisposable
 
 
     [Fact]
-    public async Task OnExecuteAsync_when_anyArchiveFails_expected_applicationError()
+    public async Task OnExecuteAsync_when_anyArchiveFails_expected_completedWithSkips()
     {
         _decompressService.ExecuteAsync(Arg.Any<DecompressionOptions>(), Arg.Any<CancellationToken>())
             .Returns(
@@ -84,7 +84,39 @@ public sealed class DecompressCommandTests : IDisposable
 
         var result = await command.OnExecuteAsync(_console, _logger, _decompressService, _reportService);
 
+        // Default skip mode: partial failure is "completed with skips" (3), not
+        // ApplicationError (11) — schedulers must distinguish degraded from broken.
+        Assert.Equal(ExitCode.CompletedWithSkips, result);
+    }
+
+
+
+    [Fact]
+    public async Task OnExecuteAsync_when_onErrorFail_and_anyArchiveFails_expected_applicationError()
+    {
+        _decompressService.ExecuteAsync(Arg.Any<DecompressionOptions>(), Arg.Any<CancellationToken>())
+            .Returns(
+            [
+                new CompressionResult { SourcePath = "b.zip", OutputPath = "/out", Success = false, ErrorMessage = "boom" }
+            ]);
+
+        var command = new Decompress { Path = _tempDir, NoLock = true, OnError = "fail" };
+
+        var result = await command.OnExecuteAsync(_console, _logger, _decompressService, _reportService);
+
         Assert.Equal(ExitCode.ApplicationError, result);
+    }
+
+
+
+    [Fact]
+    public async Task OnExecuteAsync_when_invalidOnError_expected_invalidArguments()
+    {
+        var command = new Decompress { Path = _tempDir, NoLock = true, OnError = "explode" };
+
+        var result = await command.OnExecuteAsync(_console, _logger, _decompressService, _reportService);
+
+        Assert.Equal(ExitCode.InvalidArguments, result);
     }
 
 

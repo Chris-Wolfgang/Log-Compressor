@@ -529,6 +529,143 @@ public sealed class CompressServiceTests : IDisposable
 
 
 
+    [Fact]
+    public async Task ExecuteAsync_when_onErrorFail_expected_stopsAtFirstFailure()
+    {
+        var dir = Path.GetTempPath();
+        var files = new[] { CreateTempFile(), CreateTempFile() };
+        var fileInfos = files.Select(f => new FileInfo(f)).ToList();
+
+        _fileSystem.FileExists(dir).Returns(returnThis: false);
+        _fileSystem.DirectoryExists(dir).Returns(returnThis: true);
+        _fileSystem.EnumerateFiles(dir, "*", SearchOption.TopDirectoryOnly).Returns(files);
+        _fileSystem.GetFileInfo(files[0]).Returns(fileInfos[0]);
+        _fileSystem.GetFileInfo(files[1]).Returns(fileInfos[1]);
+        _fileFilter.Apply
+        (
+            Arg.Any<IEnumerable<FileInfo>>(),
+            Arg.Any<int?>(),
+            Arg.Any<DateTime?>(),
+            Arg.Any<DateTime?>(),
+            Arg.Any<IReadOnlyList<string>>(),
+            Arg.Any<IReadOnlyList<string>>()
+        ).Returns(fileInfos);
+        _fileNamer.GetCompressedFileName(Arg.Any<FileInfo>(), "zip", Arg.Any<TimestampSource>(), Arg.Any<string?>()).Returns("out.zip");
+        _fileSystem.OpenRead(Arg.Any<string>()).Returns(_ => new MemoryStream("content"u8.ToArray()));
+        _fileSystem.CreateWrite(Arg.Any<string>()).Returns(_ => new MemoryStream());
+        _archiveVerifier.VerifyAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<long?>()).Returns(Task.FromResult(false));
+
+        var options = new CompressionOptions
+        {
+            SourcePath = dir,
+            Verify = true,
+            OnError = new ErrorPolicy { Mode = OnErrorMode.Fail }
+        };
+        var results = await _sut.ExecuteAsync(options);
+
+        // First failure stops the run: one result, second file never attempted.
+        var result = Assert.Single(results);
+        Assert.False(result.Success);
+    }
+
+
+
+    [Fact]
+    public async Task ExecuteAsync_when_onErrorRetry_expected_secondAttemptSucceeds()
+    {
+        var tempFile = CreateTempFile();
+        var fileInfo = new FileInfo(tempFile);
+
+        _fileSystem.FileExists(tempFile).Returns(returnThis: true);
+        _fileSystem.GetFileInfo(tempFile).Returns(fileInfo);
+        _fileFilter.Apply
+        (
+            Arg.Any<IEnumerable<FileInfo>>(),
+            Arg.Any<int?>(),
+            Arg.Any<DateTime?>(),
+            Arg.Any<DateTime?>(),
+            Arg.Any<IReadOnlyList<string>>(),
+            Arg.Any<IReadOnlyList<string>>()
+        ).Returns([fileInfo]);
+        _fileNamer.GetCompressedFileName(Arg.Any<FileInfo>(), "zip", Arg.Any<TimestampSource>(), Arg.Any<string?>()).Returns("out.zip");
+        _fileSystem.OpenRead(tempFile).Returns(_ => new MemoryStream("content"u8.ToArray()));
+        _fileSystem.CreateWrite(Arg.Any<string>()).Returns(_ => new MemoryStream());
+        // Fails verification once, passes on the retry.
+        _archiveVerifier.VerifyAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<long?>())
+            .Returns(Task.FromResult(false), Task.FromResult(true));
+
+        var options = new CompressionOptions
+        {
+            SourcePath = tempFile,
+            Verify = true,
+            OnError = new ErrorPolicy { RetryCount = 2 }
+        };
+        var results = await _sut.ExecuteAsync(options);
+
+        var result = Assert.Single(results);
+        Assert.True(result.Success);
+        await _archiveVerifier.Received(2).VerifyAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<long?>());
+        // Every attempt reuses the SAME reserved output path — a retry must
+        // not be diverted to a "-2" name by its own first attempt.
+        Assert.EndsWith("out.zip", result.OutputPath, StringComparison.Ordinal);
+        Assert.DoesNotContain("-2", Path.GetFileName(result.OutputPath), StringComparison.Ordinal);
+        _fileSystem.Received(2).CreateWrite(result.OutputPath);
+    }
+
+
+
+    [Fact]
+    public async Task ExecuteAsync_when_retry_withLeftoverPartialOutput_expected_partialDeletedBeforeRetry()
+    {
+        var tempFile = CreateTempFile();
+        var fileInfo = new FileInfo(tempFile);
+
+        _fileSystem.FileExists(tempFile).Returns(returnThis: true);
+        _fileSystem.GetFileInfo(tempFile).Returns(fileInfo);
+        _fileFilter.Apply
+        (
+            Arg.Any<IEnumerable<FileInfo>>(),
+            Arg.Any<int?>(),
+            Arg.Any<DateTime?>(),
+            Arg.Any<DateTime?>(),
+            Arg.Any<IReadOnlyList<string>>(),
+            Arg.Any<IReadOnlyList<string>>()
+        ).Returns([fileInfo]);
+        _fileNamer.GetCompressedFileName(Arg.Any<FileInfo>(), "zip", Arg.Any<TimestampSource>(), Arg.Any<string?>()).Returns("out.zip");
+        _fileSystem.OpenRead(tempFile).Returns(_ => new MemoryStream("content"u8.ToArray()));
+        _fileSystem.CreateWrite(Arg.Any<string>()).Returns(_ => new MemoryStream());
+        _archiveVerifier.VerifyAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<long?>())
+            .Returns(Task.FromResult(false), Task.FromResult(true));
+        // The output path is free before attempt 1 but occupied (by attempt
+        // 1's unverified archive) when the retry inspects it.
+        var expectedOutput = Path.Combine(fileInfo.DirectoryName!, "out.zip");
+        _fileSystem.FileExists(expectedOutput).Returns(returnThis: false);
+        var firstAttemptDone = false;
+        _fileSystem.When(f => f.CreateWrite(expectedOutput)).Do(_ =>
+        {
+            if (!firstAttemptDone)
+            {
+                firstAttemptDone = true;
+                _fileSystem.FileExists(expectedOutput).Returns(returnThis: true);
+            }
+        });
+
+        var options = new CompressionOptions
+        {
+            SourcePath = tempFile,
+            Verify = true,
+            OnError = new ErrorPolicy { RetryCount = 1 }
+        };
+        var results = await _sut.ExecuteAsync(options);
+
+        Assert.True(Assert.Single(results).Success);
+        // The failed attempt's leftover was cleared before the retry wrote to
+        // the same path (source deletion is a separate DeleteFile call).
+        _fileSystem.Received(1).DeleteFile(expectedOutput);
+    }
+
+
+
     private string CreateTempFile()
     {
         return _tempDir.WriteFile(Guid.NewGuid() + ".log", "test content");

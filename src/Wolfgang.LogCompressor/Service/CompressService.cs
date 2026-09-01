@@ -103,11 +103,74 @@ internal class CompressService
         foreach (var file in filtered)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            var result = await CompressFileAsync(file, options, strategy, usedPaths, cancellationToken).ConfigureAwait(false);
+            var result = await CompressWithPolicyAsync(file, options, strategy, usedPaths, cancellationToken).ConfigureAwait(false);
             results.Add(result);
+
+            if (!result.Success && options.OnError.Mode == OnErrorMode.Fail)
+            {
+                _logger.LogError("Stopping after failure of {File} (--on-error fail)", file.FullName);
+                break;
+            }
         }
 
         return results;
+    }
+
+
+
+    private async Task<CompressionResult> CompressWithPolicyAsync
+    (
+        FileInfo sourceFile,
+        CompressionOptions options,
+        ICompressionStrategy strategy,
+        HashSet<string> usedPaths,
+        CancellationToken cancellationToken
+    )
+    {
+        var outputDir = options.OutputPath ?? sourceFile.DirectoryName ?? Directory.GetCurrentDirectory();
+        var outputFileName = _fileNamer.GetCompressedFileName(sourceFile, strategy.FileExtension, options.TimestampSource, options.NamePrefix);
+        var outputPath = MakeUniqueThisRun(outputDir, outputFileName, usedPaths);
+
+        // Never overwrite an existing archive — a name collision (e.g. two
+        // same-named sources sharing a last-write second under --output) would
+        // otherwise clobber the first archive and then delete both originals.
+        // Checked once BEFORE the first attempt, not per attempt: a
+        // pre-existing archive is deterministic (retrying cannot help), and
+        // clearing it up front lets retries safely delete whatever a failed
+        // attempt of OURS left at this now-reserved path.
+        if (_fileSystem.FileExists(outputPath))
+        {
+            _logger.LogError("Output archive already exists, skipping {Source} to avoid overwrite: {Output}", sourceFile.FullName, outputPath);
+
+            return new CompressionResult
+            {
+                SourcePath = sourceFile.FullName,
+                OutputPath = outputPath,
+                OriginalSize = sourceFile.Length,
+                Success = false,
+                ErrorMessage = $"Output archive already exists: {outputPath}"
+            };
+        }
+
+        var result = await CompressFileAsync(sourceFile, outputPath, options, strategy, cancellationToken).ConfigureAwait(false);
+
+        for (var attempt = 1; !result.Success && attempt <= options.OnError.RetryCount; attempt++)
+        {
+            _logger.LogWarning("Retrying {File} (attempt {Attempt} of {Max})", sourceFile.FullName, attempt, options.OnError.RetryCount);
+
+            // Every attempt reuses the SAME reserved path. The path was free
+            // before the first attempt, so anything here now is the failed
+            // attempt's partial or unverified output — clear it for a clean
+            // retry.
+            if (_fileSystem.FileExists(outputPath))
+            {
+                _fileSystem.DeleteFile(outputPath);
+            }
+
+            result = await CompressFileAsync(sourceFile, outputPath, options, strategy, cancellationToken).ConfigureAwait(false);
+        }
+
+        return result;
     }
 
 
@@ -175,38 +238,17 @@ internal class CompressService
 #pragma warning restore MA0051
     (
         FileInfo sourceFile,
+        string outputPath,
         CompressionOptions options,
         ICompressionStrategy strategy,
-        HashSet<string> usedPaths,
         CancellationToken cancellationToken
     )
     {
-        var outputDir = options.OutputPath ?? sourceFile.DirectoryName ?? Directory.GetCurrentDirectory();
-        var outputFileName = _fileNamer.GetCompressedFileName(sourceFile, strategy.FileExtension, options.TimestampSource, options.NamePrefix);
-        var outputPath = MakeUniqueThisRun(outputDir, outputFileName, usedPaths);
-
         try
         {
             if (options.OutputPath != null && !_fileSystem.DirectoryExists(options.OutputPath))
             {
                 _fileSystem.CreateDirectory(options.OutputPath);
-            }
-
-            // Never overwrite an existing archive — a name collision (e.g. two
-            // same-named sources sharing a last-write second under --output) would
-            // otherwise clobber the first archive and then delete both originals.
-            if (_fileSystem.FileExists(outputPath))
-            {
-                _logger.LogError("Output archive already exists, skipping {Source} to avoid overwrite: {Output}", sourceFile.FullName, outputPath);
-
-                return new CompressionResult
-                {
-                    SourcePath = sourceFile.FullName,
-                    OutputPath = outputPath,
-                    OriginalSize = sourceFile.Length,
-                    Success = false,
-                    ErrorMessage = $"Output archive already exists: {outputPath}"
-                };
             }
 
             long compressedSize;

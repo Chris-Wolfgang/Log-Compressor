@@ -65,6 +65,13 @@ internal record DecompressionOptions
 
 
     /// <summary>
+    /// Gets the batch error policy (skip / fail / retry-then-skip).
+    /// </summary>
+    public ErrorPolicy OnError { get; init; } = ErrorPolicy.Default;
+
+
+
+    /// <summary>
     /// Gets the report format ("json" or "csv"), or <see langword="null"/> for no report.
     /// </summary>
     public string? ReportFormat { get; init; }

@@ -284,7 +284,8 @@ internal class BundleService
 
         // A bundle that skipped one or more unreadable files is a partial success:
         // the archive was written and the readable originals deleted, but the caller
-        // must still see a non-success result (and exit code).
+        // must still see a non-success result. SkippedCount lets the command map
+        // this to "completed with skips" (exit 3) rather than a hard failure (11).
         if (skipped > 0)
         {
             return new CompressionResult
@@ -294,6 +295,7 @@ internal class BundleService
                 OriginalSize = totalOriginalSize,
                 CompressedSize = compressedSize,
                 Success = false,
+                SkippedCount = skipped,
                 ErrorMessage = $"{skipped} file(s) could not be read and were skipped (left in place); {bundled.Count} file(s) bundled to {outputPath}."
             };
         }

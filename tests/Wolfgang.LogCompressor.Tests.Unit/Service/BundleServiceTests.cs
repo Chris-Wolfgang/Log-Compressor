@@ -310,6 +310,7 @@ public sealed class BundleServiceTests : IDisposable
         var result = await _sut.ExecuteAsync(new CompressionOptions { SourcePath = dir });
 
         Assert.False(result.Success);
+        Assert.Equal(1, result.SkippedCount);                // lets the command exit 3, not 11
         Assert.Contains("skipped", result.ErrorMessage, StringComparison.OrdinalIgnoreCase);
         _fileSystem.DidNotReceive().DeleteFile(files[0]);   // unreadable file preserved
         _fileSystem.Received(1).DeleteFile(files[1]);        // readable file bundled + deleted

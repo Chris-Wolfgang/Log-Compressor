@@ -174,9 +174,25 @@ public sealed class FileNamingServiceTests : IDisposable
 
         var result = _sut.GetCompressedFileName(file, "gz", TimestampSource.Compressed);
 
-        // The job time, not 2020: shape-asserted since "now" moves.
+        // The job time, not the mtime: shape-asserted since "now" moves.
         Assert.Matches(@"^test-\d{4}-\d{2}-\d{2}_\d{2}-\d{2}-\d{2}\.gz$", result);
-        Assert.DoesNotContain("2020", result, StringComparison.Ordinal);
+        Assert.DoesNotContain("2020-01-01_00-00-00", result, StringComparison.Ordinal);
+    }
+
+
+
+    [Fact]
+    public void GetCompressedFileName_when_compressedTimestamp_expected_stableWithinRun()
+    {
+        var first = new FileInfo(CreateTempFileWithWriteTime(new DateTime(2020, 1, 1)));
+        var second = new FileInfo(CreateTempFileWithWriteTime(new DateTime(2021, 6, 15)));
+
+        var nameA = _sut.GetCompressedFileName(first, "gz", TimestampSource.Compressed, namePrefix: "run");
+        var nameB = _sut.GetCompressedFileName(second, "gz", TimestampSource.Compressed, namePrefix: "run");
+
+        // One run, one job time: both archives embed the SAME timestamp even
+        // if the two calls straddle a second boundary.
+        Assert.Equal(nameA, nameB);
     }
 
 

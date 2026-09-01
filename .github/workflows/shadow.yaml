@@ -1,0 +1,152 @@
+name: Shadow Testing
+
+# Shadow testing (#69): run the CURRENT build and the PREVIOUS RELEASE binary
+# over an identical realistic corpus and compare behaviour. The correctness
+# comparison is the HARD gate (same files compressed, both outputs verify,
+# same skip decisions); wall-clock and RSS are reported as ADVISORY only —
+# shared-runner timing is too noisy to fail on (the same fleet decision the
+# per-PR benchmark gate follows).
+#
+# Nightly, against main. The baseline is the latest published GitHub Release
+# binary (linux-x64), i.e. exactly what a consumer runs today.
+
+on:
+  schedule:
+    - cron: '15 4 * * *'   # nightly 04:15 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: shadow-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  shadow:
+    name: Current vs latest release
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      issues: write   # auto-file an issue on a correctness divergence
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Publish current logc (linux-x64)
+        run: |
+          dotnet publish src/Wolfgang.LogCompressor/Wolfgang.LogCompressor.csproj \
+            -c Release -r linux-x64 --self-contained true \
+            -p:PublishSingleFile=true -o current
+          chmod +x current/logc
+
+      - name: Download latest release binary (baseline)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p baseline
+          gh release download --repo "$GITHUB_REPOSITORY" \
+            --pattern 'logc-linux-x64.tar.gz' --dir baseline
+          tar -xzf baseline/logc-linux-x64.tar.gz -C baseline
+          chmod +x baseline/logc
+          echo "baseline_tag=$(gh release view --repo "$GITHUB_REPOSITORY" --json tagName --jq .tagName)" >> "$GITHUB_ENV"
+
+      - name: Generate identical corpora
+        run: |
+          python3 scripts/New-ShadowCorpus.py corpus-current 42
+          python3 scripts/New-ShadowCorpus.py corpus-baseline 42
+          diff -r corpus-current corpus-baseline   # must be identical by construction
+          # Archive names embed the source mtime — pin every file to one
+          # timestamp so both legs produce identically-NAMED archives.
+          find corpus-current corpus-baseline -type f -exec touch -d '2026-03-15 23:00:15' {} +
+
+      - name: Run both over the compress scenario
+        id: run
+        run: |
+          set -euo pipefail
+          run_leg() {
+            local bin=$1 dir=$2 label=$3
+            /usr/bin/time -v "$bin" compress "$dir" --recurse --no-lock \
+              --report json --report-path "$label-report.json" \
+              2> "$label-time.txt"
+            # what remains + what was produced, as a normalized listing
+            (cd "$dir" && find . -type f | sort) > "$label-files.txt"
+          }
+          run_leg "$PWD/current/logc" corpus-current current
+          run_leg "$PWD/baseline/logc" corpus-baseline baseline
+
+      - name: Compare correctness (hard gate) and report timing (advisory)
+        id: compare
+        run: |
+          set -euo pipefail
+          fail=0
+
+          # 1. Identical resulting file trees (same sources consumed, same
+          #    archives produced — names embed source mtimes, identical by
+          #    construction).
+          if ! diff -u baseline-files.txt current-files.txt > files.diff; then
+            echo "::error::Resulting file trees diverge between baseline and current"
+            fail=1
+          fi
+
+          # 2. Same success/failure counts in the JSON reports.
+          summary() { jq -r '"\(.totalFiles) \(.succeededFiles) \(.failedFiles)"' "$1"; }
+          b=$(summary baseline-report.json); c=$(summary current-report.json)
+          echo "baseline: $b / current: $c"
+          if [ "$b" != "$c" ]; then
+            echo "::error::Report counts diverge: baseline($b) current($c)"
+            fail=1
+          fi
+
+          # 3. Advisory timing/RSS from GNU time.
+          metric() { grep -E "$2" "$1" | grep -oE '[0-9.:]+' | tail -1; }
+          {
+            echo "## Shadow run: current vs ${baseline_tag}"
+            echo ""
+            echo "| Metric | Baseline (${baseline_tag}) | Current |"
+            echo "|---|---|---|"
+            echo "| Wall clock | $(metric baseline-time.txt 'Elapsed .wall clock.') | $(metric current-time.txt 'Elapsed .wall clock.') |"
+            echo "| Peak RSS (kB) | $(metric baseline-time.txt 'Maximum resident') | $(metric current-time.txt 'Maximum resident') |"
+            echo ""
+            echo "Timing/RSS are advisory only; the gate is behavioural equivalence."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          exit "$fail"
+
+      - name: Upload run evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: shadow-run
+          path: |
+            *-report.json
+            *-files.txt
+            *-time.txt
+            files.diff
+          if-no-files-found: ignore
+          retention-days: 14
+
+      - name: File issue on behavioural divergence
+        if: failure()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          {
+            echo "The nightly shadow run found a behavioural divergence between the current build and ${baseline_tag} over an identical corpus."
+            echo ""
+            echo "Run: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+            echo ""
+            echo "See the shadow-run artifact (reports, file listings, diff) and the step summary."
+          } > issue-body.txt
+          gh issue create \
+            --title "Shadow-testing divergence vs ${baseline_tag} ($(date -u +%Y-%m-%d))" \
+            --label bug \
+            --body-file issue-body.txt

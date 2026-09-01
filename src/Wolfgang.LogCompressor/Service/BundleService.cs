@@ -118,7 +118,7 @@ internal class BundleService
             folderName = string.IsNullOrWhiteSpace(sourceDirectory.Name) ? "archive" : sourceDirectory.Name;
             outputDir = options.OutputPath ?? sourceDirectory.Parent?.FullName ?? sourceDirectory.FullName;
         }
-        var outputFileName = _fileNamer.GetBundleFileName(folderName, filtered, strategy.BundleFileExtension);
+        var outputFileName = _fileNamer.GetBundleFileName(folderName, filtered, strategy.BundleFileExtension, options.TimestampSource, options.NamePrefix);
         var outputPath = Path.Combine(outputDir, outputFileName);
 
         // Never overwrite an existing archive — refuse rather than clobber it and

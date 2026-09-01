@@ -158,6 +158,8 @@ logc decompress /var/log/archives --keep-archives
 |------|---------|---------|
 | `-r`, `--recurse` | Recurse subdirectories | `false` |
 | `-o`, `--output <dir>` | Output directory | source directory |
+| `--timestamp <src>` | Timestamp in archive names: `modified` \| `compressed` | `modified` |
+| `--name <prefix>` | Custom base name for archives (collisions this run get `-2`, `-3`, ...) | source file/folder name |
 | `--older-than <days>` | Only files modified N+ days ago | (no filter) |
 | `--min-datetime <dt>` | Inclusive lower bound on last-modified date | (no filter) |
 | `--max-datetime <dt>` | Inclusive upper bound on last-modified date | (no filter) |

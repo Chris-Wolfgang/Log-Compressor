@@ -29,6 +29,21 @@ internal record CompressionOptions
 
 
     /// <summary>
+    /// Gets which timestamp is embedded in generated archive names.
+    /// </summary>
+    public TimestampSource TimestampSource { get; init; } = TimestampSource.Modified;
+
+
+
+    /// <summary>
+    /// Gets the custom base name for generated archives, replacing the source
+    /// file or folder name. <see langword="null"/> uses the default.
+    /// </summary>
+    public string? NamePrefix { get; init; }
+
+
+
+    /// <summary>
     /// Gets the minimum file age in calendar days. Only files last modified more than this many days ago (before local midnight that many days back) are included.
     /// </summary>
     public int? OlderThanDays { get; init; }

@@ -9,6 +9,13 @@ paths) is discarded — two runs on different OS/arch legs must produce
 byte-identical output unless a test genuinely passed on one leg and failed on
 another, which is exactly the divergence the differential workflow exists to
 catch.
+
+Deliberately outcome-level rather than message-level (a scoped-down reading
+of #78's "assertion messages and reported numbers"): passing tests carry no
+assertion text, and failing tests' messages embed platform-variable paths and
+values that would make every real divergence drown in noise. A test that
+fails on one leg surfaces as an outcome divergence; that leg's own test log
+carries the message.
 """
 import sys
 import xml.etree.ElementTree as ET
@@ -17,6 +24,9 @@ NS = {"t": "http://microsoft.com/schemas/VisualStudio/TeamTest/2010"}
 
 
 def main():
+    if len(sys.argv) != 3:
+        print(__doc__, file=sys.stderr)
+        return 2
     trx_path, out_path = sys.argv[1], sys.argv[2]
     tree = ET.parse(trx_path)
 

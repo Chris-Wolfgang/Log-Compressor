@@ -92,7 +92,7 @@ internal abstract class SharedOptions
     [Option
     (
         "-f|--format",
-        Description = "Compression format: zip, gz, brotli (default: zip)"
+        Description = "Compression format: zip, gz, brotli, zstd, lz4 (default: zip)"
     )]
     public string Format { get; set; } = "zip";
 
@@ -229,7 +229,7 @@ internal abstract class SharedOptions
 
         if (!TryParseFormat(Format, out _))
         {
-            console.Error.WriteLine($"Error: Unsupported compression format: '{Format}'. Supported: zip, gz, brotli");
+            console.Error.WriteLine($"Error: Unsupported compression format: '{Format}'. Supported: zip, gz, brotli, zstd, lz4");
             return false;
         }
 
@@ -262,8 +262,8 @@ internal abstract class SharedOptions
     /// <returns>A populated <see cref="CompressionOptions"/> instance.</returns>
     internal CompressionOptions BuildOptions()
     {
-        TryParseFormat(Format, out var format);
-        TryParseLevel(Level, out var level);
+        _ = TryParseFormat(Format, out var format);
+        _ = TryParseLevel(Level, out var level);
 
         return new CompressionOptions
         {
@@ -315,6 +315,8 @@ internal abstract class SharedOptions
             "zip" => CompressionFormat.Zip,
             "gz" or "gzip" => CompressionFormat.Gz,
             "br" or "brotli" => CompressionFormat.Brotli,
+            "zst" or "zstd" => CompressionFormat.Zstd,
+            "lz4" => CompressionFormat.Lz4,
             _ => (CompressionFormat)InvalidEnumSentinel
         };
 

@@ -120,8 +120,11 @@ internal class CompressService
         return _fileSystem
             .EnumerateFiles(options.SourcePath, "*", searchOption)
             // Skip files that are already compressed archives so a repeated run over
-            // the same directory does not re-compress (and then delete) its own output.
-            .Where(p => !RetentionService.IsArchiveFile(p))
+            // the same directory does not re-compress (and then delete) its own
+            // output, and the single-instance lock file — this run's own live lock
+            // sits in the source directory and must never be compressed/deleted
+            // (#172).
+            .Where(p => !RetentionService.IsArchiveFile(p) && !ProcessLock.IsLockFile(p))
             .Select(p => _fileSystem.GetFileInfo(p))
             .ToList();
     }
@@ -188,7 +191,9 @@ internal class CompressService
             // are closed. The verifier opens the archive for reading, which fails
             // while the write handle is still open, and the source can't be deleted
             // while its read handle is open. Both must run after the using block.
-            if (options.Verify && !await _archiveVerifier.VerifyAsync(outputPath, strategy.FileExtension).ConfigureAwait(false))
+            // The source length lets the verifier catch truncated gz/br output
+            // (their decompressors return partial data instead of failing).
+            if (options.Verify && !await _archiveVerifier.VerifyAsync(outputPath, strategy.FileExtension, sourceFile.Length).ConfigureAwait(false))
             {
                 _logger.LogError("Archive verification failed for {Output}, original file preserved", outputPath);
 

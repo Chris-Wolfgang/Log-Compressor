@@ -1,0 +1,21 @@
+# zizmor configuration — GitHub Actions workflow security audit.
+# https://docs.zizmor.sh/configuration/
+#
+# Each `ignore:` entry below is an accepted, documented suppression — a
+# pre-existing finding that is deliberate design rather than a defect. A
+# NEW finding of any of these audit types anywhere else still fails.
+
+rules:
+  dangerous-triggers:
+    ignore:
+      # pr.yaml's `pull_request_target` is deliberate: the workflow YAML
+      # executes from the base branch (main), not from the PR branch, so
+      # a malicious PR cannot modify the workflow logic that validates
+      # it. A concurrent "Fetch trusted configuration files from main
+      # branch" step overwrites any protected-file changes the PR made
+      # before any build step runs (see the SECURITY NOTE at the top of
+      # pr.yaml). Converting to `pull_request` would remove that safe-
+      # configs guarantee and open the door to a malicious PR silencing
+      # analyzers. This is the same intent already documented for
+      # Scorecard's DangerousWorkflowID in scorecard.yaml's Filter step.
+      - pr.yaml

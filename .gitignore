@@ -429,3 +429,4 @@ docfx_project/obj/
 
 # ReSharper inspection report (used locally; not for commit)
 resharper-report.xml
+StrykerOutput/

@@ -227,10 +227,17 @@ public sealed class BundleCommandTests : IDisposable
     [Fact]
     public async Task OnExecuteAsync_when_lockAlreadyHeld_expected_alreadyRunning()
     {
-        // Pre-create a live (non-stale) lock file in the source directory naming the
-        // current process, so the command's ProcessLock.TryAcquire fails.
+        // Hold the lock file open with FileShare.None — an open handle IS the
+        // lock under the OpenOrCreate protocol (a mere leftover file no longer
+        // blocks; see #172) — so the command's ProcessLock.TryAcquire fails.
         var lockFile = Path.Combine(_tempDir, ".logc.lock");
-        await File.WriteAllTextAsync(lockFile, $"PID={Environment.ProcessId}{Environment.NewLine}");
+        await using var heldLock = new FileStream
+        (
+            lockFile,
+            FileMode.OpenOrCreate,
+            FileAccess.Write,
+            FileShare.None
+        );
 
         var command = new Bundle { Path = Path.Combine(_tempDir, "logs") };
 
@@ -277,4 +284,70 @@ public sealed class BundleCommandTests : IDisposable
             }
         }
     }
+
+    [Fact]
+    public async Task OnExecuteAsync_when_bundleSucceeds_withoutReport_expected_success()
+    {
+        _bundleService.ExecuteAsync(Arg.Any<CompressionOptions>(), Arg.Any<CancellationToken>())
+            .Returns(new CompressionResult { SourcePath = "logs", OutputPath = "logs.zip", Success = true });
+
+        var command = new Bundle { Path = _tempDir, NoLock = true };
+
+        var result = await command.OnExecuteAsync(_console, _logger, _bundleService, _reportService, _retentionService);
+
+        Assert.Equal(ExitCode.Success, result);
+    }
+
+
+
+    [Fact]
+    public async Task OnExecuteAsync_when_bundleFails_expected_applicationErrorAndMessageOnStderr()
+    {
+        _bundleService.ExecuteAsync(Arg.Any<CompressionOptions>(), Arg.Any<CancellationToken>())
+            .Returns(new CompressionResult { SourcePath = "logs", OutputPath = "logs.zip", Success = false, ErrorMessage = "boom" });
+        var stderr = new StringWriter();
+        _console.Error.Returns(stderr);
+
+        var command = new Bundle { Path = _tempDir, NoLock = true };
+
+        var result = await command.OnExecuteAsync(_console, _logger, _bundleService, _reportService, _retentionService);
+
+        Assert.Equal(ExitCode.ApplicationError, result);
+        Assert.Contains("boom", stderr.ToString(), StringComparison.Ordinal);
+    }
+
+
+
+    [Fact]
+    public async Task OnExecuteAsync_when_retention_withoutOutputPath_expected_sourceParentScanned()
+    {
+        _bundleService.ExecuteAsync(Arg.Any<CompressionOptions>(), Arg.Any<CancellationToken>())
+            .Returns(new CompressionResult { SourcePath = "logs", OutputPath = "logs.zip", Success = true });
+
+        var command = new Bundle { Path = _tempDir, NoLock = true, DeleteArchivesOlderThan = 30 };
+
+        await command.OnExecuteAsync(_console, _logger, _bundleService, _reportService, _retentionService);
+
+        // Bundle writes next to the source directory, so retention scans the
+        // source's PARENT (GetDirectoryName of the source path).
+        _retentionFileSystem.Received(1).DirectoryExists(Path.GetDirectoryName(Path.GetFullPath(_tempDir))!);
+    }
+
+
+
+    [Fact]
+    public async Task OnExecuteAsync_when_retention_withOutputPath_expected_outputDirectoryScanned()
+    {
+        _bundleService.ExecuteAsync(Arg.Any<CompressionOptions>(), Arg.Any<CancellationToken>())
+            .Returns(new CompressionResult { SourcePath = "logs", OutputPath = "logs.zip", Success = true });
+        var outputDir = Path.Combine(_tempDir, "archives");
+        Directory.CreateDirectory(outputDir);
+
+        var command = new Bundle { Path = _tempDir, Output = outputDir, NoLock = true, DeleteArchivesOlderThan = 30 };
+
+        await command.OnExecuteAsync(_console, _logger, _bundleService, _reportService, _retentionService);
+
+        _retentionFileSystem.Received(1).DirectoryExists(Path.GetFullPath(outputDir));
+    }
+
 }

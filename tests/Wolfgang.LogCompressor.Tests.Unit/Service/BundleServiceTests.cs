@@ -7,24 +7,24 @@ using Wolfgang.LogCompressor.Service.Compression;
 
 namespace Wolfgang.LogCompressor.Tests.Unit.Service;
 
-public sealed class BundleServiceTests
+public sealed class BundleServiceTests : IDisposable
 {
+    private readonly TempDirectory _tempDir = new();
     private readonly IFileSystem _fileSystem = Substitute.For<IFileSystem>();
     private readonly IFileFilter _fileFilter = Substitute.For<IFileFilter>();
     private readonly IFileNamer _fileNamer = Substitute.For<IFileNamer>();
     private readonly IArchiveVerifier _archiveVerifier = Substitute.For<IArchiveVerifier>();
     private readonly ICompressionStrategy _strategy = Substitute.For<ICompressionStrategy>();
-    private readonly CompressionStrategyFactory _strategyFactory;
     private readonly BundleService _sut;
 
 
 
     public BundleServiceTests()
     {
-        _strategyFactory = Substitute.For<CompressionStrategyFactory>();
-        _strategyFactory.Create(Arg.Any<CompressionFormat>(), Arg.Any<System.IO.Compression.CompressionLevel>()).Returns(_strategy);
+        var strategyFactory = Substitute.For<CompressionStrategyFactory>();
+        strategyFactory.Create(Arg.Any<CompressionFormat>(), Arg.Any<System.IO.Compression.CompressionLevel>()).Returns(_strategy);
         _strategy.BundleFileExtension.Returns("zip");
-        _archiveVerifier.VerifyAsync(Arg.Any<string>(), Arg.Any<string>()).Returns(Task.FromResult(true));
+        _archiveVerifier.VerifyAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<long?>()).Returns(Task.FromResult(true));
 
         // The real strategies enumerate (and dispose) the lazily-opened input
         // sequence; the substitute must enumerate it too so BundleService records
@@ -33,7 +33,7 @@ public sealed class BundleServiceTests
             .CompressFilesAsync(Arg.Any<IEnumerable<(Stream Stream, string EntryName)>>(), Arg.Any<Stream>(), Arg.Any<CancellationToken>())
             .Returns(callInfo =>
             {
-                foreach (var _ in callInfo.Arg<IEnumerable<(Stream Stream, string EntryName)>>()!)
+                foreach (var _ in callInfo.Arg<IEnumerable<(Stream Stream, string EntryName)>>())
                 {
                 }
 
@@ -46,7 +46,7 @@ public sealed class BundleServiceTests
             _fileFilter,
             _fileNamer,
             _archiveVerifier,
-            _strategyFactory,
+            strategyFactory,
             Substitute.For<ILogger<BundleService>>()
         );
     }
@@ -280,7 +280,7 @@ public sealed class BundleServiceTests
         SetupDirectory(dir, files, fileInfos);
         _fileNamer.GetBundleFileName("MyApp", Arg.Any<IReadOnlyList<FileInfo>>(), "zip").Returns("bundle.zip");
         _fileSystem.CreateWrite(Arg.Any<string>()).Returns(new MemoryStream());
-        _archiveVerifier.VerifyAsync(Arg.Any<string>(), Arg.Any<string>()).Returns(Task.FromResult(false));
+        _archiveVerifier.VerifyAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<long?>()).Returns(Task.FromResult(false));
 
         var options = new CompressionOptions { SourcePath = dir, Verify = true };
         var result = await _sut.ExecuteAsync(options);
@@ -390,17 +390,117 @@ public sealed class BundleServiceTests
 
 
 
-    private static string[] CreateTempFiles(int count)
+    [Fact]
+    public async Task ExecuteAsync_when_directoryContainsLockFile_expected_lockFileSkipped()
+    {
+        // The run's own live .logc.lock sits in the source directory; it must
+        // never be bundled (and then deleted) — #172.
+        var dir = "/tmp/logs/MyApp";
+        var file = CreateTempFiles(1)[0];
+        var fileInfo = new FileInfo(file);
+        var lockPath = "/tmp/logs/MyApp/.logc.lock";
+
+        _fileSystem.FileExists(dir).Returns(returnThis: false);
+        _fileSystem.DirectoryExists(dir).Returns(returnThis: true);
+        _fileSystem.EnumerateFiles(dir, "*", SearchOption.TopDirectoryOnly).Returns([file, lockPath]);
+        _fileSystem.GetFileInfo(file).Returns(fileInfo);
+        _fileFilter.Apply
+        (
+            Arg.Any<IEnumerable<FileInfo>>(),
+            Arg.Any<int?>(),
+            Arg.Any<DateTime?>(),
+            Arg.Any<DateTime?>(),
+            Arg.Any<IReadOnlyList<string>>(),
+            Arg.Any<IReadOnlyList<string>>()
+        ).Returns([fileInfo]);
+        _fileNamer.GetBundleFileName("MyApp", Arg.Any<IReadOnlyList<FileInfo>>(), "zip").Returns("bundle.zip");
+        _fileSystem.OpenRead(Arg.Any<string>()).Returns(new MemoryStream("content"u8.ToArray()));
+        _fileSystem.CreateWrite(Arg.Any<string>()).Returns(new MemoryStream());
+
+        var options = new CompressionOptions { SourcePath = dir };
+        var result = await _sut.ExecuteAsync(options);
+
+        Assert.True(result.Success);
+        _fileSystem.DidNotReceive().GetFileInfo(lockPath);
+    }
+
+
+
+    [Fact]
+    public async Task ExecuteAsync_when_verifyDisabled_expected_verifierNotCalled()
+    {
+        var dir = "/tmp/logs/MyApp";
+        var file = CreateTempFiles(1)[0];
+        var fileInfo = new FileInfo(file);
+
+        _fileSystem.FileExists(dir).Returns(returnThis: false);
+        _fileSystem.DirectoryExists(dir).Returns(returnThis: true);
+        _fileSystem.EnumerateFiles(dir, "*", SearchOption.TopDirectoryOnly).Returns([file]);
+        _fileSystem.GetFileInfo(file).Returns(fileInfo);
+        _fileFilter.Apply
+        (
+            Arg.Any<IEnumerable<FileInfo>>(),
+            Arg.Any<int?>(),
+            Arg.Any<DateTime?>(),
+            Arg.Any<DateTime?>(),
+            Arg.Any<IReadOnlyList<string>>(),
+            Arg.Any<IReadOnlyList<string>>()
+        ).Returns([fileInfo]);
+        _fileNamer.GetBundleFileName("MyApp", Arg.Any<IReadOnlyList<FileInfo>>(), "zip").Returns("bundle.zip");
+        _fileSystem.OpenRead(Arg.Any<string>()).Returns(new MemoryStream("content"u8.ToArray()));
+        _fileSystem.CreateWrite(Arg.Any<string>()).Returns(new MemoryStream());
+
+        var options = new CompressionOptions { SourcePath = dir, Verify = false };
+        var result = await _sut.ExecuteAsync(options);
+
+        Assert.True(result.Success);
+        await _archiveVerifier.DidNotReceive().VerifyAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<long?>());
+    }
+
+
+
+    [Fact]
+    public async Task ExecuteAsync_when_recurseDisabled_expected_topDirectoryOnlyEnumeration()
+    {
+        var dir = "/tmp/logs/MyApp";
+
+        _fileSystem.FileExists(dir).Returns(returnThis: false);
+        _fileSystem.DirectoryExists(dir).Returns(returnThis: true);
+        _fileSystem.EnumerateFiles(dir, "*", Arg.Any<SearchOption>()).Returns([]);
+        _fileFilter.Apply
+        (
+            Arg.Any<IEnumerable<FileInfo>>(),
+            Arg.Any<int?>(),
+            Arg.Any<DateTime?>(),
+            Arg.Any<DateTime?>(),
+            Arg.Any<IReadOnlyList<string>>(),
+            Arg.Any<IReadOnlyList<string>>()
+        ).Returns([]);
+
+        await _sut.ExecuteAsync(new CompressionOptions { SourcePath = dir, Recurse = false });
+
+        _fileSystem.Received(1).EnumerateFiles(dir, "*", SearchOption.TopDirectoryOnly);
+        _fileSystem.DidNotReceive().EnumerateFiles(dir, "*", SearchOption.AllDirectories);
+    }
+
+
+
+    private string[] CreateTempFiles(int count)
     {
         var files = new string[count];
 
         for (var i = 0; i < count; i++)
         {
-            var path = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + ".log");
-            File.WriteAllText(path, $"content {i}");
-            files[i] = path;
+            files[i] = _tempDir.WriteFile(Guid.NewGuid() + ".log", $"content {i}");
         }
 
         return files;
+    }
+
+
+
+    public void Dispose()
+    {
+        _tempDir.Dispose();
     }
 }

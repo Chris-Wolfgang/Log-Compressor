@@ -1,0 +1,31 @@
+﻿{
+  "duration": "00:05:00",
+  "totalFiles": 2,
+  "succeededFiles": 1,
+  "failedFiles": 1,
+  "originalSizeBytes": 1238663,
+  "compressedSizeBytes": 98765,
+  "files": [
+    {
+      "sourcePath": "/logs/app.log",
+      "outputPath": "/logs/app-2026-01-05_09-30-00.zip",
+      "originalSize": 1234567,
+      "compressedSize": 98765,
+      "success": true
+    },
+    {
+      "sourcePath": "/logs/locked, \u0022quoted\u0022.log",
+      "outputPath": "/logs/locked-2026-01-06_10-00-00.zip",
+      "originalSize": 4096,
+      "compressedSize": 0,
+      "success": false,
+      "errorMessage": "Archive verification failed."
+    }
+  ],
+  "errors": [
+    {
+      "sourcePath": "/logs/locked, \u0022quoted\u0022.log",
+      "errorMessage": "Archive verification failed."
+    }
+  ]
+}

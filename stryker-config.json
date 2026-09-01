@@ -1,0 +1,29 @@
+{
+  "stryker-config": {
+    "project": "src/Wolfgang.LogCompressor/Wolfgang.LogCompressor.csproj",
+    "test-projects": [
+      "tests/Wolfgang.LogCompressor.Tests.Unit/Wolfgang.LogCompressor.Tests.Unit.csproj"
+    ],
+    "target-framework": "net10.0",
+    "reporters": [
+      "html",
+      "json",
+      "progress"
+    ],
+    "thresholds": {
+      "high": 90,
+      "low": 85,
+      "break": 83
+    },
+    "ignore-methods": [
+      "LogTrace",
+      "LogDebug",
+      "LogInformation",
+      "LogWarning",
+      "LogError",
+      "LogCritical",
+      "WriteLine",
+      "WriteLineAsync"
+    ]
+  }
+}

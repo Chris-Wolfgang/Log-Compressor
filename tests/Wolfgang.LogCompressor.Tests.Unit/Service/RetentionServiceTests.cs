@@ -5,8 +5,9 @@ using Wolfgang.LogCompressor.Service;
 
 namespace Wolfgang.LogCompressor.Tests.Unit.Service;
 
-public sealed class RetentionServiceTests
+public sealed class RetentionServiceTests : IDisposable
 {
+    private readonly TempDirectory _tempDir = new();
     private readonly IFileSystem _fileSystem = Substitute.For<IFileSystem>();
     private readonly RetentionService _sut;
 
@@ -65,8 +66,7 @@ public sealed class RetentionServiceTests
         _fileSystem.EnumerateFiles(dir, "*", SearchOption.TopDirectoryOnly)
             .Returns([oldArchive, newArchive]);
 
-        var tempDir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
-        Directory.CreateDirectory(tempDir);
+        var tempDir = _tempDir.CreateSubdirectory();
 
         var oldTempPath = Path.Combine(tempDir, "old.zip");
         File.WriteAllText(oldTempPath, "old");
@@ -99,8 +99,7 @@ public sealed class RetentionServiceTests
         _fileSystem.DirectoryExists(dir).Returns(returnThis: true);
         _fileSystem.EnumerateFiles(dir, "*", SearchOption.TopDirectoryOnly).Returns([logFile]);
 
-        var tempDir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
-        Directory.CreateDirectory(tempDir);
+        var tempDir = _tempDir.CreateSubdirectory();
         var tempPath = Path.Combine(tempDir, "old.log");
         File.WriteAllText(tempPath, "log content");
         File.SetLastWriteTime(tempPath, DateTime.Today.AddDays(-60));
@@ -144,4 +143,38 @@ public sealed class RetentionServiceTests
 
         Assert.Equal(0, result);
     }
+
+
+
+    public void Dispose()
+    {
+        _tempDir.Dispose();
+    }
+
+    [Fact]
+    public void DeleteOldArchives_when_fileExactlyAtThreshold_expected_kept()
+    {
+        // Boundary contract: the cutoff is exclusive — a file whose write time
+        // equals Today-N is NOT older than N days and must be kept (#176:
+        // the >= vs > equality mutant survived without this case).
+        var dir = "/tmp/archives";
+        var archive = "/tmp/archives/edge.zip";
+
+        _fileSystem.DirectoryExists(dir).Returns(returnThis: true);
+        _fileSystem.EnumerateFiles(dir, "*", SearchOption.TopDirectoryOnly).Returns([archive]);
+
+        var tempDir = _tempDir.CreateSubdirectory();
+        var tempPath = Path.Combine(tempDir, "edge.zip");
+        File.WriteAllText(tempPath, "edge");
+        File.SetLastWriteTime(tempPath, DateTime.Today.AddDays(-30));
+        var fi = new FileInfo(tempPath);
+
+        _fileSystem.GetFileInfo(archive).Returns(fi);
+
+        var result = _sut.DeleteOldArchives(dir, 30);
+
+        Assert.Equal(0, result);
+        _fileSystem.DidNotReceive().DeleteFile(Arg.Any<string>());
+    }
+
 }

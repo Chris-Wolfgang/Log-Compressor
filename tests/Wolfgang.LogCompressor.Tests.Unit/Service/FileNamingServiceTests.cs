@@ -2,8 +2,9 @@ using Wolfgang.LogCompressor.Service;
 
 namespace Wolfgang.LogCompressor.Tests.Unit.Service;
 
-public sealed class FileNamingServiceTests
+public sealed class FileNamingServiceTests : IDisposable
 {
+    private readonly TempDirectory _tempDir = new();
     private readonly FileNamingService _sut = new();
 
 
@@ -25,8 +26,7 @@ public sealed class FileNamingServiceTests
     [Fact]
     public void GetCompressedFileName_when_fileWithMultipleDots_expected_correctBaseName()
     {
-        var tempDir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
-        Directory.CreateDirectory(tempDir);
+        var tempDir = _tempDir.CreateSubdirectory();
         var tempPath = Path.Combine(tempDir, "my.app.log");
         File.WriteAllText(tempPath, "content");
         File.SetLastWriteTime(tempPath, new DateTime(2026, 1, 1, 12, 0, 0));
@@ -154,10 +154,9 @@ public sealed class FileNamingServiceTests
 
 
 
-    private static string CreateTempFileWithWriteTime(DateTime lastWriteTime)
+    private string CreateTempFileWithWriteTime(DateTime lastWriteTime)
     {
-        var tempDir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
-        Directory.CreateDirectory(tempDir);
+        var tempDir = _tempDir.CreateSubdirectory();
         var path = Path.Combine(tempDir, "test.log");
         File.WriteAllText(path, "content");
         File.SetLastWriteTime(path, lastWriteTime);
@@ -166,9 +165,16 @@ public sealed class FileNamingServiceTests
 
 
 
-    private static FileInfo CreateFileInfo(DateTime lastWriteTime)
+    private FileInfo CreateFileInfo(DateTime lastWriteTime)
     {
         var path = CreateTempFileWithWriteTime(lastWriteTime);
         return new FileInfo(path);
+    }
+
+
+
+    public void Dispose()
+    {
+        _tempDir.Dispose();
     }
 }

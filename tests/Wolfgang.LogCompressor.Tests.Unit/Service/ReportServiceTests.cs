@@ -147,7 +147,7 @@ public sealed class ReportServiceTests : IDisposable
     [Fact]
     public async Task WriteReportAsync_when_emptyResults_expected_validJsonWithZeroCounts()
     {
-        var results = new List<CompressionResult>();
+        IReadOnlyList<CompressionResult> results = [];
         var outputPath = Path.Combine(_tempDir, "empty.json");
 
         await _sut.WriteReportAsync(results, "json", outputPath, TimeSpan.Zero);
@@ -210,4 +210,27 @@ public sealed class ReportServiceTests : IDisposable
             }
         ];
     }
+
+    [Fact]
+    public async Task WriteReportAsync_when_asymmetricOutcomes_expected_countsMatchSides()
+    {
+        // Asymmetric on purpose (#176): with equal success/failure counts a
+        // flipped success predicate produces the same numbers and the mutant
+        // survives.
+        IReadOnlyList<CompressionResult> results =
+        [
+            new() { SourcePath = "a.log", OutputPath = "a.zip", Success = true },
+            new() { SourcePath = "b.log", OutputPath = "b.zip", Success = false, ErrorMessage = "boom" },
+            new() { SourcePath = "c.log", OutputPath = "c.zip", Success = false, ErrorMessage = "bang" }
+        ];
+        var outputPath = Path.Combine(_tempDir, "asymmetric.json");
+
+        await _sut.WriteReportAsync(results, "json", outputPath, TimeSpan.Zero);
+
+        using var doc = System.Text.Json.JsonDocument.Parse(await File.ReadAllTextAsync(outputPath));
+        Assert.Equal(1, doc.RootElement.GetProperty("succeededFiles").GetInt32());
+        Assert.Equal(2, doc.RootElement.GetProperty("failedFiles").GetInt32());
+        Assert.Equal(2, doc.RootElement.GetProperty("errors").GetArrayLength());
+    }
+
 }

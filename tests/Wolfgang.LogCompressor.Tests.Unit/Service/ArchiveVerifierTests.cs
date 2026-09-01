@@ -227,6 +227,130 @@ public sealed class ArchiveVerifierTests : IDisposable
 
 
 
+    [Fact]
+    public async Task VerifyAsync_when_truncatedGzFile_expected_false()
+    {
+        // Regression for the fuzz finding (#68): GZipStream returns partial
+        // data on truncated input instead of throwing, so the verifier must
+        // check the gzip CRC/length trailer itself.
+        var archivePath = Path.Combine(_tempDir, "test.gz");
+        await CreateValidGzAsync(archivePath);
+        await TruncateAsync(archivePath, bytesToRemove: 4);
+
+        var result = await _sut.VerifyAsync(archivePath, "gz");
+
+        Assert.False(result);
+    }
+
+
+
+    [Fact]
+    public async Task VerifyAsync_when_truncatedBrotliFile_with_expectedSize_expected_false()
+    {
+        // Brotli has no checksum in the format; the expected-size comparison
+        // is what catches a truncated stream that decodes without error.
+        var archivePath = Path.Combine(_tempDir, "test.br");
+        await CreateValidBrotliAsync(archivePath);
+        await TruncateAsync(archivePath, bytesToRemove: 2);
+
+        var result = await _sut.VerifyAsync(archivePath, "br", "test content"u8.Length);
+
+        Assert.False(result);
+    }
+
+
+
+    [Fact]
+    public async Task VerifyAsync_when_gzDecompressesToUnexpectedSize_expected_false()
+    {
+        var archivePath = Path.Combine(_tempDir, "test.gz");
+        await CreateValidGzAsync(archivePath);
+
+        var result = await _sut.VerifyAsync(archivePath, "gz", "test content"u8.Length + 1);
+
+        Assert.False(result);
+    }
+
+
+
+    [Fact]
+    public async Task VerifyAsync_when_truncatedTarGzFile_expected_false()
+    {
+        var archivePath = Path.Combine(_tempDir, "test.tar.gz");
+        await CreateValidTarGzAsync(archivePath);
+        await TruncateAsync(archivePath, bytesToRemove: 4);
+
+        var result = await _sut.VerifyAsync(archivePath, "tar.gz");
+
+        Assert.False(result);
+    }
+
+
+
+    [Fact]
+    public async Task VerifyAsync_when_negativeExpectedSize_expected_throws()
+    {
+        var archivePath = Path.Combine(_tempDir, "test.gz");
+        await CreateValidGzAsync(archivePath);
+
+        await Assert.ThrowsAsync<ArgumentOutOfRangeException>
+        (
+            () => _sut.VerifyAsync(archivePath, "gz", -1)
+        );
+    }
+
+
+
+    [Fact]
+    public async Task VerifyAsync_when_gzIsizeTrailerPatched_expected_false()
+    {
+        // A stream whose CRC matches but whose ISIZE field lies: only the
+        // length-trailer comparison can catch this, so patch the last 4 bytes
+        // of an otherwise valid archive.
+        var archivePath = Path.Combine(_tempDir, "test.gz");
+        await CreateValidGzAsync(archivePath);
+        var bytes = await File.ReadAllBytesAsync(archivePath);
+        bytes[^4] ^= 0xFF;
+        await File.WriteAllBytesAsync(archivePath, bytes);
+
+        var result = await _sut.VerifyAsync(archivePath, "gz");
+
+        Assert.False(result);
+    }
+
+
+
+    [Fact]
+    public async Task VerifyAsync_when_gzSmallerThanMinimalMember_expected_false()
+    {
+        // The canonical empty-content gzip member is 20 bytes (10-byte header,
+        // "\x03\x00" empty final deflate block, 8-byte trailer). Truncated to
+        // 16 bytes it still "decompresses" to zero bytes without error, so the
+        // 18-byte size floor is the check that fires.
+        byte[] emptyGz =
+        [
+            0x1F, 0x8B, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0A,
+            0x03, 0x00,
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
+        ];
+        var archivePath = Path.Combine(_tempDir, "test.gz");
+        await File.WriteAllBytesAsync(archivePath, emptyGz[..16]);
+
+        var result = await _sut.VerifyAsync(archivePath, "gz");
+
+        Assert.False(result);
+    }
+
+
+
+    private static async Task TruncateAsync(string path, int bytesToRemove)
+    {
+        var bytes = await File.ReadAllBytesAsync(path);
+        await File.WriteAllBytesAsync(path, bytes[..^bytesToRemove]);
+    }
+
+
+
     private static async Task CreateValidZipAsync(string path)
     {
         await using var fileStream = File.Create(path);
@@ -290,4 +414,56 @@ public sealed class ArchiveVerifierTests : IDisposable
 
         await tarWriter.WriteEntryAsync(entry);
     }
+
+    [Theory]
+    [InlineData("zst")]
+    [InlineData("lz4")]
+    public async Task VerifyAsync_when_validZstdOrLz4_expected_true(string format)
+    {
+        var archivePath = Path.Combine(_tempDir, "test." + format);
+        await using (var fileStream = File.Create(archivePath))
+        {
+            Stream compressor = string.Equals(format, "zst", StringComparison.Ordinal)
+                ? new ZstdSharp.CompressionStream(fileStream, leaveOpen: true)
+                : K4os.Compression.LZ4.Streams.LZ4Stream.Encode(fileStream, leaveOpen: true);
+            await using (compressor)
+            {
+                await compressor.WriteAsync("test content"u8.ToArray());
+            }
+        }
+
+        var result = await _sut.VerifyAsync(archivePath, format, "test content"u8.Length);
+
+        Assert.True(result);
+    }
+
+
+
+    [Theory]
+    [InlineData("zst")]
+    [InlineData("lz4")]
+    public async Task VerifyAsync_when_truncatedZstdOrLz4_with_expectedSize_expected_false(string format)
+    {
+        // Neither format guarantees a content checksum, so — like brotli —
+        // the expected-size comparison is the completeness gate (#3/#4
+        // revival on top of the hardened verifier).
+        var archivePath = Path.Combine(_tempDir, "test." + format);
+        await using (var fileStream = File.Create(archivePath))
+        {
+            Stream compressor = string.Equals(format, "zst", StringComparison.Ordinal)
+                ? new ZstdSharp.CompressionStream(fileStream, leaveOpen: true)
+                : K4os.Compression.LZ4.Streams.LZ4Stream.Encode(fileStream, leaveOpen: true);
+            await using (compressor)
+            {
+                await compressor.WriteAsync("test content"u8.ToArray());
+            }
+        }
+
+        await TruncateAsync(archivePath, bytesToRemove: 4);
+
+        var result = await _sut.VerifyAsync(archivePath, format, "test content"u8.Length);
+
+        Assert.False(result);
+    }
+
 }

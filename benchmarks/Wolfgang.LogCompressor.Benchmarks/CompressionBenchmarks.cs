@@ -23,6 +23,7 @@ public class CompressionBenchmarks
     /// Gets or sets the simulated file size in bytes.
     /// </summary>
     [Params(10_485_760, 104_857_600)]
+    // ReSharper disable once UnusedAutoPropertyAccessor.Global — BenchmarkDotNet sets [Params] properties via reflection
     public int FileSize { get; set; }
 
 
@@ -30,7 +31,7 @@ public class CompressionBenchmarks
     /// <summary>
     /// Gets or sets the compression format name to benchmark.
     /// </summary>
-    [Params("zip", "gz", "brotli")]
+    [Params("zip", "gz", "brotli", "zstd", "lz4")]
     public string Format { get; set; } = "zip";
 
 
@@ -51,9 +52,10 @@ public class CompressionBenchmarks
     {
         var format = Format switch
         {
-            "zip" => CompressionFormat.Zip,
             "gz" => CompressionFormat.Gz,
             "brotli" => CompressionFormat.Brotli,
+            "zstd" => CompressionFormat.Zstd,
+            "lz4" => CompressionFormat.Lz4,
             _ => CompressionFormat.Zip
         };
 
@@ -61,7 +63,6 @@ public class CompressionBenchmarks
         {
             "fastest" => CompressionLevel.Fastest,
             "optimal" => CompressionLevel.Optimal,
-            "smallest" => CompressionLevel.SmallestSize,
             _ => CompressionLevel.SmallestSize
         };
 

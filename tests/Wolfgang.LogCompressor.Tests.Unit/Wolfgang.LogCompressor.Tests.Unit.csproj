@@ -30,6 +30,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="NSubstitute" Version="6.2.0" />
+    <PackageReference Include="Verify.Xunit" Version="31.12.5" />
   </ItemGroup>
 
   <ItemGroup>

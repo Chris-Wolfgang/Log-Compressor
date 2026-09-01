@@ -300,8 +300,11 @@ internal class DecompressService
         var destinationRoot = Path.TrimEndingDirectorySeparator(Path.GetFullPath(outputDir));
         var destination = Path.GetFullPath(Path.Combine(destinationRoot, entryName));
 
-        if (!destination.StartsWith(destinationRoot + Path.DirectorySeparatorChar, StringComparison.Ordinal)
-            && !string.Equals(destination, destinationRoot, StringComparison.Ordinal))
+        // Single StartsWith guard, deliberately: this is the exact sanitizer
+        // shape CodeQL's cs/zipslip query recognizes as a barrier. A file
+        // entry always has a name component, so destination == root only for
+        // degenerate entry names ("", "."), which are rightly rejected too.
+        if (!destination.StartsWith(destinationRoot + Path.DirectorySeparatorChar, StringComparison.Ordinal))
         {
             throw new InvalidDataException($"Archive entry escapes the destination directory: {entryName}");
         }

@@ -165,7 +165,7 @@ internal class DecompressService
             var kind = DetectByName(archive.FullName);
             if (kind == ArchiveKind.Unknown)
             {
-                kind = SniffKind(archive.FullName);
+                kind = await SniffKindAsync(archive.FullName, cancellationToken).ConfigureAwait(false);
             }
 
             if (!_fileSystem.DirectoryExists(outputDir))
@@ -260,15 +260,16 @@ internal class DecompressService
 
 
 
-    private ArchiveKind SniffKind(string path)
+    private async Task<ArchiveKind> SniffKindAsync(string path, CancellationToken cancellationToken)
     {
         // Content-sniff fallback for an explicitly named file with an
         // unrecognized extension. Brotli has no magic number, so a renamed
         // .br archive cannot be sniffed — the error message says so.
-        Span<byte> magic = stackalloc byte[4];
-        using (var stream = _fileSystem.OpenRead(path))
+        var magic = new byte[4];
+        var stream = _fileSystem.OpenRead(path);
+        await using (stream.ConfigureAwait(false))
         {
-            var read = stream.Read(magic);
+            var read = await stream.ReadAtLeastAsync(magic, 4, throwOnEndOfStream: false, cancellationToken).ConfigureAwait(false);
             if (read < 4)
             {
                 throw new InvalidDataException($"File too small to identify: {path}");

@@ -118,7 +118,7 @@ internal class BundleService
             folderName = string.IsNullOrWhiteSpace(sourceDirectory.Name) ? "archive" : sourceDirectory.Name;
             outputDir = options.OutputPath ?? sourceDirectory.Parent?.FullName ?? sourceDirectory.FullName;
         }
-        var outputFileName = _fileNamer.GetBundleFileName(folderName, filtered, strategy.BundleFileExtension);
+        var outputFileName = _fileNamer.GetBundleFileName(folderName, filtered, strategy.BundleFileExtension, options.TimestampSource, options.NamePrefix);
         var outputPath = Path.Combine(outputDir, outputFileName);
 
         // Never overwrite an existing archive — refuse rather than clobber it and
@@ -184,16 +184,37 @@ internal class BundleService
         {
             foreach (var file in filtered)
             {
-                Stream stream;
+                Stream? stream = null;
 
-                try
+                for (var attempt = 0; stream is null; attempt++)
                 {
-                    stream = _fileSystem.OpenRead(file.FullName);
+                    try
+                    {
+                        stream = _fileSystem.OpenRead(file.FullName);
+                    }
+                    catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+                    {
+                        if (attempt < options.OnError.RetryCount)
+                        {
+                            _logger.LogWarning(ex, "Retrying unreadable file {File} (attempt {Attempt} of {Max})", file.FullName, attempt + 1, options.OnError.RetryCount);
+                            continue;
+                        }
+
+                        if (options.OnError.Mode == OnErrorMode.Fail)
+                        {
+                            // Strict mode: an unreadable input aborts the whole
+                            // bundle rather than shipping an incomplete archive.
+                            throw new IOException($"Unreadable input aborted the bundle (--on-error fail): {file.FullName}", ex);
+                        }
+
+                        skipped++;
+                        _logger.LogWarning(ex, "Skipping unreadable file {File}: {Message}", file.FullName, ex.Message);
+                        break;
+                    }
                 }
-                catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+
+                if (stream is null)
                 {
-                    skipped++;
-                    _logger.LogWarning(ex, "Skipping unreadable file {File}: {Message}", file.FullName, ex.Message);
                     continue;
                 }
 
@@ -263,7 +284,8 @@ internal class BundleService
 
         // A bundle that skipped one or more unreadable files is a partial success:
         // the archive was written and the readable originals deleted, but the caller
-        // must still see a non-success result (and exit code).
+        // must still see a non-success result. SkippedCount lets the command map
+        // this to "completed with skips" (exit 3) rather than a hard failure (11).
         if (skipped > 0)
         {
             return new CompressionResult
@@ -273,6 +295,7 @@ internal class BundleService
                 OriginalSize = totalOriginalSize,
                 CompressedSize = compressedSize,
                 Success = false,
+                SkippedCount = skipped,
                 ErrorMessage = $"{skipped} file(s) could not be read and were skipped (left in place); {bundled.Count} file(s) bundled to {outputPath}."
             };
         }

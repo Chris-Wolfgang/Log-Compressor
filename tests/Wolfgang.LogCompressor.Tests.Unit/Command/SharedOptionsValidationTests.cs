@@ -16,6 +16,77 @@ public sealed class SharedOptionsValidationTests
 
 
     [Fact]
+    public void ValidateOptions_when_invalidTimestampSource_expected_false()
+    {
+        var console = Substitute.For<IConsole>();
+        console.Error.Returns(new StringWriter());
+
+        var options = new TestOptions { Path = "/tmp", Timestamp = "created" };
+
+        Assert.False(options.ValidateOptions(console));
+    }
+
+
+
+    [Fact]
+    public void ValidateOptions_when_nameContainsPathSeparator_expected_false()
+    {
+        var console = Substitute.For<IConsole>();
+        console.Error.Returns(new StringWriter());
+
+        var options = new TestOptions { Path = "/tmp", Name = "a/b" };
+
+        Assert.False(options.ValidateOptions(console));
+    }
+
+
+
+    [Fact]
+    public void ValidateOptions_when_invalidOnError_expected_false()
+    {
+        var console = Substitute.For<IConsole>();
+        console.Error.Returns(new StringWriter());
+
+        var options = new TestOptions { Path = "/tmp", OnError = "explode" };
+
+        Assert.False(options.ValidateOptions(console));
+    }
+
+
+
+    [Fact]
+    public void BuildOptions_when_onErrorRetrySet_expected_mapped()
+    {
+        var options = new TestOptions { Path = "/tmp/logs", OnError = "retry:3" };
+
+        var result = options.BuildOptions();
+
+        Assert.Equal(OnErrorMode.Skip, result.OnError.Mode);
+        Assert.Equal(3, result.OnError.RetryCount);
+    }
+
+
+
+    [Fact]
+    public void BuildOptions_when_timestampAndNameSet_expected_mapped()
+    {
+        var options = new TestOptions
+        {
+            Path = "/tmp/logs",
+            Timestamp = "compressed",
+            Name = "weblogs"
+        };
+
+        var result = options.BuildOptions();
+
+        Assert.Equal(TimestampSource.Compressed, result.TimestampSource);
+        Assert.Equal("weblogs", result.NamePrefix);
+    }
+
+
+
+
+    [Fact]
     public void ValidateOptions_when_olderThanAndMinDateTime_expected_false()
     {
         var console = Substitute.For<IConsole>();

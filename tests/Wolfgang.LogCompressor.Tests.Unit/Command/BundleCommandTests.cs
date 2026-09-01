@@ -107,6 +107,33 @@ public sealed class BundleCommandTests : IDisposable
 
 
     [Fact]
+    public async Task OnExecuteAsync_when_bundleCompletesWithSkippedInputs_expected_completedWithSkips()
+    {
+        _bundleService.ExecuteAsync(Arg.Any<CompressionOptions>(), Arg.Any<CancellationToken>())
+            .Returns
+            (
+                new CompressionResult
+                {
+                    SourcePath = "/tmp/logs",
+                    OutputPath = "/tmp/logs.zip",
+                    Success = false,
+                    SkippedCount = 2,
+                    ErrorMessage = "2 file(s) could not be read and were skipped"
+                }
+            );
+
+        var command = new Bundle { Path = "/tmp/logs", NoLock = true };
+
+        var result = await command.OnExecuteAsync(_console, _logger, _bundleService, _reportService, _retentionService);
+
+        // The archive was written; only some inputs were skipped — degraded (3),
+        // not broken (11).
+        Assert.Equal(ExitCode.CompletedWithSkips, result);
+    }
+
+
+
+    [Fact]
     public async Task OnExecuteAsync_when_invalidOptions_expected_invalidArguments()
     {
         var command = new Bundle

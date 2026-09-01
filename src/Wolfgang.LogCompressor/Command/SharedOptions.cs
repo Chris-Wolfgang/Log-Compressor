@@ -111,6 +111,42 @@ internal abstract class SharedOptions
 
 
     /// <summary>
+    /// Gets or sets which timestamp is embedded in generated archive names.
+    /// </summary>
+    [Option
+    (
+        "--timestamp",
+        Description = "Timestamp embedded in archive names: modified, compressed (default: modified)"
+    )]
+    public string Timestamp { get; set; } = "modified";
+
+
+
+    /// <summary>
+    /// Gets or sets the custom base name for generated archives.
+    /// </summary>
+    [Option
+    (
+        "--name",
+        Description = "Custom base name for archives, replacing the source file/folder name (colliding names get -2, -3, ... this run)"
+    )]
+    public string? Name { get; set; }
+
+
+
+    /// <summary>
+    /// Gets or sets the batch error policy.
+    /// </summary>
+    [Option
+    (
+        "--on-error",
+        Description = "When an item fails: skip, fail, or retry:N (1-100, then skip) (default: skip)"
+    )]
+    public string OnError { get; set; } = "skip";
+
+
+
+    /// <summary>
     /// Gets or sets the glob patterns to include.
     /// </summary>
     [Option
@@ -239,6 +275,11 @@ internal abstract class SharedOptions
             return false;
         }
 
+        if (!ValidateNamingOptions(console))
+        {
+            return false;
+        }
+
         if (Report != null && !IsValidReportFormat(Report))
         {
             console.Error.WriteLine($"Error: Unsupported report format: '{Report}'. Supported: json, csv");
@@ -264,6 +305,8 @@ internal abstract class SharedOptions
     {
         _ = TryParseFormat(Format, out var format);
         _ = TryParseLevel(Level, out var level);
+        _ = TryParseTimestampSource(Timestamp, out var timestampSource);
+        _ = ErrorPolicy.TryParse(OnError, out var onError);
 
         return new CompressionOptions
         {
@@ -275,6 +318,9 @@ internal abstract class SharedOptions
             MaxDateTime = ParseDateTime(MaxDateTime),
             Format = format,
             Level = level,
+            TimestampSource = timestampSource,
+            NamePrefix = Name,
+            OnError = onError,
             IncludePatterns = Include ?? [],
             ExcludePatterns = Exclude ?? [],
             Verify = !NoVerify,
@@ -321,6 +367,45 @@ internal abstract class SharedOptions
         };
 
         return (int)format != InvalidEnumSentinel;
+    }
+
+
+
+    private bool ValidateNamingOptions(IConsole console)
+    {
+        if (!TryParseTimestampSource(Timestamp, out _))
+        {
+            console.Error.WriteLine($"Error: Unsupported timestamp source: '{Timestamp}'. Supported: modified, compressed");
+            return false;
+        }
+
+        if (Name != null && (Name.Length == 0 || Name.IndexOfAny(System.IO.Path.GetInvalidFileNameChars()) >= 0))
+        {
+            console.Error.WriteLine("Error: --name must be a valid file name fragment (no path separators or reserved characters).");
+            return false;
+        }
+
+        if (!ErrorPolicy.TryParse(OnError, out _))
+        {
+            console.Error.WriteLine($"Error: Unsupported error policy: '{OnError}'. Supported: skip, fail, retry:N (1-100)");
+            return false;
+        }
+
+        return true;
+    }
+
+
+
+    private static bool TryParseTimestampSource(string value, out TimestampSource source)
+    {
+        source = value.ToLowerInvariant() switch
+        {
+            "modified" => TimestampSource.Modified,
+            "compressed" => TimestampSource.Compressed,
+            _ => (TimestampSource)InvalidEnumSentinel
+        };
+
+        return (int)source != InvalidEnumSentinel;
     }
 
 

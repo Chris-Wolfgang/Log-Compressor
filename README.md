@@ -13,6 +13,7 @@ A cross-platform .NET CLI (`logc`) for compressing log files. Built for **unatte
 - **Two compression modes:**
   - `logc compress <path>` — produces **one archive per source file** (each log gets its own `.zip` / `.tar.gz` / `.tar.br`)
   - `logc bundle <path>` — produces **one archive containing many files** (good for end-of-month rollups)
+  - `logc decompress <path>` — **extracts** logc archives (all formats, singles and bundles); archives are deleted only after every entry extracted successfully
 - **Five formats:** ZIP (default), GZip (`.tar.gz`), Brotli (`.tar.br`), Zstandard (`.tar.zst`), LZ4 (`.tar.lz4`)
 - **Filtering:**
   - `-r|--recurse` — descend into subdirectories
@@ -115,6 +116,18 @@ logc bundle /var/log/myapp --recurse --min-datetime 2026-04-01 --max-datetime 20
 # Produces: /var/log/myapp/myapp-2026-04-01 to 2026-04-30.tar.gz
 ```
 
+### Extract archives back out
+
+```bash
+# Extract every archive in a directory (archives are deleted after successful extraction):
+logc decompress /var/log/archives --recurse --output /var/log/restored
+
+# Keep the archives, refuse to overwrite anything that already exists:
+logc decompress /var/log/archives --keep-archives
+```
+
+`decompress` handles every format logc produces — `.zip`, `.gz`, `.br`, `.zst`, `.lz4` and the `.tar.*` bundles. ZIP and tar entries restore their original names; raw single-stream formats extract to the archive name minus its compression suffix (the original file extension is not stored in those formats). Entries are confined to the output directory (zip-slip protected), an existing file fails that archive unless `--force`, and an archive is deleted only after every entry extracted successfully (`--keep-archives` to opt out) — the safety mirror of compress's verify-then-delete.
+
 ### Output filename conventions
 
 | Mode | Pattern |
@@ -126,20 +139,50 @@ logc bundle /var/log/myapp --recurse --min-datetime 2026-04-01 --max-datetime 20
 
 ## 🔧 CLI Reference
 
+### `decompress` flags
+
+| Flag | Meaning | Default |
+|------|---------|---------|
+| `<path>` | Archive file, or directory containing archives | required |
+| `-o`, `--output <dir>` | Extraction destination | alongside each archive |
+| `-r`, `--recurse` | Recurse into subdirectories | off |
+| `--include` / `--exclude <pattern>` | Select archives by glob (repeatable) | all recognized archives |
+| `--force` | Overwrite existing files at extraction targets | off |
+| `--keep-archives` | Keep archives after successful extraction | off (archives deleted) |
+| `--no-lock` | Skip the single-instance directory lock | off |
+| `--on-error <policy>` | `skip` \| `fail` \| `retry:N` (1–100; retries then skips) | `skip` |
+| `--report <fmt>` / `--report-path` | Summary report (`json` \| `csv`) | none |
+
 ### Shared flags (apply to both `compress` and `bundle`)
 
 | Flag | Purpose | Default |
 |------|---------|---------|
 | `-r`, `--recurse` | Recurse subdirectories | `false` |
 | `-o`, `--output <dir>` | Output directory | source directory |
+| `--timestamp <src>` | Timestamp in archive names: `modified` \| `compressed` | `modified` |
+| `--name <prefix>` | Custom base name for archives (collisions this run get `-2`, `-3`, ...) | source file/folder name |
 | `--older-than <days>` | Only files modified N+ days ago | (no filter) |
 | `--min-datetime <dt>` | Inclusive lower bound on last-modified date | (no filter) |
 | `--max-datetime <dt>` | Inclusive upper bound on last-modified date | (no filter) |
 | `-f`, `--format <fmt>` | `zip` \| `gz` \| `brotli` \| `zstd` \| `lz4` | `zip` |
 | `--include <glob>` | Only process files matching this glob (repeatable) | (no filter) |
 | `--exclude <glob>` | Skip files matching this glob (repeatable; applied after `--include`) | (no filter) |
+| `--on-error <policy>` | `skip` \| `fail` \| `retry:N` (1–100; retries then skips) | `skip` |
 
 `--older-than` is mutually exclusive with `--min-datetime` / `--max-datetime`. DateTime values are parsed using the local culture.
+
+### Exit codes
+
+| Code | Meaning |
+|------|---------|
+| 0 | Success — every item processed |
+| 1 | Invalid arguments |
+| 2 | Another instance already holds the directory lock |
+| 3 | Completed with skips — the run finished but one or more items failed and were skipped (`--on-error skip`, or `retry:N` exhausted) |
+| 10 | Unhandled exception |
+| 11 | Application error — the run failed (`--on-error fail` stopped at the first failure, or a fatal error) |
+
+Under `--on-error fail`, the first item that still fails after any retries stops the run and exits 11. Under the default `skip`, failures are logged, the item is left in place, and the run continues — ending in exit 3 so schedulers can tell a degraded run from a clean one.
 
 ### Response files
 
@@ -288,12 +331,7 @@ The output lands in `bin/Release/net10.0/linux-x64/publish/` as `logc` alongside
 
 ## 🛣️ Roadmap
 
-Items deferred from v0.1.0:
-
-- `decompress` sub-command
-- Compressed-timestamp naming mode (`{name}-{now}` instead of `{name}-{lastModified}`)
-- Custom name prefix (`--name`)
-- Mid-batch error-handling strategies (currently: skip & continue for `compress`, fail-fast for `bundle`)
+Planned work is tracked in the [issue tracker](https://github.com/Chris-Wolfgang/Log-Compressor/issues) — see issues labeled `enhancement`.
 
 ---
 

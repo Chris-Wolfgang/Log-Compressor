@@ -39,6 +39,9 @@ def write_log(path: Path, size: int, rnd: random.Random) -> None:
 
 
 def main() -> int:
+    if len(sys.argv) < 2:
+        print(__doc__, file=sys.stderr)
+        return 2
     out = Path(sys.argv[1])
     seed = int(sys.argv[2]) if len(sys.argv) > 2 else 42
     rnd = random.Random(seed)
@@ -50,7 +53,7 @@ def main() -> int:
     for i in range(3):
         write_log(out / "service" / f"service-{i}.log", rnd.randrange(1, 4) * 1_048_576, rnd)
     write_log(out / "archive" / "big.log", 16 * 1_048_576, rnd)
-    (out / "empty.log").write_text("")
+    (out / "empty.log").write_text("", encoding="utf-8", newline="\n")
     write_log(out / "notes.txt", 5_000, rnd)
 
     total = sum(p.stat().st_size for p in out.rglob("*") if p.is_file())

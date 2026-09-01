@@ -91,17 +91,19 @@ internal class CompressService
         );
 
         var results = new List<CompressionResult>(filtered.Count);
-        // Names already produced THIS run: with --name every file shares a base
-        // name, and even without it a recursed tree can hold same-named files
-        // with identical mtimes — either way two sources must never resolve to
-        // one archive path (the second would overwrite the first's archive
-        // after its original was already deleted).
-        var usedNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        // Output paths already produced THIS run: with --name every file shares
+        // a base name, and even without it a recursed tree can hold same-named
+        // files with identical mtimes — either way two sources must never
+        // resolve to one archive path (the second would overwrite the first's
+        // archive after its original was already deleted). Keyed by FULL path,
+        // not file name: same-named recursed files landing in different
+        // directories (no --output) don't collide and must not be renamed.
+        var usedPaths = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
         foreach (var file in filtered)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            var result = await CompressFileAsync(file, options, strategy, usedNames, cancellationToken).ConfigureAwait(false);
+            var result = await CompressFileAsync(file, options, strategy, usedPaths, cancellationToken).ConfigureAwait(false);
             results.Add(result);
         }
 
@@ -110,16 +112,19 @@ internal class CompressService
 
 
 
-    private static string MakeUniqueThisRun(string fileName, HashSet<string> usedNames)
+    private static string MakeUniqueThisRun(string outputDir, string fileName, HashSet<string> usedPaths)
     {
-        if (usedNames.Add(fileName))
+        var path = Path.Combine(outputDir, fileName);
+        if (usedPaths.Add(path))
         {
-            return fileName;
+            return path;
         }
 
+        // Insert the counter before the FINAL extension only: a dotted stem
+        // ("my.app-….zip") must become "my.app-…-2.zip", not "my-2.app-….zip".
         var stem = fileName;
         var extension = string.Empty;
-        var dot = fileName.IndexOf('.', StringComparison.Ordinal);
+        var dot = fileName.LastIndexOf('.');
         if (dot > 0)
         {
             stem = fileName[..dot];
@@ -128,8 +133,8 @@ internal class CompressService
 
         for (var i = 2; ; i++)
         {
-            var candidate = $"{stem}-{i}{extension}";
-            if (usedNames.Add(candidate))
+            var candidate = Path.Combine(outputDir, $"{stem}-{i}{extension}");
+            if (usedPaths.Add(candidate))
             {
                 return candidate;
             }
@@ -172,14 +177,13 @@ internal class CompressService
         FileInfo sourceFile,
         CompressionOptions options,
         ICompressionStrategy strategy,
-        HashSet<string> usedNames,
+        HashSet<string> usedPaths,
         CancellationToken cancellationToken
     )
     {
         var outputDir = options.OutputPath ?? sourceFile.DirectoryName ?? Directory.GetCurrentDirectory();
         var outputFileName = _fileNamer.GetCompressedFileName(sourceFile, strategy.FileExtension, options.TimestampSource, options.NamePrefix);
-        outputFileName = MakeUniqueThisRun(outputFileName, usedNames);
-        var outputPath = Path.Combine(outputDir, outputFileName);
+        var outputPath = MakeUniqueThisRun(outputDir, outputFileName, usedPaths);
 
         try
         {

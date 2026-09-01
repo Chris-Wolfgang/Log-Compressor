@@ -17,6 +17,14 @@ internal sealed class FileNamingService : IFileNamer
 
 
 
+    // Captured once on first use so every archive named during one run embeds
+    // the SAME "compressed" timestamp — per-call Now could straddle a second
+    // boundary and scatter a batch across different suffixes. logc is a
+    // one-shot CLI, so instance lifetime == run lifetime.
+    private readonly Lazy<DateTime> _runTimestamp = new(() => DateTimeOffset.Now.DateTime);
+
+
+
     /// <inheritdoc />
     public string GetCompressedFileName(FileInfo sourceFile, string extension, TimestampSource timestampSource = TimestampSource.Modified, string? namePrefix = null)
     {
@@ -25,7 +33,7 @@ internal sealed class FileNamingService : IFileNamer
 
         var baseName = namePrefix ?? Path.GetFileNameWithoutExtension(sourceFile.Name);
         var timestamp = timestampSource == TimestampSource.Compressed
-            ? DateTimeOffset.Now.DateTime
+            ? _runTimestamp.Value
             : sourceFile.LastWriteTime;
 
         return $"{baseName}-{timestamp.ToString(DateTimeFormat, CultureInfo.InvariantCulture)}.{extension}";
@@ -50,7 +58,7 @@ internal sealed class FileNamingService : IFileNamer
         if (timestampSource == TimestampSource.Compressed)
         {
             // One archive, one job time — a min/max range adds nothing here.
-            var now = DateTimeOffset.Now.DateTime.ToString(DateTimeFormat, CultureInfo.InvariantCulture);
+            var now = _runTimestamp.Value.ToString(DateTimeFormat, CultureInfo.InvariantCulture);
             return $"{baseName}-{now}.{extension}";
         }
 

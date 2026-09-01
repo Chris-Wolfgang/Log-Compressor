@@ -25,6 +25,7 @@ namespace Wolfgang.LogCompressor;
 )]
 [Subcommand(typeof(Compress))]
 [Subcommand(typeof(Bundle))]
+[Subcommand(typeof(Decompress))]
 [Subcommand(typeof(Init))]
 [ExcludeFromCodeCoverage]
 internal class Program
@@ -66,6 +67,7 @@ internal class Program
                         .AddSingleton<RetentionService>()
                         .AddTransient<CompressService>()
                         .AddTransient<BundleService>()
+                        .AddTransient<DecompressService>()
                         ;
                 })
                 .RunCommandLineApplicationAsync<Program>(args);

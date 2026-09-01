@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **`decompress` sub-command** (#187) — extracts logc archives back out: every format (`zip`/`gz`/`brotli`/`zstd`/`lz4`), single archives and tar bundles, with `--output`, `--recurse`, `--include`/`--exclude`, `--force`, `--keep-archives`, `--no-lock` and `--report`. Safety mirrors compress's verify-then-delete: entries are confined to the destination (zip-slip protected), collisions fail the archive unless `--force`, and an archive is deleted only after every entry extracted successfully. Unknown extensions fall back to magic-byte sniffing (brotli excepted — the format has no signature).
+
 ## [0.2.0] - 2026-08-31
 
 ### Added

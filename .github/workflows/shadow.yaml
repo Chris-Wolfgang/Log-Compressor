@@ -135,7 +135,10 @@ jobs:
           retention-days: 14
 
       - name: File issue on behavioural divergence
-        if: failure()
+        # Only a confirmed compare-step failure is a divergence — infra
+        # failures earlier in the job (download, corpus generation) must not
+        # file false-positive issues.
+        if: failure() && steps.compare.outcome == 'failure'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |

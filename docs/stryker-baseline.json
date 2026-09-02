@@ -1,19 +1,20 @@
 {
   "$comment": "Mutation-score floor for the Stryker gate (#74). stryker-config.json's thresholds.break MUST equal 'floor' — Stryker exits non-zero below it, failing the weekly stryker.yaml run, which auto-files an issue. Ratchet policy: the floor only moves UP, in a PR that shows the new sustained score; lowering it requires a written rationale in the same PR. History lives in this file's git log.",
   "project": "src/Wolfgang.LogCompressor/Wolfgang.LogCompressor.csproj",
-  "floor": 83,
+  "floor": 85,
   "measured": {
-    "date": "2026-08-29",
-    "score": 84.50,
-    "killed": 300,
-    "survived": 61,
-    "timeout": 49,
-    "runtimeMinutes": 10,
-    "environment": "local win-x64, dotnet-stryker latest, Release unit suite (254 tests)"
+    "date": "2026-09-02",
+    "score": 86.84,
+    "killed": 559,
+    "survived": 95,
+    "timeout": 94,
+    "runtimeMinutes": 14,
+    "environment": "local win-x64, dotnet-stryker 4.16.0, Release unit suite (376 tests)"
   },
   "history": [
     { "date": "2026-08-29", "score": 71.99, "floor": 71, "note": "first real run (stryker.yaml had been a config-less no-op)" },
-    { "date": "2026-08-29", "score": 84.50, "floor": 83, "note": "#176 pass: 18 behavioural killing tests (verify/recurse flags, exit codes, retention dir + boundary, report counts, filter order, sink defaults) + ignore-methods for Log*/WriteLine* — log-statement mutants are unassertable by design, excluding them turns the score into signal" }
+    { "date": "2026-08-29", "score": 84.50, "floor": 83, "note": "#176 pass: 18 behavioural killing tests (verify/recurse flags, exit codes, retention dir + boundary, report counts, filter order, sink defaults) + ignore-methods for Log*/WriteLine* — log-statement mutants are unassertable by design, excluding them turns the score into signal" },
+    { "date": "2026-09-02", "score": 86.84, "floor": 85, "note": "#176 second pass after the v0.3.0 features dropped the score to 81.12 (below the 83 gate): 27 killing tests - verifier tar-walk isolation (valid compression wrapping non-tar bytes), ctor null-guards, exact retry-attempt counts, skip-mode continuation, byte-count/OriginalSize sums, uniquifier counter progression, directory-entry extraction, expected-size-zero boundary" }
   ],
-  "survivorProfile": "61 survivors, led by ArchiveVerifier (18) and the services — dominated by leaveOpen:true argument booleans and similar equivalent-behaviour mutants (disposal semantics indistinguishable in context). Raising the floor past ~87 means hunting those case-by-case; check the HTML report from the weekly stryker.yaml artifact."
+  "survivorProfile": "95 survivors + 4 no-coverage - dominated by ConfigureAwait(false)->true boolean flips (equivalent under xunit: no SynchronizationContext) and leaveOpen argument booleans (disposal semantics indistinguishable in context), plus a few unreachable-by-construction branches (root-directory bundle sources, whitespace folder names). Raising the floor past ~88 means hunting those case-by-case; check the HTML report from the weekly stryker.yaml artifact."
 }

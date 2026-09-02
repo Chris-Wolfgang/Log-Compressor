@@ -399,6 +399,7 @@ internal class DecompressService
                         var empty = _fileSystem.CreateWrite(destination);
                         await using (empty.ConfigureAwait(false))
                         {
+                            // Opening the stream creates the file - nothing to write.
                         }
 
                         continue;

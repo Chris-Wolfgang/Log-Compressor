@@ -1,5 +1,4 @@
 using System.Diagnostics;
-using System.Formats.Tar;
 using System.IO.Compression;
 using System.Text;
 using Wolfgang.LogCompressor.Model;
@@ -125,7 +124,9 @@ public static class CompressionRatioBenchmarks
         // repeated line is pathologically compressible (brotli shrinks 100 MB
         // of it to ~250 bytes) and produces ratio/speed numbers that mislead
         // rather than guide format choice.
+#pragma warning disable S2245 // Deterministic corpus generation for benchmarks - not a security context
         var random = new Random(42);
+#pragma warning restore S2245
         string[] levels = ["INF", "INF", "INF", "INF", "DBG", "DBG", "WRN", "ERR"];
         string[] methods = ["GET", "POST", "PUT", "DELETE"];
         string[] paths =
@@ -134,7 +135,7 @@ public static class CompressionRatioBenchmarks
             "/api/reports/daily", "/api/inventory", "/auth/token", "/api/search"
         ];
 
-        var timestamp = new DateTime(2026, 3, 15, 23, 0, 15, 123);
+        var timestamp = new DateTime(2026, 3, 15, 23, 0, 15, 123, DateTimeKind.Utc);
         var sb = new StringBuilder(size + 256);
 
         while (sb.Length < size)

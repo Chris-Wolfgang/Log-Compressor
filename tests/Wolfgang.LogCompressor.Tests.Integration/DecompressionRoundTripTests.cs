@@ -1,5 +1,4 @@
 using Microsoft.Extensions.Logging.Abstractions;
-using Wolfgang.LogCompressor.Abstraction;
 using Wolfgang.LogCompressor.Model;
 using Wolfgang.LogCompressor.Service;
 using Wolfgang.LogCompressor.Service.Compression;

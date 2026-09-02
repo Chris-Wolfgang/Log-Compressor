@@ -194,13 +194,16 @@ internal class CompressService
             extension = fileName[dot..];
         }
 
-        for (var i = 2; ; i++)
+        var i = 2;
+        while (true)
         {
             var candidate = Path.Combine(outputDir, $"{stem}-{i}{extension}");
             if (usedPaths.Add(candidate))
             {
                 return candidate;
             }
+
+            i++;
         }
     }
 

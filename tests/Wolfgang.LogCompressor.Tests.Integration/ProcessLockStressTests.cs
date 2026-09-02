@@ -41,6 +41,9 @@ public sealed class ProcessLockStressTests
             {
                 using var barrier = new Barrier(Contenders);
 
+                // Task.WhenAll completes before the locks are disposed, so the
+                // closures never observe a disposed lock.
+                // ReSharper disable once AccessToDisposedClosure
                 var results = await Task.WhenAll
                 (
                     locks.Select(l => Task.Run(() =>
@@ -88,6 +91,9 @@ public sealed class ProcessLockStressTests
             {
                 using var barrier = new Barrier(Contenders);
 
+                // Task.WhenAll completes before the locks are disposed, so the
+                // closures never observe a disposed lock.
+                // ReSharper disable once AccessToDisposedClosure
                 var results = await Task.WhenAll
                 (
                     locks.Select(l => Task.Run(() =>
@@ -132,6 +138,9 @@ public sealed class ProcessLockStressTests
             {
                 using var barrier = new Barrier(Contenders);
 
+                // Task.WhenAll completes before the locks are disposed, so the
+                // closures never observe a disposed lock.
+                // ReSharper disable once AccessToDisposedClosure
                 var results = await Task.WhenAll
                 (
                     locks.Select(l => Task.Run(() =>

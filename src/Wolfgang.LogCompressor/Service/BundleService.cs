@@ -185,8 +185,9 @@ internal class BundleService
             foreach (var file in filtered)
             {
                 Stream? stream = null;
+                var attempt = 0;
 
-                for (var attempt = 0; stream is null; attempt++)
+                while (stream is null)
                 {
                     try
                     {
@@ -197,6 +198,7 @@ internal class BundleService
                         if (attempt < options.OnError.RetryCount)
                         {
                             _logger.LogWarning(ex, "Retrying unreadable file {File} (attempt {Attempt} of {Max})", file.FullName, attempt + 1, options.OnError.RetryCount);
+                            attempt++;
                             continue;
                         }
 

@@ -22,6 +22,18 @@ public sealed class ErrorPolicyTests
 
 
     [Theory]
+    [InlineData(1, 200)]
+    [InlineData(5, 1000)]
+    [InlineData(10, 2000)]
+    [InlineData(100, 2000)]
+    public void RetryDelay_when_attemptGiven_expected_linearBackoffCappedAtTwoSeconds(int attempt, int expectedMs)
+    {
+        Assert.Equal(TimeSpan.FromMilliseconds(expectedMs), ErrorPolicy.RetryDelay(attempt));
+    }
+
+
+
+    [Theory]
     [InlineData("retry:0")]
     [InlineData("retry:101")]
     [InlineData("retry:")]

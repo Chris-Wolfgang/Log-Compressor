@@ -31,6 +31,22 @@ internal sealed record ErrorPolicy
 
 
     /// <summary>
+    /// Gets the pause before retry <paramref name="attempt"/> (1-based):
+    /// 200 ms × attempt, capped at 2 s. Transient conditions (a writer
+    /// rotating the file, an antivirus scan) rarely clear within
+    /// microseconds, so immediate retries would burn the whole retry
+    /// budget pointlessly.
+    /// </summary>
+    /// <param name="attempt">The 1-based retry attempt number.</param>
+    /// <returns>The delay to wait before that attempt.</returns>
+    public static TimeSpan RetryDelay(int attempt)
+    {
+        return TimeSpan.FromMilliseconds(Math.Min(200L * attempt, 2000L));
+    }
+
+
+
+    /// <summary>
     /// Parses <c>skip</c>, <c>fail</c> or <c>retry:N</c> (1–100).
     /// </summary>
     /// <param name="value">The raw flag value.</param>

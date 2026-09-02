@@ -107,7 +107,7 @@ public class CompressionBenchmarks
         }
 
         using var output = new MemoryStream();
-        await _strategy.CompressFilesAsync(inputs, output);
+        await _strategy.CompressFilesAsync(inputs.ToAsyncEnumerable(), output);
 
         foreach (var (stream, _) in inputs)
         {

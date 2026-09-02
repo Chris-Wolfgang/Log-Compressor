@@ -69,7 +69,7 @@ public class CompressionFuzzTests
         strategy
             .CompressFilesAsync
             (
-                entries.Select(e => ((Stream)new MemoryStream(e.Content), e.Name)),
+                entries.Select(e => ((Stream)new MemoryStream(e.Content), e.Name)).ToAsyncEnumerable(),
                 output
             )
             .GetAwaiter()

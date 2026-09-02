@@ -59,7 +59,7 @@ public sealed class ZipCompressionStrategyTests
 
         using var outputStream = new MemoryStream();
 
-        await _sut.CompressFilesAsync(inputs, outputStream);
+        await _sut.CompressFilesAsync(inputs.ToAsyncEnumerable(), outputStream);
 
         outputStream.Position = 0;
         using var archive = new ZipArchive(outputStream, ZipArchiveMode.Read);

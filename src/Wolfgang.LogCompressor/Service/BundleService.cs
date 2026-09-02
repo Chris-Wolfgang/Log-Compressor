@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using Microsoft.Extensions.Logging;
 using Wolfgang.LogCompressor.Abstraction;
 using Wolfgang.LogCompressor.Model;
@@ -180,7 +181,12 @@ internal class BundleService
         // each stream immediately, so only one source handle is open at a time —
         // safe for bundles of many thousands of files. Unreadable files (locked,
         // no read permission) are skipped and recorded so they are never deleted.
-        IEnumerable<(Stream Stream, string EntryName)> OpenInputs()
+        // Async so retries can back off — a locked file won't unlock in the
+        // microseconds an immediate retry would give it.
+        async IAsyncEnumerable<(Stream Stream, string EntryName)> OpenInputsAsync
+        (
+            [EnumeratorCancellation] CancellationToken enumerationToken
+        )
         {
             foreach (var file in filtered)
             {
@@ -199,6 +205,7 @@ internal class BundleService
                         {
                             _logger.LogWarning(ex, "Retrying unreadable file {File} (attempt {Attempt} of {Max})", file.FullName, attempt + 1, options.OnError.RetryCount);
                             attempt++;
+                            await Task.Delay(ErrorPolicy.RetryDelay(attempt), enumerationToken).ConfigureAwait(false);
                             continue;
                         }
 
@@ -229,7 +236,7 @@ internal class BundleService
 
         await using (var outputStream = _fileSystem.CreateWrite(outputPath))
         {
-            await strategy.CompressFilesAsync(OpenInputs(), outputStream, cancellationToken).ConfigureAwait(false);
+            await strategy.CompressFilesAsync(OpenInputsAsync(cancellationToken), outputStream, cancellationToken).ConfigureAwait(false);
             await outputStream.FlushAsync(cancellationToken).ConfigureAwait(false);
             compressedSize = outputStream.Length;
         }

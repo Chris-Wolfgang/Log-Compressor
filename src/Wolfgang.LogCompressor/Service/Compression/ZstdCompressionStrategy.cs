@@ -54,7 +54,7 @@ internal sealed class ZstdCompressionStrategy : ICompressionStrategy
     /// <inheritdoc />
     public async Task CompressFilesAsync
     (
-        IEnumerable<(Stream Stream, string EntryName)> inputs,
+        IAsyncEnumerable<(Stream Stream, string EntryName)> inputs,
         Stream outputStream,
         CancellationToken cancellationToken = default
     )
@@ -62,7 +62,7 @@ internal sealed class ZstdCompressionStrategy : ICompressionStrategy
         await using var zstdStream = new CompressionStream(outputStream, _level, leaveOpen: true);
         await using var tarWriter = new TarWriter(zstdStream, leaveOpen: true);
 
-        foreach (var (stream, entryName) in inputs)
+        await foreach (var (stream, entryName) in inputs.WithCancellation(cancellationToken).ConfigureAwait(false))
         {
             // Take ownership of the source stream: dispose it as soon as its entry
             // is written so only one source handle is open at a time.

@@ -55,7 +55,7 @@ internal sealed class Lz4CompressionStrategy : ICompressionStrategy
     /// <inheritdoc />
     public async Task CompressFilesAsync
     (
-        IEnumerable<(Stream Stream, string EntryName)> inputs,
+        IAsyncEnumerable<(Stream Stream, string EntryName)> inputs,
         Stream outputStream,
         CancellationToken cancellationToken = default
     )
@@ -63,7 +63,7 @@ internal sealed class Lz4CompressionStrategy : ICompressionStrategy
         await using var lz4Stream = LZ4Stream.Encode(outputStream, _level, leaveOpen: true);
         await using var tarWriter = new TarWriter(lz4Stream, leaveOpen: true);
 
-        foreach (var (stream, entryName) in inputs)
+        await foreach (var (stream, entryName) in inputs.WithCancellation(cancellationToken).ConfigureAwait(false))
         {
             // Take ownership of the source stream: dispose it as soon as its entry
             // is written so only one source handle is open at a time.

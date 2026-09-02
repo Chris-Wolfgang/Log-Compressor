@@ -30,14 +30,12 @@ public sealed class BundleServiceTests : IDisposable
         // sequence; the substitute must enumerate it too so BundleService records
         // which files were actually bundled.
         _strategy
-            .CompressFilesAsync(Arg.Any<IEnumerable<(Stream Stream, string EntryName)>>(), Arg.Any<Stream>(), Arg.Any<CancellationToken>())
-            .Returns(callInfo =>
+            .CompressFilesAsync(Arg.Any<IAsyncEnumerable<(Stream Stream, string EntryName)>>(), Arg.Any<Stream>(), Arg.Any<CancellationToken>())
+            .Returns(async callInfo =>
             {
-                foreach (var _ in callInfo.Arg<IEnumerable<(Stream Stream, string EntryName)>>())
+                await foreach (var _ in callInfo.Arg<IAsyncEnumerable<(Stream Stream, string EntryName)>>())
                 {
                 }
-
-                return Task.CompletedTask;
             });
 
         _sut = new BundleService

@@ -67,7 +67,7 @@ public sealed class DecompressServiceTests : IDisposable
     {
         // A REAL file backs the FileInfo: the service materializes Length,
         // and real paths keep Windows/Unix path semantics honest.
-        var path = System.IO.Path.Combine(_tempDir.Path, name);
+        var path = Path.Combine(_tempDir.Path, name);
         File.WriteAllBytes(path, bytes);
         _fileSystem.FileExists(path).Returns(returnThis: true);
         _fileSystem.GetFileInfo(path).Returns(new FileInfo(path));
@@ -385,7 +385,7 @@ public sealed class DecompressServiceTests : IDisposable
         var dir = _tempDir.Path;
         var zipPath = SetupSingleArchive("a.zip", ZipBytes(("a.log", "a")));
         var gzPath = SetupSingleArchive("b.gz", GzBytes("b"));
-        var txtPath = System.IO.Path.Combine(dir, "readme.txt");
+        var txtPath = Path.Combine(dir, "readme.txt");
         File.WriteAllText(txtPath, "not an archive");
         _fileSystem.FileExists(dir).Returns(returnThis: false);
         _fileSystem.EnumerateFiles(dir, "*", SearchOption.TopDirectoryOnly)

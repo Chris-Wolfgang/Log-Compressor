@@ -87,6 +87,6 @@ public class PerfSmokeBenchmarks
         }
 
         using var output = new MemoryStream();
-        await _strategy.CompressFilesAsync(inputs, output);
+        await _strategy.CompressFilesAsync(inputs.ToAsyncEnumerable(), output);
     }
 }

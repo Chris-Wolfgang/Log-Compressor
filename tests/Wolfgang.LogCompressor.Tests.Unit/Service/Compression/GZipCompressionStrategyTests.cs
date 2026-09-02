@@ -55,7 +55,7 @@ public sealed class GZipCompressionStrategyTests
 
         using var outputStream = new MemoryStream();
 
-        await _sut.CompressFilesAsync(inputs, outputStream);
+        await _sut.CompressFilesAsync(inputs.ToAsyncEnumerable(), outputStream);
 
         outputStream.Position = 0;
         await using var gzipStream = new GZipStream(outputStream, CompressionMode.Decompress, leaveOpen: true);

@@ -56,7 +56,7 @@ public sealed class ZstdCompressionStrategyTests
 
         using var outputStream = new MemoryStream();
 
-        await _sut.CompressFilesAsync(inputs, outputStream);
+        await _sut.CompressFilesAsync(inputs.ToAsyncEnumerable(), outputStream);
 
         outputStream.Position = 0;
         await using var zstdStream = new DecompressionStream(outputStream);

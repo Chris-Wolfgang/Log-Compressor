@@ -121,7 +121,7 @@ public sealed class CultureInvarianceTests : IDisposable
     public async Task WriteReportAsync_when_csvUnderHostileCulture_expected_invariantContent(string cultureName)
     {
         var sut = new ReportService();
-        var reportPath = System.IO.Path.Combine(_tempDir.Path, $"report-{cultureName}.csv");
+        var reportPath = Path.Combine(_tempDir.Path, $"report-{cultureName}.csv");
         var results = new List<CompressionResult>
         {
             new()
@@ -153,7 +153,7 @@ public sealed class CultureInvarianceTests : IDisposable
     public async Task WriteReportAsync_when_jsonUnderHostileCulture_expected_invariantNumbers(string cultureName)
     {
         var sut = new ReportService();
-        var reportPath = System.IO.Path.Combine(_tempDir.Path, $"report-{cultureName}.json");
+        var reportPath = Path.Combine(_tempDir.Path, $"report-{cultureName}.json");
         var results = new List<CompressionResult>
         {
             new()

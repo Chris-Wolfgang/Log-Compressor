@@ -34,6 +34,16 @@ public sealed class ErrorPolicyTests
 
 
     [Theory]
+    [InlineData(0)]
+    [InlineData(-1)]
+    public void RetryDelay_when_attemptBelowOne_expected_throws(int attempt)
+    {
+        Assert.Throws<ArgumentOutOfRangeException>(() => ErrorPolicy.RetryDelay(attempt));
+    }
+
+
+
+    [Theory]
     [InlineData("retry:0")]
     [InlineData("retry:101")]
     [InlineData("retry:")]

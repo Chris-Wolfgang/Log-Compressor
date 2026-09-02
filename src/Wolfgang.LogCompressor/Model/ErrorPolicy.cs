@@ -39,8 +39,11 @@ internal sealed record ErrorPolicy
     /// </summary>
     /// <param name="attempt">The 1-based retry attempt number.</param>
     /// <returns>The delay to wait before that attempt.</returns>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="attempt"/> is less than 1.</exception>
     public static TimeSpan RetryDelay(int attempt)
     {
+        ArgumentOutOfRangeException.ThrowIfLessThan(attempt, 1);
+
         return TimeSpan.FromMilliseconds(Math.Min(200L * attempt, 2000L));
     }
 

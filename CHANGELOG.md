@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- `--on-error retry:N` now backs off between attempts (200 ms x attempt, capped at 2 s) instead of retrying immediately — transient conditions like a writer rotating the file rarely clear within microseconds.
+
 ## [0.3.0] - 2026-09-01
 
 ### Added

@@ -157,6 +157,9 @@ internal class CompressService
         for (var attempt = 1; !result.Success && attempt <= options.OnError.RetryCount; attempt++)
         {
             _logger.LogWarning("Retrying {File} (attempt {Attempt} of {Max})", sourceFile.FullName, attempt, options.OnError.RetryCount);
+            // Back off before retrying — transient conditions (a writer
+            // rotating the file, an AV scan) don't clear in microseconds.
+            await Task.Delay(ErrorPolicy.RetryDelay(attempt), cancellationToken).ConfigureAwait(false);
 
             // Every attempt reuses the SAME reserved path. The path was free
             // before the first attempt, so anything here now is the failed

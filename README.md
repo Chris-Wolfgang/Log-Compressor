@@ -150,7 +150,7 @@ logc decompress /var/log/archives --keep-archives
 | `--force` | Overwrite existing files at extraction targets | off |
 | `--keep-archives` | Keep archives after successful extraction | off (archives deleted) |
 | `--no-lock` | Skip the single-instance directory lock | off |
-| `--on-error <policy>` | `skip` \| `fail` \| `retry:N` (1–100; retries then skips) | `skip` |
+| `--on-error <policy>` | `skip` \| `fail` \| `retry:N` (1–100; retries with 200 ms–2 s backoff, then skips) | `skip` |
 | `--report <fmt>` / `--report-path` | Summary report (`json` \| `csv`) | none |
 
 ### Shared flags (apply to both `compress` and `bundle`)
@@ -167,7 +167,7 @@ logc decompress /var/log/archives --keep-archives
 | `-f`, `--format <fmt>` | `zip` \| `gz` \| `brotli` \| `zstd` \| `lz4` | `zip` |
 | `--include <glob>` | Only process files matching this glob (repeatable) | (no filter) |
 | `--exclude <glob>` | Skip files matching this glob (repeatable; applied after `--include`) | (no filter) |
-| `--on-error <policy>` | `skip` \| `fail` \| `retry:N` (1–100; retries then skips) | `skip` |
+| `--on-error <policy>` | `skip` \| `fail` \| `retry:N` (1–100; retries with 200 ms–2 s backoff, then skips) | `skip` |
 
 `--older-than` is mutually exclusive with `--min-datetime` / `--max-datetime`. DateTime values are parsed using the local culture.
 

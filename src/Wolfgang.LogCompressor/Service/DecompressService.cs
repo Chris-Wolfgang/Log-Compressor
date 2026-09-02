@@ -105,6 +105,9 @@ internal class DecompressService
             for (var attempt = 1; !result.Success && attempt <= options.OnError.RetryCount; attempt++)
             {
                 _logger.LogWarning("Retrying {Archive} (attempt {Attempt} of {Max})", archive.FullName, attempt, options.OnError.RetryCount);
+                // Back off before retrying — transient conditions don't clear
+                // in microseconds.
+                await Task.Delay(ErrorPolicy.RetryDelay(attempt), cancellationToken).ConfigureAwait(false);
                 result = await DecompressOneAsync(archive, options, cancellationToken).ConfigureAwait(false);
             }
 

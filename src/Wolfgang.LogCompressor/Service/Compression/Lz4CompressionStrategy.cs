@@ -47,6 +47,11 @@ internal sealed class Lz4CompressionStrategy : ICompressionStrategy
     {
         _ = entryName; // Not used by single-stream LZ4 format
         await using var lz4Stream = LZ4Stream.Encode(outputStream, _level, leaveOpen: true);
+        // K4os emits NOTHING (not even the frame header/end mark) when no
+        // write ever reaches the encoder, so an empty source would produce a
+        // 0-byte, malformed .lz4. An explicit empty write triggers the full
+        // valid frame (11 bytes: magic + descriptor + end mark).
+        await lz4Stream.WriteAsync(ReadOnlyMemory<byte>.Empty, cancellationToken).ConfigureAwait(false);
         await inputStream.CopyToAsync(lz4Stream, cancellationToken).ConfigureAwait(false);
     }
 

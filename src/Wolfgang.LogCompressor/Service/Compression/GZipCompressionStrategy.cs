@@ -9,6 +9,21 @@ namespace Wolfgang.LogCompressor.Service.Compression;
 /// </summary>
 internal sealed class GZipCompressionStrategy : ICompressionStrategy
 {
+    // .NET's GZipStream emits NOTHING at all (no header, no trailer) when no
+    // byte is ever written through it, so an empty source would produce a
+    // 0-byte, malformed .gz that fails verification (found by the fuzz sweep:
+    // seed 6ynpRrX3UoE1). Neither Flush nor an empty write completes the
+    // framing, so empty sources get the canonical empty gzip member instead:
+    // 10-byte header, empty final deflate block (03 00), zero CRC-32/ISIZE.
+    private static readonly byte[] EmptyGzipMember =
+    [
+        0x1F, 0x8B, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+        0x03, 0x00,
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
+    ];
+
+
+
     private readonly CompressionLevel _level;
 
 
@@ -44,8 +59,21 @@ internal sealed class GZipCompressionStrategy : ICompressionStrategy
     )
     {
         _ = entryName; // Not used by single-stream GZip format
-        await using var gzipStream = new GZipStream(outputStream, _level, leaveOpen: true);
-        await inputStream.CopyToAsync(gzipStream, cancellationToken).ConfigureAwait(false);
+
+        var buffer = new byte[81920];
+        var firstRead = await inputStream.ReadAsync(buffer, cancellationToken).ConfigureAwait(false);
+        if (firstRead == 0)
+        {
+            await outputStream.WriteAsync(EmptyGzipMember, cancellationToken).ConfigureAwait(false);
+            return;
+        }
+
+        var gzipStream = new GZipStream(outputStream, _level, leaveOpen: true);
+        await using (gzipStream.ConfigureAwait(false))
+        {
+            await gzipStream.WriteAsync(buffer.AsMemory(0, firstRead), cancellationToken).ConfigureAwait(false);
+            await inputStream.CopyToAsync(gzipStream, cancellationToken).ConfigureAwait(false);
+        }
     }
 
 

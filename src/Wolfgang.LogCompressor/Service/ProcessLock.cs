@@ -82,6 +82,28 @@ internal sealed class ProcessLock : IDisposable
 
 
 
+    private static void WriteDiagnostics(FileStream lockStream)
+    {
+        // Refresh the diagnostic content for humans inspecting the
+        // directory. SetLength(0) discards whatever a previous (crashed)
+        // holder wrote.
+        lockStream.SetLength(0);
+
+        using (var writer = new StreamWriter(lockStream, leaveOpen: true))
+        {
+            writer.WriteLine($"PID={Environment.ProcessId}");
+            writer.WriteLine($"Started={DateTimeOffset.Now:O}");
+            writer.Flush();
+        }
+
+        // StreamWriter.Flush only pushes the writer buffer into the
+        // FileStream buffer; push the bytes to disk so anything reading
+        // the file for diagnostics sees the PID rather than an empty file.
+        lockStream.Flush(flushToDisk: true);
+    }
+
+
+
     /// <summary>
     /// Attempts to acquire the lock.
     /// </summary>
@@ -105,22 +127,7 @@ internal sealed class ProcessLock : IDisposable
                 FileOptions.None
             );
 
-            // Refresh the diagnostic content for humans inspecting the
-            // directory. SetLength(0) discards whatever a previous (crashed)
-            // holder wrote.
-            _lockStream.SetLength(0);
-
-            using (var writer = new StreamWriter(_lockStream, leaveOpen: true))
-            {
-                writer.WriteLine($"PID={Environment.ProcessId}");
-                writer.WriteLine($"Started={DateTimeOffset.Now:O}");
-                writer.Flush();
-            }
-
-            // StreamWriter.Flush only pushes the writer buffer into the
-            // FileStream buffer; push the bytes to disk so anything reading
-            // the file for diagnostics sees the PID rather than an empty file.
-            _lockStream.Flush(flushToDisk: true);
+            WriteDiagnostics(_lockStream);
 
             _logger.LogDebug("Lock acquired: {Path}", _lockFilePath);
             return true;

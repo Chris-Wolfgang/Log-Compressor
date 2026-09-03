@@ -60,8 +60,11 @@ internal sealed class GZipCompressionStrategy : ICompressionStrategy
     {
         _ = entryName; // Not used by single-stream GZip format
 
-        var buffer = new byte[81920];
-        var firstRead = await inputStream.ReadAsync(buffer, cancellationToken).ConfigureAwait(false);
+        // A 1-byte probe detects an empty source without allocating a copy
+        // buffer per file; the probed byte is replayed ahead of the bulk copy
+        // (which uses CopyToAsync's pooled buffering).
+        var probe = new byte[1];
+        var firstRead = await inputStream.ReadAsync(probe, cancellationToken).ConfigureAwait(false);
         if (firstRead == 0)
         {
             await outputStream.WriteAsync(EmptyGzipMember, cancellationToken).ConfigureAwait(false);
@@ -71,7 +74,7 @@ internal sealed class GZipCompressionStrategy : ICompressionStrategy
         var gzipStream = new GZipStream(outputStream, _level, leaveOpen: true);
         await using (gzipStream.ConfigureAwait(false))
         {
-            await gzipStream.WriteAsync(buffer.AsMemory(0, firstRead), cancellationToken).ConfigureAwait(false);
+            await gzipStream.WriteAsync(probe.AsMemory(0, 1), cancellationToken).ConfigureAwait(false);
             await inputStream.CopyToAsync(gzipStream, cancellationToken).ConfigureAwait(false);
         }
     }

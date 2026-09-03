@@ -162,6 +162,20 @@
     },
     {
       "type": "ManagedReference",
+      "source_relative_path": "api/Wolfgang.LogCompressor.Command.Decompress.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Wolfgang.LogCompressor.Command.Decompress.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "Wolfgang.LogCompressor.Command.Decompress",
+      "Summary": "<p sourcefile=\"api/Wolfgang.LogCompressor.Command.Decompress.yml\" sourcestartlinenumber=\"1\">Extracts archives produced by the compress and bundle commands.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
       "source_relative_path": "api/Wolfgang.LogCompressor.Command.Init.yml",
       "output": {
         ".html": {
@@ -386,6 +400,62 @@
     },
     {
       "type": "ManagedReference",
+      "source_relative_path": "api/Wolfgang.LogCompressor.Model.DecompressionOptions.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Wolfgang.LogCompressor.Model.DecompressionOptions.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "Wolfgang.LogCompressor.Model.DecompressionOptions",
+      "Summary": "<p sourcefile=\"api/Wolfgang.LogCompressor.Model.DecompressionOptions.yml\" sourcestartlinenumber=\"1\">Options for decompression operations.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Wolfgang.LogCompressor.Model.ErrorPolicy.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Wolfgang.LogCompressor.Model.ErrorPolicy.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "Wolfgang.LogCompressor.Model.ErrorPolicy",
+      "Summary": "<p sourcefile=\"api/Wolfgang.LogCompressor.Model.ErrorPolicy.yml\" sourcestartlinenumber=\"1\">Parsed <code>--on-error</code> policy: the mode plus an optional per-item retry\ncount applied before the mode takes effect.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Wolfgang.LogCompressor.Model.OnErrorMode.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Wolfgang.LogCompressor.Model.OnErrorMode.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "Wolfgang.LogCompressor.Model.OnErrorMode",
+      "Summary": "<p sourcefile=\"api/Wolfgang.LogCompressor.Model.OnErrorMode.yml\" sourcestartlinenumber=\"1\">How a run reacts when one item in the batch fails.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Wolfgang.LogCompressor.Model.TimestampSource.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Wolfgang.LogCompressor.Model.TimestampSource.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "Wolfgang.LogCompressor.Model.TimestampSource",
+      "Summary": "<p sourcefile=\"api/Wolfgang.LogCompressor.Model.TimestampSource.yml\" sourcestartlinenumber=\"1\">Which timestamp is embedded in generated archive names.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
       "source_relative_path": "api/Wolfgang.LogCompressor.Model.yml",
       "output": {
         ".html": {
@@ -551,6 +621,34 @@
       "IsMRef": true,
       "Title": "Wolfgang.LogCompressor.Service.Compression",
       "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Wolfgang.LogCompressor.Service.DecompressService.ArchiveKind.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Wolfgang.LogCompressor.Service.DecompressService.ArchiveKind.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "Wolfgang.LogCompressor.Service.DecompressService.ArchiveKind",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Wolfgang.LogCompressor.Service.DecompressService.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Wolfgang.LogCompressor.Service.DecompressService.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "Wolfgang.LogCompressor.Service.DecompressService",
+      "Summary": "<p sourcefile=\"api/Wolfgang.LogCompressor.Service.DecompressService.yml\" sourcestartlinenumber=\"1\">Extracts archives produced by <xref href=\"Wolfgang.LogCompressor.Service.CompressService\" data-throw-if-not-resolved=\"false\"></xref> and\n<xref href=\"Wolfgang.LogCompressor.Service.BundleService\" data-throw-if-not-resolved=\"false\"></xref> — every supported format, single archives and\ntar bundles alike.</p>\n"
     },
     {
       "type": "ManagedReference",

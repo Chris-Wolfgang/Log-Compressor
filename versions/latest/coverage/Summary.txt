@@ -1,27 +1,28 @@
 Summary
-  Generated on: 9/1/2026 - 12:19:26 AM
-  Coverage date: 9/1/2026 - 12:19:09 AM - 9/1/2026 - 12:19:21 AM
+  Generated on: 9/3/2026 - 12:35:38 AM
+  Coverage date: 9/3/2026 - 12:35:23 AM - 9/3/2026 - 12:35:35 AM
   Parser: MultiReport (3x Cobertura)
   Assemblies: 4
-  Classes: 52
-  Files: 52
-  Line coverage: 99.8%
-  Covered lines: 3876
-  Uncovered lines: 4
-  Coverable lines: 3880
-  Total lines: 8690
-  Branch coverage: 92.9% (421 of 453)
-  Covered branches: 421
-  Total branches: 453
-  Method coverage: 100% (451 of 451)
-  Full method coverage: 99.7% (450 of 451)
-  Covered methods: 451
-  Fully covered methods: 450
-  Total methods: 451
+  Classes: 60
+  Files: 60
+  Line coverage: 100%
+  Covered lines: 4949
+  Uncovered lines: 0
+  Coverable lines: 4949
+  Total lines: 11124
+  Branch coverage: 93.5% (628 of 671)
+  Covered branches: 628
+  Total branches: 671
+  Method coverage: 100% (567 of 567)
+  Full method coverage: 100% (567 of 567)
+  Covered methods: 567
+  Fully covered methods: 567
+  Total methods: 567
 
-logc                                                                                      99.5%
+logc                                                                                       100%
   Wolfgang.LogCompressor.Command.Bundle                                                    100%
   Wolfgang.LogCompressor.Command.Compress                                                  100%
+  Wolfgang.LogCompressor.Command.Decompress                                                100%
   Wolfgang.LogCompressor.Command.SharedOptions                                             100%
   Wolfgang.LogCompressor.Framework.ConsoleSinkOptions                                      100%
   Wolfgang.LogCompressor.Framework.FileSinkOptions                                         100%
@@ -29,7 +30,9 @@ logc                                                                            
   Wolfgang.LogCompressor.Framework.SerilogConfigurator                                     100%
   Wolfgang.LogCompressor.Model.CompressionOptions                                          100%
   Wolfgang.LogCompressor.Model.CompressionResult                                           100%
-  Wolfgang.LogCompressor.Service.ArchiveVerifier                                          95.5%
+  Wolfgang.LogCompressor.Model.DecompressionOptions                                        100%
+  Wolfgang.LogCompressor.Model.ErrorPolicy                                                 100%
+  Wolfgang.LogCompressor.Service.ArchiveVerifier                                           100%
   Wolfgang.LogCompressor.Service.BundleService                                             100%
   Wolfgang.LogCompressor.Service.Compression.BrotliCompressionStrategy                     100%
   Wolfgang.LogCompressor.Service.Compression.CompressionStrategyFactory                    100%
@@ -38,6 +41,7 @@ logc                                                                            
   Wolfgang.LogCompressor.Service.Compression.ZipCompressionStrategy                        100%
   Wolfgang.LogCompressor.Service.Compression.ZstdCompressionStrategy                       100%
   Wolfgang.LogCompressor.Service.CompressService                                           100%
+  Wolfgang.LogCompressor.Service.DecompressService                                         100%
   Wolfgang.LogCompressor.Service.FileFilterService                                         100%
   Wolfgang.LogCompressor.Service.FileNamingService                                         100%
   Wolfgang.LogCompressor.Service.ReportService                                             100%
@@ -50,6 +54,7 @@ Wolfgang.LogCompressor.Tests.Fuzz                                               
 
 Wolfgang.LogCompressor.Tests.Integration                                                   100%
   Wolfgang.LogCompressor.Tests.Integration.CompressionRoundTripTests                       100%
+  Wolfgang.LogCompressor.Tests.Integration.DecompressionRoundTripTests                     100%
   Wolfgang.LogCompressor.Tests.Integration.ProcessLockStressTests                          100%
   Wolfgang.LogCompressor.Tests.Integration.ProcessLockTests                                100%
   Wolfgang.LogCompressor.Tests.Integration.TempDirectory                                   100%
@@ -58,10 +63,12 @@ Wolfgang.LogCompressor.Tests.Integration                                        
 Wolfgang.LogCompressor.Tests.Unit                                                          100%
   Wolfgang.LogCompressor.Tests.Unit.Command.BundleCommandTests                             100%
   Wolfgang.LogCompressor.Tests.Unit.Command.CompressCommandTests                           100%
+  Wolfgang.LogCompressor.Tests.Unit.Command.DecompressCommandTests                         100%
   Wolfgang.LogCompressor.Tests.Unit.Command.SharedOptionsValidationTests                   100%
   Wolfgang.LogCompressor.Tests.Unit.Framework.SerilogConfiguratorTests                     100%
   Wolfgang.LogCompressor.Tests.Unit.Framework.SinkOptionsDefaultsTests                     100%
   Wolfgang.LogCompressor.Tests.Unit.Globalization.CultureInvarianceTests                   100%
+  Wolfgang.LogCompressor.Tests.Unit.Model.ErrorPolicyTests                                 100%
   Wolfgang.LogCompressor.Tests.Unit.Service.ArchiveVerifierTests                           100%
   Wolfgang.LogCompressor.Tests.Unit.Service.BundleServiceTests                             100%
   Wolfgang.LogCompressor.Tests.Unit.Service.Compression.BrotliCompressionStrategyTests     100%
@@ -71,6 +78,7 @@ Wolfgang.LogCompressor.Tests.Unit                                               
   Wolfgang.LogCompressor.Tests.Unit.Service.Compression.ZipCompressionStrategyTests        100%
   Wolfgang.LogCompressor.Tests.Unit.Service.Compression.ZstdCompressionStrategyTests       100%
   Wolfgang.LogCompressor.Tests.Unit.Service.CompressServiceTests                           100%
+  Wolfgang.LogCompressor.Tests.Unit.Service.DecompressServiceTests                         100%
   Wolfgang.LogCompressor.Tests.Unit.Service.FileFilterServiceTests                         100%
   Wolfgang.LogCompressor.Tests.Unit.Service.FileNamingServiceTests                         100%
   Wolfgang.LogCompressor.Tests.Unit.Service.ReportServiceTests                             100%

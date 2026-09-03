@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+      <title>Class DecompressService | Wolfgang.LogCompressor Documentation </title>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta name="title" content="Class DecompressService | Wolfgang.LogCompressor Documentation ">
+      
+      <meta name="description" content="Extracts archives produced by  and  — every supported format, single archives and tar bundles alike.">
+      <link rel="icon" href="../favicon.svg">
+      <link rel="stylesheet" href="../public/docfx.min.css">
+      <link rel="stylesheet" href="../public/main.css">
+      <meta name="docfx:navrel" content="../toc.html">
+      <meta name="docfx:tocrel" content="../toc.html">
+      
+      <meta name="docfx:rel" content="../">
+      
+      
+      <meta name="docfx:docurl" content="https://github.com/Chris-Wolfgang/Log-Compressor/new/v0.3.0/apiSpec/new?filename=Wolfgang_LogCompressor_Service_DecompressService.md&amp;value=---%0Auid%3A%20Wolfgang.LogCompressor.Service.DecompressService%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">
+      <meta name="loc:inThisArticle" content="In this article">
+      <meta name="loc:searchResultsCount" content="{count} results for &quot;{query}&quot;">
+      <meta name="loc:searchNoResults" content="No results for &quot;{query}&quot;">
+      <meta name="loc:tocFilter" content="Filter by title">
+      <meta name="loc:nextArticle" content="Next">
+      <meta name="loc:prevArticle" content="Previous">
+      <meta name="loc:themeLight" content="Light">
+      <meta name="loc:themeDark" content="Dark">
+      <meta name="loc:themeAuto" content="Auto">
+      <meta name="loc:changeTheme" content="Change theme">
+      <meta name="loc:copy" content="Copy">
+      <meta name="loc:downloadPdf" content="Download PDF">
+
+      <script type="module" src="./../public/docfx.min.js"></script>
+
+      <script>
+        const theme = localStorage.getItem('theme') || 'auto'
+        document.documentElement.setAttribute('data-bs-theme', theme === 'auto' ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : theme)
+      </script>
+
+  </head>
+
+  <body class="tex2jax_ignore" data-layout="" data-yaml-mime="ManagedReference">
+    <header class="bg-body border-bottom">
+      <nav id="autocollapse" class="navbar navbar-expand-md" role="navigation">
+        <div class="container-xxl flex-nowrap">
+          <a class="navbar-brand" href="../index.html">
+            <img id="logo" class="svg" src="../logo.svg" alt="Wolfgang.LogCompressor">
+            Wolfgang.LogCompressor
+          </a>
+          <button class="btn btn-lg d-md-none border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navpanel" aria-controls="navpanel" aria-expanded="false" aria-label="Toggle navigation">
+            <i class="bi bi-three-dots"></i>
+          </button>
+          <div class="collapse navbar-collapse" id="navpanel">
+            <div id="navbar">
+              <form class="search" role="search" id="search">
+                <i class="bi bi-search"></i>
+                <input class="form-control" id="search-query" type="search" disabled placeholder="Search" autocomplete="off" aria-label="Search">
+              </form>
+            </div>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <main class="container-xxl">
+
+      <div class="content">
+        <div class="actionbar">
+
+          <nav id="breadcrumb"></nav>
+        </div>
+
+        <article data-uid="Wolfgang.LogCompressor.Service.DecompressService">
+
+
+
+  <h1 id="Wolfgang_LogCompressor_Service_DecompressService" data-uid="Wolfgang.LogCompressor.Service.DecompressService" class="text-break">
+Class DecompressService  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/v0.3.0/src/Wolfgang.LogCompressor/Service/DecompressService.cs/#L25"><i class="bi bi-code-slash"></i></a>
+  </h1>
+
+  <div class="facts text-secondary">
+    <dl><dt>Namespace</dt><dd><a class="xref" href="Wolfgang.html">Wolfgang</a>.<a class="xref" href="Wolfgang.LogCompressor.html">LogCompressor</a>.<a class="xref" href="Wolfgang.LogCompressor.Service.html">Service</a></dd></dl>
+  <dl><dt>Assembly</dt><dd>logc.dll</dd></dl>
+  </div>
+
+  <div class="markdown summary"><p>Extracts archives produced by <a class="xref" href="Wolfgang.LogCompressor.Service.CompressService.html">CompressService</a> and
+<a class="xref" href="Wolfgang.LogCompressor.Service.BundleService.html">BundleService</a> — every supported format, single archives and
+tar bundles alike.</p>
+</div>
+  <div class="markdown conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">internal class DecompressService</code></pre>
+  </div>
+
+
+
+
+  <dl class="typelist inheritance">
+    <dt>Inheritance</dt>
+    <dd>
+      <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></div>
+      <div><span class="xref">DecompressService</span></div>
+    </dd>
+  </dl>
+
+
+
+  <dl class="typelist inheritedMembers">
+    <dt>Inherited Members</dt>
+    <dd>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)">object.Equals(object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">object.Equals(object, object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gethashcode">object.GetHashCode()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gettype">object.GetType()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone">object.MemberwiseClone()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.referenceequals">object.ReferenceEquals(object, object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.tostring">object.ToString()</a>
+    </div>
+  </dd></dl>
+
+
+
+
+  <h2 id="Wolfgang_LogCompressor_Service_DecompressService_remarks">Remarks</h2>
+  <div class="markdown level0 remarks"><p>Safety mirror of the compress side's verify-then-delete (ADR-0003): an
+archive is deleted only after every entry extracted without error, and
+never when <a class="xref" href="Wolfgang.LogCompressor.Model.DecompressionOptions.html#Wolfgang_LogCompressor_Model_DecompressionOptions_KeepArchives">KeepArchives</a> is set. An
+existing file at an extraction target fails that archive (kept intact)
+unless <a class="xref" href="Wolfgang.LogCompressor.Model.DecompressionOptions.html#Wolfgang_LogCompressor_Model_DecompressionOptions_Force">Force</a> allows overwriting.
+Entry paths are confined to the destination directory — an entry that
+would escape it (zip-slip / tar-slip) fails the archive. A failed tar or
+multi-entry extraction can leave already-written entries behind; the
+archive itself is always kept on any failure, so no data is lost.</p>
+</div>
+
+
+  <h2 class="section" id="constructors">Constructors
+</h2>
+
+
+  <a id="Wolfgang_LogCompressor_Service_DecompressService__ctor_" data-uid="Wolfgang.LogCompressor.Service.DecompressService.#ctor*"></a>
+
+  <h3 id="Wolfgang_LogCompressor_Service_DecompressService__ctor_Wolfgang_LogCompressor_Abstraction_IFileSystem_Wolfgang_LogCompressor_Abstraction_IFileFilter_Microsoft_Extensions_Logging_ILogger_Wolfgang_LogCompressor_Service_DecompressService__" data-uid="Wolfgang.LogCompressor.Service.DecompressService.#ctor(Wolfgang.LogCompressor.Abstraction.IFileSystem,Wolfgang.LogCompressor.Abstraction.IFileFilter,Microsoft.Extensions.Logging.ILogger{Wolfgang.LogCompressor.Service.DecompressService})">
+  DecompressService(IFileSystem, IFileFilter, ILogger&lt;DecompressService&gt;)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/v0.3.0/src/Wolfgang.LogCompressor/Service/DecompressService.cs/#L69"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Initializes a new instance of the <a class="xref" href="Wolfgang.LogCompressor.Service.DecompressService.html">DecompressService</a> class.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public DecompressService(IFileSystem fileSystem, IFileFilter fileFilter, ILogger&lt;DecompressService&gt; logger)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>fileSystem</code> <a class="xref" href="Wolfgang.LogCompressor.Abstraction.IFileSystem.html">IFileSystem</a></dt>
+    <dd><p>The file system abstraction.</p>
+</dd>
+    <dt><code>fileFilter</code> <a class="xref" href="Wolfgang.LogCompressor.Abstraction.IFileFilter.html">IFileFilter</a></dt>
+    <dd><p>The file filter for include/exclude patterns.</p>
+</dd>
+    <dt><code>logger</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/microsoft.extensions.logging.ilogger-1">ILogger</a>&lt;<a class="xref" href="Wolfgang.LogCompressor.Service.DecompressService.html">DecompressService</a>&gt;</dt>
+    <dd><p>The logger.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+
+  <h2 class="section" id="fields">Fields
+</h2>
+
+
+
+  <h3 id="Wolfgang_LogCompressor_Service_DecompressService_KnownSuffixes" data-uid="Wolfgang.LogCompressor.Service.DecompressService.KnownSuffixes">
+  KnownSuffixes
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/v0.3.0/src/Wolfgang.LogCompressor/Service/DecompressService.cs/#L32"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">private static readonly (string Suffix, DecompressService.ArchiveKind Kind)[] KnownSuffixes</code></pre>
+  </div>
+
+
+
+
+  <h4 class="section">Field Value</h4>
+  <dl class="parameters">
+    <dt>(<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.valuetuple-system.string,wolfgang.logcompressor.service.decompressservice.archivekind-.suffix">Suffix</a>, <a class="xref" href="Wolfgang.LogCompressor.Service.DecompressService.ArchiveKind.html">ArchiveKind</a> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.valuetuple-system.string,wolfgang.logcompressor.service.decompressservice.archivekind-.kind">Kind</a>)[]</dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+  <h3 id="Wolfgang_LogCompressor_Service_DecompressService__fileFilter" data-uid="Wolfgang.LogCompressor.Service.DecompressService._fileFilter">
+  _fileFilter
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/v0.3.0/src/Wolfgang.LogCompressor/Service/DecompressService.cs/#L28"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">private readonly IFileFilter _fileFilter</code></pre>
+  </div>
+
+
+
+
+  <h4 class="section">Field Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="Wolfgang.LogCompressor.Abstraction.IFileFilter.html">IFileFilter</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+  <h3 id="Wolfgang_LogCompressor_Service_DecompressService__fileSystem" data-uid="Wolfgang.LogCompressor.Service.DecompressService._fileSystem">
+  _fileSystem
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/v0.3.0/src/Wolfgang.LogCompressor/Service/DecompressService.cs/#L27"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">private readonly IFileSystem _fileSystem</code></pre>
+  </div>
+
+
+
+
+  <h4 class="section">Field Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="Wolfgang.LogCompressor.Abstraction.IFileSystem.html">IFileSystem</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+  <h3 id="Wolfgang_LogCompressor_Service_DecompressService__logger" data-uid="Wolfgang.LogCompressor.Service.DecompressService._logger">
+  _logger
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/v0.3.0/src/Wolfgang.LogCompressor/Service/DecompressService.cs/#L29"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">private readonly ILogger&lt;DecompressService&gt; _logger</code></pre>
+  </div>
+
+
+
+
+  <h4 class="section">Field Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/microsoft.extensions.logging.ilogger-1">ILogger</a>&lt;<a class="xref" href="Wolfgang.LogCompressor.Service.DecompressService.html">DecompressService</a>&gt;</dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+  <h2 class="section" id="methods">Methods
+</h2>
+
+
+  <a id="Wolfgang_LogCompressor_Service_DecompressService_DecompressOneAsync_" data-uid="Wolfgang.LogCompressor.Service.DecompressService.DecompressOneAsync*"></a>
+
+  <h3 id="Wolfgang_LogCompressor_Service_DecompressService_DecompressOneAsync_System_IO_FileInfo_Wolfgang_LogCompressor_Model_DecompressionOptions_System_Threading_CancellationToken_" data-uid="Wolfgang.LogCompressor.Service.DecompressService.DecompressOneAsync(System.IO.FileInfo,Wolfgang.LogCompressor.Model.DecompressionOptions,System.Threading.CancellationToken)">
+  DecompressOneAsync(FileInfo, DecompressionOptions, CancellationToken)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/v0.3.0/src/Wolfgang.LogCompressor/Service/DecompressService.cs/#L150"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">private Task&lt;CompressionResult&gt; DecompressOneAsync(FileInfo archive, DecompressionOptions options, CancellationToken cancellationToken)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>archive</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.fileinfo">FileInfo</a></dt>
+    <dd></dd>
+    <dt><code>options</code> <a class="xref" href="Wolfgang.LogCompressor.Model.DecompressionOptions.html">DecompressionOptions</a></dt>
+    <dd></dd>
+    <dt><code>cancellationToken</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></dt>
+    <dd></dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1">Task</a>&lt;<a class="xref" href="Wolfgang.LogCompressor.Model.CompressionResult.html">CompressionResult</a>&gt;</dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+  <a id="Wolfgang_LogCompressor_Service_DecompressService_DetectByName_" data-uid="Wolfgang.LogCompressor.Service.DecompressService.DetectByName*"></a>
+
+  <h3 id="Wolfgang_LogCompressor_Service_DecompressService_DetectByName_System_String_" data-uid="Wolfgang.LogCompressor.Service.DecompressService.DetectByName(System.String)">
+  DetectByName(string)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/v0.3.0/src/Wolfgang.LogCompressor/Service/DecompressService.cs/#L248"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">private static DecompressService.ArchiveKind DetectByName(string path)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>path</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></dt>
+    <dd></dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="Wolfgang.LogCompressor.Service.DecompressService.html">DecompressService</a>.<a class="xref" href="Wolfgang.LogCompressor.Service.DecompressService.ArchiveKind.html">ArchiveKind</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+  <a id="Wolfgang_LogCompressor_Service_DecompressService_ExecuteAsync_" data-uid="Wolfgang.LogCompressor.Service.DecompressService.ExecuteAsync*"></a>
+
+  <h3 id="Wolfgang_LogCompressor_Service_DecompressService_ExecuteAsync_Wolfgang_LogCompressor_Model_DecompressionOptions_System_Threading_CancellationToken_" data-uid="Wolfgang.LogCompressor.Service.DecompressService.ExecuteAsync(Wolfgang.LogCompressor.Model.DecompressionOptions,System.Threading.CancellationToken)">
+  ExecuteAsync(DecompressionOptions, CancellationToken)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/v0.3.0/src/Wolfgang.LogCompressor/Service/DecompressService.cs/#L89"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Extracts every archive selected by the options.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public virtual Task&lt;IReadOnlyList&lt;CompressionResult&gt;&gt; ExecuteAsync(DecompressionOptions options, CancellationToken cancellationToken = default)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>options</code> <a class="xref" href="Wolfgang.LogCompressor.Model.DecompressionOptions.html">DecompressionOptions</a></dt>
+    <dd><p>The decompression options.</p>
+</dd>
+    <dt><code>cancellationToken</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></dt>
+    <dd><p>A token to cancel the operation.</p>
+</dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1">Task</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlylist-1">IReadOnlyList</a>&lt;<a class="xref" href="Wolfgang.LogCompressor.Model.CompressionResult.html">CompressionResult</a>&gt;&gt;</dt>
+    <dd><p>One result per archive. <a class="xref" href="Wolfgang.LogCompressor.Model.CompressionResult.html#Wolfgang_LogCompressor_Model_CompressionResult_OriginalSize">OriginalSize</a> is the
+archive size and <a class="xref" href="Wolfgang.LogCompressor.Model.CompressionResult.html#Wolfgang_LogCompressor_Model_CompressionResult_CompressedSize">CompressedSize</a> the extracted byte count.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+  <a id="Wolfgang_LogCompressor_Service_DecompressService_ExtractAsync_" data-uid="Wolfgang.LogCompressor.Service.DecompressService.ExtractAsync*"></a>
+
+  <h3 id="Wolfgang_LogCompressor_Service_DecompressService_ExtractAsync_Wolfgang_LogCompressor_Service_DecompressService_ArchiveKind_System_IO_FileInfo_System_String_Wolfgang_LogCompressor_Model_DecompressionOptions_System_Threading_CancellationToken_" data-uid="Wolfgang.LogCompressor.Service.DecompressService.ExtractAsync(Wolfgang.LogCompressor.Service.DecompressService.ArchiveKind,System.IO.FileInfo,System.String,Wolfgang.LogCompressor.Model.DecompressionOptions,System.Threading.CancellationToken)">
+  ExtractAsync(ArchiveKind, FileInfo, string, DecompressionOptions, CancellationToken)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/v0.3.0/src/Wolfgang.LogCompressor/Service/DecompressService.cs/#L219"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">private Task&lt;long&gt; ExtractAsync(DecompressService.ArchiveKind kind, FileInfo archive, string outputDir, DecompressionOptions options, CancellationToken cancellationToken)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>kind</code> <a class="xref" href="Wolfgang.LogCompressor.Service.DecompressService.html">DecompressService</a>.<a class="xref" href="Wolfgang.LogCompressor.Service.DecompressService.ArchiveKind.html">ArchiveKind</a></dt>
+    <dd></dd>
+    <dt><code>archive</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.fileinfo">FileInfo</a></dt>
+    <dd></dd>
+    <dt><code>outputDir</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></dt>
+    <dd></dd>
+    <dt><code>options</code> <a class="xref" href="Wolfgang.LogCompressor.Model.DecompressionOptions.html">DecompressionOptions</a></dt>
+    <dd></dd>
+    <dt><code>cancellationToken</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></dt>
+    <dd></dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1">Task</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int64">long</a>&gt;</dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+  <a id="Wolfgang_LogCompressor_Service_DecompressService_ExtractRawAsync_" data-uid="Wolfgang.LogCompressor.Service.DecompressService.ExtractRawAsync*"></a>
+
+  <h3 id="Wolfgang_LogCompressor_Service_DecompressService_ExtractRawAsync_System_IO_FileInfo_System_String_Wolfgang_LogCompressor_Model_DecompressionOptions_System_Func_System_IO_Stream_System_IO_Stream__System_Threading_CancellationToken_" data-uid="Wolfgang.LogCompressor.Service.DecompressService.ExtractRawAsync(System.IO.FileInfo,System.String,Wolfgang.LogCompressor.Model.DecompressionOptions,System.Func{System.IO.Stream,System.IO.Stream},System.Threading.CancellationToken)">
+  ExtractRawAsync(FileInfo, string, DecompressionOptions, Func&lt;Stream, Stream&gt;, CancellationToken)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/v0.3.0/src/Wolfgang.LogCompressor/Service/DecompressService.cs/#L417"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">private Task&lt;long&gt; ExtractRawAsync(FileInfo archive, string outputDir, DecompressionOptions options, Func&lt;Stream, Stream&gt; decompressorFactory, CancellationToken cancellationToken)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>archive</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.fileinfo">FileInfo</a></dt>
+    <dd></dd>
+    <dt><code>outputDir</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></dt>
+    <dd></dd>
+    <dt><code>options</code> <a class="xref" href="Wolfgang.LogCompressor.Model.DecompressionOptions.html">DecompressionOptions</a></dt>
+    <dd></dd>
+    <dt><code>decompressorFactory</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.func-2">Func</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.stream">Stream</a>, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.stream">Stream</a>&gt;</dt>
+    <dd></dd>
+    <dt><code>cancellationToken</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></dt>
+    <dd></dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1">Task</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int64">long</a>&gt;</dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+  <a id="Wolfgang_LogCompressor_Service_DecompressService_ExtractTarAsync_" data-uid="Wolfgang.LogCompressor.Service.DecompressService.ExtractTarAsync*"></a>
+
+  <h3 id="Wolfgang_LogCompressor_Service_DecompressService_ExtractTarAsync_System_IO_FileInfo_System_String_Wolfgang_LogCompressor_Model_DecompressionOptions_System_Func_System_IO_Stream_System_IO_Stream__System_Threading_CancellationToken_" data-uid="Wolfgang.LogCompressor.Service.DecompressService.ExtractTarAsync(System.IO.FileInfo,System.String,Wolfgang.LogCompressor.Model.DecompressionOptions,System.Func{System.IO.Stream,System.IO.Stream},System.Threading.CancellationToken)">
+  ExtractTarAsync(FileInfo, string, DecompressionOptions, Func&lt;Stream, Stream&gt;, CancellationToken)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/v0.3.0/src/Wolfgang.LogCompressor/Service/DecompressService.cs/#L368"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">private Task&lt;long&gt; ExtractTarAsync(FileInfo archive, string outputDir, DecompressionOptions options, Func&lt;Stream, Stream&gt; decompressorFactory, CancellationToken cancellationToken)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>archive</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.fileinfo">FileInfo</a></dt>
+    <dd></dd>
+    <dt><code>outputDir</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></dt>
+    <dd></dd>
+    <dt><code>options</code> <a class="xref" href="Wolfgang.LogCompressor.Model.DecompressionOptions.html">DecompressionOptions</a></dt>
+    <dd></dd>
+    <dt><code>decompressorFactory</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.func-2">Func</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.stream">Stream</a>, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.stream">Stream</a>&gt;</dt>
+    <dd></dd>
+    <dt><code>cancellationToken</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></dt>
+    <dd></dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1">Task</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int64">long</a>&gt;</dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+  <a id="Wolfgang_LogCompressor_Service_DecompressService_ExtractZipAsync_" data-uid="Wolfgang.LogCompressor.Service.DecompressService.ExtractZipAsync*"></a>
+
+  <h3 id="Wolfgang_LogCompressor_Service_DecompressService_ExtractZipAsync_System_IO_FileInfo_System_String_Wolfgang_LogCompressor_Model_DecompressionOptions_System_Threading_CancellationToken_" data-uid="Wolfgang.LogCompressor.Service.DecompressService.ExtractZipAsync(System.IO.FileInfo,System.String,Wolfgang.LogCompressor.Model.DecompressionOptions,System.Threading.CancellationToken)">
+  ExtractZipAsync(FileInfo, string, DecompressionOptions, CancellationToken)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/v0.3.0/src/Wolfgang.LogCompressor/Service/DecompressService.cs/#L329"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">private Task&lt;long&gt; ExtractZipAsync(FileInfo archive, string outputDir, DecompressionOptions options, CancellationToken cancellationToken)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>archive</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.fileinfo">FileInfo</a></dt>
+    <dd></dd>
+    <dt><code>outputDir</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></dt>
+    <dd></dd>
+    <dt><code>options</code> <a class="xref" href="Wolfgang.LogCompressor.Model.DecompressionOptions.html">DecompressionOptions</a></dt>
+    <dd></dd>
+    <dt><code>cancellationToken</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></dt>
+    <dd></dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1">Task</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int64">long</a>&gt;</dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+  <a id="Wolfgang_LogCompressor_Service_DecompressService_GetArchives_" data-uid="Wolfgang.LogCompressor.Service.DecompressService.GetArchives*"></a>
+
+  <h3 id="Wolfgang_LogCompressor_Service_DecompressService_GetArchives_Wolfgang_LogCompressor_Model_DecompressionOptions_" data-uid="Wolfgang.LogCompressor.Service.DecompressService.GetArchives(Wolfgang.LogCompressor.Model.DecompressionOptions)">
+  GetArchives(DecompressionOptions)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/v0.3.0/src/Wolfgang.LogCompressor/Service/DecompressService.cs/#L125"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">private List&lt;FileInfo&gt; GetArchives(DecompressionOptions options)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>options</code> <a class="xref" href="Wolfgang.LogCompressor.Model.DecompressionOptions.html">DecompressionOptions</a></dt>
+    <dd></dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.list-1">List</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.fileinfo">FileInfo</a>&gt;</dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+  <a id="Wolfgang_LogCompressor_Service_DecompressService_GetMatchedSuffixLength_" data-uid="Wolfgang.LogCompressor.Service.DecompressService.GetMatchedSuffixLength*"></a>
+
+  <h3 id="Wolfgang_LogCompressor_Service_DecompressService_GetMatchedSuffixLength_System_String_" data-uid="Wolfgang.LogCompressor.Service.DecompressService.GetMatchedSuffixLength(System.String)">
+  GetMatchedSuffixLength(string)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/v0.3.0/src/Wolfgang.LogCompressor/Service/DecompressService.cs/#L454"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">private static int GetMatchedSuffixLength(string name)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>name</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></dt>
+    <dd></dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+  <a id="Wolfgang_LogCompressor_Service_DecompressService_ResolveDestination_" data-uid="Wolfgang.LogCompressor.Service.DecompressService.ResolveDestination*"></a>
+
+  <h3 id="Wolfgang_LogCompressor_Service_DecompressService_ResolveDestination_System_String_System_String_Wolfgang_LogCompressor_Model_DecompressionOptions_" data-uid="Wolfgang.LogCompressor.Service.DecompressService.ResolveDestination(System.String,System.String,Wolfgang.LogCompressor.Model.DecompressionOptions)">
+  ResolveDestination(string, string, DecompressionOptions)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/v0.3.0/src/Wolfgang.LogCompressor/Service/DecompressService.cs/#L293"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">private string ResolveDestination(string outputDir, string entryName, DecompressionOptions options)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>outputDir</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></dt>
+    <dd></dd>
+    <dt><code>entryName</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></dt>
+    <dd></dd>
+    <dt><code>options</code> <a class="xref" href="Wolfgang.LogCompressor.Model.DecompressionOptions.html">DecompressionOptions</a></dt>
+    <dd></dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+  <a id="Wolfgang_LogCompressor_Service_DecompressService_SniffKindAsync_" data-uid="Wolfgang.LogCompressor.Service.DecompressService.SniffKindAsync*"></a>
+
+  <h3 id="Wolfgang_LogCompressor_Service_DecompressService_SniffKindAsync_System_String_System_Threading_CancellationToken_" data-uid="Wolfgang.LogCompressor.Service.DecompressService.SniffKindAsync(System.String,System.Threading.CancellationToken)">
+  SniffKindAsync(string, CancellationToken)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/v0.3.0/src/Wolfgang.LogCompressor/Service/DecompressService.cs/#L263"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">private Task&lt;DecompressService.ArchiveKind&gt; SniffKindAsync(string path, CancellationToken cancellationToken)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>path</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></dt>
+    <dd></dd>
+    <dt><code>cancellationToken</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></dt>
+    <dd></dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1">Task</a>&lt;<a class="xref" href="Wolfgang.LogCompressor.Service.DecompressService.html">DecompressService</a>.<a class="xref" href="Wolfgang.LogCompressor.Service.DecompressService.ArchiveKind.html">ArchiveKind</a>&gt;</dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+  <a id="Wolfgang_LogCompressor_Service_DecompressService_WriteEntryAsync_" data-uid="Wolfgang.LogCompressor.Service.DecompressService.WriteEntryAsync*"></a>
+
+  <h3 id="Wolfgang_LogCompressor_Service_DecompressService_WriteEntryAsync_System_IO_Stream_System_String_System_Threading_CancellationToken_" data-uid="Wolfgang.LogCompressor.Service.DecompressService.WriteEntryAsync(System.IO.Stream,System.String,System.Threading.CancellationToken)">
+  WriteEntryAsync(Stream, string, CancellationToken)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/v0.3.0/src/Wolfgang.LogCompressor/Service/DecompressService.cs/#L471"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">private Task&lt;long&gt; WriteEntryAsync(Stream source, string destination, CancellationToken cancellationToken)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>source</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.stream">Stream</a></dt>
+    <dd></dd>
+    <dt><code>destination</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></dt>
+    <dd></dd>
+    <dt><code>cancellationToken</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></dt>
+    <dd></dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1">Task</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int64">long</a>&gt;</dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+
+</article>
+
+        <div class="contribution d-print-none">
+          <a href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/v0.3.0/src/Wolfgang.LogCompressor/Service/DecompressService.cs/#L25" class="edit-link">Edit this page</a>
+        </div>
+
+
+      </div>
+
+      <div class="affix">
+        <nav id="affix"></nav>
+      </div>
+    </main>
+
+    <div class="container-xxl search-results" id="search-results"></div>
+
+    <footer class="border-top text-secondary">
+      <div class="container-xxl">
+        <div class="flex-fill">
+          Made with DocFX <script>(function(){var r='/';if(window.location.hostname.endsWith('.github.io')){var s=window.location.pathname.split('/').filter(Boolean);if(s.length)r='/'+s[0]+'/';}var t=document.createElement('script');t.src=r+'public/version-picker.js';t.async=true;document.head.appendChild(t);})();</script>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

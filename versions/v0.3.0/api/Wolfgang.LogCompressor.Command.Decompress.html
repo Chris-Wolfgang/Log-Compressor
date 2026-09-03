@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+      <title>Class Decompress | Wolfgang.LogCompressor Documentation </title>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta name="title" content="Class Decompress | Wolfgang.LogCompressor Documentation ">
+      
+      <meta name="description" content="Extracts archives produced by the compress and bundle commands.">
+      <link rel="icon" href="../favicon.svg">
+      <link rel="stylesheet" href="../public/docfx.min.css">
+      <link rel="stylesheet" href="../public/main.css">
+      <meta name="docfx:navrel" content="../toc.html">
+      <meta name="docfx:tocrel" content="../toc.html">
+      
+      <meta name="docfx:rel" content="../">
+      
+      
+      <meta name="docfx:docurl" content="https://github.com/Chris-Wolfgang/Log-Compressor/new/v0.3.0/apiSpec/new?filename=Wolfgang_LogCompressor_Command_Decompress.md&amp;value=---%0Auid%3A%20Wolfgang.LogCompressor.Command.Decompress%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">
+      <meta name="loc:inThisArticle" content="In this article">
+      <meta name="loc:searchResultsCount" content="{count} results for &quot;{query}&quot;">
+      <meta name="loc:searchNoResults" content="No results for &quot;{query}&quot;">
+      <meta name="loc:tocFilter" content="Filter by title">
+      <meta name="loc:nextArticle" content="Next">
+      <meta name="loc:prevArticle" content="Previous">
+      <meta name="loc:themeLight" content="Light">
+      <meta name="loc:themeDark" content="Dark">
+      <meta name="loc:themeAuto" content="Auto">
+      <meta name="loc:changeTheme" content="Change theme">
+      <meta name="loc:copy" content="Copy">
+      <meta name="loc:downloadPdf" content="Download PDF">
+
+      <script type="module" src="./../public/docfx.min.js"></script>
+
+      <script>
+        const theme = localStorage.getItem('theme') || 'auto'
+        document.documentElement.setAttribute('data-bs-theme', theme === 'auto' ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : theme)
+      </script>
+
+  </head>
+
+  <body class="tex2jax_ignore" data-layout="" data-yaml-mime="ManagedReference">
+    <header class="bg-body border-bottom">
+      <nav id="autocollapse" class="navbar navbar-expand-md" role="navigation">
+        <div class="container-xxl flex-nowrap">
+          <a class="navbar-brand" href="../index.html">
+            <img id="logo" class="svg" src="../logo.svg" alt="Wolfgang.LogCompressor">
+            Wolfgang.LogCompressor
+          </a>
+          <button class="btn btn-lg d-md-none border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navpanel" aria-controls="navpanel" aria-expanded="false" aria-label="Toggle navigation">
+            <i class="bi bi-three-dots"></i>
+          </button>
+          <div class="collapse navbar-collapse" id="navpanel">
+            <div id="navbar">
+              <form class="search" role="search" id="search">
+                <i class="bi bi-search"></i>
+                <input class="form-control" id="search-query" type="search" disabled placeholder="Search" autocomplete="off" aria-label="Search">
+              </form>
+            </div>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <main class="container-xxl">
+
+      <div class="content">
+        <div class="actionbar">
+
+          <nav id="breadcrumb"></nav>
+        </div>
+
+        <article data-uid="Wolfgang.LogCompressor.Command.Decompress">
+
+
+
+  <h1 id="Wolfgang_LogCompressor_Command_Decompress" data-uid="Wolfgang.LogCompressor.Command.Decompress" class="text-break">
+Class Decompress  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/v0.3.0/src/Wolfgang.LogCompressor/Command/Decompress.cs/#L13"><i class="bi bi-code-slash"></i></a>
+  </h1>
+
+  <div class="facts text-secondary">
+    <dl><dt>Namespace</dt><dd><a class="xref" href="Wolfgang.html">Wolfgang</a>.<a class="xref" href="Wolfgang.LogCompressor.html">LogCompressor</a>.<a class="xref" href="Wolfgang.LogCompressor.Command.html">Command</a></dd></dl>
+  <dl><dt>Assembly</dt><dd>logc.dll</dd></dl>
+  </div>
+
+  <div class="markdown summary"><p>Extracts archives produced by the compress and bundle commands.</p>
+</div>
+  <div class="markdown conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[Command(Description = &quot;Extract logc archives - all formats, single archives and tar bundles&quot;, ResponseFileHandling = ResponseFileHandling.ParseArgsAsLineSeparated)]
+internal class Decompress</code></pre>
+  </div>
+
+
+
+
+  <dl class="typelist inheritance">
+    <dt>Inheritance</dt>
+    <dd>
+      <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></div>
+      <div><span class="xref">Decompress</span></div>
+    </dd>
+  </dl>
+
+
+
+  <dl class="typelist inheritedMembers">
+    <dt>Inherited Members</dt>
+    <dd>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)">object.Equals(object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">object.Equals(object, object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gethashcode">object.GetHashCode()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gettype">object.GetType()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone">object.MemberwiseClone()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.referenceequals">object.ReferenceEquals(object, object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.tostring">object.ToString()</a>
+    </div>
+  </dd></dl>
+
+
+
+
+
+
+  <h2 class="section" id="properties">Properties
+</h2>
+
+
+  <a id="Wolfgang_LogCompressor_Command_Decompress_Exclude_" data-uid="Wolfgang.LogCompressor.Command.Decompress.Exclude*"></a>
+
+  <h3 id="Wolfgang_LogCompressor_Command_Decompress_Exclude" data-uid="Wolfgang.LogCompressor.Command.Decompress.Exclude">
+  Exclude
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/v0.3.0/src/Wolfgang.LogCompressor/Command/Decompress.cs/#L56"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Gets or sets the exclude glob patterns.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[Option(&quot;--exclude &lt;PATTERN&gt;&quot;, Description = &quot;Skip archives matching the pattern (repeatable)&quot;)]
+public string[] Exclude { get; set; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a>[]</dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <a id="Wolfgang_LogCompressor_Command_Decompress_Force_" data-uid="Wolfgang.LogCompressor.Command.Decompress.Force*"></a>
+
+  <h3 id="Wolfgang_LogCompressor_Command_Decompress_Force" data-uid="Wolfgang.LogCompressor.Command.Decompress.Force">
+  Force
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/v0.3.0/src/Wolfgang.LogCompressor/Command/Decompress.cs/#L64"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Gets or sets a value indicating whether existing files may be overwritten.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[Option(&quot;--force&quot;, Description = &quot;Overwrite existing files at extraction targets&quot;)]
+public bool Force { get; set; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <a id="Wolfgang_LogCompressor_Command_Decompress_Include_" data-uid="Wolfgang.LogCompressor.Command.Decompress.Include*"></a>
+
+  <h3 id="Wolfgang_LogCompressor_Command_Decompress_Include" data-uid="Wolfgang.LogCompressor.Command.Decompress.Include">
+  Include
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/v0.3.0/src/Wolfgang.LogCompressor/Command/Decompress.cs/#L48"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Gets or sets the include glob patterns.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[Option(&quot;--include &lt;PATTERN&gt;&quot;, Description = &quot;Only extract archives matching the pattern (repeatable)&quot;)]
+public string[] Include { get; set; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a>[]</dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <a id="Wolfgang_LogCompressor_Command_Decompress_KeepArchives_" data-uid="Wolfgang.LogCompressor.Command.Decompress.KeepArchives*"></a>
+
+  <h3 id="Wolfgang_LogCompressor_Command_Decompress_KeepArchives" data-uid="Wolfgang.LogCompressor.Command.Decompress.KeepArchives">
+  KeepArchives
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/v0.3.0/src/Wolfgang.LogCompressor/Command/Decompress.cs/#L72"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Gets or sets a value indicating whether archives are kept after extraction.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[Option(&quot;--keep-archives&quot;, Description = &quot;Keep archives after successful extraction (default: delete them)&quot;)]
+public bool KeepArchives { get; set; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <a id="Wolfgang_LogCompressor_Command_Decompress_NoLock_" data-uid="Wolfgang.LogCompressor.Command.Decompress.NoLock*"></a>
+
+  <h3 id="Wolfgang_LogCompressor_Command_Decompress_NoLock" data-uid="Wolfgang.LogCompressor.Command.Decompress.NoLock">
+  NoLock
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/v0.3.0/src/Wolfgang.LogCompressor/Command/Decompress.cs/#L80"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Gets or sets a value indicating whether the single-instance lock is skipped.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[Option(&quot;--no-lock&quot;, Description = &quot;Skip the single-instance directory lock&quot;)]
+public bool NoLock { get; set; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <a id="Wolfgang_LogCompressor_Command_Decompress_OnError_" data-uid="Wolfgang.LogCompressor.Command.Decompress.OnError*"></a>
+
+  <h3 id="Wolfgang_LogCompressor_Command_Decompress_OnError" data-uid="Wolfgang.LogCompressor.Command.Decompress.OnError">
+  OnError
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/v0.3.0/src/Wolfgang.LogCompressor/Command/Decompress.cs/#L104"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Gets or sets the batch error policy.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[Option(&quot;--on-error &lt;POLICY&gt;&quot;, Description = &quot;When an archive fails: skip, fail, or retry:N (1-100, then skip) (default: skip)&quot;)]
+public string OnError { get; set; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <a id="Wolfgang_LogCompressor_Command_Decompress_Output_" data-uid="Wolfgang.LogCompressor.Command.Decompress.Output*"></a>
+
+  <h3 id="Wolfgang_LogCompressor_Command_Decompress_Output" data-uid="Wolfgang.LogCompressor.Command.Decompress.Output">
+  Output
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/v0.3.0/src/Wolfgang.LogCompressor/Command/Decompress.cs/#L32"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Gets or sets the output directory. Defaults to each archive's own directory.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[Option(&quot;-o|--output&quot;, Description = &quot;Output directory (default: alongside each archive)&quot;)]
+public string? Output { get; set; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <a id="Wolfgang_LogCompressor_Command_Decompress_Path_" data-uid="Wolfgang.LogCompressor.Command.Decompress.Path*"></a>
+
+  <h3 id="Wolfgang_LogCompressor_Command_Decompress_Path" data-uid="Wolfgang.LogCompressor.Command.Decompress.Path">
+  Path
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/v0.3.0/src/Wolfgang.LogCompressor/Command/Decompress.cs/#L23"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Gets or sets the archive file or directory of archives to extract.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[Argument(0, Description = &quot;Archive file, or directory containing archives&quot;)]
+[Required]
+public string Path { get; set; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <a id="Wolfgang_LogCompressor_Command_Decompress_Recurse_" data-uid="Wolfgang.LogCompressor.Command.Decompress.Recurse*"></a>
+
+  <h3 id="Wolfgang_LogCompressor_Command_Decompress_Recurse" data-uid="Wolfgang.LogCompressor.Command.Decompress.Recurse">
+  Recurse
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/v0.3.0/src/Wolfgang.LogCompressor/Command/Decompress.cs/#L40"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Gets or sets a value indicating whether to recurse into subdirectories.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[Option(&quot;-r|--recurse&quot;, Description = &quot;Recurse into subdirectories&quot;)]
+public bool Recurse { get; set; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <a id="Wolfgang_LogCompressor_Command_Decompress_Report_" data-uid="Wolfgang.LogCompressor.Command.Decompress.Report*"></a>
+
+  <h3 id="Wolfgang_LogCompressor_Command_Decompress_Report" data-uid="Wolfgang.LogCompressor.Command.Decompress.Report">
+  Report
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/v0.3.0/src/Wolfgang.LogCompressor/Command/Decompress.cs/#L88"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Gets or sets the report format.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[Option(&quot;--report &lt;FORMAT&gt;&quot;, Description = &quot;Write a summary report: json or csv&quot;)]
+public string? Report { get; set; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <a id="Wolfgang_LogCompressor_Command_Decompress_ReportPath_" data-uid="Wolfgang.LogCompressor.Command.Decompress.ReportPath*"></a>
+
+  <h3 id="Wolfgang_LogCompressor_Command_Decompress_ReportPath" data-uid="Wolfgang.LogCompressor.Command.Decompress.ReportPath">
+  ReportPath
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/v0.3.0/src/Wolfgang.LogCompressor/Command/Decompress.cs/#L96"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Gets or sets the report output path.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[Option(&quot;--report-path &lt;PATH&gt;&quot;, Description = &quot;Report output path (default: decompress-report.&lt;format&gt;)&quot;)]
+public string? ReportPath { get; set; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <h2 class="section" id="methods">Methods
+</h2>
+
+
+  <a id="Wolfgang_LogCompressor_Command_Decompress_OnExecuteAsync_" data-uid="Wolfgang.LogCompressor.Command.Decompress.OnExecuteAsync*"></a>
+
+  <h3 id="Wolfgang_LogCompressor_Command_Decompress_OnExecuteAsync_McMaster_Extensions_CommandLineUtils_IConsole_Microsoft_Extensions_Logging_ILogger_Wolfgang_LogCompressor_Command_Decompress__Wolfgang_LogCompressor_Service_DecompressService_Wolfgang_LogCompressor_Service_ReportService_" data-uid="Wolfgang.LogCompressor.Command.Decompress.OnExecuteAsync(McMaster.Extensions.CommandLineUtils.IConsole,Microsoft.Extensions.Logging.ILogger{Wolfgang.LogCompressor.Command.Decompress},Wolfgang.LogCompressor.Service.DecompressService,Wolfgang.LogCompressor.Service.ReportService)">
+  OnExecuteAsync(IConsole, ILogger&lt;Decompress&gt;, DecompressService, ReportService)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/v0.3.0/src/Wolfgang.LogCompressor/Command/Decompress.cs/#L118"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Executes the decompress command.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">internal Task&lt;int&gt; OnExecuteAsync(IConsole console, ILogger&lt;Decompress&gt; logger, DecompressService decompressService, ReportService reportService)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>console</code> <span class="xref">IConsole</span></dt>
+    <dd><p>The console.</p>
+</dd>
+    <dt><code>logger</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/microsoft.extensions.logging.ilogger-1">ILogger</a>&lt;<a class="xref" href="Wolfgang.LogCompressor.Command.Decompress.html">Decompress</a>&gt;</dt>
+    <dd><p>The logger.</p>
+</dd>
+    <dt><code>decompressService</code> <a class="xref" href="Wolfgang.LogCompressor.Service.DecompressService.html">DecompressService</a></dt>
+    <dd><p>The decompression service.</p>
+</dd>
+    <dt><code>reportService</code> <a class="xref" href="Wolfgang.LogCompressor.Service.ReportService.html">ReportService</a></dt>
+    <dd><p>The report service.</p>
+</dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1">Task</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a>&gt;</dt>
+    <dd><p>An exit code indicating success or failure.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+
+</article>
+
+        <div class="contribution d-print-none">
+          <a href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/v0.3.0/src/Wolfgang.LogCompressor/Command/Decompress.cs/#L13" class="edit-link">Edit this page</a>
+        </div>
+
+
+      </div>
+
+      <div class="affix">
+        <nav id="affix"></nav>
+      </div>
+    </main>
+
+    <div class="container-xxl search-results" id="search-results"></div>
+
+    <footer class="border-top text-secondary">
+      <div class="container-xxl">
+        <div class="flex-fill">
+          Made with DocFX <script>(function(){var r='/';if(window.location.hostname.endsWith('.github.io')){var s=window.location.pathname.split('/').filter(Boolean);if(s.length)r='/'+s[0]+'/';}var t=document.createElement('script');t.src=r+'public/version-picker.js';t.async=true;document.head.appendChild(t);})();</script>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

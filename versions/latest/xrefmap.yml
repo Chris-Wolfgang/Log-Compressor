@@ -139,15 +139,15 @@ references:
   commentId: T:Wolfgang.LogCompressor.Abstraction.IFileNamer
   fullName: Wolfgang.LogCompressor.Abstraction.IFileNamer
   nameWithType: IFileNamer
-- uid: Wolfgang.LogCompressor.Abstraction.IFileNamer.GetBundleFileName(System.String,System.Collections.Generic.IReadOnlyList{System.IO.FileInfo},System.String)
-  name: GetBundleFileName(string, IReadOnlyList<FileInfo>, string)
-  href: api/Wolfgang.LogCompressor.Abstraction.IFileNamer.html#Wolfgang_LogCompressor_Abstraction_IFileNamer_GetBundleFileName_System_String_System_Collections_Generic_IReadOnlyList_System_IO_FileInfo__System_String_
-  commentId: M:Wolfgang.LogCompressor.Abstraction.IFileNamer.GetBundleFileName(System.String,System.Collections.Generic.IReadOnlyList{System.IO.FileInfo},System.String)
-  name.vb: GetBundleFileName(String, IReadOnlyList(Of FileInfo), String)
-  fullName: Wolfgang.LogCompressor.Abstraction.IFileNamer.GetBundleFileName(string, System.Collections.Generic.IReadOnlyList<System.IO.FileInfo>, string)
-  fullName.vb: Wolfgang.LogCompressor.Abstraction.IFileNamer.GetBundleFileName(String, System.Collections.Generic.IReadOnlyList(Of System.IO.FileInfo), String)
-  nameWithType: IFileNamer.GetBundleFileName(string, IReadOnlyList<FileInfo>, string)
-  nameWithType.vb: IFileNamer.GetBundleFileName(String, IReadOnlyList(Of FileInfo), String)
+- uid: Wolfgang.LogCompressor.Abstraction.IFileNamer.GetBundleFileName(System.String,System.Collections.Generic.IReadOnlyList{System.IO.FileInfo},System.String,Wolfgang.LogCompressor.Model.TimestampSource,System.String)
+  name: GetBundleFileName(string, IReadOnlyList<FileInfo>, string, TimestampSource, string?)
+  href: api/Wolfgang.LogCompressor.Abstraction.IFileNamer.html#Wolfgang_LogCompressor_Abstraction_IFileNamer_GetBundleFileName_System_String_System_Collections_Generic_IReadOnlyList_System_IO_FileInfo__System_String_Wolfgang_LogCompressor_Model_TimestampSource_System_String_
+  commentId: M:Wolfgang.LogCompressor.Abstraction.IFileNamer.GetBundleFileName(System.String,System.Collections.Generic.IReadOnlyList{System.IO.FileInfo},System.String,Wolfgang.LogCompressor.Model.TimestampSource,System.String)
+  name.vb: GetBundleFileName(String, IReadOnlyList(Of FileInfo), String, TimestampSource, String)
+  fullName: Wolfgang.LogCompressor.Abstraction.IFileNamer.GetBundleFileName(string, System.Collections.Generic.IReadOnlyList<System.IO.FileInfo>, string, Wolfgang.LogCompressor.Model.TimestampSource, string?)
+  fullName.vb: Wolfgang.LogCompressor.Abstraction.IFileNamer.GetBundleFileName(String, System.Collections.Generic.IReadOnlyList(Of System.IO.FileInfo), String, Wolfgang.LogCompressor.Model.TimestampSource, String)
+  nameWithType: IFileNamer.GetBundleFileName(string, IReadOnlyList<FileInfo>, string, TimestampSource, string?)
+  nameWithType.vb: IFileNamer.GetBundleFileName(String, IReadOnlyList(Of FileInfo), String, TimestampSource, String)
 - uid: Wolfgang.LogCompressor.Abstraction.IFileNamer.GetBundleFileName*
   name: GetBundleFileName
   href: api/Wolfgang.LogCompressor.Abstraction.IFileNamer.html#Wolfgang_LogCompressor_Abstraction_IFileNamer_GetBundleFileName_
@@ -155,15 +155,15 @@ references:
   isSpec: "True"
   fullName: Wolfgang.LogCompressor.Abstraction.IFileNamer.GetBundleFileName
   nameWithType: IFileNamer.GetBundleFileName
-- uid: Wolfgang.LogCompressor.Abstraction.IFileNamer.GetCompressedFileName(System.IO.FileInfo,System.String)
-  name: GetCompressedFileName(FileInfo, string)
-  href: api/Wolfgang.LogCompressor.Abstraction.IFileNamer.html#Wolfgang_LogCompressor_Abstraction_IFileNamer_GetCompressedFileName_System_IO_FileInfo_System_String_
-  commentId: M:Wolfgang.LogCompressor.Abstraction.IFileNamer.GetCompressedFileName(System.IO.FileInfo,System.String)
-  name.vb: GetCompressedFileName(FileInfo, String)
-  fullName: Wolfgang.LogCompressor.Abstraction.IFileNamer.GetCompressedFileName(System.IO.FileInfo, string)
-  fullName.vb: Wolfgang.LogCompressor.Abstraction.IFileNamer.GetCompressedFileName(System.IO.FileInfo, String)
-  nameWithType: IFileNamer.GetCompressedFileName(FileInfo, string)
-  nameWithType.vb: IFileNamer.GetCompressedFileName(FileInfo, String)
+- uid: Wolfgang.LogCompressor.Abstraction.IFileNamer.GetCompressedFileName(System.IO.FileInfo,System.String,Wolfgang.LogCompressor.Model.TimestampSource,System.String)
+  name: GetCompressedFileName(FileInfo, string, TimestampSource, string?)
+  href: api/Wolfgang.LogCompressor.Abstraction.IFileNamer.html#Wolfgang_LogCompressor_Abstraction_IFileNamer_GetCompressedFileName_System_IO_FileInfo_System_String_Wolfgang_LogCompressor_Model_TimestampSource_System_String_
+  commentId: M:Wolfgang.LogCompressor.Abstraction.IFileNamer.GetCompressedFileName(System.IO.FileInfo,System.String,Wolfgang.LogCompressor.Model.TimestampSource,System.String)
+  name.vb: GetCompressedFileName(FileInfo, String, TimestampSource, String)
+  fullName: Wolfgang.LogCompressor.Abstraction.IFileNamer.GetCompressedFileName(System.IO.FileInfo, string, Wolfgang.LogCompressor.Model.TimestampSource, string?)
+  fullName.vb: Wolfgang.LogCompressor.Abstraction.IFileNamer.GetCompressedFileName(System.IO.FileInfo, String, Wolfgang.LogCompressor.Model.TimestampSource, String)
+  nameWithType: IFileNamer.GetCompressedFileName(FileInfo, string, TimestampSource, string?)
+  nameWithType.vb: IFileNamer.GetCompressedFileName(FileInfo, String, TimestampSource, String)
 - uid: Wolfgang.LogCompressor.Abstraction.IFileNamer.GetCompressedFileName*
   name: GetCompressedFileName
   href: api/Wolfgang.LogCompressor.Abstraction.IFileNamer.html#Wolfgang_LogCompressor_Abstraction_IFileNamer_GetCompressedFileName_
@@ -355,6 +355,171 @@ references:
   isSpec: "True"
   fullName: Wolfgang.LogCompressor.Command.Compress.OnExecuteAsync
   nameWithType: Compress.OnExecuteAsync
+- uid: Wolfgang.LogCompressor.Command.Decompress
+  name: Decompress
+  href: api/Wolfgang.LogCompressor.Command.Decompress.html
+  commentId: T:Wolfgang.LogCompressor.Command.Decompress
+  fullName: Wolfgang.LogCompressor.Command.Decompress
+  nameWithType: Decompress
+- uid: Wolfgang.LogCompressor.Command.Decompress.Exclude
+  name: Exclude
+  href: api/Wolfgang.LogCompressor.Command.Decompress.html#Wolfgang_LogCompressor_Command_Decompress_Exclude
+  commentId: P:Wolfgang.LogCompressor.Command.Decompress.Exclude
+  fullName: Wolfgang.LogCompressor.Command.Decompress.Exclude
+  nameWithType: Decompress.Exclude
+- uid: Wolfgang.LogCompressor.Command.Decompress.Exclude*
+  name: Exclude
+  href: api/Wolfgang.LogCompressor.Command.Decompress.html#Wolfgang_LogCompressor_Command_Decompress_Exclude_
+  commentId: Overload:Wolfgang.LogCompressor.Command.Decompress.Exclude
+  isSpec: "True"
+  fullName: Wolfgang.LogCompressor.Command.Decompress.Exclude
+  nameWithType: Decompress.Exclude
+- uid: Wolfgang.LogCompressor.Command.Decompress.Force
+  name: Force
+  href: api/Wolfgang.LogCompressor.Command.Decompress.html#Wolfgang_LogCompressor_Command_Decompress_Force
+  commentId: P:Wolfgang.LogCompressor.Command.Decompress.Force
+  fullName: Wolfgang.LogCompressor.Command.Decompress.Force
+  nameWithType: Decompress.Force
+- uid: Wolfgang.LogCompressor.Command.Decompress.Force*
+  name: Force
+  href: api/Wolfgang.LogCompressor.Command.Decompress.html#Wolfgang_LogCompressor_Command_Decompress_Force_
+  commentId: Overload:Wolfgang.LogCompressor.Command.Decompress.Force
+  isSpec: "True"
+  fullName: Wolfgang.LogCompressor.Command.Decompress.Force
+  nameWithType: Decompress.Force
+- uid: Wolfgang.LogCompressor.Command.Decompress.Include
+  name: Include
+  href: api/Wolfgang.LogCompressor.Command.Decompress.html#Wolfgang_LogCompressor_Command_Decompress_Include
+  commentId: P:Wolfgang.LogCompressor.Command.Decompress.Include
+  fullName: Wolfgang.LogCompressor.Command.Decompress.Include
+  nameWithType: Decompress.Include
+- uid: Wolfgang.LogCompressor.Command.Decompress.Include*
+  name: Include
+  href: api/Wolfgang.LogCompressor.Command.Decompress.html#Wolfgang_LogCompressor_Command_Decompress_Include_
+  commentId: Overload:Wolfgang.LogCompressor.Command.Decompress.Include
+  isSpec: "True"
+  fullName: Wolfgang.LogCompressor.Command.Decompress.Include
+  nameWithType: Decompress.Include
+- uid: Wolfgang.LogCompressor.Command.Decompress.KeepArchives
+  name: KeepArchives
+  href: api/Wolfgang.LogCompressor.Command.Decompress.html#Wolfgang_LogCompressor_Command_Decompress_KeepArchives
+  commentId: P:Wolfgang.LogCompressor.Command.Decompress.KeepArchives
+  fullName: Wolfgang.LogCompressor.Command.Decompress.KeepArchives
+  nameWithType: Decompress.KeepArchives
+- uid: Wolfgang.LogCompressor.Command.Decompress.KeepArchives*
+  name: KeepArchives
+  href: api/Wolfgang.LogCompressor.Command.Decompress.html#Wolfgang_LogCompressor_Command_Decompress_KeepArchives_
+  commentId: Overload:Wolfgang.LogCompressor.Command.Decompress.KeepArchives
+  isSpec: "True"
+  fullName: Wolfgang.LogCompressor.Command.Decompress.KeepArchives
+  nameWithType: Decompress.KeepArchives
+- uid: Wolfgang.LogCompressor.Command.Decompress.NoLock
+  name: NoLock
+  href: api/Wolfgang.LogCompressor.Command.Decompress.html#Wolfgang_LogCompressor_Command_Decompress_NoLock
+  commentId: P:Wolfgang.LogCompressor.Command.Decompress.NoLock
+  fullName: Wolfgang.LogCompressor.Command.Decompress.NoLock
+  nameWithType: Decompress.NoLock
+- uid: Wolfgang.LogCompressor.Command.Decompress.NoLock*
+  name: NoLock
+  href: api/Wolfgang.LogCompressor.Command.Decompress.html#Wolfgang_LogCompressor_Command_Decompress_NoLock_
+  commentId: Overload:Wolfgang.LogCompressor.Command.Decompress.NoLock
+  isSpec: "True"
+  fullName: Wolfgang.LogCompressor.Command.Decompress.NoLock
+  nameWithType: Decompress.NoLock
+- uid: Wolfgang.LogCompressor.Command.Decompress.OnError
+  name: OnError
+  href: api/Wolfgang.LogCompressor.Command.Decompress.html#Wolfgang_LogCompressor_Command_Decompress_OnError
+  commentId: P:Wolfgang.LogCompressor.Command.Decompress.OnError
+  fullName: Wolfgang.LogCompressor.Command.Decompress.OnError
+  nameWithType: Decompress.OnError
+- uid: Wolfgang.LogCompressor.Command.Decompress.OnError*
+  name: OnError
+  href: api/Wolfgang.LogCompressor.Command.Decompress.html#Wolfgang_LogCompressor_Command_Decompress_OnError_
+  commentId: Overload:Wolfgang.LogCompressor.Command.Decompress.OnError
+  isSpec: "True"
+  fullName: Wolfgang.LogCompressor.Command.Decompress.OnError
+  nameWithType: Decompress.OnError
+- uid: Wolfgang.LogCompressor.Command.Decompress.OnExecuteAsync(McMaster.Extensions.CommandLineUtils.IConsole,Microsoft.Extensions.Logging.ILogger{Wolfgang.LogCompressor.Command.Decompress},Wolfgang.LogCompressor.Service.DecompressService,Wolfgang.LogCompressor.Service.ReportService)
+  name: OnExecuteAsync(IConsole, ILogger<Decompress>, DecompressService, ReportService)
+  href: api/Wolfgang.LogCompressor.Command.Decompress.html#Wolfgang_LogCompressor_Command_Decompress_OnExecuteAsync_McMaster_Extensions_CommandLineUtils_IConsole_Microsoft_Extensions_Logging_ILogger_Wolfgang_LogCompressor_Command_Decompress__Wolfgang_LogCompressor_Service_DecompressService_Wolfgang_LogCompressor_Service_ReportService_
+  commentId: M:Wolfgang.LogCompressor.Command.Decompress.OnExecuteAsync(McMaster.Extensions.CommandLineUtils.IConsole,Microsoft.Extensions.Logging.ILogger{Wolfgang.LogCompressor.Command.Decompress},Wolfgang.LogCompressor.Service.DecompressService,Wolfgang.LogCompressor.Service.ReportService)
+  name.vb: OnExecuteAsync(IConsole, ILogger(Of Decompress), DecompressService, ReportService)
+  fullName: Wolfgang.LogCompressor.Command.Decompress.OnExecuteAsync(McMaster.Extensions.CommandLineUtils.IConsole, Microsoft.Extensions.Logging.ILogger<Wolfgang.LogCompressor.Command.Decompress>, Wolfgang.LogCompressor.Service.DecompressService, Wolfgang.LogCompressor.Service.ReportService)
+  fullName.vb: Wolfgang.LogCompressor.Command.Decompress.OnExecuteAsync(McMaster.Extensions.CommandLineUtils.IConsole, Microsoft.Extensions.Logging.ILogger(Of Wolfgang.LogCompressor.Command.Decompress), Wolfgang.LogCompressor.Service.DecompressService, Wolfgang.LogCompressor.Service.ReportService)
+  nameWithType: Decompress.OnExecuteAsync(IConsole, ILogger<Decompress>, DecompressService, ReportService)
+  nameWithType.vb: Decompress.OnExecuteAsync(IConsole, ILogger(Of Decompress), DecompressService, ReportService)
+- uid: Wolfgang.LogCompressor.Command.Decompress.OnExecuteAsync*
+  name: OnExecuteAsync
+  href: api/Wolfgang.LogCompressor.Command.Decompress.html#Wolfgang_LogCompressor_Command_Decompress_OnExecuteAsync_
+  commentId: Overload:Wolfgang.LogCompressor.Command.Decompress.OnExecuteAsync
+  isSpec: "True"
+  fullName: Wolfgang.LogCompressor.Command.Decompress.OnExecuteAsync
+  nameWithType: Decompress.OnExecuteAsync
+- uid: Wolfgang.LogCompressor.Command.Decompress.Output
+  name: Output
+  href: api/Wolfgang.LogCompressor.Command.Decompress.html#Wolfgang_LogCompressor_Command_Decompress_Output
+  commentId: P:Wolfgang.LogCompressor.Command.Decompress.Output
+  fullName: Wolfgang.LogCompressor.Command.Decompress.Output
+  nameWithType: Decompress.Output
+- uid: Wolfgang.LogCompressor.Command.Decompress.Output*
+  name: Output
+  href: api/Wolfgang.LogCompressor.Command.Decompress.html#Wolfgang_LogCompressor_Command_Decompress_Output_
+  commentId: Overload:Wolfgang.LogCompressor.Command.Decompress.Output
+  isSpec: "True"
+  fullName: Wolfgang.LogCompressor.Command.Decompress.Output
+  nameWithType: Decompress.Output
+- uid: Wolfgang.LogCompressor.Command.Decompress.Path
+  name: Path
+  href: api/Wolfgang.LogCompressor.Command.Decompress.html#Wolfgang_LogCompressor_Command_Decompress_Path
+  commentId: P:Wolfgang.LogCompressor.Command.Decompress.Path
+  fullName: Wolfgang.LogCompressor.Command.Decompress.Path
+  nameWithType: Decompress.Path
+- uid: Wolfgang.LogCompressor.Command.Decompress.Path*
+  name: Path
+  href: api/Wolfgang.LogCompressor.Command.Decompress.html#Wolfgang_LogCompressor_Command_Decompress_Path_
+  commentId: Overload:Wolfgang.LogCompressor.Command.Decompress.Path
+  isSpec: "True"
+  fullName: Wolfgang.LogCompressor.Command.Decompress.Path
+  nameWithType: Decompress.Path
+- uid: Wolfgang.LogCompressor.Command.Decompress.Recurse
+  name: Recurse
+  href: api/Wolfgang.LogCompressor.Command.Decompress.html#Wolfgang_LogCompressor_Command_Decompress_Recurse
+  commentId: P:Wolfgang.LogCompressor.Command.Decompress.Recurse
+  fullName: Wolfgang.LogCompressor.Command.Decompress.Recurse
+  nameWithType: Decompress.Recurse
+- uid: Wolfgang.LogCompressor.Command.Decompress.Recurse*
+  name: Recurse
+  href: api/Wolfgang.LogCompressor.Command.Decompress.html#Wolfgang_LogCompressor_Command_Decompress_Recurse_
+  commentId: Overload:Wolfgang.LogCompressor.Command.Decompress.Recurse
+  isSpec: "True"
+  fullName: Wolfgang.LogCompressor.Command.Decompress.Recurse
+  nameWithType: Decompress.Recurse
+- uid: Wolfgang.LogCompressor.Command.Decompress.Report
+  name: Report
+  href: api/Wolfgang.LogCompressor.Command.Decompress.html#Wolfgang_LogCompressor_Command_Decompress_Report
+  commentId: P:Wolfgang.LogCompressor.Command.Decompress.Report
+  fullName: Wolfgang.LogCompressor.Command.Decompress.Report
+  nameWithType: Decompress.Report
+- uid: Wolfgang.LogCompressor.Command.Decompress.Report*
+  name: Report
+  href: api/Wolfgang.LogCompressor.Command.Decompress.html#Wolfgang_LogCompressor_Command_Decompress_Report_
+  commentId: Overload:Wolfgang.LogCompressor.Command.Decompress.Report
+  isSpec: "True"
+  fullName: Wolfgang.LogCompressor.Command.Decompress.Report
+  nameWithType: Decompress.Report
+- uid: Wolfgang.LogCompressor.Command.Decompress.ReportPath
+  name: ReportPath
+  href: api/Wolfgang.LogCompressor.Command.Decompress.html#Wolfgang_LogCompressor_Command_Decompress_ReportPath
+  commentId: P:Wolfgang.LogCompressor.Command.Decompress.ReportPath
+  fullName: Wolfgang.LogCompressor.Command.Decompress.ReportPath
+  nameWithType: Decompress.ReportPath
+- uid: Wolfgang.LogCompressor.Command.Decompress.ReportPath*
+  name: ReportPath
+  href: api/Wolfgang.LogCompressor.Command.Decompress.html#Wolfgang_LogCompressor_Command_Decompress_ReportPath_
+  commentId: Overload:Wolfgang.LogCompressor.Command.Decompress.ReportPath
+  isSpec: "True"
+  fullName: Wolfgang.LogCompressor.Command.Decompress.ReportPath
+  nameWithType: Decompress.ReportPath
 - uid: Wolfgang.LogCompressor.Command.Init
   name: Init
   href: api/Wolfgang.LogCompressor.Command.Init.html
@@ -592,6 +757,19 @@ references:
   isSpec: "True"
   fullName: Wolfgang.LogCompressor.Command.SharedOptions.MinDateTime
   nameWithType: SharedOptions.MinDateTime
+- uid: Wolfgang.LogCompressor.Command.SharedOptions.Name
+  name: Name
+  href: api/Wolfgang.LogCompressor.Command.SharedOptions.html#Wolfgang_LogCompressor_Command_SharedOptions_Name
+  commentId: P:Wolfgang.LogCompressor.Command.SharedOptions.Name
+  fullName: Wolfgang.LogCompressor.Command.SharedOptions.Name
+  nameWithType: SharedOptions.Name
+- uid: Wolfgang.LogCompressor.Command.SharedOptions.Name*
+  name: Name
+  href: api/Wolfgang.LogCompressor.Command.SharedOptions.html#Wolfgang_LogCompressor_Command_SharedOptions_Name_
+  commentId: Overload:Wolfgang.LogCompressor.Command.SharedOptions.Name
+  isSpec: "True"
+  fullName: Wolfgang.LogCompressor.Command.SharedOptions.Name
+  nameWithType: SharedOptions.Name
 - uid: Wolfgang.LogCompressor.Command.SharedOptions.NoLock
   name: NoLock
   href: api/Wolfgang.LogCompressor.Command.SharedOptions.html#Wolfgang_LogCompressor_Command_SharedOptions_NoLock
@@ -631,6 +809,19 @@ references:
   isSpec: "True"
   fullName: Wolfgang.LogCompressor.Command.SharedOptions.OlderThan
   nameWithType: SharedOptions.OlderThan
+- uid: Wolfgang.LogCompressor.Command.SharedOptions.OnError
+  name: OnError
+  href: api/Wolfgang.LogCompressor.Command.SharedOptions.html#Wolfgang_LogCompressor_Command_SharedOptions_OnError
+  commentId: P:Wolfgang.LogCompressor.Command.SharedOptions.OnError
+  fullName: Wolfgang.LogCompressor.Command.SharedOptions.OnError
+  nameWithType: SharedOptions.OnError
+- uid: Wolfgang.LogCompressor.Command.SharedOptions.OnError*
+  name: OnError
+  href: api/Wolfgang.LogCompressor.Command.SharedOptions.html#Wolfgang_LogCompressor_Command_SharedOptions_OnError_
+  commentId: Overload:Wolfgang.LogCompressor.Command.SharedOptions.OnError
+  isSpec: "True"
+  fullName: Wolfgang.LogCompressor.Command.SharedOptions.OnError
+  nameWithType: SharedOptions.OnError
 - uid: Wolfgang.LogCompressor.Command.SharedOptions.Output
   name: Output
   href: api/Wolfgang.LogCompressor.Command.SharedOptions.html#Wolfgang_LogCompressor_Command_SharedOptions_Output
@@ -712,6 +903,19 @@ references:
   isSpec: "True"
   fullName: Wolfgang.LogCompressor.Command.SharedOptions.ReportPath
   nameWithType: SharedOptions.ReportPath
+- uid: Wolfgang.LogCompressor.Command.SharedOptions.Timestamp
+  name: Timestamp
+  href: api/Wolfgang.LogCompressor.Command.SharedOptions.html#Wolfgang_LogCompressor_Command_SharedOptions_Timestamp
+  commentId: P:Wolfgang.LogCompressor.Command.SharedOptions.Timestamp
+  fullName: Wolfgang.LogCompressor.Command.SharedOptions.Timestamp
+  nameWithType: SharedOptions.Timestamp
+- uid: Wolfgang.LogCompressor.Command.SharedOptions.Timestamp*
+  name: Timestamp
+  href: api/Wolfgang.LogCompressor.Command.SharedOptions.html#Wolfgang_LogCompressor_Command_SharedOptions_Timestamp_
+  commentId: Overload:Wolfgang.LogCompressor.Command.SharedOptions.Timestamp
+  isSpec: "True"
+  fullName: Wolfgang.LogCompressor.Command.SharedOptions.Timestamp
+  nameWithType: SharedOptions.Timestamp
 - uid: Wolfgang.LogCompressor.Command.SharedOptions.TryParseFormat(System.String,Wolfgang.LogCompressor.Model.CompressionFormat@)
   name: TryParseFormat(string, out CompressionFormat)
   href: api/Wolfgang.LogCompressor.Command.SharedOptions.html#Wolfgang_LogCompressor_Command_SharedOptions_TryParseFormat_System_String_Wolfgang_LogCompressor_Model_CompressionFormat__
@@ -744,6 +948,35 @@ references:
   isSpec: "True"
   fullName: Wolfgang.LogCompressor.Command.SharedOptions.TryParseLevel
   nameWithType: SharedOptions.TryParseLevel
+- uid: Wolfgang.LogCompressor.Command.SharedOptions.TryParseTimestampSource(System.String,Wolfgang.LogCompressor.Model.TimestampSource@)
+  name: TryParseTimestampSource(string, out TimestampSource)
+  href: api/Wolfgang.LogCompressor.Command.SharedOptions.html#Wolfgang_LogCompressor_Command_SharedOptions_TryParseTimestampSource_System_String_Wolfgang_LogCompressor_Model_TimestampSource__
+  commentId: M:Wolfgang.LogCompressor.Command.SharedOptions.TryParseTimestampSource(System.String,Wolfgang.LogCompressor.Model.TimestampSource@)
+  name.vb: TryParseTimestampSource(String, TimestampSource)
+  fullName: Wolfgang.LogCompressor.Command.SharedOptions.TryParseTimestampSource(string, out Wolfgang.LogCompressor.Model.TimestampSource)
+  fullName.vb: Wolfgang.LogCompressor.Command.SharedOptions.TryParseTimestampSource(String, Wolfgang.LogCompressor.Model.TimestampSource)
+  nameWithType: SharedOptions.TryParseTimestampSource(string, out TimestampSource)
+  nameWithType.vb: SharedOptions.TryParseTimestampSource(String, TimestampSource)
+- uid: Wolfgang.LogCompressor.Command.SharedOptions.TryParseTimestampSource*
+  name: TryParseTimestampSource
+  href: api/Wolfgang.LogCompressor.Command.SharedOptions.html#Wolfgang_LogCompressor_Command_SharedOptions_TryParseTimestampSource_
+  commentId: Overload:Wolfgang.LogCompressor.Command.SharedOptions.TryParseTimestampSource
+  isSpec: "True"
+  fullName: Wolfgang.LogCompressor.Command.SharedOptions.TryParseTimestampSource
+  nameWithType: SharedOptions.TryParseTimestampSource
+- uid: Wolfgang.LogCompressor.Command.SharedOptions.ValidateNamingOptions(McMaster.Extensions.CommandLineUtils.IConsole)
+  name: ValidateNamingOptions(IConsole)
+  href: api/Wolfgang.LogCompressor.Command.SharedOptions.html#Wolfgang_LogCompressor_Command_SharedOptions_ValidateNamingOptions_McMaster_Extensions_CommandLineUtils_IConsole_
+  commentId: M:Wolfgang.LogCompressor.Command.SharedOptions.ValidateNamingOptions(McMaster.Extensions.CommandLineUtils.IConsole)
+  fullName: Wolfgang.LogCompressor.Command.SharedOptions.ValidateNamingOptions(McMaster.Extensions.CommandLineUtils.IConsole)
+  nameWithType: SharedOptions.ValidateNamingOptions(IConsole)
+- uid: Wolfgang.LogCompressor.Command.SharedOptions.ValidateNamingOptions*
+  name: ValidateNamingOptions
+  href: api/Wolfgang.LogCompressor.Command.SharedOptions.html#Wolfgang_LogCompressor_Command_SharedOptions_ValidateNamingOptions_
+  commentId: Overload:Wolfgang.LogCompressor.Command.SharedOptions.ValidateNamingOptions
+  isSpec: "True"
+  fullName: Wolfgang.LogCompressor.Command.SharedOptions.ValidateNamingOptions
+  nameWithType: SharedOptions.ValidateNamingOptions
 - uid: Wolfgang.LogCompressor.Command.SharedOptions.ValidateOptions(McMaster.Extensions.CommandLineUtils.IConsole)
   name: ValidateOptions(IConsole)
   href: api/Wolfgang.LogCompressor.Command.SharedOptions.html#Wolfgang_LogCompressor_Command_SharedOptions_ValidateOptions_McMaster_Extensions_CommandLineUtils_IConsole_
@@ -775,6 +1008,12 @@ references:
   commentId: F:Wolfgang.LogCompressor.ExitCode.ApplicationError
   fullName: Wolfgang.LogCompressor.ExitCode.ApplicationError
   nameWithType: ExitCode.ApplicationError
+- uid: Wolfgang.LogCompressor.ExitCode.CompletedWithSkips
+  name: CompletedWithSkips
+  href: api/Wolfgang.LogCompressor.ExitCode.html#Wolfgang_LogCompressor_ExitCode_CompletedWithSkips
+  commentId: F:Wolfgang.LogCompressor.ExitCode.CompletedWithSkips
+  fullName: Wolfgang.LogCompressor.ExitCode.CompletedWithSkips
+  nameWithType: ExitCode.CompletedWithSkips
 - uid: Wolfgang.LogCompressor.ExitCode.InvalidArguments
   name: InvalidArguments
   href: api/Wolfgang.LogCompressor.ExitCode.html#Wolfgang_LogCompressor_ExitCode_InvalidArguments
@@ -1207,6 +1446,19 @@ references:
   isSpec: "True"
   fullName: Wolfgang.LogCompressor.Model.CompressionOptions.MinDateTime
   nameWithType: CompressionOptions.MinDateTime
+- uid: Wolfgang.LogCompressor.Model.CompressionOptions.NamePrefix
+  name: NamePrefix
+  href: api/Wolfgang.LogCompressor.Model.CompressionOptions.html#Wolfgang_LogCompressor_Model_CompressionOptions_NamePrefix
+  commentId: P:Wolfgang.LogCompressor.Model.CompressionOptions.NamePrefix
+  fullName: Wolfgang.LogCompressor.Model.CompressionOptions.NamePrefix
+  nameWithType: CompressionOptions.NamePrefix
+- uid: Wolfgang.LogCompressor.Model.CompressionOptions.NamePrefix*
+  name: NamePrefix
+  href: api/Wolfgang.LogCompressor.Model.CompressionOptions.html#Wolfgang_LogCompressor_Model_CompressionOptions_NamePrefix_
+  commentId: Overload:Wolfgang.LogCompressor.Model.CompressionOptions.NamePrefix
+  isSpec: "True"
+  fullName: Wolfgang.LogCompressor.Model.CompressionOptions.NamePrefix
+  nameWithType: CompressionOptions.NamePrefix
 - uid: Wolfgang.LogCompressor.Model.CompressionOptions.NoLock
   name: NoLock
   href: api/Wolfgang.LogCompressor.Model.CompressionOptions.html#Wolfgang_LogCompressor_Model_CompressionOptions_NoLock
@@ -1233,6 +1485,19 @@ references:
   isSpec: "True"
   fullName: Wolfgang.LogCompressor.Model.CompressionOptions.OlderThanDays
   nameWithType: CompressionOptions.OlderThanDays
+- uid: Wolfgang.LogCompressor.Model.CompressionOptions.OnError
+  name: OnError
+  href: api/Wolfgang.LogCompressor.Model.CompressionOptions.html#Wolfgang_LogCompressor_Model_CompressionOptions_OnError
+  commentId: P:Wolfgang.LogCompressor.Model.CompressionOptions.OnError
+  fullName: Wolfgang.LogCompressor.Model.CompressionOptions.OnError
+  nameWithType: CompressionOptions.OnError
+- uid: Wolfgang.LogCompressor.Model.CompressionOptions.OnError*
+  name: OnError
+  href: api/Wolfgang.LogCompressor.Model.CompressionOptions.html#Wolfgang_LogCompressor_Model_CompressionOptions_OnError_
+  commentId: Overload:Wolfgang.LogCompressor.Model.CompressionOptions.OnError
+  isSpec: "True"
+  fullName: Wolfgang.LogCompressor.Model.CompressionOptions.OnError
+  nameWithType: CompressionOptions.OnError
 - uid: Wolfgang.LogCompressor.Model.CompressionOptions.OutputPath
   name: OutputPath
   href: api/Wolfgang.LogCompressor.Model.CompressionOptions.html#Wolfgang_LogCompressor_Model_CompressionOptions_OutputPath
@@ -1298,6 +1563,19 @@ references:
   isSpec: "True"
   fullName: Wolfgang.LogCompressor.Model.CompressionOptions.SourcePath
   nameWithType: CompressionOptions.SourcePath
+- uid: Wolfgang.LogCompressor.Model.CompressionOptions.TimestampSource
+  name: TimestampSource
+  href: api/Wolfgang.LogCompressor.Model.CompressionOptions.html#Wolfgang_LogCompressor_Model_CompressionOptions_TimestampSource
+  commentId: P:Wolfgang.LogCompressor.Model.CompressionOptions.TimestampSource
+  fullName: Wolfgang.LogCompressor.Model.CompressionOptions.TimestampSource
+  nameWithType: CompressionOptions.TimestampSource
+- uid: Wolfgang.LogCompressor.Model.CompressionOptions.TimestampSource*
+  name: TimestampSource
+  href: api/Wolfgang.LogCompressor.Model.CompressionOptions.html#Wolfgang_LogCompressor_Model_CompressionOptions_TimestampSource_
+  commentId: Overload:Wolfgang.LogCompressor.Model.CompressionOptions.TimestampSource
+  isSpec: "True"
+  fullName: Wolfgang.LogCompressor.Model.CompressionOptions.TimestampSource
+  nameWithType: CompressionOptions.TimestampSource
 - uid: Wolfgang.LogCompressor.Model.CompressionOptions.Verify
   name: Verify
   href: api/Wolfgang.LogCompressor.Model.CompressionOptions.html#Wolfgang_LogCompressor_Model_CompressionOptions_Verify
@@ -1369,6 +1647,19 @@ references:
   isSpec: "True"
   fullName: Wolfgang.LogCompressor.Model.CompressionResult.OutputPath
   nameWithType: CompressionResult.OutputPath
+- uid: Wolfgang.LogCompressor.Model.CompressionResult.SkippedCount
+  name: SkippedCount
+  href: api/Wolfgang.LogCompressor.Model.CompressionResult.html#Wolfgang_LogCompressor_Model_CompressionResult_SkippedCount
+  commentId: P:Wolfgang.LogCompressor.Model.CompressionResult.SkippedCount
+  fullName: Wolfgang.LogCompressor.Model.CompressionResult.SkippedCount
+  nameWithType: CompressionResult.SkippedCount
+- uid: Wolfgang.LogCompressor.Model.CompressionResult.SkippedCount*
+  name: SkippedCount
+  href: api/Wolfgang.LogCompressor.Model.CompressionResult.html#Wolfgang_LogCompressor_Model_CompressionResult_SkippedCount_
+  commentId: Overload:Wolfgang.LogCompressor.Model.CompressionResult.SkippedCount
+  isSpec: "True"
+  fullName: Wolfgang.LogCompressor.Model.CompressionResult.SkippedCount
+  nameWithType: CompressionResult.SkippedCount
 - uid: Wolfgang.LogCompressor.Model.CompressionResult.SourcePath
   name: SourcePath
   href: api/Wolfgang.LogCompressor.Model.CompressionResult.html#Wolfgang_LogCompressor_Model_CompressionResult_SourcePath
@@ -1395,6 +1686,252 @@ references:
   isSpec: "True"
   fullName: Wolfgang.LogCompressor.Model.CompressionResult.Success
   nameWithType: CompressionResult.Success
+- uid: Wolfgang.LogCompressor.Model.DecompressionOptions
+  name: DecompressionOptions
+  href: api/Wolfgang.LogCompressor.Model.DecompressionOptions.html
+  commentId: T:Wolfgang.LogCompressor.Model.DecompressionOptions
+  fullName: Wolfgang.LogCompressor.Model.DecompressionOptions
+  nameWithType: DecompressionOptions
+- uid: Wolfgang.LogCompressor.Model.DecompressionOptions.ExcludePatterns
+  name: ExcludePatterns
+  href: api/Wolfgang.LogCompressor.Model.DecompressionOptions.html#Wolfgang_LogCompressor_Model_DecompressionOptions_ExcludePatterns
+  commentId: P:Wolfgang.LogCompressor.Model.DecompressionOptions.ExcludePatterns
+  fullName: Wolfgang.LogCompressor.Model.DecompressionOptions.ExcludePatterns
+  nameWithType: DecompressionOptions.ExcludePatterns
+- uid: Wolfgang.LogCompressor.Model.DecompressionOptions.ExcludePatterns*
+  name: ExcludePatterns
+  href: api/Wolfgang.LogCompressor.Model.DecompressionOptions.html#Wolfgang_LogCompressor_Model_DecompressionOptions_ExcludePatterns_
+  commentId: Overload:Wolfgang.LogCompressor.Model.DecompressionOptions.ExcludePatterns
+  isSpec: "True"
+  fullName: Wolfgang.LogCompressor.Model.DecompressionOptions.ExcludePatterns
+  nameWithType: DecompressionOptions.ExcludePatterns
+- uid: Wolfgang.LogCompressor.Model.DecompressionOptions.Force
+  name: Force
+  href: api/Wolfgang.LogCompressor.Model.DecompressionOptions.html#Wolfgang_LogCompressor_Model_DecompressionOptions_Force
+  commentId: P:Wolfgang.LogCompressor.Model.DecompressionOptions.Force
+  fullName: Wolfgang.LogCompressor.Model.DecompressionOptions.Force
+  nameWithType: DecompressionOptions.Force
+- uid: Wolfgang.LogCompressor.Model.DecompressionOptions.Force*
+  name: Force
+  href: api/Wolfgang.LogCompressor.Model.DecompressionOptions.html#Wolfgang_LogCompressor_Model_DecompressionOptions_Force_
+  commentId: Overload:Wolfgang.LogCompressor.Model.DecompressionOptions.Force
+  isSpec: "True"
+  fullName: Wolfgang.LogCompressor.Model.DecompressionOptions.Force
+  nameWithType: DecompressionOptions.Force
+- uid: Wolfgang.LogCompressor.Model.DecompressionOptions.IncludePatterns
+  name: IncludePatterns
+  href: api/Wolfgang.LogCompressor.Model.DecompressionOptions.html#Wolfgang_LogCompressor_Model_DecompressionOptions_IncludePatterns
+  commentId: P:Wolfgang.LogCompressor.Model.DecompressionOptions.IncludePatterns
+  fullName: Wolfgang.LogCompressor.Model.DecompressionOptions.IncludePatterns
+  nameWithType: DecompressionOptions.IncludePatterns
+- uid: Wolfgang.LogCompressor.Model.DecompressionOptions.IncludePatterns*
+  name: IncludePatterns
+  href: api/Wolfgang.LogCompressor.Model.DecompressionOptions.html#Wolfgang_LogCompressor_Model_DecompressionOptions_IncludePatterns_
+  commentId: Overload:Wolfgang.LogCompressor.Model.DecompressionOptions.IncludePatterns
+  isSpec: "True"
+  fullName: Wolfgang.LogCompressor.Model.DecompressionOptions.IncludePatterns
+  nameWithType: DecompressionOptions.IncludePatterns
+- uid: Wolfgang.LogCompressor.Model.DecompressionOptions.KeepArchives
+  name: KeepArchives
+  href: api/Wolfgang.LogCompressor.Model.DecompressionOptions.html#Wolfgang_LogCompressor_Model_DecompressionOptions_KeepArchives
+  commentId: P:Wolfgang.LogCompressor.Model.DecompressionOptions.KeepArchives
+  fullName: Wolfgang.LogCompressor.Model.DecompressionOptions.KeepArchives
+  nameWithType: DecompressionOptions.KeepArchives
+- uid: Wolfgang.LogCompressor.Model.DecompressionOptions.KeepArchives*
+  name: KeepArchives
+  href: api/Wolfgang.LogCompressor.Model.DecompressionOptions.html#Wolfgang_LogCompressor_Model_DecompressionOptions_KeepArchives_
+  commentId: Overload:Wolfgang.LogCompressor.Model.DecompressionOptions.KeepArchives
+  isSpec: "True"
+  fullName: Wolfgang.LogCompressor.Model.DecompressionOptions.KeepArchives
+  nameWithType: DecompressionOptions.KeepArchives
+- uid: Wolfgang.LogCompressor.Model.DecompressionOptions.NoLock
+  name: NoLock
+  href: api/Wolfgang.LogCompressor.Model.DecompressionOptions.html#Wolfgang_LogCompressor_Model_DecompressionOptions_NoLock
+  commentId: P:Wolfgang.LogCompressor.Model.DecompressionOptions.NoLock
+  fullName: Wolfgang.LogCompressor.Model.DecompressionOptions.NoLock
+  nameWithType: DecompressionOptions.NoLock
+- uid: Wolfgang.LogCompressor.Model.DecompressionOptions.NoLock*
+  name: NoLock
+  href: api/Wolfgang.LogCompressor.Model.DecompressionOptions.html#Wolfgang_LogCompressor_Model_DecompressionOptions_NoLock_
+  commentId: Overload:Wolfgang.LogCompressor.Model.DecompressionOptions.NoLock
+  isSpec: "True"
+  fullName: Wolfgang.LogCompressor.Model.DecompressionOptions.NoLock
+  nameWithType: DecompressionOptions.NoLock
+- uid: Wolfgang.LogCompressor.Model.DecompressionOptions.OnError
+  name: OnError
+  href: api/Wolfgang.LogCompressor.Model.DecompressionOptions.html#Wolfgang_LogCompressor_Model_DecompressionOptions_OnError
+  commentId: P:Wolfgang.LogCompressor.Model.DecompressionOptions.OnError
+  fullName: Wolfgang.LogCompressor.Model.DecompressionOptions.OnError
+  nameWithType: DecompressionOptions.OnError
+- uid: Wolfgang.LogCompressor.Model.DecompressionOptions.OnError*
+  name: OnError
+  href: api/Wolfgang.LogCompressor.Model.DecompressionOptions.html#Wolfgang_LogCompressor_Model_DecompressionOptions_OnError_
+  commentId: Overload:Wolfgang.LogCompressor.Model.DecompressionOptions.OnError
+  isSpec: "True"
+  fullName: Wolfgang.LogCompressor.Model.DecompressionOptions.OnError
+  nameWithType: DecompressionOptions.OnError
+- uid: Wolfgang.LogCompressor.Model.DecompressionOptions.OutputPath
+  name: OutputPath
+  href: api/Wolfgang.LogCompressor.Model.DecompressionOptions.html#Wolfgang_LogCompressor_Model_DecompressionOptions_OutputPath
+  commentId: P:Wolfgang.LogCompressor.Model.DecompressionOptions.OutputPath
+  fullName: Wolfgang.LogCompressor.Model.DecompressionOptions.OutputPath
+  nameWithType: DecompressionOptions.OutputPath
+- uid: Wolfgang.LogCompressor.Model.DecompressionOptions.OutputPath*
+  name: OutputPath
+  href: api/Wolfgang.LogCompressor.Model.DecompressionOptions.html#Wolfgang_LogCompressor_Model_DecompressionOptions_OutputPath_
+  commentId: Overload:Wolfgang.LogCompressor.Model.DecompressionOptions.OutputPath
+  isSpec: "True"
+  fullName: Wolfgang.LogCompressor.Model.DecompressionOptions.OutputPath
+  nameWithType: DecompressionOptions.OutputPath
+- uid: Wolfgang.LogCompressor.Model.DecompressionOptions.Recurse
+  name: Recurse
+  href: api/Wolfgang.LogCompressor.Model.DecompressionOptions.html#Wolfgang_LogCompressor_Model_DecompressionOptions_Recurse
+  commentId: P:Wolfgang.LogCompressor.Model.DecompressionOptions.Recurse
+  fullName: Wolfgang.LogCompressor.Model.DecompressionOptions.Recurse
+  nameWithType: DecompressionOptions.Recurse
+- uid: Wolfgang.LogCompressor.Model.DecompressionOptions.Recurse*
+  name: Recurse
+  href: api/Wolfgang.LogCompressor.Model.DecompressionOptions.html#Wolfgang_LogCompressor_Model_DecompressionOptions_Recurse_
+  commentId: Overload:Wolfgang.LogCompressor.Model.DecompressionOptions.Recurse
+  isSpec: "True"
+  fullName: Wolfgang.LogCompressor.Model.DecompressionOptions.Recurse
+  nameWithType: DecompressionOptions.Recurse
+- uid: Wolfgang.LogCompressor.Model.DecompressionOptions.ReportFormat
+  name: ReportFormat
+  href: api/Wolfgang.LogCompressor.Model.DecompressionOptions.html#Wolfgang_LogCompressor_Model_DecompressionOptions_ReportFormat
+  commentId: P:Wolfgang.LogCompressor.Model.DecompressionOptions.ReportFormat
+  fullName: Wolfgang.LogCompressor.Model.DecompressionOptions.ReportFormat
+  nameWithType: DecompressionOptions.ReportFormat
+- uid: Wolfgang.LogCompressor.Model.DecompressionOptions.ReportFormat*
+  name: ReportFormat
+  href: api/Wolfgang.LogCompressor.Model.DecompressionOptions.html#Wolfgang_LogCompressor_Model_DecompressionOptions_ReportFormat_
+  commentId: Overload:Wolfgang.LogCompressor.Model.DecompressionOptions.ReportFormat
+  isSpec: "True"
+  fullName: Wolfgang.LogCompressor.Model.DecompressionOptions.ReportFormat
+  nameWithType: DecompressionOptions.ReportFormat
+- uid: Wolfgang.LogCompressor.Model.DecompressionOptions.ReportPath
+  name: ReportPath
+  href: api/Wolfgang.LogCompressor.Model.DecompressionOptions.html#Wolfgang_LogCompressor_Model_DecompressionOptions_ReportPath
+  commentId: P:Wolfgang.LogCompressor.Model.DecompressionOptions.ReportPath
+  fullName: Wolfgang.LogCompressor.Model.DecompressionOptions.ReportPath
+  nameWithType: DecompressionOptions.ReportPath
+- uid: Wolfgang.LogCompressor.Model.DecompressionOptions.ReportPath*
+  name: ReportPath
+  href: api/Wolfgang.LogCompressor.Model.DecompressionOptions.html#Wolfgang_LogCompressor_Model_DecompressionOptions_ReportPath_
+  commentId: Overload:Wolfgang.LogCompressor.Model.DecompressionOptions.ReportPath
+  isSpec: "True"
+  fullName: Wolfgang.LogCompressor.Model.DecompressionOptions.ReportPath
+  nameWithType: DecompressionOptions.ReportPath
+- uid: Wolfgang.LogCompressor.Model.DecompressionOptions.SourcePath
+  name: SourcePath
+  href: api/Wolfgang.LogCompressor.Model.DecompressionOptions.html#Wolfgang_LogCompressor_Model_DecompressionOptions_SourcePath
+  commentId: P:Wolfgang.LogCompressor.Model.DecompressionOptions.SourcePath
+  fullName: Wolfgang.LogCompressor.Model.DecompressionOptions.SourcePath
+  nameWithType: DecompressionOptions.SourcePath
+- uid: Wolfgang.LogCompressor.Model.DecompressionOptions.SourcePath*
+  name: SourcePath
+  href: api/Wolfgang.LogCompressor.Model.DecompressionOptions.html#Wolfgang_LogCompressor_Model_DecompressionOptions_SourcePath_
+  commentId: Overload:Wolfgang.LogCompressor.Model.DecompressionOptions.SourcePath
+  isSpec: "True"
+  fullName: Wolfgang.LogCompressor.Model.DecompressionOptions.SourcePath
+  nameWithType: DecompressionOptions.SourcePath
+- uid: Wolfgang.LogCompressor.Model.ErrorPolicy
+  name: ErrorPolicy
+  href: api/Wolfgang.LogCompressor.Model.ErrorPolicy.html
+  commentId: T:Wolfgang.LogCompressor.Model.ErrorPolicy
+  fullName: Wolfgang.LogCompressor.Model.ErrorPolicy
+  nameWithType: ErrorPolicy
+- uid: Wolfgang.LogCompressor.Model.ErrorPolicy.Default
+  name: Default
+  href: api/Wolfgang.LogCompressor.Model.ErrorPolicy.html#Wolfgang_LogCompressor_Model_ErrorPolicy_Default
+  commentId: P:Wolfgang.LogCompressor.Model.ErrorPolicy.Default
+  fullName: Wolfgang.LogCompressor.Model.ErrorPolicy.Default
+  nameWithType: ErrorPolicy.Default
+- uid: Wolfgang.LogCompressor.Model.ErrorPolicy.Default*
+  name: Default
+  href: api/Wolfgang.LogCompressor.Model.ErrorPolicy.html#Wolfgang_LogCompressor_Model_ErrorPolicy_Default_
+  commentId: Overload:Wolfgang.LogCompressor.Model.ErrorPolicy.Default
+  isSpec: "True"
+  fullName: Wolfgang.LogCompressor.Model.ErrorPolicy.Default
+  nameWithType: ErrorPolicy.Default
+- uid: Wolfgang.LogCompressor.Model.ErrorPolicy.Mode
+  name: Mode
+  href: api/Wolfgang.LogCompressor.Model.ErrorPolicy.html#Wolfgang_LogCompressor_Model_ErrorPolicy_Mode
+  commentId: P:Wolfgang.LogCompressor.Model.ErrorPolicy.Mode
+  fullName: Wolfgang.LogCompressor.Model.ErrorPolicy.Mode
+  nameWithType: ErrorPolicy.Mode
+- uid: Wolfgang.LogCompressor.Model.ErrorPolicy.Mode*
+  name: Mode
+  href: api/Wolfgang.LogCompressor.Model.ErrorPolicy.html#Wolfgang_LogCompressor_Model_ErrorPolicy_Mode_
+  commentId: Overload:Wolfgang.LogCompressor.Model.ErrorPolicy.Mode
+  isSpec: "True"
+  fullName: Wolfgang.LogCompressor.Model.ErrorPolicy.Mode
+  nameWithType: ErrorPolicy.Mode
+- uid: Wolfgang.LogCompressor.Model.ErrorPolicy.RetryCount
+  name: RetryCount
+  href: api/Wolfgang.LogCompressor.Model.ErrorPolicy.html#Wolfgang_LogCompressor_Model_ErrorPolicy_RetryCount
+  commentId: P:Wolfgang.LogCompressor.Model.ErrorPolicy.RetryCount
+  fullName: Wolfgang.LogCompressor.Model.ErrorPolicy.RetryCount
+  nameWithType: ErrorPolicy.RetryCount
+- uid: Wolfgang.LogCompressor.Model.ErrorPolicy.RetryCount*
+  name: RetryCount
+  href: api/Wolfgang.LogCompressor.Model.ErrorPolicy.html#Wolfgang_LogCompressor_Model_ErrorPolicy_RetryCount_
+  commentId: Overload:Wolfgang.LogCompressor.Model.ErrorPolicy.RetryCount
+  isSpec: "True"
+  fullName: Wolfgang.LogCompressor.Model.ErrorPolicy.RetryCount
+  nameWithType: ErrorPolicy.RetryCount
+- uid: Wolfgang.LogCompressor.Model.ErrorPolicy.TryParse(System.String,Wolfgang.LogCompressor.Model.ErrorPolicy@)
+  name: TryParse(string, out ErrorPolicy)
+  href: api/Wolfgang.LogCompressor.Model.ErrorPolicy.html#Wolfgang_LogCompressor_Model_ErrorPolicy_TryParse_System_String_Wolfgang_LogCompressor_Model_ErrorPolicy__
+  commentId: M:Wolfgang.LogCompressor.Model.ErrorPolicy.TryParse(System.String,Wolfgang.LogCompressor.Model.ErrorPolicy@)
+  name.vb: TryParse(String, ErrorPolicy)
+  fullName: Wolfgang.LogCompressor.Model.ErrorPolicy.TryParse(string, out Wolfgang.LogCompressor.Model.ErrorPolicy)
+  fullName.vb: Wolfgang.LogCompressor.Model.ErrorPolicy.TryParse(String, Wolfgang.LogCompressor.Model.ErrorPolicy)
+  nameWithType: ErrorPolicy.TryParse(string, out ErrorPolicy)
+  nameWithType.vb: ErrorPolicy.TryParse(String, ErrorPolicy)
+- uid: Wolfgang.LogCompressor.Model.ErrorPolicy.TryParse*
+  name: TryParse
+  href: api/Wolfgang.LogCompressor.Model.ErrorPolicy.html#Wolfgang_LogCompressor_Model_ErrorPolicy_TryParse_
+  commentId: Overload:Wolfgang.LogCompressor.Model.ErrorPolicy.TryParse
+  isSpec: "True"
+  fullName: Wolfgang.LogCompressor.Model.ErrorPolicy.TryParse
+  nameWithType: ErrorPolicy.TryParse
+- uid: Wolfgang.LogCompressor.Model.OnErrorMode
+  name: OnErrorMode
+  href: api/Wolfgang.LogCompressor.Model.OnErrorMode.html
+  commentId: T:Wolfgang.LogCompressor.Model.OnErrorMode
+  fullName: Wolfgang.LogCompressor.Model.OnErrorMode
+  nameWithType: OnErrorMode
+- uid: Wolfgang.LogCompressor.Model.OnErrorMode.Fail
+  name: Fail
+  href: api/Wolfgang.LogCompressor.Model.OnErrorMode.html#Wolfgang_LogCompressor_Model_OnErrorMode_Fail
+  commentId: F:Wolfgang.LogCompressor.Model.OnErrorMode.Fail
+  fullName: Wolfgang.LogCompressor.Model.OnErrorMode.Fail
+  nameWithType: OnErrorMode.Fail
+- uid: Wolfgang.LogCompressor.Model.OnErrorMode.Skip
+  name: Skip
+  href: api/Wolfgang.LogCompressor.Model.OnErrorMode.html#Wolfgang_LogCompressor_Model_OnErrorMode_Skip
+  commentId: F:Wolfgang.LogCompressor.Model.OnErrorMode.Skip
+  fullName: Wolfgang.LogCompressor.Model.OnErrorMode.Skip
+  nameWithType: OnErrorMode.Skip
+- uid: Wolfgang.LogCompressor.Model.TimestampSource
+  name: TimestampSource
+  href: api/Wolfgang.LogCompressor.Model.TimestampSource.html
+  commentId: T:Wolfgang.LogCompressor.Model.TimestampSource
+  fullName: Wolfgang.LogCompressor.Model.TimestampSource
+  nameWithType: TimestampSource
+- uid: Wolfgang.LogCompressor.Model.TimestampSource.Compressed
+  name: Compressed
+  href: api/Wolfgang.LogCompressor.Model.TimestampSource.html#Wolfgang_LogCompressor_Model_TimestampSource_Compressed
+  commentId: F:Wolfgang.LogCompressor.Model.TimestampSource.Compressed
+  fullName: Wolfgang.LogCompressor.Model.TimestampSource.Compressed
+  nameWithType: TimestampSource.Compressed
+- uid: Wolfgang.LogCompressor.Model.TimestampSource.Modified
+  name: Modified
+  href: api/Wolfgang.LogCompressor.Model.TimestampSource.html#Wolfgang_LogCompressor_Model_TimestampSource_Modified
+  commentId: F:Wolfgang.LogCompressor.Model.TimestampSource.Modified
+  fullName: Wolfgang.LogCompressor.Model.TimestampSource.Modified
+  nameWithType: TimestampSource.Modified
 - uid: Wolfgang.LogCompressor.Program
   name: Program
   href: api/Wolfgang.LogCompressor.Program.html
@@ -1742,12 +2279,15 @@ references:
   fullName.vb: Wolfgang.LogCompressor.Service.CompressService.New
   nameWithType: CompressService.CompressService
   nameWithType.vb: CompressService.New
-- uid: Wolfgang.LogCompressor.Service.CompressService.CompressFileAsync(System.IO.FileInfo,Wolfgang.LogCompressor.Model.CompressionOptions,Wolfgang.LogCompressor.Abstraction.ICompressionStrategy,System.Threading.CancellationToken)
-  name: CompressFileAsync(FileInfo, CompressionOptions, ICompressionStrategy, CancellationToken)
-  href: api/Wolfgang.LogCompressor.Service.CompressService.html#Wolfgang_LogCompressor_Service_CompressService_CompressFileAsync_System_IO_FileInfo_Wolfgang_LogCompressor_Model_CompressionOptions_Wolfgang_LogCompressor_Abstraction_ICompressionStrategy_System_Threading_CancellationToken_
-  commentId: M:Wolfgang.LogCompressor.Service.CompressService.CompressFileAsync(System.IO.FileInfo,Wolfgang.LogCompressor.Model.CompressionOptions,Wolfgang.LogCompressor.Abstraction.ICompressionStrategy,System.Threading.CancellationToken)
-  fullName: Wolfgang.LogCompressor.Service.CompressService.CompressFileAsync(System.IO.FileInfo, Wolfgang.LogCompressor.Model.CompressionOptions, Wolfgang.LogCompressor.Abstraction.ICompressionStrategy, System.Threading.CancellationToken)
-  nameWithType: CompressService.CompressFileAsync(FileInfo, CompressionOptions, ICompressionStrategy, CancellationToken)
+- uid: Wolfgang.LogCompressor.Service.CompressService.CompressFileAsync(System.IO.FileInfo,System.String,Wolfgang.LogCompressor.Model.CompressionOptions,Wolfgang.LogCompressor.Abstraction.ICompressionStrategy,System.Threading.CancellationToken)
+  name: CompressFileAsync(FileInfo, string, CompressionOptions, ICompressionStrategy, CancellationToken)
+  href: api/Wolfgang.LogCompressor.Service.CompressService.html#Wolfgang_LogCompressor_Service_CompressService_CompressFileAsync_System_IO_FileInfo_System_String_Wolfgang_LogCompressor_Model_CompressionOptions_Wolfgang_LogCompressor_Abstraction_ICompressionStrategy_System_Threading_CancellationToken_
+  commentId: M:Wolfgang.LogCompressor.Service.CompressService.CompressFileAsync(System.IO.FileInfo,System.String,Wolfgang.LogCompressor.Model.CompressionOptions,Wolfgang.LogCompressor.Abstraction.ICompressionStrategy,System.Threading.CancellationToken)
+  name.vb: CompressFileAsync(FileInfo, String, CompressionOptions, ICompressionStrategy, CancellationToken)
+  fullName: Wolfgang.LogCompressor.Service.CompressService.CompressFileAsync(System.IO.FileInfo, string, Wolfgang.LogCompressor.Model.CompressionOptions, Wolfgang.LogCompressor.Abstraction.ICompressionStrategy, System.Threading.CancellationToken)
+  fullName.vb: Wolfgang.LogCompressor.Service.CompressService.CompressFileAsync(System.IO.FileInfo, String, Wolfgang.LogCompressor.Model.CompressionOptions, Wolfgang.LogCompressor.Abstraction.ICompressionStrategy, System.Threading.CancellationToken)
+  nameWithType: CompressService.CompressFileAsync(FileInfo, string, CompressionOptions, ICompressionStrategy, CancellationToken)
+  nameWithType.vb: CompressService.CompressFileAsync(FileInfo, String, CompressionOptions, ICompressionStrategy, CancellationToken)
 - uid: Wolfgang.LogCompressor.Service.CompressService.CompressFileAsync*
   name: CompressFileAsync
   href: api/Wolfgang.LogCompressor.Service.CompressService.html#Wolfgang_LogCompressor_Service_CompressService_CompressFileAsync_
@@ -1755,6 +2295,22 @@ references:
   isSpec: "True"
   fullName: Wolfgang.LogCompressor.Service.CompressService.CompressFileAsync
   nameWithType: CompressService.CompressFileAsync
+- uid: Wolfgang.LogCompressor.Service.CompressService.CompressWithPolicyAsync(System.IO.FileInfo,Wolfgang.LogCompressor.Model.CompressionOptions,Wolfgang.LogCompressor.Abstraction.ICompressionStrategy,System.Collections.Generic.HashSet{System.String},System.Threading.CancellationToken)
+  name: CompressWithPolicyAsync(FileInfo, CompressionOptions, ICompressionStrategy, HashSet<string>, CancellationToken)
+  href: api/Wolfgang.LogCompressor.Service.CompressService.html#Wolfgang_LogCompressor_Service_CompressService_CompressWithPolicyAsync_System_IO_FileInfo_Wolfgang_LogCompressor_Model_CompressionOptions_Wolfgang_LogCompressor_Abstraction_ICompressionStrategy_System_Collections_Generic_HashSet_System_String__System_Threading_CancellationToken_
+  commentId: M:Wolfgang.LogCompressor.Service.CompressService.CompressWithPolicyAsync(System.IO.FileInfo,Wolfgang.LogCompressor.Model.CompressionOptions,Wolfgang.LogCompressor.Abstraction.ICompressionStrategy,System.Collections.Generic.HashSet{System.String},System.Threading.CancellationToken)
+  name.vb: CompressWithPolicyAsync(FileInfo, CompressionOptions, ICompressionStrategy, HashSet(Of String), CancellationToken)
+  fullName: Wolfgang.LogCompressor.Service.CompressService.CompressWithPolicyAsync(System.IO.FileInfo, Wolfgang.LogCompressor.Model.CompressionOptions, Wolfgang.LogCompressor.Abstraction.ICompressionStrategy, System.Collections.Generic.HashSet<string>, System.Threading.CancellationToken)
+  fullName.vb: Wolfgang.LogCompressor.Service.CompressService.CompressWithPolicyAsync(System.IO.FileInfo, Wolfgang.LogCompressor.Model.CompressionOptions, Wolfgang.LogCompressor.Abstraction.ICompressionStrategy, System.Collections.Generic.HashSet(Of String), System.Threading.CancellationToken)
+  nameWithType: CompressService.CompressWithPolicyAsync(FileInfo, CompressionOptions, ICompressionStrategy, HashSet<string>, CancellationToken)
+  nameWithType.vb: CompressService.CompressWithPolicyAsync(FileInfo, CompressionOptions, ICompressionStrategy, HashSet(Of String), CancellationToken)
+- uid: Wolfgang.LogCompressor.Service.CompressService.CompressWithPolicyAsync*
+  name: CompressWithPolicyAsync
+  href: api/Wolfgang.LogCompressor.Service.CompressService.html#Wolfgang_LogCompressor_Service_CompressService_CompressWithPolicyAsync_
+  commentId: Overload:Wolfgang.LogCompressor.Service.CompressService.CompressWithPolicyAsync
+  isSpec: "True"
+  fullName: Wolfgang.LogCompressor.Service.CompressService.CompressWithPolicyAsync
+  nameWithType: CompressService.CompressWithPolicyAsync
 - uid: Wolfgang.LogCompressor.Service.CompressService.EnumerateSourceFiles(Wolfgang.LogCompressor.Model.CompressionOptions)
   name: EnumerateSourceFiles(CompressionOptions)
   href: api/Wolfgang.LogCompressor.Service.CompressService.html#Wolfgang_LogCompressor_Service_CompressService_EnumerateSourceFiles_Wolfgang_LogCompressor_Model_CompressionOptions_
@@ -1781,6 +2337,22 @@ references:
   isSpec: "True"
   fullName: Wolfgang.LogCompressor.Service.CompressService.ExecuteAsync
   nameWithType: CompressService.ExecuteAsync
+- uid: Wolfgang.LogCompressor.Service.CompressService.MakeUniqueThisRun(System.String,System.String,System.Collections.Generic.HashSet{System.String})
+  name: MakeUniqueThisRun(string, string, HashSet<string>)
+  href: api/Wolfgang.LogCompressor.Service.CompressService.html#Wolfgang_LogCompressor_Service_CompressService_MakeUniqueThisRun_System_String_System_String_System_Collections_Generic_HashSet_System_String__
+  commentId: M:Wolfgang.LogCompressor.Service.CompressService.MakeUniqueThisRun(System.String,System.String,System.Collections.Generic.HashSet{System.String})
+  name.vb: MakeUniqueThisRun(String, String, HashSet(Of String))
+  fullName: Wolfgang.LogCompressor.Service.CompressService.MakeUniqueThisRun(string, string, System.Collections.Generic.HashSet<string>)
+  fullName.vb: Wolfgang.LogCompressor.Service.CompressService.MakeUniqueThisRun(String, String, System.Collections.Generic.HashSet(Of String))
+  nameWithType: CompressService.MakeUniqueThisRun(string, string, HashSet<string>)
+  nameWithType.vb: CompressService.MakeUniqueThisRun(String, String, HashSet(Of String))
+- uid: Wolfgang.LogCompressor.Service.CompressService.MakeUniqueThisRun*
+  name: MakeUniqueThisRun
+  href: api/Wolfgang.LogCompressor.Service.CompressService.html#Wolfgang_LogCompressor_Service_CompressService_MakeUniqueThisRun_
+  commentId: Overload:Wolfgang.LogCompressor.Service.CompressService.MakeUniqueThisRun
+  isSpec: "True"
+  fullName: Wolfgang.LogCompressor.Service.CompressService.MakeUniqueThisRun
+  nameWithType: CompressService.MakeUniqueThisRun
 - uid: Wolfgang.LogCompressor.Service.CompressService._archiveVerifier
   name: _archiveVerifier
   href: api/Wolfgang.LogCompressor.Service.CompressService.html#Wolfgang_LogCompressor_Service_CompressService__archiveVerifier
@@ -2313,6 +2885,304 @@ references:
   commentId: F:Wolfgang.LogCompressor.Service.Compression.ZstdCompressionStrategy._level
   fullName: Wolfgang.LogCompressor.Service.Compression.ZstdCompressionStrategy._level
   nameWithType: ZstdCompressionStrategy._level
+- uid: Wolfgang.LogCompressor.Service.DecompressService
+  name: DecompressService
+  href: api/Wolfgang.LogCompressor.Service.DecompressService.html
+  commentId: T:Wolfgang.LogCompressor.Service.DecompressService
+  fullName: Wolfgang.LogCompressor.Service.DecompressService
+  nameWithType: DecompressService
+- uid: Wolfgang.LogCompressor.Service.DecompressService.#ctor(Wolfgang.LogCompressor.Abstraction.IFileSystem,Wolfgang.LogCompressor.Abstraction.IFileFilter,Microsoft.Extensions.Logging.ILogger{Wolfgang.LogCompressor.Service.DecompressService})
+  name: DecompressService(IFileSystem, IFileFilter, ILogger<DecompressService>)
+  href: api/Wolfgang.LogCompressor.Service.DecompressService.html#Wolfgang_LogCompressor_Service_DecompressService__ctor_Wolfgang_LogCompressor_Abstraction_IFileSystem_Wolfgang_LogCompressor_Abstraction_IFileFilter_Microsoft_Extensions_Logging_ILogger_Wolfgang_LogCompressor_Service_DecompressService__
+  commentId: M:Wolfgang.LogCompressor.Service.DecompressService.#ctor(Wolfgang.LogCompressor.Abstraction.IFileSystem,Wolfgang.LogCompressor.Abstraction.IFileFilter,Microsoft.Extensions.Logging.ILogger{Wolfgang.LogCompressor.Service.DecompressService})
+  name.vb: New(IFileSystem, IFileFilter, ILogger(Of DecompressService))
+  fullName: Wolfgang.LogCompressor.Service.DecompressService.DecompressService(Wolfgang.LogCompressor.Abstraction.IFileSystem, Wolfgang.LogCompressor.Abstraction.IFileFilter, Microsoft.Extensions.Logging.ILogger<Wolfgang.LogCompressor.Service.DecompressService>)
+  fullName.vb: Wolfgang.LogCompressor.Service.DecompressService.New(Wolfgang.LogCompressor.Abstraction.IFileSystem, Wolfgang.LogCompressor.Abstraction.IFileFilter, Microsoft.Extensions.Logging.ILogger(Of Wolfgang.LogCompressor.Service.DecompressService))
+  nameWithType: DecompressService.DecompressService(IFileSystem, IFileFilter, ILogger<DecompressService>)
+  nameWithType.vb: DecompressService.New(IFileSystem, IFileFilter, ILogger(Of DecompressService))
+- uid: Wolfgang.LogCompressor.Service.DecompressService.#ctor*
+  name: DecompressService
+  href: api/Wolfgang.LogCompressor.Service.DecompressService.html#Wolfgang_LogCompressor_Service_DecompressService__ctor_
+  commentId: Overload:Wolfgang.LogCompressor.Service.DecompressService.#ctor
+  isSpec: "True"
+  name.vb: New
+  fullName: Wolfgang.LogCompressor.Service.DecompressService.DecompressService
+  fullName.vb: Wolfgang.LogCompressor.Service.DecompressService.New
+  nameWithType: DecompressService.DecompressService
+  nameWithType.vb: DecompressService.New
+- uid: Wolfgang.LogCompressor.Service.DecompressService.ArchiveKind
+  name: DecompressService.ArchiveKind
+  href: api/Wolfgang.LogCompressor.Service.DecompressService.ArchiveKind.html
+  commentId: T:Wolfgang.LogCompressor.Service.DecompressService.ArchiveKind
+  fullName: Wolfgang.LogCompressor.Service.DecompressService.ArchiveKind
+  nameWithType: DecompressService.ArchiveKind
+- uid: Wolfgang.LogCompressor.Service.DecompressService.ArchiveKind.RawBrotli
+  name: RawBrotli
+  href: api/Wolfgang.LogCompressor.Service.DecompressService.ArchiveKind.html#Wolfgang_LogCompressor_Service_DecompressService_ArchiveKind_RawBrotli
+  commentId: F:Wolfgang.LogCompressor.Service.DecompressService.ArchiveKind.RawBrotli
+  fullName: Wolfgang.LogCompressor.Service.DecompressService.ArchiveKind.RawBrotli
+  nameWithType: DecompressService.ArchiveKind.RawBrotli
+- uid: Wolfgang.LogCompressor.Service.DecompressService.ArchiveKind.RawGz
+  name: RawGz
+  href: api/Wolfgang.LogCompressor.Service.DecompressService.ArchiveKind.html#Wolfgang_LogCompressor_Service_DecompressService_ArchiveKind_RawGz
+  commentId: F:Wolfgang.LogCompressor.Service.DecompressService.ArchiveKind.RawGz
+  fullName: Wolfgang.LogCompressor.Service.DecompressService.ArchiveKind.RawGz
+  nameWithType: DecompressService.ArchiveKind.RawGz
+- uid: Wolfgang.LogCompressor.Service.DecompressService.ArchiveKind.RawLz4
+  name: RawLz4
+  href: api/Wolfgang.LogCompressor.Service.DecompressService.ArchiveKind.html#Wolfgang_LogCompressor_Service_DecompressService_ArchiveKind_RawLz4
+  commentId: F:Wolfgang.LogCompressor.Service.DecompressService.ArchiveKind.RawLz4
+  fullName: Wolfgang.LogCompressor.Service.DecompressService.ArchiveKind.RawLz4
+  nameWithType: DecompressService.ArchiveKind.RawLz4
+- uid: Wolfgang.LogCompressor.Service.DecompressService.ArchiveKind.RawZstd
+  name: RawZstd
+  href: api/Wolfgang.LogCompressor.Service.DecompressService.ArchiveKind.html#Wolfgang_LogCompressor_Service_DecompressService_ArchiveKind_RawZstd
+  commentId: F:Wolfgang.LogCompressor.Service.DecompressService.ArchiveKind.RawZstd
+  fullName: Wolfgang.LogCompressor.Service.DecompressService.ArchiveKind.RawZstd
+  nameWithType: DecompressService.ArchiveKind.RawZstd
+- uid: Wolfgang.LogCompressor.Service.DecompressService.ArchiveKind.TarBrotli
+  name: TarBrotli
+  href: api/Wolfgang.LogCompressor.Service.DecompressService.ArchiveKind.html#Wolfgang_LogCompressor_Service_DecompressService_ArchiveKind_TarBrotli
+  commentId: F:Wolfgang.LogCompressor.Service.DecompressService.ArchiveKind.TarBrotli
+  fullName: Wolfgang.LogCompressor.Service.DecompressService.ArchiveKind.TarBrotli
+  nameWithType: DecompressService.ArchiveKind.TarBrotli
+- uid: Wolfgang.LogCompressor.Service.DecompressService.ArchiveKind.TarGz
+  name: TarGz
+  href: api/Wolfgang.LogCompressor.Service.DecompressService.ArchiveKind.html#Wolfgang_LogCompressor_Service_DecompressService_ArchiveKind_TarGz
+  commentId: F:Wolfgang.LogCompressor.Service.DecompressService.ArchiveKind.TarGz
+  fullName: Wolfgang.LogCompressor.Service.DecompressService.ArchiveKind.TarGz
+  nameWithType: DecompressService.ArchiveKind.TarGz
+- uid: Wolfgang.LogCompressor.Service.DecompressService.ArchiveKind.TarLz4
+  name: TarLz4
+  href: api/Wolfgang.LogCompressor.Service.DecompressService.ArchiveKind.html#Wolfgang_LogCompressor_Service_DecompressService_ArchiveKind_TarLz4
+  commentId: F:Wolfgang.LogCompressor.Service.DecompressService.ArchiveKind.TarLz4
+  fullName: Wolfgang.LogCompressor.Service.DecompressService.ArchiveKind.TarLz4
+  nameWithType: DecompressService.ArchiveKind.TarLz4
+- uid: Wolfgang.LogCompressor.Service.DecompressService.ArchiveKind.TarZstd
+  name: TarZstd
+  href: api/Wolfgang.LogCompressor.Service.DecompressService.ArchiveKind.html#Wolfgang_LogCompressor_Service_DecompressService_ArchiveKind_TarZstd
+  commentId: F:Wolfgang.LogCompressor.Service.DecompressService.ArchiveKind.TarZstd
+  fullName: Wolfgang.LogCompressor.Service.DecompressService.ArchiveKind.TarZstd
+  nameWithType: DecompressService.ArchiveKind.TarZstd
+- uid: Wolfgang.LogCompressor.Service.DecompressService.ArchiveKind.Unknown
+  name: Unknown
+  href: api/Wolfgang.LogCompressor.Service.DecompressService.ArchiveKind.html#Wolfgang_LogCompressor_Service_DecompressService_ArchiveKind_Unknown
+  commentId: F:Wolfgang.LogCompressor.Service.DecompressService.ArchiveKind.Unknown
+  fullName: Wolfgang.LogCompressor.Service.DecompressService.ArchiveKind.Unknown
+  nameWithType: DecompressService.ArchiveKind.Unknown
+- uid: Wolfgang.LogCompressor.Service.DecompressService.ArchiveKind.Zip
+  name: Zip
+  href: api/Wolfgang.LogCompressor.Service.DecompressService.ArchiveKind.html#Wolfgang_LogCompressor_Service_DecompressService_ArchiveKind_Zip
+  commentId: F:Wolfgang.LogCompressor.Service.DecompressService.ArchiveKind.Zip
+  fullName: Wolfgang.LogCompressor.Service.DecompressService.ArchiveKind.Zip
+  nameWithType: DecompressService.ArchiveKind.Zip
+- uid: Wolfgang.LogCompressor.Service.DecompressService.DecompressOneAsync(System.IO.FileInfo,Wolfgang.LogCompressor.Model.DecompressionOptions,System.Threading.CancellationToken)
+  name: DecompressOneAsync(FileInfo, DecompressionOptions, CancellationToken)
+  href: api/Wolfgang.LogCompressor.Service.DecompressService.html#Wolfgang_LogCompressor_Service_DecompressService_DecompressOneAsync_System_IO_FileInfo_Wolfgang_LogCompressor_Model_DecompressionOptions_System_Threading_CancellationToken_
+  commentId: M:Wolfgang.LogCompressor.Service.DecompressService.DecompressOneAsync(System.IO.FileInfo,Wolfgang.LogCompressor.Model.DecompressionOptions,System.Threading.CancellationToken)
+  fullName: Wolfgang.LogCompressor.Service.DecompressService.DecompressOneAsync(System.IO.FileInfo, Wolfgang.LogCompressor.Model.DecompressionOptions, System.Threading.CancellationToken)
+  nameWithType: DecompressService.DecompressOneAsync(FileInfo, DecompressionOptions, CancellationToken)
+- uid: Wolfgang.LogCompressor.Service.DecompressService.DecompressOneAsync*
+  name: DecompressOneAsync
+  href: api/Wolfgang.LogCompressor.Service.DecompressService.html#Wolfgang_LogCompressor_Service_DecompressService_DecompressOneAsync_
+  commentId: Overload:Wolfgang.LogCompressor.Service.DecompressService.DecompressOneAsync
+  isSpec: "True"
+  fullName: Wolfgang.LogCompressor.Service.DecompressService.DecompressOneAsync
+  nameWithType: DecompressService.DecompressOneAsync
+- uid: Wolfgang.LogCompressor.Service.DecompressService.DetectByName(System.String)
+  name: DetectByName(string)
+  href: api/Wolfgang.LogCompressor.Service.DecompressService.html#Wolfgang_LogCompressor_Service_DecompressService_DetectByName_System_String_
+  commentId: M:Wolfgang.LogCompressor.Service.DecompressService.DetectByName(System.String)
+  name.vb: DetectByName(String)
+  fullName: Wolfgang.LogCompressor.Service.DecompressService.DetectByName(string)
+  fullName.vb: Wolfgang.LogCompressor.Service.DecompressService.DetectByName(String)
+  nameWithType: DecompressService.DetectByName(string)
+  nameWithType.vb: DecompressService.DetectByName(String)
+- uid: Wolfgang.LogCompressor.Service.DecompressService.DetectByName*
+  name: DetectByName
+  href: api/Wolfgang.LogCompressor.Service.DecompressService.html#Wolfgang_LogCompressor_Service_DecompressService_DetectByName_
+  commentId: Overload:Wolfgang.LogCompressor.Service.DecompressService.DetectByName
+  isSpec: "True"
+  fullName: Wolfgang.LogCompressor.Service.DecompressService.DetectByName
+  nameWithType: DecompressService.DetectByName
+- uid: Wolfgang.LogCompressor.Service.DecompressService.ExecuteAsync(Wolfgang.LogCompressor.Model.DecompressionOptions,System.Threading.CancellationToken)
+  name: ExecuteAsync(DecompressionOptions, CancellationToken)
+  href: api/Wolfgang.LogCompressor.Service.DecompressService.html#Wolfgang_LogCompressor_Service_DecompressService_ExecuteAsync_Wolfgang_LogCompressor_Model_DecompressionOptions_System_Threading_CancellationToken_
+  commentId: M:Wolfgang.LogCompressor.Service.DecompressService.ExecuteAsync(Wolfgang.LogCompressor.Model.DecompressionOptions,System.Threading.CancellationToken)
+  fullName: Wolfgang.LogCompressor.Service.DecompressService.ExecuteAsync(Wolfgang.LogCompressor.Model.DecompressionOptions, System.Threading.CancellationToken)
+  nameWithType: DecompressService.ExecuteAsync(DecompressionOptions, CancellationToken)
+- uid: Wolfgang.LogCompressor.Service.DecompressService.ExecuteAsync*
+  name: ExecuteAsync
+  href: api/Wolfgang.LogCompressor.Service.DecompressService.html#Wolfgang_LogCompressor_Service_DecompressService_ExecuteAsync_
+  commentId: Overload:Wolfgang.LogCompressor.Service.DecompressService.ExecuteAsync
+  isSpec: "True"
+  fullName: Wolfgang.LogCompressor.Service.DecompressService.ExecuteAsync
+  nameWithType: DecompressService.ExecuteAsync
+- uid: Wolfgang.LogCompressor.Service.DecompressService.ExtractAsync(Wolfgang.LogCompressor.Service.DecompressService.ArchiveKind,System.IO.FileInfo,System.String,Wolfgang.LogCompressor.Model.DecompressionOptions,System.Threading.CancellationToken)
+  name: ExtractAsync(ArchiveKind, FileInfo, string, DecompressionOptions, CancellationToken)
+  href: api/Wolfgang.LogCompressor.Service.DecompressService.html#Wolfgang_LogCompressor_Service_DecompressService_ExtractAsync_Wolfgang_LogCompressor_Service_DecompressService_ArchiveKind_System_IO_FileInfo_System_String_Wolfgang_LogCompressor_Model_DecompressionOptions_System_Threading_CancellationToken_
+  commentId: M:Wolfgang.LogCompressor.Service.DecompressService.ExtractAsync(Wolfgang.LogCompressor.Service.DecompressService.ArchiveKind,System.IO.FileInfo,System.String,Wolfgang.LogCompressor.Model.DecompressionOptions,System.Threading.CancellationToken)
+  name.vb: ExtractAsync(ArchiveKind, FileInfo, String, DecompressionOptions, CancellationToken)
+  fullName: Wolfgang.LogCompressor.Service.DecompressService.ExtractAsync(Wolfgang.LogCompressor.Service.DecompressService.ArchiveKind, System.IO.FileInfo, string, Wolfgang.LogCompressor.Model.DecompressionOptions, System.Threading.CancellationToken)
+  fullName.vb: Wolfgang.LogCompressor.Service.DecompressService.ExtractAsync(Wolfgang.LogCompressor.Service.DecompressService.ArchiveKind, System.IO.FileInfo, String, Wolfgang.LogCompressor.Model.DecompressionOptions, System.Threading.CancellationToken)
+  nameWithType: DecompressService.ExtractAsync(DecompressService.ArchiveKind, FileInfo, string, DecompressionOptions, CancellationToken)
+  nameWithType.vb: DecompressService.ExtractAsync(DecompressService.ArchiveKind, FileInfo, String, DecompressionOptions, CancellationToken)
+- uid: Wolfgang.LogCompressor.Service.DecompressService.ExtractAsync*
+  name: ExtractAsync
+  href: api/Wolfgang.LogCompressor.Service.DecompressService.html#Wolfgang_LogCompressor_Service_DecompressService_ExtractAsync_
+  commentId: Overload:Wolfgang.LogCompressor.Service.DecompressService.ExtractAsync
+  isSpec: "True"
+  fullName: Wolfgang.LogCompressor.Service.DecompressService.ExtractAsync
+  nameWithType: DecompressService.ExtractAsync
+- uid: Wolfgang.LogCompressor.Service.DecompressService.ExtractRawAsync(System.IO.FileInfo,System.String,Wolfgang.LogCompressor.Model.DecompressionOptions,System.Func{System.IO.Stream,System.IO.Stream},System.Threading.CancellationToken)
+  name: ExtractRawAsync(FileInfo, string, DecompressionOptions, Func<Stream, Stream>, CancellationToken)
+  href: api/Wolfgang.LogCompressor.Service.DecompressService.html#Wolfgang_LogCompressor_Service_DecompressService_ExtractRawAsync_System_IO_FileInfo_System_String_Wolfgang_LogCompressor_Model_DecompressionOptions_System_Func_System_IO_Stream_System_IO_Stream__System_Threading_CancellationToken_
+  commentId: M:Wolfgang.LogCompressor.Service.DecompressService.ExtractRawAsync(System.IO.FileInfo,System.String,Wolfgang.LogCompressor.Model.DecompressionOptions,System.Func{System.IO.Stream,System.IO.Stream},System.Threading.CancellationToken)
+  name.vb: ExtractRawAsync(FileInfo, String, DecompressionOptions, Func(Of Stream, Stream), CancellationToken)
+  fullName: Wolfgang.LogCompressor.Service.DecompressService.ExtractRawAsync(System.IO.FileInfo, string, Wolfgang.LogCompressor.Model.DecompressionOptions, System.Func<System.IO.Stream, System.IO.Stream>, System.Threading.CancellationToken)
+  fullName.vb: Wolfgang.LogCompressor.Service.DecompressService.ExtractRawAsync(System.IO.FileInfo, String, Wolfgang.LogCompressor.Model.DecompressionOptions, System.Func(Of System.IO.Stream, System.IO.Stream), System.Threading.CancellationToken)
+  nameWithType: DecompressService.ExtractRawAsync(FileInfo, string, DecompressionOptions, Func<Stream, Stream>, CancellationToken)
+  nameWithType.vb: DecompressService.ExtractRawAsync(FileInfo, String, DecompressionOptions, Func(Of Stream, Stream), CancellationToken)
+- uid: Wolfgang.LogCompressor.Service.DecompressService.ExtractRawAsync*
+  name: ExtractRawAsync
+  href: api/Wolfgang.LogCompressor.Service.DecompressService.html#Wolfgang_LogCompressor_Service_DecompressService_ExtractRawAsync_
+  commentId: Overload:Wolfgang.LogCompressor.Service.DecompressService.ExtractRawAsync
+  isSpec: "True"
+  fullName: Wolfgang.LogCompressor.Service.DecompressService.ExtractRawAsync
+  nameWithType: DecompressService.ExtractRawAsync
+- uid: Wolfgang.LogCompressor.Service.DecompressService.ExtractTarAsync(System.IO.FileInfo,System.String,Wolfgang.LogCompressor.Model.DecompressionOptions,System.Func{System.IO.Stream,System.IO.Stream},System.Threading.CancellationToken)
+  name: ExtractTarAsync(FileInfo, string, DecompressionOptions, Func<Stream, Stream>, CancellationToken)
+  href: api/Wolfgang.LogCompressor.Service.DecompressService.html#Wolfgang_LogCompressor_Service_DecompressService_ExtractTarAsync_System_IO_FileInfo_System_String_Wolfgang_LogCompressor_Model_DecompressionOptions_System_Func_System_IO_Stream_System_IO_Stream__System_Threading_CancellationToken_
+  commentId: M:Wolfgang.LogCompressor.Service.DecompressService.ExtractTarAsync(System.IO.FileInfo,System.String,Wolfgang.LogCompressor.Model.DecompressionOptions,System.Func{System.IO.Stream,System.IO.Stream},System.Threading.CancellationToken)
+  name.vb: ExtractTarAsync(FileInfo, String, DecompressionOptions, Func(Of Stream, Stream), CancellationToken)
+  fullName: Wolfgang.LogCompressor.Service.DecompressService.ExtractTarAsync(System.IO.FileInfo, string, Wolfgang.LogCompressor.Model.DecompressionOptions, System.Func<System.IO.Stream, System.IO.Stream>, System.Threading.CancellationToken)
+  fullName.vb: Wolfgang.LogCompressor.Service.DecompressService.ExtractTarAsync(System.IO.FileInfo, String, Wolfgang.LogCompressor.Model.DecompressionOptions, System.Func(Of System.IO.Stream, System.IO.Stream), System.Threading.CancellationToken)
+  nameWithType: DecompressService.ExtractTarAsync(FileInfo, string, DecompressionOptions, Func<Stream, Stream>, CancellationToken)
+  nameWithType.vb: DecompressService.ExtractTarAsync(FileInfo, String, DecompressionOptions, Func(Of Stream, Stream), CancellationToken)
+- uid: Wolfgang.LogCompressor.Service.DecompressService.ExtractTarAsync*
+  name: ExtractTarAsync
+  href: api/Wolfgang.LogCompressor.Service.DecompressService.html#Wolfgang_LogCompressor_Service_DecompressService_ExtractTarAsync_
+  commentId: Overload:Wolfgang.LogCompressor.Service.DecompressService.ExtractTarAsync
+  isSpec: "True"
+  fullName: Wolfgang.LogCompressor.Service.DecompressService.ExtractTarAsync
+  nameWithType: DecompressService.ExtractTarAsync
+- uid: Wolfgang.LogCompressor.Service.DecompressService.ExtractZipAsync(System.IO.FileInfo,System.String,Wolfgang.LogCompressor.Model.DecompressionOptions,System.Threading.CancellationToken)
+  name: ExtractZipAsync(FileInfo, string, DecompressionOptions, CancellationToken)
+  href: api/Wolfgang.LogCompressor.Service.DecompressService.html#Wolfgang_LogCompressor_Service_DecompressService_ExtractZipAsync_System_IO_FileInfo_System_String_Wolfgang_LogCompressor_Model_DecompressionOptions_System_Threading_CancellationToken_
+  commentId: M:Wolfgang.LogCompressor.Service.DecompressService.ExtractZipAsync(System.IO.FileInfo,System.String,Wolfgang.LogCompressor.Model.DecompressionOptions,System.Threading.CancellationToken)
+  name.vb: ExtractZipAsync(FileInfo, String, DecompressionOptions, CancellationToken)
+  fullName: Wolfgang.LogCompressor.Service.DecompressService.ExtractZipAsync(System.IO.FileInfo, string, Wolfgang.LogCompressor.Model.DecompressionOptions, System.Threading.CancellationToken)
+  fullName.vb: Wolfgang.LogCompressor.Service.DecompressService.ExtractZipAsync(System.IO.FileInfo, String, Wolfgang.LogCompressor.Model.DecompressionOptions, System.Threading.CancellationToken)
+  nameWithType: DecompressService.ExtractZipAsync(FileInfo, string, DecompressionOptions, CancellationToken)
+  nameWithType.vb: DecompressService.ExtractZipAsync(FileInfo, String, DecompressionOptions, CancellationToken)
+- uid: Wolfgang.LogCompressor.Service.DecompressService.ExtractZipAsync*
+  name: ExtractZipAsync
+  href: api/Wolfgang.LogCompressor.Service.DecompressService.html#Wolfgang_LogCompressor_Service_DecompressService_ExtractZipAsync_
+  commentId: Overload:Wolfgang.LogCompressor.Service.DecompressService.ExtractZipAsync
+  isSpec: "True"
+  fullName: Wolfgang.LogCompressor.Service.DecompressService.ExtractZipAsync
+  nameWithType: DecompressService.ExtractZipAsync
+- uid: Wolfgang.LogCompressor.Service.DecompressService.GetArchives(Wolfgang.LogCompressor.Model.DecompressionOptions)
+  name: GetArchives(DecompressionOptions)
+  href: api/Wolfgang.LogCompressor.Service.DecompressService.html#Wolfgang_LogCompressor_Service_DecompressService_GetArchives_Wolfgang_LogCompressor_Model_DecompressionOptions_
+  commentId: M:Wolfgang.LogCompressor.Service.DecompressService.GetArchives(Wolfgang.LogCompressor.Model.DecompressionOptions)
+  fullName: Wolfgang.LogCompressor.Service.DecompressService.GetArchives(Wolfgang.LogCompressor.Model.DecompressionOptions)
+  nameWithType: DecompressService.GetArchives(DecompressionOptions)
+- uid: Wolfgang.LogCompressor.Service.DecompressService.GetArchives*
+  name: GetArchives
+  href: api/Wolfgang.LogCompressor.Service.DecompressService.html#Wolfgang_LogCompressor_Service_DecompressService_GetArchives_
+  commentId: Overload:Wolfgang.LogCompressor.Service.DecompressService.GetArchives
+  isSpec: "True"
+  fullName: Wolfgang.LogCompressor.Service.DecompressService.GetArchives
+  nameWithType: DecompressService.GetArchives
+- uid: Wolfgang.LogCompressor.Service.DecompressService.GetMatchedSuffixLength(System.String)
+  name: GetMatchedSuffixLength(string)
+  href: api/Wolfgang.LogCompressor.Service.DecompressService.html#Wolfgang_LogCompressor_Service_DecompressService_GetMatchedSuffixLength_System_String_
+  commentId: M:Wolfgang.LogCompressor.Service.DecompressService.GetMatchedSuffixLength(System.String)
+  name.vb: GetMatchedSuffixLength(String)
+  fullName: Wolfgang.LogCompressor.Service.DecompressService.GetMatchedSuffixLength(string)
+  fullName.vb: Wolfgang.LogCompressor.Service.DecompressService.GetMatchedSuffixLength(String)
+  nameWithType: DecompressService.GetMatchedSuffixLength(string)
+  nameWithType.vb: DecompressService.GetMatchedSuffixLength(String)
+- uid: Wolfgang.LogCompressor.Service.DecompressService.GetMatchedSuffixLength*
+  name: GetMatchedSuffixLength
+  href: api/Wolfgang.LogCompressor.Service.DecompressService.html#Wolfgang_LogCompressor_Service_DecompressService_GetMatchedSuffixLength_
+  commentId: Overload:Wolfgang.LogCompressor.Service.DecompressService.GetMatchedSuffixLength
+  isSpec: "True"
+  fullName: Wolfgang.LogCompressor.Service.DecompressService.GetMatchedSuffixLength
+  nameWithType: DecompressService.GetMatchedSuffixLength
+- uid: Wolfgang.LogCompressor.Service.DecompressService.KnownSuffixes
+  name: KnownSuffixes
+  href: api/Wolfgang.LogCompressor.Service.DecompressService.html#Wolfgang_LogCompressor_Service_DecompressService_KnownSuffixes
+  commentId: F:Wolfgang.LogCompressor.Service.DecompressService.KnownSuffixes
+  fullName: Wolfgang.LogCompressor.Service.DecompressService.KnownSuffixes
+  nameWithType: DecompressService.KnownSuffixes
+- uid: Wolfgang.LogCompressor.Service.DecompressService.ResolveDestination(System.String,System.String,Wolfgang.LogCompressor.Model.DecompressionOptions)
+  name: ResolveDestination(string, string, DecompressionOptions)
+  href: api/Wolfgang.LogCompressor.Service.DecompressService.html#Wolfgang_LogCompressor_Service_DecompressService_ResolveDestination_System_String_System_String_Wolfgang_LogCompressor_Model_DecompressionOptions_
+  commentId: M:Wolfgang.LogCompressor.Service.DecompressService.ResolveDestination(System.String,System.String,Wolfgang.LogCompressor.Model.DecompressionOptions)
+  name.vb: ResolveDestination(String, String, DecompressionOptions)
+  fullName: Wolfgang.LogCompressor.Service.DecompressService.ResolveDestination(string, string, Wolfgang.LogCompressor.Model.DecompressionOptions)
+  fullName.vb: Wolfgang.LogCompressor.Service.DecompressService.ResolveDestination(String, String, Wolfgang.LogCompressor.Model.DecompressionOptions)
+  nameWithType: DecompressService.ResolveDestination(string, string, DecompressionOptions)
+  nameWithType.vb: DecompressService.ResolveDestination(String, String, DecompressionOptions)
+- uid: Wolfgang.LogCompressor.Service.DecompressService.ResolveDestination*
+  name: ResolveDestination
+  href: api/Wolfgang.LogCompressor.Service.DecompressService.html#Wolfgang_LogCompressor_Service_DecompressService_ResolveDestination_
+  commentId: Overload:Wolfgang.LogCompressor.Service.DecompressService.ResolveDestination
+  isSpec: "True"
+  fullName: Wolfgang.LogCompressor.Service.DecompressService.ResolveDestination
+  nameWithType: DecompressService.ResolveDestination
+- uid: Wolfgang.LogCompressor.Service.DecompressService.SniffKindAsync(System.String,System.Threading.CancellationToken)
+  name: SniffKindAsync(string, CancellationToken)
+  href: api/Wolfgang.LogCompressor.Service.DecompressService.html#Wolfgang_LogCompressor_Service_DecompressService_SniffKindAsync_System_String_System_Threading_CancellationToken_
+  commentId: M:Wolfgang.LogCompressor.Service.DecompressService.SniffKindAsync(System.String,System.Threading.CancellationToken)
+  name.vb: SniffKindAsync(String, CancellationToken)
+  fullName: Wolfgang.LogCompressor.Service.DecompressService.SniffKindAsync(string, System.Threading.CancellationToken)
+  fullName.vb: Wolfgang.LogCompressor.Service.DecompressService.SniffKindAsync(String, System.Threading.CancellationToken)
+  nameWithType: DecompressService.SniffKindAsync(string, CancellationToken)
+  nameWithType.vb: DecompressService.SniffKindAsync(String, CancellationToken)
+- uid: Wolfgang.LogCompressor.Service.DecompressService.SniffKindAsync*
+  name: SniffKindAsync
+  href: api/Wolfgang.LogCompressor.Service.DecompressService.html#Wolfgang_LogCompressor_Service_DecompressService_SniffKindAsync_
+  commentId: Overload:Wolfgang.LogCompressor.Service.DecompressService.SniffKindAsync
+  isSpec: "True"
+  fullName: Wolfgang.LogCompressor.Service.DecompressService.SniffKindAsync
+  nameWithType: DecompressService.SniffKindAsync
+- uid: Wolfgang.LogCompressor.Service.DecompressService.WriteEntryAsync(System.IO.Stream,System.String,System.Threading.CancellationToken)
+  name: WriteEntryAsync(Stream, string, CancellationToken)
+  href: api/Wolfgang.LogCompressor.Service.DecompressService.html#Wolfgang_LogCompressor_Service_DecompressService_WriteEntryAsync_System_IO_Stream_System_String_System_Threading_CancellationToken_
+  commentId: M:Wolfgang.LogCompressor.Service.DecompressService.WriteEntryAsync(System.IO.Stream,System.String,System.Threading.CancellationToken)
+  name.vb: WriteEntryAsync(Stream, String, CancellationToken)
+  fullName: Wolfgang.LogCompressor.Service.DecompressService.WriteEntryAsync(System.IO.Stream, string, System.Threading.CancellationToken)
+  fullName.vb: Wolfgang.LogCompressor.Service.DecompressService.WriteEntryAsync(System.IO.Stream, String, System.Threading.CancellationToken)
+  nameWithType: DecompressService.WriteEntryAsync(Stream, string, CancellationToken)
+  nameWithType.vb: DecompressService.WriteEntryAsync(Stream, String, CancellationToken)
+- uid: Wolfgang.LogCompressor.Service.DecompressService.WriteEntryAsync*
+  name: WriteEntryAsync
+  href: api/Wolfgang.LogCompressor.Service.DecompressService.html#Wolfgang_LogCompressor_Service_DecompressService_WriteEntryAsync_
+  commentId: Overload:Wolfgang.LogCompressor.Service.DecompressService.WriteEntryAsync
+  isSpec: "True"
+  fullName: Wolfgang.LogCompressor.Service.DecompressService.WriteEntryAsync
+  nameWithType: DecompressService.WriteEntryAsync
+- uid: Wolfgang.LogCompressor.Service.DecompressService._fileFilter
+  name: _fileFilter
+  href: api/Wolfgang.LogCompressor.Service.DecompressService.html#Wolfgang_LogCompressor_Service_DecompressService__fileFilter
+  commentId: F:Wolfgang.LogCompressor.Service.DecompressService._fileFilter
+  fullName: Wolfgang.LogCompressor.Service.DecompressService._fileFilter
+  nameWithType: DecompressService._fileFilter
+- uid: Wolfgang.LogCompressor.Service.DecompressService._fileSystem
+  name: _fileSystem
+  href: api/Wolfgang.LogCompressor.Service.DecompressService.html#Wolfgang_LogCompressor_Service_DecompressService__fileSystem
+  commentId: F:Wolfgang.LogCompressor.Service.DecompressService._fileSystem
+  fullName: Wolfgang.LogCompressor.Service.DecompressService._fileSystem
+  nameWithType: DecompressService._fileSystem
+- uid: Wolfgang.LogCompressor.Service.DecompressService._logger
+  name: _logger
+  href: api/Wolfgang.LogCompressor.Service.DecompressService.html#Wolfgang_LogCompressor_Service_DecompressService__logger
+  commentId: F:Wolfgang.LogCompressor.Service.DecompressService._logger
+  fullName: Wolfgang.LogCompressor.Service.DecompressService._logger
+  nameWithType: DecompressService._logger
 - uid: Wolfgang.LogCompressor.Service.FileFilterService
   name: FileFilterService
   href: api/Wolfgang.LogCompressor.Service.FileFilterService.html
@@ -2347,15 +3217,15 @@ references:
   commentId: F:Wolfgang.LogCompressor.Service.FileNamingService.DateTimeFormat
   fullName: Wolfgang.LogCompressor.Service.FileNamingService.DateTimeFormat
   nameWithType: FileNamingService.DateTimeFormat
-- uid: Wolfgang.LogCompressor.Service.FileNamingService.GetBundleFileName(System.String,System.Collections.Generic.IReadOnlyList{System.IO.FileInfo},System.String)
-  name: GetBundleFileName(string, IReadOnlyList<FileInfo>, string)
-  href: api/Wolfgang.LogCompressor.Service.FileNamingService.html#Wolfgang_LogCompressor_Service_FileNamingService_GetBundleFileName_System_String_System_Collections_Generic_IReadOnlyList_System_IO_FileInfo__System_String_
-  commentId: M:Wolfgang.LogCompressor.Service.FileNamingService.GetBundleFileName(System.String,System.Collections.Generic.IReadOnlyList{System.IO.FileInfo},System.String)
-  name.vb: GetBundleFileName(String, IReadOnlyList(Of FileInfo), String)
-  fullName: Wolfgang.LogCompressor.Service.FileNamingService.GetBundleFileName(string, System.Collections.Generic.IReadOnlyList<System.IO.FileInfo>, string)
-  fullName.vb: Wolfgang.LogCompressor.Service.FileNamingService.GetBundleFileName(String, System.Collections.Generic.IReadOnlyList(Of System.IO.FileInfo), String)
-  nameWithType: FileNamingService.GetBundleFileName(string, IReadOnlyList<FileInfo>, string)
-  nameWithType.vb: FileNamingService.GetBundleFileName(String, IReadOnlyList(Of FileInfo), String)
+- uid: Wolfgang.LogCompressor.Service.FileNamingService.GetBundleFileName(System.String,System.Collections.Generic.IReadOnlyList{System.IO.FileInfo},System.String,Wolfgang.LogCompressor.Model.TimestampSource,System.String)
+  name: GetBundleFileName(string, IReadOnlyList<FileInfo>, string, TimestampSource, string?)
+  href: api/Wolfgang.LogCompressor.Service.FileNamingService.html#Wolfgang_LogCompressor_Service_FileNamingService_GetBundleFileName_System_String_System_Collections_Generic_IReadOnlyList_System_IO_FileInfo__System_String_Wolfgang_LogCompressor_Model_TimestampSource_System_String_
+  commentId: M:Wolfgang.LogCompressor.Service.FileNamingService.GetBundleFileName(System.String,System.Collections.Generic.IReadOnlyList{System.IO.FileInfo},System.String,Wolfgang.LogCompressor.Model.TimestampSource,System.String)
+  name.vb: GetBundleFileName(String, IReadOnlyList(Of FileInfo), String, TimestampSource, String)
+  fullName: Wolfgang.LogCompressor.Service.FileNamingService.GetBundleFileName(string, System.Collections.Generic.IReadOnlyList<System.IO.FileInfo>, string, Wolfgang.LogCompressor.Model.TimestampSource, string?)
+  fullName.vb: Wolfgang.LogCompressor.Service.FileNamingService.GetBundleFileName(String, System.Collections.Generic.IReadOnlyList(Of System.IO.FileInfo), String, Wolfgang.LogCompressor.Model.TimestampSource, String)
+  nameWithType: FileNamingService.GetBundleFileName(string, IReadOnlyList<FileInfo>, string, TimestampSource, string?)
+  nameWithType.vb: FileNamingService.GetBundleFileName(String, IReadOnlyList(Of FileInfo), String, TimestampSource, String)
 - uid: Wolfgang.LogCompressor.Service.FileNamingService.GetBundleFileName*
   name: GetBundleFileName
   href: api/Wolfgang.LogCompressor.Service.FileNamingService.html#Wolfgang_LogCompressor_Service_FileNamingService_GetBundleFileName_
@@ -2363,15 +3233,15 @@ references:
   isSpec: "True"
   fullName: Wolfgang.LogCompressor.Service.FileNamingService.GetBundleFileName
   nameWithType: FileNamingService.GetBundleFileName
-- uid: Wolfgang.LogCompressor.Service.FileNamingService.GetCompressedFileName(System.IO.FileInfo,System.String)
-  name: GetCompressedFileName(FileInfo, string)
-  href: api/Wolfgang.LogCompressor.Service.FileNamingService.html#Wolfgang_LogCompressor_Service_FileNamingService_GetCompressedFileName_System_IO_FileInfo_System_String_
-  commentId: M:Wolfgang.LogCompressor.Service.FileNamingService.GetCompressedFileName(System.IO.FileInfo,System.String)
-  name.vb: GetCompressedFileName(FileInfo, String)
-  fullName: Wolfgang.LogCompressor.Service.FileNamingService.GetCompressedFileName(System.IO.FileInfo, string)
-  fullName.vb: Wolfgang.LogCompressor.Service.FileNamingService.GetCompressedFileName(System.IO.FileInfo, String)
-  nameWithType: FileNamingService.GetCompressedFileName(FileInfo, string)
-  nameWithType.vb: FileNamingService.GetCompressedFileName(FileInfo, String)
+- uid: Wolfgang.LogCompressor.Service.FileNamingService.GetCompressedFileName(System.IO.FileInfo,System.String,Wolfgang.LogCompressor.Model.TimestampSource,System.String)
+  name: GetCompressedFileName(FileInfo, string, TimestampSource, string?)
+  href: api/Wolfgang.LogCompressor.Service.FileNamingService.html#Wolfgang_LogCompressor_Service_FileNamingService_GetCompressedFileName_System_IO_FileInfo_System_String_Wolfgang_LogCompressor_Model_TimestampSource_System_String_
+  commentId: M:Wolfgang.LogCompressor.Service.FileNamingService.GetCompressedFileName(System.IO.FileInfo,System.String,Wolfgang.LogCompressor.Model.TimestampSource,System.String)
+  name.vb: GetCompressedFileName(FileInfo, String, TimestampSource, String)
+  fullName: Wolfgang.LogCompressor.Service.FileNamingService.GetCompressedFileName(System.IO.FileInfo, string, Wolfgang.LogCompressor.Model.TimestampSource, string?)
+  fullName.vb: Wolfgang.LogCompressor.Service.FileNamingService.GetCompressedFileName(System.IO.FileInfo, String, Wolfgang.LogCompressor.Model.TimestampSource, String)
+  nameWithType: FileNamingService.GetCompressedFileName(FileInfo, string, TimestampSource, string?)
+  nameWithType.vb: FileNamingService.GetCompressedFileName(FileInfo, String, TimestampSource, String)
 - uid: Wolfgang.LogCompressor.Service.FileNamingService.GetCompressedFileName*
   name: GetCompressedFileName
   href: api/Wolfgang.LogCompressor.Service.FileNamingService.html#Wolfgang_LogCompressor_Service_FileNamingService_GetCompressedFileName_
@@ -2379,6 +3249,12 @@ references:
   isSpec: "True"
   fullName: Wolfgang.LogCompressor.Service.FileNamingService.GetCompressedFileName
   nameWithType: FileNamingService.GetCompressedFileName
+- uid: Wolfgang.LogCompressor.Service.FileNamingService._runTimestamp
+  name: _runTimestamp
+  href: api/Wolfgang.LogCompressor.Service.FileNamingService.html#Wolfgang_LogCompressor_Service_FileNamingService__runTimestamp
+  commentId: F:Wolfgang.LogCompressor.Service.FileNamingService._runTimestamp
+  fullName: Wolfgang.LogCompressor.Service.FileNamingService._runTimestamp
+  nameWithType: FileNamingService._runTimestamp
 - uid: Wolfgang.LogCompressor.Service.FileSystemWrapper
   name: FileSystemWrapper
   href: api/Wolfgang.LogCompressor.Service.FileSystemWrapper.html

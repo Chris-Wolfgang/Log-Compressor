@@ -312,7 +312,7 @@ public sealed class DecompressServiceTests : IDisposable
         byte[] bytes;
         using (var buffer = new MemoryStream())
         {
-            using (var zip = new System.IO.Compression.ZipArchive(buffer, System.IO.Compression.ZipArchiveMode.Create, leaveOpen: true))
+            using (var zip = new ZipArchive(buffer, ZipArchiveMode.Create, leaveOpen: true))
             {
                 zip.CreateEntry("sub/");
                 var entry = zip.CreateEntry("sub/a.log");
@@ -390,7 +390,7 @@ public sealed class DecompressServiceTests : IDisposable
     private static byte[] GzipBytes(byte[] content)
     {
         using var buffer = new MemoryStream();
-        using (var gz = new GZipStream(buffer, System.IO.Compression.CompressionLevel.Fastest, leaveOpen: true))
+        using (var gz = new GZipStream(buffer, CompressionLevel.Fastest, leaveOpen: true))
         {
             gz.Write(content);
         }

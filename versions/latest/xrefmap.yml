@@ -82,15 +82,15 @@ references:
   isSpec: "True"
   fullName: Wolfgang.LogCompressor.Abstraction.ICompressionStrategy.CompressFileAsync
   nameWithType: ICompressionStrategy.CompressFileAsync
-- uid: Wolfgang.LogCompressor.Abstraction.ICompressionStrategy.CompressFilesAsync(System.Collections.Generic.IEnumerable{System.ValueTuple{System.IO.Stream,System.String}},System.IO.Stream,System.Threading.CancellationToken)
-  name: CompressFilesAsync(IEnumerable<(Stream Stream, string EntryName)>, Stream, CancellationToken)
-  href: api/Wolfgang.LogCompressor.Abstraction.ICompressionStrategy.html#Wolfgang_LogCompressor_Abstraction_ICompressionStrategy_CompressFilesAsync_System_Collections_Generic_IEnumerable_System_ValueTuple_System_IO_Stream_System_String___System_IO_Stream_System_Threading_CancellationToken_
-  commentId: M:Wolfgang.LogCompressor.Abstraction.ICompressionStrategy.CompressFilesAsync(System.Collections.Generic.IEnumerable{System.ValueTuple{System.IO.Stream,System.String}},System.IO.Stream,System.Threading.CancellationToken)
-  name.vb: CompressFilesAsync(IEnumerable(Of (Stream As Stream, EntryName As String)), Stream, CancellationToken)
-  fullName: Wolfgang.LogCompressor.Abstraction.ICompressionStrategy.CompressFilesAsync(System.Collections.Generic.IEnumerable<(System.IO.Stream Stream, string EntryName)>, System.IO.Stream, System.Threading.CancellationToken)
-  fullName.vb: Wolfgang.LogCompressor.Abstraction.ICompressionStrategy.CompressFilesAsync(System.Collections.Generic.IEnumerable(Of (Stream As System.IO.Stream, EntryName As String)), System.IO.Stream, System.Threading.CancellationToken)
-  nameWithType: ICompressionStrategy.CompressFilesAsync(IEnumerable<(Stream Stream, string EntryName)>, Stream, CancellationToken)
-  nameWithType.vb: ICompressionStrategy.CompressFilesAsync(IEnumerable(Of (Stream As Stream, EntryName As String)), Stream, CancellationToken)
+- uid: Wolfgang.LogCompressor.Abstraction.ICompressionStrategy.CompressFilesAsync(System.Collections.Generic.IAsyncEnumerable{System.ValueTuple{System.IO.Stream,System.String}},System.IO.Stream,System.Threading.CancellationToken)
+  name: CompressFilesAsync(IAsyncEnumerable<(Stream Stream, string EntryName)>, Stream, CancellationToken)
+  href: api/Wolfgang.LogCompressor.Abstraction.ICompressionStrategy.html#Wolfgang_LogCompressor_Abstraction_ICompressionStrategy_CompressFilesAsync_System_Collections_Generic_IAsyncEnumerable_System_ValueTuple_System_IO_Stream_System_String___System_IO_Stream_System_Threading_CancellationToken_
+  commentId: M:Wolfgang.LogCompressor.Abstraction.ICompressionStrategy.CompressFilesAsync(System.Collections.Generic.IAsyncEnumerable{System.ValueTuple{System.IO.Stream,System.String}},System.IO.Stream,System.Threading.CancellationToken)
+  name.vb: CompressFilesAsync(IAsyncEnumerable(Of (Stream As Stream, EntryName As String)), Stream, CancellationToken)
+  fullName: Wolfgang.LogCompressor.Abstraction.ICompressionStrategy.CompressFilesAsync(System.Collections.Generic.IAsyncEnumerable<(System.IO.Stream Stream, string EntryName)>, System.IO.Stream, System.Threading.CancellationToken)
+  fullName.vb: Wolfgang.LogCompressor.Abstraction.ICompressionStrategy.CompressFilesAsync(System.Collections.Generic.IAsyncEnumerable(Of (Stream As System.IO.Stream, EntryName As String)), System.IO.Stream, System.Threading.CancellationToken)
+  nameWithType: ICompressionStrategy.CompressFilesAsync(IAsyncEnumerable<(Stream Stream, string EntryName)>, Stream, CancellationToken)
+  nameWithType.vb: ICompressionStrategy.CompressFilesAsync(IAsyncEnumerable(Of (Stream As Stream, EntryName As String)), Stream, CancellationToken)
 - uid: Wolfgang.LogCompressor.Abstraction.ICompressionStrategy.CompressFilesAsync*
   name: CompressFilesAsync
   href: api/Wolfgang.LogCompressor.Abstraction.ICompressionStrategy.html#Wolfgang_LogCompressor_Abstraction_ICompressionStrategy_CompressFilesAsync_
@@ -1880,6 +1880,22 @@ references:
   isSpec: "True"
   fullName: Wolfgang.LogCompressor.Model.ErrorPolicy.RetryCount
   nameWithType: ErrorPolicy.RetryCount
+- uid: Wolfgang.LogCompressor.Model.ErrorPolicy.RetryDelay(System.Int32)
+  name: RetryDelay(int)
+  href: api/Wolfgang.LogCompressor.Model.ErrorPolicy.html#Wolfgang_LogCompressor_Model_ErrorPolicy_RetryDelay_System_Int32_
+  commentId: M:Wolfgang.LogCompressor.Model.ErrorPolicy.RetryDelay(System.Int32)
+  name.vb: RetryDelay(Integer)
+  fullName: Wolfgang.LogCompressor.Model.ErrorPolicy.RetryDelay(int)
+  fullName.vb: Wolfgang.LogCompressor.Model.ErrorPolicy.RetryDelay(Integer)
+  nameWithType: ErrorPolicy.RetryDelay(int)
+  nameWithType.vb: ErrorPolicy.RetryDelay(Integer)
+- uid: Wolfgang.LogCompressor.Model.ErrorPolicy.RetryDelay*
+  name: RetryDelay
+  href: api/Wolfgang.LogCompressor.Model.ErrorPolicy.html#Wolfgang_LogCompressor_Model_ErrorPolicy_RetryDelay_
+  commentId: Overload:Wolfgang.LogCompressor.Model.ErrorPolicy.RetryDelay
+  isSpec: "True"
+  fullName: Wolfgang.LogCompressor.Model.ErrorPolicy.RetryDelay
+  nameWithType: ErrorPolicy.RetryDelay
 - uid: Wolfgang.LogCompressor.Model.ErrorPolicy.TryParse(System.String,Wolfgang.LogCompressor.Model.ErrorPolicy@)
   name: TryParse(string, out ErrorPolicy)
   href: api/Wolfgang.LogCompressor.Model.ErrorPolicy.html#Wolfgang_LogCompressor_Model_ErrorPolicy_TryParse_System_String_Wolfgang_LogCompressor_Model_ErrorPolicy__
@@ -2449,15 +2465,15 @@ references:
   isSpec: "True"
   fullName: Wolfgang.LogCompressor.Service.Compression.BrotliCompressionStrategy.CompressFileAsync
   nameWithType: BrotliCompressionStrategy.CompressFileAsync
-- uid: Wolfgang.LogCompressor.Service.Compression.BrotliCompressionStrategy.CompressFilesAsync(System.Collections.Generic.IEnumerable{System.ValueTuple{System.IO.Stream,System.String}},System.IO.Stream,System.Threading.CancellationToken)
-  name: CompressFilesAsync(IEnumerable<(Stream Stream, string EntryName)>, Stream, CancellationToken)
-  href: api/Wolfgang.LogCompressor.Service.Compression.BrotliCompressionStrategy.html#Wolfgang_LogCompressor_Service_Compression_BrotliCompressionStrategy_CompressFilesAsync_System_Collections_Generic_IEnumerable_System_ValueTuple_System_IO_Stream_System_String___System_IO_Stream_System_Threading_CancellationToken_
-  commentId: M:Wolfgang.LogCompressor.Service.Compression.BrotliCompressionStrategy.CompressFilesAsync(System.Collections.Generic.IEnumerable{System.ValueTuple{System.IO.Stream,System.String}},System.IO.Stream,System.Threading.CancellationToken)
-  name.vb: CompressFilesAsync(IEnumerable(Of (Stream As Stream, EntryName As String)), Stream, CancellationToken)
-  fullName: Wolfgang.LogCompressor.Service.Compression.BrotliCompressionStrategy.CompressFilesAsync(System.Collections.Generic.IEnumerable<(System.IO.Stream Stream, string EntryName)>, System.IO.Stream, System.Threading.CancellationToken)
-  fullName.vb: Wolfgang.LogCompressor.Service.Compression.BrotliCompressionStrategy.CompressFilesAsync(System.Collections.Generic.IEnumerable(Of (Stream As System.IO.Stream, EntryName As String)), System.IO.Stream, System.Threading.CancellationToken)
-  nameWithType: BrotliCompressionStrategy.CompressFilesAsync(IEnumerable<(Stream Stream, string EntryName)>, Stream, CancellationToken)
-  nameWithType.vb: BrotliCompressionStrategy.CompressFilesAsync(IEnumerable(Of (Stream As Stream, EntryName As String)), Stream, CancellationToken)
+- uid: Wolfgang.LogCompressor.Service.Compression.BrotliCompressionStrategy.CompressFilesAsync(System.Collections.Generic.IAsyncEnumerable{System.ValueTuple{System.IO.Stream,System.String}},System.IO.Stream,System.Threading.CancellationToken)
+  name: CompressFilesAsync(IAsyncEnumerable<(Stream Stream, string EntryName)>, Stream, CancellationToken)
+  href: api/Wolfgang.LogCompressor.Service.Compression.BrotliCompressionStrategy.html#Wolfgang_LogCompressor_Service_Compression_BrotliCompressionStrategy_CompressFilesAsync_System_Collections_Generic_IAsyncEnumerable_System_ValueTuple_System_IO_Stream_System_String___System_IO_Stream_System_Threading_CancellationToken_
+  commentId: M:Wolfgang.LogCompressor.Service.Compression.BrotliCompressionStrategy.CompressFilesAsync(System.Collections.Generic.IAsyncEnumerable{System.ValueTuple{System.IO.Stream,System.String}},System.IO.Stream,System.Threading.CancellationToken)
+  name.vb: CompressFilesAsync(IAsyncEnumerable(Of (Stream As Stream, EntryName As String)), Stream, CancellationToken)
+  fullName: Wolfgang.LogCompressor.Service.Compression.BrotliCompressionStrategy.CompressFilesAsync(System.Collections.Generic.IAsyncEnumerable<(System.IO.Stream Stream, string EntryName)>, System.IO.Stream, System.Threading.CancellationToken)
+  fullName.vb: Wolfgang.LogCompressor.Service.Compression.BrotliCompressionStrategy.CompressFilesAsync(System.Collections.Generic.IAsyncEnumerable(Of (Stream As System.IO.Stream, EntryName As String)), System.IO.Stream, System.Threading.CancellationToken)
+  nameWithType: BrotliCompressionStrategy.CompressFilesAsync(IAsyncEnumerable<(Stream Stream, string EntryName)>, Stream, CancellationToken)
+  nameWithType.vb: BrotliCompressionStrategy.CompressFilesAsync(IAsyncEnumerable(Of (Stream As Stream, EntryName As String)), Stream, CancellationToken)
 - uid: Wolfgang.LogCompressor.Service.Compression.BrotliCompressionStrategy.CompressFilesAsync*
   name: CompressFilesAsync
   href: api/Wolfgang.LogCompressor.Service.Compression.BrotliCompressionStrategy.html#Wolfgang_LogCompressor_Service_Compression_BrotliCompressionStrategy_CompressFilesAsync_
@@ -2557,15 +2573,15 @@ references:
   isSpec: "True"
   fullName: Wolfgang.LogCompressor.Service.Compression.GZipCompressionStrategy.CompressFileAsync
   nameWithType: GZipCompressionStrategy.CompressFileAsync
-- uid: Wolfgang.LogCompressor.Service.Compression.GZipCompressionStrategy.CompressFilesAsync(System.Collections.Generic.IEnumerable{System.ValueTuple{System.IO.Stream,System.String}},System.IO.Stream,System.Threading.CancellationToken)
-  name: CompressFilesAsync(IEnumerable<(Stream Stream, string EntryName)>, Stream, CancellationToken)
-  href: api/Wolfgang.LogCompressor.Service.Compression.GZipCompressionStrategy.html#Wolfgang_LogCompressor_Service_Compression_GZipCompressionStrategy_CompressFilesAsync_System_Collections_Generic_IEnumerable_System_ValueTuple_System_IO_Stream_System_String___System_IO_Stream_System_Threading_CancellationToken_
-  commentId: M:Wolfgang.LogCompressor.Service.Compression.GZipCompressionStrategy.CompressFilesAsync(System.Collections.Generic.IEnumerable{System.ValueTuple{System.IO.Stream,System.String}},System.IO.Stream,System.Threading.CancellationToken)
-  name.vb: CompressFilesAsync(IEnumerable(Of (Stream As Stream, EntryName As String)), Stream, CancellationToken)
-  fullName: Wolfgang.LogCompressor.Service.Compression.GZipCompressionStrategy.CompressFilesAsync(System.Collections.Generic.IEnumerable<(System.IO.Stream Stream, string EntryName)>, System.IO.Stream, System.Threading.CancellationToken)
-  fullName.vb: Wolfgang.LogCompressor.Service.Compression.GZipCompressionStrategy.CompressFilesAsync(System.Collections.Generic.IEnumerable(Of (Stream As System.IO.Stream, EntryName As String)), System.IO.Stream, System.Threading.CancellationToken)
-  nameWithType: GZipCompressionStrategy.CompressFilesAsync(IEnumerable<(Stream Stream, string EntryName)>, Stream, CancellationToken)
-  nameWithType.vb: GZipCompressionStrategy.CompressFilesAsync(IEnumerable(Of (Stream As Stream, EntryName As String)), Stream, CancellationToken)
+- uid: Wolfgang.LogCompressor.Service.Compression.GZipCompressionStrategy.CompressFilesAsync(System.Collections.Generic.IAsyncEnumerable{System.ValueTuple{System.IO.Stream,System.String}},System.IO.Stream,System.Threading.CancellationToken)
+  name: CompressFilesAsync(IAsyncEnumerable<(Stream Stream, string EntryName)>, Stream, CancellationToken)
+  href: api/Wolfgang.LogCompressor.Service.Compression.GZipCompressionStrategy.html#Wolfgang_LogCompressor_Service_Compression_GZipCompressionStrategy_CompressFilesAsync_System_Collections_Generic_IAsyncEnumerable_System_ValueTuple_System_IO_Stream_System_String___System_IO_Stream_System_Threading_CancellationToken_
+  commentId: M:Wolfgang.LogCompressor.Service.Compression.GZipCompressionStrategy.CompressFilesAsync(System.Collections.Generic.IAsyncEnumerable{System.ValueTuple{System.IO.Stream,System.String}},System.IO.Stream,System.Threading.CancellationToken)
+  name.vb: CompressFilesAsync(IAsyncEnumerable(Of (Stream As Stream, EntryName As String)), Stream, CancellationToken)
+  fullName: Wolfgang.LogCompressor.Service.Compression.GZipCompressionStrategy.CompressFilesAsync(System.Collections.Generic.IAsyncEnumerable<(System.IO.Stream Stream, string EntryName)>, System.IO.Stream, System.Threading.CancellationToken)
+  fullName.vb: Wolfgang.LogCompressor.Service.Compression.GZipCompressionStrategy.CompressFilesAsync(System.Collections.Generic.IAsyncEnumerable(Of (Stream As System.IO.Stream, EntryName As String)), System.IO.Stream, System.Threading.CancellationToken)
+  nameWithType: GZipCompressionStrategy.CompressFilesAsync(IAsyncEnumerable<(Stream Stream, string EntryName)>, Stream, CancellationToken)
+  nameWithType.vb: GZipCompressionStrategy.CompressFilesAsync(IAsyncEnumerable(Of (Stream As Stream, EntryName As String)), Stream, CancellationToken)
 - uid: Wolfgang.LogCompressor.Service.Compression.GZipCompressionStrategy.CompressFilesAsync*
   name: CompressFilesAsync
   href: api/Wolfgang.LogCompressor.Service.Compression.GZipCompressionStrategy.html#Wolfgang_LogCompressor_Service_Compression_GZipCompressionStrategy_CompressFilesAsync_
@@ -2573,6 +2589,12 @@ references:
   isSpec: "True"
   fullName: Wolfgang.LogCompressor.Service.Compression.GZipCompressionStrategy.CompressFilesAsync
   nameWithType: GZipCompressionStrategy.CompressFilesAsync
+- uid: Wolfgang.LogCompressor.Service.Compression.GZipCompressionStrategy.EmptyGzipMember
+  name: EmptyGzipMember
+  href: api/Wolfgang.LogCompressor.Service.Compression.GZipCompressionStrategy.html#Wolfgang_LogCompressor_Service_Compression_GZipCompressionStrategy_EmptyGzipMember
+  commentId: F:Wolfgang.LogCompressor.Service.Compression.GZipCompressionStrategy.EmptyGzipMember
+  fullName: Wolfgang.LogCompressor.Service.Compression.GZipCompressionStrategy.EmptyGzipMember
+  nameWithType: GZipCompressionStrategy.EmptyGzipMember
 - uid: Wolfgang.LogCompressor.Service.Compression.GZipCompressionStrategy.FileExtension
   name: FileExtension
   href: api/Wolfgang.LogCompressor.Service.Compression.GZipCompressionStrategy.html#Wolfgang_LogCompressor_Service_Compression_GZipCompressionStrategy_FileExtension
@@ -2646,15 +2668,15 @@ references:
   isSpec: "True"
   fullName: Wolfgang.LogCompressor.Service.Compression.Lz4CompressionStrategy.CompressFileAsync
   nameWithType: Lz4CompressionStrategy.CompressFileAsync
-- uid: Wolfgang.LogCompressor.Service.Compression.Lz4CompressionStrategy.CompressFilesAsync(System.Collections.Generic.IEnumerable{System.ValueTuple{System.IO.Stream,System.String}},System.IO.Stream,System.Threading.CancellationToken)
-  name: CompressFilesAsync(IEnumerable<(Stream Stream, string EntryName)>, Stream, CancellationToken)
-  href: api/Wolfgang.LogCompressor.Service.Compression.Lz4CompressionStrategy.html#Wolfgang_LogCompressor_Service_Compression_Lz4CompressionStrategy_CompressFilesAsync_System_Collections_Generic_IEnumerable_System_ValueTuple_System_IO_Stream_System_String___System_IO_Stream_System_Threading_CancellationToken_
-  commentId: M:Wolfgang.LogCompressor.Service.Compression.Lz4CompressionStrategy.CompressFilesAsync(System.Collections.Generic.IEnumerable{System.ValueTuple{System.IO.Stream,System.String}},System.IO.Stream,System.Threading.CancellationToken)
-  name.vb: CompressFilesAsync(IEnumerable(Of (Stream As Stream, EntryName As String)), Stream, CancellationToken)
-  fullName: Wolfgang.LogCompressor.Service.Compression.Lz4CompressionStrategy.CompressFilesAsync(System.Collections.Generic.IEnumerable<(System.IO.Stream Stream, string EntryName)>, System.IO.Stream, System.Threading.CancellationToken)
-  fullName.vb: Wolfgang.LogCompressor.Service.Compression.Lz4CompressionStrategy.CompressFilesAsync(System.Collections.Generic.IEnumerable(Of (Stream As System.IO.Stream, EntryName As String)), System.IO.Stream, System.Threading.CancellationToken)
-  nameWithType: Lz4CompressionStrategy.CompressFilesAsync(IEnumerable<(Stream Stream, string EntryName)>, Stream, CancellationToken)
-  nameWithType.vb: Lz4CompressionStrategy.CompressFilesAsync(IEnumerable(Of (Stream As Stream, EntryName As String)), Stream, CancellationToken)
+- uid: Wolfgang.LogCompressor.Service.Compression.Lz4CompressionStrategy.CompressFilesAsync(System.Collections.Generic.IAsyncEnumerable{System.ValueTuple{System.IO.Stream,System.String}},System.IO.Stream,System.Threading.CancellationToken)
+  name: CompressFilesAsync(IAsyncEnumerable<(Stream Stream, string EntryName)>, Stream, CancellationToken)
+  href: api/Wolfgang.LogCompressor.Service.Compression.Lz4CompressionStrategy.html#Wolfgang_LogCompressor_Service_Compression_Lz4CompressionStrategy_CompressFilesAsync_System_Collections_Generic_IAsyncEnumerable_System_ValueTuple_System_IO_Stream_System_String___System_IO_Stream_System_Threading_CancellationToken_
+  commentId: M:Wolfgang.LogCompressor.Service.Compression.Lz4CompressionStrategy.CompressFilesAsync(System.Collections.Generic.IAsyncEnumerable{System.ValueTuple{System.IO.Stream,System.String}},System.IO.Stream,System.Threading.CancellationToken)
+  name.vb: CompressFilesAsync(IAsyncEnumerable(Of (Stream As Stream, EntryName As String)), Stream, CancellationToken)
+  fullName: Wolfgang.LogCompressor.Service.Compression.Lz4CompressionStrategy.CompressFilesAsync(System.Collections.Generic.IAsyncEnumerable<(System.IO.Stream Stream, string EntryName)>, System.IO.Stream, System.Threading.CancellationToken)
+  fullName.vb: Wolfgang.LogCompressor.Service.Compression.Lz4CompressionStrategy.CompressFilesAsync(System.Collections.Generic.IAsyncEnumerable(Of (Stream As System.IO.Stream, EntryName As String)), System.IO.Stream, System.Threading.CancellationToken)
+  nameWithType: Lz4CompressionStrategy.CompressFilesAsync(IAsyncEnumerable<(Stream Stream, string EntryName)>, Stream, CancellationToken)
+  nameWithType.vb: Lz4CompressionStrategy.CompressFilesAsync(IAsyncEnumerable(Of (Stream As Stream, EntryName As String)), Stream, CancellationToken)
 - uid: Wolfgang.LogCompressor.Service.Compression.Lz4CompressionStrategy.CompressFilesAsync*
   name: CompressFilesAsync
   href: api/Wolfgang.LogCompressor.Service.Compression.Lz4CompressionStrategy.html#Wolfgang_LogCompressor_Service_Compression_Lz4CompressionStrategy_CompressFilesAsync_
@@ -2748,15 +2770,15 @@ references:
   isSpec: "True"
   fullName: Wolfgang.LogCompressor.Service.Compression.ZipCompressionStrategy.CompressFileAsync
   nameWithType: ZipCompressionStrategy.CompressFileAsync
-- uid: Wolfgang.LogCompressor.Service.Compression.ZipCompressionStrategy.CompressFilesAsync(System.Collections.Generic.IEnumerable{System.ValueTuple{System.IO.Stream,System.String}},System.IO.Stream,System.Threading.CancellationToken)
-  name: CompressFilesAsync(IEnumerable<(Stream Stream, string EntryName)>, Stream, CancellationToken)
-  href: api/Wolfgang.LogCompressor.Service.Compression.ZipCompressionStrategy.html#Wolfgang_LogCompressor_Service_Compression_ZipCompressionStrategy_CompressFilesAsync_System_Collections_Generic_IEnumerable_System_ValueTuple_System_IO_Stream_System_String___System_IO_Stream_System_Threading_CancellationToken_
-  commentId: M:Wolfgang.LogCompressor.Service.Compression.ZipCompressionStrategy.CompressFilesAsync(System.Collections.Generic.IEnumerable{System.ValueTuple{System.IO.Stream,System.String}},System.IO.Stream,System.Threading.CancellationToken)
-  name.vb: CompressFilesAsync(IEnumerable(Of (Stream As Stream, EntryName As String)), Stream, CancellationToken)
-  fullName: Wolfgang.LogCompressor.Service.Compression.ZipCompressionStrategy.CompressFilesAsync(System.Collections.Generic.IEnumerable<(System.IO.Stream Stream, string EntryName)>, System.IO.Stream, System.Threading.CancellationToken)
-  fullName.vb: Wolfgang.LogCompressor.Service.Compression.ZipCompressionStrategy.CompressFilesAsync(System.Collections.Generic.IEnumerable(Of (Stream As System.IO.Stream, EntryName As String)), System.IO.Stream, System.Threading.CancellationToken)
-  nameWithType: ZipCompressionStrategy.CompressFilesAsync(IEnumerable<(Stream Stream, string EntryName)>, Stream, CancellationToken)
-  nameWithType.vb: ZipCompressionStrategy.CompressFilesAsync(IEnumerable(Of (Stream As Stream, EntryName As String)), Stream, CancellationToken)
+- uid: Wolfgang.LogCompressor.Service.Compression.ZipCompressionStrategy.CompressFilesAsync(System.Collections.Generic.IAsyncEnumerable{System.ValueTuple{System.IO.Stream,System.String}},System.IO.Stream,System.Threading.CancellationToken)
+  name: CompressFilesAsync(IAsyncEnumerable<(Stream Stream, string EntryName)>, Stream, CancellationToken)
+  href: api/Wolfgang.LogCompressor.Service.Compression.ZipCompressionStrategy.html#Wolfgang_LogCompressor_Service_Compression_ZipCompressionStrategy_CompressFilesAsync_System_Collections_Generic_IAsyncEnumerable_System_ValueTuple_System_IO_Stream_System_String___System_IO_Stream_System_Threading_CancellationToken_
+  commentId: M:Wolfgang.LogCompressor.Service.Compression.ZipCompressionStrategy.CompressFilesAsync(System.Collections.Generic.IAsyncEnumerable{System.ValueTuple{System.IO.Stream,System.String}},System.IO.Stream,System.Threading.CancellationToken)
+  name.vb: CompressFilesAsync(IAsyncEnumerable(Of (Stream As Stream, EntryName As String)), Stream, CancellationToken)
+  fullName: Wolfgang.LogCompressor.Service.Compression.ZipCompressionStrategy.CompressFilesAsync(System.Collections.Generic.IAsyncEnumerable<(System.IO.Stream Stream, string EntryName)>, System.IO.Stream, System.Threading.CancellationToken)
+  fullName.vb: Wolfgang.LogCompressor.Service.Compression.ZipCompressionStrategy.CompressFilesAsync(System.Collections.Generic.IAsyncEnumerable(Of (Stream As System.IO.Stream, EntryName As String)), System.IO.Stream, System.Threading.CancellationToken)
+  nameWithType: ZipCompressionStrategy.CompressFilesAsync(IAsyncEnumerable<(Stream Stream, string EntryName)>, Stream, CancellationToken)
+  nameWithType.vb: ZipCompressionStrategy.CompressFilesAsync(IAsyncEnumerable(Of (Stream As Stream, EntryName As String)), Stream, CancellationToken)
 - uid: Wolfgang.LogCompressor.Service.Compression.ZipCompressionStrategy.CompressFilesAsync*
   name: CompressFilesAsync
   href: api/Wolfgang.LogCompressor.Service.Compression.ZipCompressionStrategy.html#Wolfgang_LogCompressor_Service_Compression_ZipCompressionStrategy_CompressFilesAsync_
@@ -2837,15 +2859,15 @@ references:
   isSpec: "True"
   fullName: Wolfgang.LogCompressor.Service.Compression.ZstdCompressionStrategy.CompressFileAsync
   nameWithType: ZstdCompressionStrategy.CompressFileAsync
-- uid: Wolfgang.LogCompressor.Service.Compression.ZstdCompressionStrategy.CompressFilesAsync(System.Collections.Generic.IEnumerable{System.ValueTuple{System.IO.Stream,System.String}},System.IO.Stream,System.Threading.CancellationToken)
-  name: CompressFilesAsync(IEnumerable<(Stream Stream, string EntryName)>, Stream, CancellationToken)
-  href: api/Wolfgang.LogCompressor.Service.Compression.ZstdCompressionStrategy.html#Wolfgang_LogCompressor_Service_Compression_ZstdCompressionStrategy_CompressFilesAsync_System_Collections_Generic_IEnumerable_System_ValueTuple_System_IO_Stream_System_String___System_IO_Stream_System_Threading_CancellationToken_
-  commentId: M:Wolfgang.LogCompressor.Service.Compression.ZstdCompressionStrategy.CompressFilesAsync(System.Collections.Generic.IEnumerable{System.ValueTuple{System.IO.Stream,System.String}},System.IO.Stream,System.Threading.CancellationToken)
-  name.vb: CompressFilesAsync(IEnumerable(Of (Stream As Stream, EntryName As String)), Stream, CancellationToken)
-  fullName: Wolfgang.LogCompressor.Service.Compression.ZstdCompressionStrategy.CompressFilesAsync(System.Collections.Generic.IEnumerable<(System.IO.Stream Stream, string EntryName)>, System.IO.Stream, System.Threading.CancellationToken)
-  fullName.vb: Wolfgang.LogCompressor.Service.Compression.ZstdCompressionStrategy.CompressFilesAsync(System.Collections.Generic.IEnumerable(Of (Stream As System.IO.Stream, EntryName As String)), System.IO.Stream, System.Threading.CancellationToken)
-  nameWithType: ZstdCompressionStrategy.CompressFilesAsync(IEnumerable<(Stream Stream, string EntryName)>, Stream, CancellationToken)
-  nameWithType.vb: ZstdCompressionStrategy.CompressFilesAsync(IEnumerable(Of (Stream As Stream, EntryName As String)), Stream, CancellationToken)
+- uid: Wolfgang.LogCompressor.Service.Compression.ZstdCompressionStrategy.CompressFilesAsync(System.Collections.Generic.IAsyncEnumerable{System.ValueTuple{System.IO.Stream,System.String}},System.IO.Stream,System.Threading.CancellationToken)
+  name: CompressFilesAsync(IAsyncEnumerable<(Stream Stream, string EntryName)>, Stream, CancellationToken)
+  href: api/Wolfgang.LogCompressor.Service.Compression.ZstdCompressionStrategy.html#Wolfgang_LogCompressor_Service_Compression_ZstdCompressionStrategy_CompressFilesAsync_System_Collections_Generic_IAsyncEnumerable_System_ValueTuple_System_IO_Stream_System_String___System_IO_Stream_System_Threading_CancellationToken_
+  commentId: M:Wolfgang.LogCompressor.Service.Compression.ZstdCompressionStrategy.CompressFilesAsync(System.Collections.Generic.IAsyncEnumerable{System.ValueTuple{System.IO.Stream,System.String}},System.IO.Stream,System.Threading.CancellationToken)
+  name.vb: CompressFilesAsync(IAsyncEnumerable(Of (Stream As Stream, EntryName As String)), Stream, CancellationToken)
+  fullName: Wolfgang.LogCompressor.Service.Compression.ZstdCompressionStrategy.CompressFilesAsync(System.Collections.Generic.IAsyncEnumerable<(System.IO.Stream Stream, string EntryName)>, System.IO.Stream, System.Threading.CancellationToken)
+  fullName.vb: Wolfgang.LogCompressor.Service.Compression.ZstdCompressionStrategy.CompressFilesAsync(System.Collections.Generic.IAsyncEnumerable(Of (Stream As System.IO.Stream, EntryName As String)), System.IO.Stream, System.Threading.CancellationToken)
+  nameWithType: ZstdCompressionStrategy.CompressFilesAsync(IAsyncEnumerable<(Stream Stream, string EntryName)>, Stream, CancellationToken)
+  nameWithType.vb: ZstdCompressionStrategy.CompressFilesAsync(IAsyncEnumerable(Of (Stream As Stream, EntryName As String)), Stream, CancellationToken)
 - uid: Wolfgang.LogCompressor.Service.Compression.ZstdCompressionStrategy.CompressFilesAsync*
   name: CompressFilesAsync
   href: api/Wolfgang.LogCompressor.Service.Compression.ZstdCompressionStrategy.html#Wolfgang_LogCompressor_Service_Compression_ZstdCompressionStrategy_CompressFilesAsync_

@@ -1,23 +1,23 @@
 Summary
-  Generated on: 9/3/2026 - 12:35:38 AM
-  Coverage date: 9/3/2026 - 12:35:23 AM - 9/3/2026 - 12:35:35 AM
+  Generated on: 9/3/2026 - 3:29:54 PM
+  Coverage date: 9/3/2026 - 3:29:37 PM - 9/3/2026 - 3:29:49 PM
   Parser: MultiReport (3x Cobertura)
   Assemblies: 4
   Classes: 60
   Files: 60
-  Line coverage: 100%
-  Covered lines: 4949
-  Uncovered lines: 0
-  Coverable lines: 4949
-  Total lines: 11124
-  Branch coverage: 93.5% (628 of 671)
-  Covered branches: 628
-  Total branches: 671
-  Method coverage: 100% (567 of 567)
-  Full method coverage: 100% (567 of 567)
-  Covered methods: 567
-  Fully covered methods: 567
-  Total methods: 567
+  Line coverage: 99.8%
+  Covered lines: 5327
+  Uncovered lines: 9
+  Coverable lines: 5336
+  Total lines: 11863
+  Branch coverage: 94.4% (647 of 685)
+  Covered branches: 647
+  Total branches: 685
+  Method coverage: 99.8% (599 of 600)
+  Full method coverage: 99.5% (597 of 600)
+  Covered methods: 599
+  Fully covered methods: 597
+  Total methods: 600
 
 logc                                                                                       100%
   Wolfgang.LogCompressor.Command.Bundle                                                    100%
@@ -47,8 +47,8 @@ logc                                                                            
   Wolfgang.LogCompressor.Service.ReportService                                             100%
   Wolfgang.LogCompressor.Service.RetentionService                                          100%
 
-Wolfgang.LogCompressor.Tests.Fuzz                                                          100%
-  Wolfgang.LogCompressor.Tests.Fuzz.CompressionFuzzTests                                   100%
+Wolfgang.LogCompressor.Tests.Fuzz                                                         97.2%
+  Wolfgang.LogCompressor.Tests.Fuzz.CompressionFuzzTests                                  96.8%
   Wolfgang.LogCompressor.Tests.Fuzz.TempDirectory                                          100%
   Wolfgang.LogCompressor.Tests.Fuzz.TempDirectoryTests                                     100%
 
@@ -60,7 +60,7 @@ Wolfgang.LogCompressor.Tests.Integration                                        
   Wolfgang.LogCompressor.Tests.Integration.TempDirectory                                   100%
   Wolfgang.LogCompressor.Tests.Integration.TempDirectoryTests                              100%
 
-Wolfgang.LogCompressor.Tests.Unit                                                          100%
+Wolfgang.LogCompressor.Tests.Unit                                                         99.9%
   Wolfgang.LogCompressor.Tests.Unit.Command.BundleCommandTests                             100%
   Wolfgang.LogCompressor.Tests.Unit.Command.CompressCommandTests                           100%
   Wolfgang.LogCompressor.Tests.Unit.Command.DecompressCommandTests                         100%
@@ -69,7 +69,7 @@ Wolfgang.LogCompressor.Tests.Unit                                               
   Wolfgang.LogCompressor.Tests.Unit.Framework.SinkOptionsDefaultsTests                     100%
   Wolfgang.LogCompressor.Tests.Unit.Globalization.CultureInvarianceTests                   100%
   Wolfgang.LogCompressor.Tests.Unit.Model.ErrorPolicyTests                                 100%
-  Wolfgang.LogCompressor.Tests.Unit.Service.ArchiveVerifierTests                           100%
+  Wolfgang.LogCompressor.Tests.Unit.Service.ArchiveVerifierTests                          99.6%
   Wolfgang.LogCompressor.Tests.Unit.Service.BundleServiceTests                             100%
   Wolfgang.LogCompressor.Tests.Unit.Service.Compression.BrotliCompressionStrategyTests     100%
   Wolfgang.LogCompressor.Tests.Unit.Service.Compression.CompressionStrategyFactoryTests    100%

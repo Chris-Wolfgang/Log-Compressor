@@ -29,6 +29,25 @@ internal sealed class ProcessLock : IDisposable
     /// </summary>
     internal const string LockFileName = ".logc.lock";
 
+    /// <summary>
+    /// Resolves the directory a run must lock for the given source path: the
+    /// source itself when it is a directory, otherwise its containing
+    /// directory. Locking the directory being processed (not its parent)
+    /// keeps sibling directories independently lockable (#194).
+    /// </summary>
+    /// <param name="sourcePath">The source file or directory path.</param>
+    /// <returns>The directory whose lock file guards this run.</returns>
+    internal static string LockDirectoryFor(string sourcePath)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(sourcePath);
+
+        return Directory.Exists(sourcePath)
+            ? sourcePath
+            : Path.GetDirectoryName(sourcePath) ?? sourcePath;
+    }
+
+
+
     private readonly string _lockFilePath;
     private readonly ILogger _logger;
     private FileStream? _lockStream;

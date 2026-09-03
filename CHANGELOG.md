@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.1] - 2026-09-03
+
 ### Fixed
 
 - **Empty source files now produce valid archives.** .NET's `GZipStream` and the LZ4 encoder emit zero bytes when no data is ever written, so compressing an empty file produced a 0-byte, malformed `.gz`/`.lz4` that failed verification (leaving the source in place and the run degraded). Empty sources now get the canonical empty gzip member / LZ4 frame. Found by the weekly fuzz sweep's first scheduled-cadence run (seed `6ynpRrX3UoE1`).
@@ -70,7 +72,8 @@ First release of `logc`, a cross-platform .NET CLI for compressing log files.
 - Structured logging via Serilog (console + file sinks).
 - Self-contained, per-platform release archives for `win-x64`, `linux-x64`, and `osx-x64` (each bundles the single-file `logc` executable plus its `AppSettings.json`); no .NET runtime required on the target. Distributed via GitHub Releases, not NuGet.
 
-[Unreleased]: https://github.com/Chris-Wolfgang/Log-Compressor/compare/v0.3.0...HEAD
+[Unreleased]: https://github.com/Chris-Wolfgang/Log-Compressor/compare/v0.3.1...HEAD
+[0.3.1]: https://github.com/Chris-Wolfgang/Log-Compressor/compare/v0.3.0...v0.3.1
 [0.3.0]: https://github.com/Chris-Wolfgang/Log-Compressor/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/Chris-Wolfgang/Log-Compressor/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/Chris-Wolfgang/Log-Compressor/releases/tag/v0.1.0

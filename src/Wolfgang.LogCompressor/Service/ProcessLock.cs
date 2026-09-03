@@ -135,6 +135,20 @@ internal sealed class ProcessLock : IDisposable
             );
             return false;
         }
+        catch (UnauthorizedAccessException ex)
+        {
+            // Directory-source locks live inside the directory being
+            // processed (#194), so a read-only or ACL-denied source surfaces
+            // here rather than as an unhandled crash. --no-lock skips locking
+            // for sources the process may only read.
+            _logger.LogWarning
+            (
+                ex,
+                "Cannot create the lock file (access denied — is the directory read-only?). Use --no-lock to skip locking. Lock file: {Path}",
+                _lockFilePath
+            );
+            return false;
+        }
     }
 
 

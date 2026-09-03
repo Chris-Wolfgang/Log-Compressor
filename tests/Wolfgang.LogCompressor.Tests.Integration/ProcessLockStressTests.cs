@@ -167,4 +167,36 @@ public sealed class ProcessLockStressTests
 
         Assert.Equal(Iterations, totalWins);
     }
+
+
+    [Fact]
+    public void LockDirectoryFor_when_sourceIsDirectory_expected_directoryItself()
+    {
+        var dir = Directory.CreateTempSubdirectory("lockdir-").FullName;
+        try
+        {
+            // Sibling directories must not contend on a shared parent (#194).
+            Assert.Equal(dir, ProcessLock.LockDirectoryFor(dir));
+        }
+        finally
+        {
+            Directory.Delete(dir);
+        }
+    }
+
+
+
+    [Fact]
+    public void LockDirectoryFor_when_sourceIsFilePath_expected_containingDirectory()
+    {
+        var dir = Directory.CreateTempSubdirectory("lockdir-").FullName;
+        try
+        {
+            Assert.Equal(dir, ProcessLock.LockDirectoryFor(Path.Combine(dir, "app.log")));
+        }
+        finally
+        {
+            Directory.Delete(dir);
+        }
+    }
 }

@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **Directory sources now lock the directory itself, not its parent** (#194): `logc compress /var/log/app` previously placed `.logc.lock` in `/var/log`, making scheduled jobs on sibling directories contend on the shared parent. All three commands (`compress`, `bundle`, `decompress`) now lock the directory being processed, matching ProcessLock's documented contract. **Migration note:** anything observing the lock-file location (monitoring, cleanup scripts) should look inside the source directory; file sources still lock the containing directory.
+
 ## [0.3.1] - 2026-09-03
 
 ### Fixed

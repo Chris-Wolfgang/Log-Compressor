@@ -67,7 +67,7 @@ public sealed class DecompressServiceTests : IDisposable
     {
         // A REAL file backs the FileInfo: the service materializes Length,
         // and real paths keep Windows/Unix path semantics honest.
-        var path = System.IO.Path.Combine(_tempDir.Path, name);
+        var path = Path.Combine(_tempDir.Path, name);
         File.WriteAllBytes(path, bytes);
         _fileSystem.FileExists(path).Returns(returnThis: true);
         _fileSystem.GetFileInfo(path).Returns(new FileInfo(path));
@@ -99,8 +99,10 @@ public sealed class DecompressServiceTests : IDisposable
         _fileSystem.FileExists("/tmp/nope").Returns(returnThis: false);
         _fileSystem.DirectoryExists("/tmp/nope").Returns(returnThis: false);
 
-        await Assert.ThrowsAsync<FileNotFoundException>(
+        var ex = await Assert.ThrowsAsync<FileNotFoundException>(
             () => _sut.ExecuteAsync(new DecompressionOptions { SourcePath = "/tmp/nope" }));
+
+        Assert.Contains("Source path not found: /tmp/nope", ex.Message, StringComparison.Ordinal);
     }
 
 
@@ -235,6 +237,169 @@ public sealed class DecompressServiceTests : IDisposable
 
 
 
+    [Fact]
+    public void Ctor_when_anyDependencyNull_expected_throwsWithParamName()
+    {
+        var fileFilter = new FileFilterService();
+        var logger = Substitute.For<ILogger<DecompressService>>();
+
+        Assert.Equal("fileSystem", Assert.Throws<ArgumentNullException>(() => new DecompressService(null!, fileFilter, logger)).ParamName);
+        Assert.Equal("fileFilter", Assert.Throws<ArgumentNullException>(() => new DecompressService(_fileSystem, null!, logger)).ParamName);
+        Assert.Equal("logger", Assert.Throws<ArgumentNullException>(() => new DecompressService(_fileSystem, fileFilter, null!)).ParamName);
+    }
+
+
+
+    [Fact]
+    public async Task ExecuteAsync_when_retriesExhausted_expected_exactAttemptCount()
+    {
+        var bad = SetupSingleArchive("bad.zip", [0x50, 0x4B, 0x03, 0x04, 0xFF, 0xFF]);
+        var attempts = 0;
+        _fileSystem.OpenRead(bad).Returns(_ =>
+        {
+            attempts++;
+            return new MemoryStream([0x50, 0x4B, 0x03, 0x04, 0xFF, 0xFF]);
+        });
+
+        var results = await _sut.ExecuteAsync(new DecompressionOptions
+        {
+            SourcePath = bad,
+            OnError = new ErrorPolicy { RetryCount = 1 }
+        });
+
+        // Exactly 1 initial attempt + 1 retry.
+        Assert.False(Assert.Single(results).Success);
+        Assert.Equal(2, attempts);
+    }
+
+
+
+    [Fact]
+    public async Task ExecuteAsync_when_recurse_expected_subdirectoriesScanned()
+    {
+        var dir = _tempDir.Path;
+        var archive = SetupSingleArchive("a.zip", ZipBytes(("a.log", "a")));
+        _fileSystem.FileExists(dir).Returns(returnThis: false);
+        _fileSystem.EnumerateFiles(dir, "*", SearchOption.AllDirectories).Returns([archive]);
+
+        var results = await _sut.ExecuteAsync(new DecompressionOptions { SourcePath = dir, Recurse = true });
+
+        Assert.Single(results);
+        _fileSystem.Received(1).EnumerateFiles(dir, "*", SearchOption.AllDirectories);
+        _fileSystem.DidNotReceive().EnumerateFiles(dir, "*", SearchOption.TopDirectoryOnly);
+    }
+
+
+
+    [Fact]
+    public async Task ExecuteAsync_when_tarGzExtracted_expected_byteCountSummed()
+    {
+        var archive = SetupSingleArchive("counted.tar.gz", TarGzBytes(("a.log", "abc"), ("b.log", "hello")));
+
+        var results = await _sut.ExecuteAsync(new DecompressionOptions { SourcePath = archive });
+
+        var result = Assert.Single(results);
+        Assert.True(result.Success);
+        // 3 + 5 bytes across the two tar entries.
+        Assert.Equal(8, result.CompressedSize);
+    }
+
+
+
+    [Fact]
+    public async Task ExecuteAsync_when_zipContainsDirectoryEntry_expected_onlyFilesWritten()
+    {
+        byte[] bytes;
+        using (var buffer = new MemoryStream())
+        {
+            using (var zip = new System.IO.Compression.ZipArchive(buffer, System.IO.Compression.ZipArchiveMode.Create, leaveOpen: true))
+            {
+                zip.CreateEntry("sub/");
+                var entry = zip.CreateEntry("sub/a.log");
+                using var s = entry.Open();
+                s.Write("abc"u8);
+            }
+
+            bytes = buffer.ToArray();
+        }
+        var archive = SetupSingleArchive("dirs.zip", bytes);
+
+        var results = await _sut.ExecuteAsync(new DecompressionOptions { SourcePath = archive });
+
+        // The directory entry is skipped; only the file contributes bytes.
+        Assert.True(Assert.Single(results).Success);
+        Assert.Equal(3, results[0].CompressedSize);
+    }
+
+
+
+    [Fact]
+    public async Task ExecuteAsync_when_tarContainsDirectoryEntry_expected_onlyFilesWritten()
+    {
+        var archive = SetupSingleArchive("dirs.tar.gz", TarGzBytesWithDirectory("sub", ("sub/a.log", "abc")));
+
+        var results = await _sut.ExecuteAsync(new DecompressionOptions { SourcePath = archive });
+
+        Assert.True(Assert.Single(results).Success);
+        Assert.Equal(3, results[0].CompressedSize);
+    }
+
+
+
+    private static byte[] TarGzBytes(params (string Name, string Content)[] entries)
+    {
+        using var tarBuffer = new MemoryStream();
+        using (var writer = new System.Formats.Tar.TarWriter(tarBuffer, leaveOpen: true))
+        {
+            foreach (var (name, content) in entries)
+            {
+                var entry = new System.Formats.Tar.PaxTarEntry(System.Formats.Tar.TarEntryType.RegularFile, name)
+                {
+                    DataStream = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(content))
+                };
+                writer.WriteEntry(entry);
+            }
+        }
+
+        return GzipBytes(tarBuffer.ToArray());
+    }
+
+
+
+    private static byte[] TarGzBytesWithDirectory(string directoryName, params (string Name, string Content)[] entries)
+    {
+        using var tarBuffer = new MemoryStream();
+        using (var writer = new System.Formats.Tar.TarWriter(tarBuffer, leaveOpen: true))
+        {
+            writer.WriteEntry(new System.Formats.Tar.PaxTarEntry(System.Formats.Tar.TarEntryType.Directory, directoryName));
+            foreach (var (name, content) in entries)
+            {
+                var entry = new System.Formats.Tar.PaxTarEntry(System.Formats.Tar.TarEntryType.RegularFile, name)
+                {
+                    DataStream = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(content))
+                };
+                writer.WriteEntry(entry);
+            }
+        }
+
+        return GzipBytes(tarBuffer.ToArray());
+    }
+
+
+
+    private static byte[] GzipBytes(byte[] content)
+    {
+        using var buffer = new MemoryStream();
+        using (var gz = new GZipStream(buffer, System.IO.Compression.CompressionLevel.Fastest, leaveOpen: true))
+        {
+            gz.Write(content);
+        }
+
+        return buffer.ToArray();
+    }
+
+
+
     private static byte[] ZstdBytes(string content)
     {
         using var buffer = new MemoryStream();
@@ -334,6 +499,59 @@ public sealed class DecompressServiceTests : IDisposable
 
 
     [Fact]
+    public async Task ExecuteAsync_when_skipMode_withFailureFirst_expected_laterArchivesStillProcessed()
+    {
+        var dir = _tempDir.Path;
+        var bad = SetupSingleArchive("bad.zip", [0x50, 0x4B, 0x03, 0x04, 0xFF, 0xFF]);
+        var good = SetupSingleArchive("good.zip", ZipBytes(("a.log", "a")));
+        _fileSystem.FileExists(dir).Returns(returnThis: false);
+        _fileSystem.EnumerateFiles(dir, "*", SearchOption.TopDirectoryOnly).Returns([bad, good]);
+
+        var results = await _sut.ExecuteAsync(new DecompressionOptions { SourcePath = dir });
+
+        // Default skip mode: a failure must not stop the run.
+        Assert.Equal(2, results.Count);
+        Assert.False(results[0].Success);
+        Assert.True(results[1].Success);
+    }
+
+
+
+    [Fact]
+    public async Task ExecuteAsync_when_outputDirMissing_expected_createdExactlyOnce()
+    {
+        var archive = SetupSingleArchive("a.zip", ZipBytes(("a.log", "a")));
+        // Missing on the pre-extraction check, present when the per-entry
+        // parent guard looks again after creation.
+        _fileSystem.DirectoryExists(Arg.Any<string>()).Returns(returnThis: false, returnThese: true);
+
+        var results = await _sut.ExecuteAsync(new DecompressionOptions { SourcePath = archive });
+
+        Assert.True(Assert.Single(results).Success);
+        _fileSystem.Received(1).CreateDirectory(Arg.Any<string>());
+    }
+
+
+
+    [Fact]
+    public async Task ExecuteAsync_when_zipExtracted_expected_byteCountAndOutputDirReported()
+    {
+        var archive = SetupSingleArchive("counted.zip", ZipBytes(("a.log", "abc"), ("b.log", "hello")));
+
+        var results = await _sut.ExecuteAsync(new DecompressionOptions { SourcePath = archive });
+
+        var result = Assert.Single(results);
+        Assert.True(result.Success);
+        // 3 + 5 extracted bytes, reported against the archive's own directory.
+        Assert.Equal(8, result.CompressedSize);
+        Assert.Equal(_tempDir.Path, result.OutputPath);
+        // Every directory already existed — nothing may be created.
+        _fileSystem.DidNotReceive().CreateDirectory(Arg.Any<string>());
+    }
+
+
+
+    [Fact]
     public async Task ExecuteAsync_when_onErrorRetry_expected_secondAttemptSucceeds()
     {
         var bytes = ZipBytes(("a.log", "hello"));
@@ -385,7 +603,7 @@ public sealed class DecompressServiceTests : IDisposable
         var dir = _tempDir.Path;
         var zipPath = SetupSingleArchive("a.zip", ZipBytes(("a.log", "a")));
         var gzPath = SetupSingleArchive("b.gz", GzBytes("b"));
-        var txtPath = System.IO.Path.Combine(dir, "readme.txt");
+        var txtPath = Path.Combine(dir, "readme.txt");
         File.WriteAllText(txtPath, "not an archive");
         _fileSystem.FileExists(dir).Returns(returnThis: false);
         _fileSystem.EnumerateFiles(dir, "*", SearchOption.TopDirectoryOnly)

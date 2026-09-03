@@ -227,7 +227,7 @@ public sealed class ReportServiceTests : IDisposable
 
         await _sut.WriteReportAsync(results, "json", outputPath, TimeSpan.Zero);
 
-        using var doc = System.Text.Json.JsonDocument.Parse(await File.ReadAllTextAsync(outputPath));
+        using var doc = JsonDocument.Parse(await File.ReadAllTextAsync(outputPath));
         Assert.Equal(1, doc.RootElement.GetProperty("succeededFiles").GetInt32());
         Assert.Equal(2, doc.RootElement.GetProperty("failedFiles").GetInt32());
         Assert.Equal(2, doc.RootElement.GetProperty("errors").GetArrayLength());

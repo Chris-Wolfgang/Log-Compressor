@@ -50,8 +50,11 @@ public class CompressionFuzzTests
     {
         using var input = new MemoryStream(content);
         using var output = new MemoryStream();
-        // Safe sync-over-async: MemoryStream operations complete synchronously.
+        // Safe sync-over-async: MemoryStream operations complete synchronously,
+        // and CsCheck Sample lambdas must be synchronous.
+#pragma warning disable VSTHRD002
         strategy.CompressFileAsync(input, output, entryName).GetAwaiter().GetResult();
+#pragma warning restore VSTHRD002
         return output.ToArray();
     }
 
@@ -60,14 +63,18 @@ public class CompressionFuzzTests
     private static byte[] CompressBundle(ICompressionStrategy strategy, IReadOnlyList<(byte[] Content, string Name)> entries)
     {
         using var output = new MemoryStream();
+        // Safe sync-over-async: MemoryStream operations complete synchronously,
+        // and CsCheck Sample lambdas must be synchronous.
+#pragma warning disable VSTHRD002
         strategy
             .CompressFilesAsync
             (
-                entries.Select(e => ((Stream)new MemoryStream(e.Content), e.Name)),
+                entries.Select(e => ((Stream)new MemoryStream(e.Content), e.Name)).ToAsyncEnumerable(),
                 output
             )
             .GetAwaiter()
             .GetResult();
+#pragma warning restore VSTHRD002
         return output.ToArray();
     }
 
@@ -334,7 +341,10 @@ public class CompressionFuzzTests
                 File.WriteAllBytes(path, CompressSingle(strategy, content, "file.log"));
 
                 var verifier = new ArchiveVerifier(NullLogger<ArchiveVerifier>.Instance);
+                // Safe sync-over-async: CsCheck Sample lambdas must be synchronous.
+#pragma warning disable VSTHRD002
                 Assert.True(verifier.VerifyAsync(path, format, content.Length).GetAwaiter().GetResult());
+#pragma warning restore VSTHRD002
             },
             iter: Iterations);
     }
@@ -373,7 +383,10 @@ public class CompressionFuzzTests
                 File.WriteAllBytes(path, truncated);
 
                 var verifier = new ArchiveVerifier(NullLogger<ArchiveVerifier>.Instance);
+                // Safe sync-over-async: CsCheck Sample lambdas must be synchronous.
+#pragma warning disable VSTHRD002
                 var verified = verifier.VerifyAsync(path, format, content.Length).GetAwaiter().GetResult();
+#pragma warning restore VSTHRD002
 
                 if (verified)
                 {

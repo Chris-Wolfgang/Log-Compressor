@@ -47,7 +47,7 @@ internal interface ICompressionStrategy
     /// <param name="cancellationToken">A token to cancel the operation.</param>
     Task CompressFilesAsync
     (
-        IEnumerable<(Stream Stream, string EntryName)> inputs,
+        IAsyncEnumerable<(Stream Stream, string EntryName)> inputs,
         Stream outputStream,
         CancellationToken cancellationToken = default
     );

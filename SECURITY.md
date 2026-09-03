@@ -5,9 +5,8 @@
 If you discover a security vulnerability, please follow these steps:
 
 1. **Do not** create a public issue on this repository.
-2. In the top navigation of this repository, click the **Security** tab.
-3. In the top right, click the **Report a vulnerability** button.
-4. Fill out the provided form with:
+2. Open the private advisory form directly: [Report a vulnerability](https://github.com/Chris-Wolfgang/Log-Compressor/security/advisories/new) — or navigate there via the repository's **Security** tab and the **Report a vulnerability** button.
+3. Fill out the provided form with:
    - A description of the vulnerability
    - Steps to reproduce the issue
    - Potential impact

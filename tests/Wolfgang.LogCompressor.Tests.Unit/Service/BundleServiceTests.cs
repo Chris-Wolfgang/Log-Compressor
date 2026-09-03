@@ -30,14 +30,12 @@ public sealed class BundleServiceTests : IDisposable
         // sequence; the substitute must enumerate it too so BundleService records
         // which files were actually bundled.
         _strategy
-            .CompressFilesAsync(Arg.Any<IEnumerable<(Stream Stream, string EntryName)>>(), Arg.Any<Stream>(), Arg.Any<CancellationToken>())
-            .Returns(callInfo =>
+            .CompressFilesAsync(Arg.Any<IAsyncEnumerable<(Stream Stream, string EntryName)>>(), Arg.Any<Stream>(), Arg.Any<CancellationToken>())
+            .Returns(async callInfo =>
             {
-                foreach (var _ in callInfo.Arg<IEnumerable<(Stream Stream, string EntryName)>>())
+                await foreach (var _ in callInfo.Arg<IAsyncEnumerable<(Stream Stream, string EntryName)>>())
                 {
                 }
-
-                return Task.CompletedTask;
             });
 
         _sut = new BundleService
@@ -161,6 +159,7 @@ public sealed class BundleServiceTests : IDisposable
         var result = await _sut.ExecuteAsync(options);
 
         Assert.False(result.Success);
+        Assert.Equal(string.Empty, result.OutputPath);
         Assert.Equal("No files matched the specified criteria.", result.ErrorMessage);
     }
 
@@ -174,7 +173,9 @@ public sealed class BundleServiceTests : IDisposable
 
         var options = new CompressionOptions { SourcePath = "nonexistent" };
 
-        await Assert.ThrowsAsync<FileNotFoundException>(() => _sut.ExecuteAsync(options));
+        var ex = await Assert.ThrowsAsync<FileNotFoundException>(() => _sut.ExecuteAsync(options));
+
+        Assert.Contains("Source path not found: nonexistent", ex.Message, StringComparison.Ordinal);
     }
 
 
@@ -362,6 +363,101 @@ public sealed class BundleServiceTests : IDisposable
         Assert.False(result.Success);
         Assert.Contains("already exists", result.ErrorMessage, StringComparison.OrdinalIgnoreCase);
         _fileSystem.DidNotReceive().DeleteFile(files[0]);
+    }
+
+
+
+    [Fact]
+    public async Task ExecuteAsync_when_unreadableRetriesExhausted_expected_exactAttemptCount()
+    {
+        var dir = "/tmp/logs/MyApp";
+        var files = CreateTempFiles(1);
+        var infos = files.Select(f => new FileInfo(f)).ToList();
+
+        SetupDirectory(dir, files, infos);
+        _fileNamer.GetBundleFileName("MyApp", Arg.Any<IReadOnlyList<FileInfo>>(), "zip").Returns("bundle.zip");
+        _fileSystem.OpenRead(files[0]).Returns(_ => throw new IOException("locked"));
+        _fileSystem.CreateWrite(Arg.Any<string>()).Returns(new MemoryStream());
+
+        var options = new CompressionOptions
+        {
+            SourcePath = dir,
+            OnError = new ErrorPolicy { RetryCount = 1 }
+        };
+        var result = await _sut.ExecuteAsync(options);
+
+        // Exactly 1 initial attempt + 1 retry — the budget must not be off
+        // by one in either direction.
+        Assert.False(result.Success);
+        _fileSystem.Received(2).OpenRead(files[0]);
+    }
+
+
+
+    [Fact]
+    public async Task ExecuteAsync_when_bundleSucceeds_expected_originalSizeIsSumOfInputs()
+    {
+        var dir = "/tmp/logs/MyApp";
+        var files = CreateTempFiles(2);
+        var infos = files.Select(f => new FileInfo(f)).ToList();
+
+        SetupDirectory(dir, files, infos);
+        _fileNamer.GetBundleFileName("MyApp", Arg.Any<IReadOnlyList<FileInfo>>(), "zip").Returns("bundle.zip");
+        _fileSystem.CreateWrite(Arg.Any<string>()).Returns(new MemoryStream());
+
+        var result = await _sut.ExecuteAsync(new CompressionOptions { SourcePath = dir });
+
+        Assert.True(result.Success);
+        Assert.Equal(infos.Sum(f => f.Length), result.OriginalSize);
+    }
+
+
+
+    [Fact]
+    public async Task ExecuteAsync_when_fileSource_withOutputPath_expected_bundleWrittenUnderOutputPath()
+    {
+        var file = CreateTempFiles(1)[0];
+        var info = new FileInfo(file);
+        var outputDir = "/tmp/bundle-out";
+
+        _fileSystem.FileExists(file).Returns(returnThis: true);
+        _fileSystem.GetFileInfo(file).Returns(info);
+        _fileSystem.DirectoryExists(outputDir).Returns(returnThis: true);
+        _fileSystem.OpenRead(file).Returns(new MemoryStream("content"u8.ToArray()));
+        _fileFilter.Apply
+        (
+            Arg.Any<IEnumerable<FileInfo>>(),
+            Arg.Any<int?>(),
+            Arg.Any<DateTime?>(),
+            Arg.Any<DateTime?>(),
+            Arg.Any<IReadOnlyList<string>>(),
+            Arg.Any<IReadOnlyList<string>>()
+        ).Returns([info]);
+        _fileNamer.GetBundleFileName(Arg.Any<string>(), Arg.Any<IReadOnlyList<FileInfo>>(), "zip").Returns("bundle.zip");
+        _fileSystem.CreateWrite(Arg.Any<string>()).Returns(new MemoryStream());
+
+        var options = new CompressionOptions { SourcePath = file, OutputPath = outputDir };
+        var result = await _sut.ExecuteAsync(options);
+
+        // --output must win over the source file's own directory.
+        Assert.True(result.Success);
+        Assert.Equal(Path.Combine(outputDir, "bundle.zip"), result.OutputPath);
+    }
+
+
+
+    [Fact]
+    public void Ctor_when_anyDependencyNull_expected_throwsWithParamName()
+    {
+        var factory = Substitute.For<CompressionStrategyFactory>();
+        var logger = Substitute.For<ILogger<BundleService>>();
+
+        Assert.Equal("fileSystem", Assert.Throws<ArgumentNullException>(() => new BundleService(null!, _fileFilter, _fileNamer, _archiveVerifier, factory, logger)).ParamName);
+        Assert.Equal("fileFilter", Assert.Throws<ArgumentNullException>(() => new BundleService(_fileSystem, null!, _fileNamer, _archiveVerifier, factory, logger)).ParamName);
+        Assert.Equal("fileNamer", Assert.Throws<ArgumentNullException>(() => new BundleService(_fileSystem, _fileFilter, null!, _archiveVerifier, factory, logger)).ParamName);
+        Assert.Equal("archiveVerifier", Assert.Throws<ArgumentNullException>(() => new BundleService(_fileSystem, _fileFilter, _fileNamer, null!, factory, logger)).ParamName);
+        Assert.Equal("strategyFactory", Assert.Throws<ArgumentNullException>(() => new BundleService(_fileSystem, _fileFilter, _fileNamer, _archiveVerifier, null!, logger)).ParamName);
+        Assert.Equal("logger", Assert.Throws<ArgumentNullException>(() => new BundleService(_fileSystem, _fileFilter, _fileNamer, _archiveVerifier, factory, null!)).ParamName);
     }
 
 

@@ -236,7 +236,9 @@ public sealed class CompressServiceTests : IDisposable
 
         var options = new CompressionOptions { SourcePath = "nonexistent" };
 
-        await Assert.ThrowsAsync<FileNotFoundException>(() => _sut.ExecuteAsync(options));
+        var ex = await Assert.ThrowsAsync<FileNotFoundException>(() => _sut.ExecuteAsync(options));
+
+        Assert.Contains("Source path not found: nonexistent", ex.Message, StringComparison.Ordinal);
     }
 
 
@@ -662,6 +664,171 @@ public sealed class CompressServiceTests : IDisposable
         // The failed attempt's leftover was cleared before the retry wrote to
         // the same path (source deletion is a separate DeleteFile call).
         _fileSystem.Received(1).DeleteFile(expectedOutput);
+    }
+
+
+
+    [Fact]
+    public async Task ExecuteAsync_when_retriesExhausted_expected_exactAttemptCount()
+    {
+        var tempFile = CreateTempFile();
+        var fileInfo = new FileInfo(tempFile);
+
+        _fileSystem.FileExists(tempFile).Returns(returnThis: true);
+        _fileSystem.GetFileInfo(tempFile).Returns(fileInfo);
+        _fileFilter.Apply
+        (
+            Arg.Any<IEnumerable<FileInfo>>(),
+            Arg.Any<int?>(),
+            Arg.Any<DateTime?>(),
+            Arg.Any<DateTime?>(),
+            Arg.Any<IReadOnlyList<string>>(),
+            Arg.Any<IReadOnlyList<string>>()
+        ).Returns([fileInfo]);
+        _fileNamer.GetCompressedFileName(Arg.Any<FileInfo>(), "zip", Arg.Any<TimestampSource>(), Arg.Any<string?>()).Returns("out.zip");
+        _fileSystem.OpenRead(tempFile).Returns(_ => new MemoryStream("content"u8.ToArray()));
+        _fileSystem.CreateWrite(Arg.Any<string>()).Returns(_ => new MemoryStream());
+        _archiveVerifier.VerifyAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<long?>()).Returns(Task.FromResult(false));
+
+        var options = new CompressionOptions
+        {
+            SourcePath = tempFile,
+            Verify = true,
+            OnError = new ErrorPolicy { RetryCount = 2 }
+        };
+        var results = await _sut.ExecuteAsync(options);
+
+        // Exactly 1 initial attempt + 2 retries — the retry budget must be
+        // spent precisely, no more, no less.
+        Assert.False(Assert.Single(results).Success);
+        _fileSystem.Received(3).CreateWrite(Arg.Any<string>());
+    }
+
+
+
+    [Fact]
+    public async Task ExecuteAsync_when_dotfileNameCollides_expected_counterAppendedNotSplit()
+    {
+        var dir = Path.GetTempPath();
+        var files = new[] { CreateTempFile(), CreateTempFile() };
+        var fileInfos = files.Select(f => new FileInfo(f)).ToList();
+
+        _fileSystem.FileExists(dir).Returns(returnThis: false);
+        _fileSystem.DirectoryExists(dir).Returns(returnThis: true);
+        _fileSystem.EnumerateFiles(dir, "*", SearchOption.TopDirectoryOnly).Returns(files);
+        _fileSystem.GetFileInfo(files[0]).Returns(fileInfos[0]);
+        _fileSystem.GetFileInfo(files[1]).Returns(fileInfos[1]);
+        _fileFilter.Apply
+        (
+            Arg.Any<IEnumerable<FileInfo>>(),
+            Arg.Any<int?>(),
+            Arg.Any<DateTime?>(),
+            Arg.Any<DateTime?>(),
+            Arg.Any<IReadOnlyList<string>>(),
+            Arg.Any<IReadOnlyList<string>>()
+        ).Returns(fileInfos);
+        // A name whose ONLY dot is the leading one has no extension to
+        // preserve — the counter belongs at the end, not before ".hidden".
+        _fileNamer.GetCompressedFileName(Arg.Any<FileInfo>(), "zip", Arg.Any<TimestampSource>(), Arg.Any<string?>()).Returns(".hidden");
+        _fileSystem.OpenRead(Arg.Any<string>()).Returns(_ => new MemoryStream("content"u8.ToArray()));
+        _fileSystem.CreateWrite(Arg.Any<string>()).Returns(_ => new MemoryStream());
+
+        var options = new CompressionOptions { SourcePath = dir };
+        var results = await _sut.ExecuteAsync(options);
+
+        Assert.EndsWith(".hidden-2", results[1].OutputPath, StringComparison.Ordinal);
+    }
+
+
+
+    [Fact]
+    public void Ctor_when_anyDependencyNull_expected_throwsWithParamName()
+    {
+        var factory = Substitute.For<CompressionStrategyFactory>();
+        var logger = Substitute.For<ILogger<CompressService>>();
+
+        Assert.Equal("fileSystem", Assert.Throws<ArgumentNullException>(() => new CompressService(null!, _fileFilter, _fileNamer, _archiveVerifier, factory, logger)).ParamName);
+        Assert.Equal("fileFilter", Assert.Throws<ArgumentNullException>(() => new CompressService(_fileSystem, null!, _fileNamer, _archiveVerifier, factory, logger)).ParamName);
+        Assert.Equal("fileNamer", Assert.Throws<ArgumentNullException>(() => new CompressService(_fileSystem, _fileFilter, null!, _archiveVerifier, factory, logger)).ParamName);
+        Assert.Equal("archiveVerifier", Assert.Throws<ArgumentNullException>(() => new CompressService(_fileSystem, _fileFilter, _fileNamer, null!, factory, logger)).ParamName);
+        Assert.Equal("strategyFactory", Assert.Throws<ArgumentNullException>(() => new CompressService(_fileSystem, _fileFilter, _fileNamer, _archiveVerifier, null!, logger)).ParamName);
+        Assert.Equal("logger", Assert.Throws<ArgumentNullException>(() => new CompressService(_fileSystem, _fileFilter, _fileNamer, _archiveVerifier, factory, null!)).ParamName);
+    }
+
+
+
+    [Fact]
+    public async Task ExecuteAsync_when_skipMode_withFailureFirst_expected_laterFilesStillProcessed()
+    {
+        var dir = Path.GetTempPath();
+        var files = new[] { CreateTempFile(), CreateTempFile() };
+        var fileInfos = files.Select(f => new FileInfo(f)).ToList();
+
+        _fileSystem.FileExists(dir).Returns(returnThis: false);
+        _fileSystem.DirectoryExists(dir).Returns(returnThis: true);
+        _fileSystem.EnumerateFiles(dir, "*", SearchOption.TopDirectoryOnly).Returns(files);
+        _fileSystem.GetFileInfo(files[0]).Returns(fileInfos[0]);
+        _fileSystem.GetFileInfo(files[1]).Returns(fileInfos[1]);
+        _fileFilter.Apply
+        (
+            Arg.Any<IEnumerable<FileInfo>>(),
+            Arg.Any<int?>(),
+            Arg.Any<DateTime?>(),
+            Arg.Any<DateTime?>(),
+            Arg.Any<IReadOnlyList<string>>(),
+            Arg.Any<IReadOnlyList<string>>()
+        ).Returns(fileInfos);
+        _fileNamer.GetCompressedFileName(Arg.Any<FileInfo>(), "zip", Arg.Any<TimestampSource>(), Arg.Any<string?>()).Returns("out.zip");
+        _fileSystem.OpenRead(Arg.Any<string>()).Returns(_ => new MemoryStream("content"u8.ToArray()));
+        _fileSystem.CreateWrite(Arg.Any<string>()).Returns(_ => new MemoryStream());
+        // First file fails verification, second passes.
+        _archiveVerifier.VerifyAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<long?>())
+            .Returns(Task.FromResult(false), Task.FromResult(true));
+
+        var options = new CompressionOptions { SourcePath = dir, Verify = true };
+        var results = await _sut.ExecuteAsync(options);
+
+        // Default skip mode: a failure must not stop the run.
+        Assert.Equal(2, results.Count);
+        Assert.False(results[0].Success);
+        Assert.True(results[1].Success);
+    }
+
+
+
+    [Fact]
+    public async Task ExecuteAsync_when_threeSourcesCollide_expected_countersTwoAndThree()
+    {
+        var dir = Path.GetTempPath();
+        var files = new[] { CreateTempFile(), CreateTempFile(), CreateTempFile() };
+        var fileInfos = files.Select(f => new FileInfo(f)).ToList();
+
+        _fileSystem.FileExists(dir).Returns(returnThis: false);
+        _fileSystem.DirectoryExists(dir).Returns(returnThis: true);
+        _fileSystem.EnumerateFiles(dir, "*", SearchOption.TopDirectoryOnly).Returns(files);
+        _fileSystem.GetFileInfo(files[0]).Returns(fileInfos[0]);
+        _fileSystem.GetFileInfo(files[1]).Returns(fileInfos[1]);
+        _fileSystem.GetFileInfo(files[2]).Returns(fileInfos[2]);
+        _fileFilter.Apply
+        (
+            Arg.Any<IEnumerable<FileInfo>>(),
+            Arg.Any<int?>(),
+            Arg.Any<DateTime?>(),
+            Arg.Any<DateTime?>(),
+            Arg.Any<IReadOnlyList<string>>(),
+            Arg.Any<IReadOnlyList<string>>()
+        ).Returns(fileInfos);
+        _fileNamer.GetCompressedFileName(Arg.Any<FileInfo>(), "zip", Arg.Any<TimestampSource>(), Arg.Any<string?>()).Returns("logs.zip");
+        _fileSystem.OpenRead(Arg.Any<string>()).Returns(_ => new MemoryStream("content"u8.ToArray()));
+        _fileSystem.CreateWrite(Arg.Any<string>()).Returns(_ => new MemoryStream());
+
+        var options = new CompressionOptions { SourcePath = dir };
+        var results = await _sut.ExecuteAsync(options);
+
+        // The counter must keep advancing past the first collision.
+        Assert.EndsWith("logs.zip", results[0].OutputPath, StringComparison.Ordinal);
+        Assert.EndsWith("logs-2.zip", results[1].OutputPath, StringComparison.Ordinal);
+        Assert.EndsWith("logs-3.zip", results[2].OutputPath, StringComparison.Ordinal);
     }
 
 

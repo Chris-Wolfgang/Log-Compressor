@@ -156,6 +156,147 @@ public sealed class ArchiveVerifierTests : IDisposable
 
 
 
+    // The tar-bundle formats run a tar-structure walk on top of (or instead
+    // of) the compression-level check. A VALID compression stream wrapping
+    // NON-tar bytes isolates that walk: only the tar check can reject it.
+    [Theory]
+    [InlineData("tar.gz")]
+    [InlineData("tar.br")]
+    [InlineData("tar.zst")]
+    [InlineData("tar.lz4")]
+    public async Task VerifyAsync_when_validCompressionWrapsNonTarContent_expected_false(string format)
+    {
+        var notATar = new byte[600];
+        new Random(7).NextBytes(notATar);
+        var archivePath = Path.Combine(_tempDir, $"bad.{format}");
+        await File.WriteAllBytesAsync(archivePath, CompressRaw(format, notATar));
+
+        var result = await _sut.VerifyAsync(archivePath, format);
+
+        Assert.False(result);
+    }
+
+
+
+    [Theory]
+    [InlineData("tar.zst")]
+    [InlineData("tar.lz4")]
+    public async Task VerifyAsync_when_validTarBundle_expected_true(string format)
+    {
+        var archivePath = Path.Combine(_tempDir, $"good.{format}");
+        await File.WriteAllBytesAsync(archivePath, CompressRaw(format, TarBytes("file.log", "hello tar"u8.ToArray())));
+
+        var result = await _sut.VerifyAsync(archivePath, format);
+
+        Assert.True(result);
+    }
+
+
+
+    [Fact]
+    public async Task VerifyAsync_when_unknownFormat_withMissingFile_expected_false()
+    {
+        // The unknown-format fallback must actually open the file — a
+        // missing (or unreadable) file cannot verify as readable.
+        var result = await _sut.VerifyAsync(Path.Combine(_tempDir, "missing.bin"), "unknown");
+
+        Assert.False(result);
+    }
+
+
+
+    private static byte[] CompressRaw(string format, byte[] content)
+    {
+        using var buffer = new MemoryStream();
+        Stream compressor = format switch
+        {
+            "tar.gz" => new GZipStream(buffer, CompressionLevel.Fastest, leaveOpen: true),
+            "tar.br" => new BrotliStream(buffer, CompressionLevel.Fastest, leaveOpen: true),
+            "tar.zst" => new ZstdSharp.CompressionStream(buffer, leaveOpen: true),
+            "tar.lz4" => K4os.Compression.LZ4.Streams.LZ4Stream.Encode(buffer, leaveOpen: true),
+            _ => throw new ArgumentOutOfRangeException(nameof(format))
+        };
+        using (compressor)
+        {
+            compressor.Write(content);
+        }
+
+        return buffer.ToArray();
+    }
+
+
+
+    private static byte[] TarBytes(string entryName, byte[] content)
+    {
+        using var buffer = new MemoryStream();
+        using (var writer = new TarWriter(buffer, leaveOpen: true))
+        {
+            var entry = new PaxTarEntry(TarEntryType.RegularFile, entryName)
+            {
+                DataStream = new MemoryStream(content)
+            };
+            writer.WriteEntry(entry);
+        }
+
+        return buffer.ToArray();
+    }
+
+
+
+    [Fact]
+    public void Ctor_when_loggerNull_expected_throwsWithParamName()
+    {
+        Assert.Equal("logger", Assert.Throws<ArgumentNullException>(() => new ArchiveVerifier(null!)).ParamName);
+    }
+
+
+
+    [Fact]
+    public async Task VerifyAsync_when_expectedSizeZero_expected_sizeMismatchNotRejection()
+    {
+        // Zero is a legal expected size (an empty source file) — it must be
+        // treated as a size to compare against, never rejected as invalid.
+        var archivePath = Path.Combine(_tempDir, "nonempty.gz");
+        await CreateValidGzAsync(archivePath);
+
+        var result = await _sut.VerifyAsync(archivePath, "gz", expectedUncompressedSize: 0);
+
+        Assert.False(result);
+    }
+
+
+
+    // Pinned from the weekly fuzz sweep (seed 6ynpRrX3UoE1): GZipStream and
+    // the K4os LZ4 encoder emit NOTHING for a source that never yields a
+    // byte, producing 0-byte malformed archives that fail verification.
+    // Every strategy must produce a verifiable archive for an EMPTY source.
+    [Theory]
+    [InlineData("zip")]
+    [InlineData("gz")]
+    [InlineData("brotli")]
+    [InlineData("zstd")]
+    [InlineData("lz4")]
+    public async Task VerifyAsync_when_strategyCompressesEmptySource_expected_true(string formatName)
+    {
+        var strategy = new Wolfgang.LogCompressor.Service.Compression.CompressionStrategyFactory()
+            .Create(Enum.Parse<Wolfgang.LogCompressor.Model.CompressionFormat>(formatName, ignoreCase: true), CompressionLevel.SmallestSize);
+        var archivePath = Path.Combine(_tempDir, $"empty-source.{strategy.FileExtension}");
+        using (var input = new MemoryStream())
+        {
+            var output = File.Create(archivePath);
+            await using (output.ConfigureAwait(false))
+            {
+                await strategy.CompressFileAsync(input, output, "empty.log");
+            }
+        }
+
+        var result = await _sut.VerifyAsync(archivePath, strategy.FileExtension, expectedUncompressedSize: 0);
+
+        Assert.True(result);
+    }
+
+
+
     [Fact]
     public async Task VerifyAsync_when_nullPath_expected_throwsArgumentNullException()
     {

@@ -106,10 +106,11 @@ internal sealed class ProcessLock : IDisposable
             _logger.LogDebug("Lock acquired: {Path}", _lockFilePath);
             return true;
         }
-        catch (IOException)
+        catch (IOException ex)
         {
             _logger.LogWarning
             (
+                ex,
                 "Another instance is already processing this directory. Lock file: {Path}",
                 _lockFilePath
             );

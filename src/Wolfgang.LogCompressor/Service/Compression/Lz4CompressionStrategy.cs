@@ -47,6 +47,11 @@ internal sealed class Lz4CompressionStrategy : ICompressionStrategy
     {
         _ = entryName; // Not used by single-stream LZ4 format
         await using var lz4Stream = LZ4Stream.Encode(outputStream, _level, leaveOpen: true);
+        // K4os emits NOTHING (not even the frame header/end mark) when no
+        // write ever reaches the encoder, so an empty source would produce a
+        // 0-byte, malformed .lz4. An explicit empty write triggers the full
+        // valid frame (11 bytes: magic + descriptor + end mark).
+        await lz4Stream.WriteAsync(ReadOnlyMemory<byte>.Empty, cancellationToken).ConfigureAwait(false);
         await inputStream.CopyToAsync(lz4Stream, cancellationToken).ConfigureAwait(false);
     }
 
@@ -55,7 +60,7 @@ internal sealed class Lz4CompressionStrategy : ICompressionStrategy
     /// <inheritdoc />
     public async Task CompressFilesAsync
     (
-        IEnumerable<(Stream Stream, string EntryName)> inputs,
+        IAsyncEnumerable<(Stream Stream, string EntryName)> inputs,
         Stream outputStream,
         CancellationToken cancellationToken = default
     )
@@ -63,7 +68,7 @@ internal sealed class Lz4CompressionStrategy : ICompressionStrategy
         await using var lz4Stream = LZ4Stream.Encode(outputStream, _level, leaveOpen: true);
         await using var tarWriter = new TarWriter(lz4Stream, leaveOpen: true);
 
-        foreach (var (stream, entryName) in inputs)
+        await foreach (var (stream, entryName) in inputs.WithCancellation(cancellationToken).ConfigureAwait(false))
         {
             // Take ownership of the source stream: dispose it as soon as its entry
             // is written so only one source handle is open at a time.

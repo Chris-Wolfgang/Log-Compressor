@@ -9,6 +9,21 @@ namespace Wolfgang.LogCompressor.Service.Compression;
 /// </summary>
 internal sealed class GZipCompressionStrategy : ICompressionStrategy
 {
+    // .NET's GZipStream emits NOTHING at all (no header, no trailer) when no
+    // byte is ever written through it, so an empty source would produce a
+    // 0-byte, malformed .gz that fails verification (found by the fuzz sweep:
+    // seed 6ynpRrX3UoE1). Neither Flush nor an empty write completes the
+    // framing, so empty sources get the canonical empty gzip member instead:
+    // 10-byte header, empty final deflate block (03 00), zero CRC-32/ISIZE.
+    private static readonly byte[] EmptyGzipMember =
+    [
+        0x1F, 0x8B, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+        0x03, 0x00,
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
+    ];
+
+
+
     private readonly CompressionLevel _level;
 
 
@@ -44,8 +59,24 @@ internal sealed class GZipCompressionStrategy : ICompressionStrategy
     )
     {
         _ = entryName; // Not used by single-stream GZip format
-        await using var gzipStream = new GZipStream(outputStream, _level, leaveOpen: true);
-        await inputStream.CopyToAsync(gzipStream, cancellationToken).ConfigureAwait(false);
+
+        // A 1-byte probe detects an empty source without allocating a copy
+        // buffer per file; the probed byte is replayed ahead of the bulk copy
+        // (which uses CopyToAsync's pooled buffering).
+        var probe = new byte[1];
+        var firstRead = await inputStream.ReadAsync(probe, cancellationToken).ConfigureAwait(false);
+        if (firstRead == 0)
+        {
+            await outputStream.WriteAsync(EmptyGzipMember, cancellationToken).ConfigureAwait(false);
+            return;
+        }
+
+        var gzipStream = new GZipStream(outputStream, _level, leaveOpen: true);
+        await using (gzipStream.ConfigureAwait(false))
+        {
+            await gzipStream.WriteAsync(probe.AsMemory(0, 1), cancellationToken).ConfigureAwait(false);
+            await inputStream.CopyToAsync(gzipStream, cancellationToken).ConfigureAwait(false);
+        }
     }
 
 
@@ -53,7 +84,7 @@ internal sealed class GZipCompressionStrategy : ICompressionStrategy
     /// <inheritdoc />
     public async Task CompressFilesAsync
     (
-        IEnumerable<(Stream Stream, string EntryName)> inputs,
+        IAsyncEnumerable<(Stream Stream, string EntryName)> inputs,
         Stream outputStream,
         CancellationToken cancellationToken = default
     )
@@ -61,7 +92,7 @@ internal sealed class GZipCompressionStrategy : ICompressionStrategy
         await using var gzipStream = new GZipStream(outputStream, _level, leaveOpen: true);
         await using var tarWriter = new TarWriter(gzipStream, leaveOpen: true);
 
-        foreach (var (stream, entryName) in inputs)
+        await foreach (var (stream, entryName) in inputs.WithCancellation(cancellationToken).ConfigureAwait(false))
         {
             // Take ownership of the source stream: dispose it as soon as its entry
             // is written so only one source handle is open at a time.

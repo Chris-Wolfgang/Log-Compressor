@@ -77,7 +77,9 @@ jobs:
             python scripts/Normalize-TestResults.py "$trx" "$RUNNER_TEMP/part.txt"
             cat "$RUNNER_TEMP/part.txt" >> normalized/${{ matrix.leg }}.txt
           done
-          sort -o normalized/${{ matrix.leg }}.txt normalized/${{ matrix.leg }}.txt
+          # LC_ALL=C: byte-ordinal sort — macOS's default collation orders
+          # case differently and produced false divergence (2026-09-03 run).
+          LC_ALL=C sort -o normalized/${{ matrix.leg }}.txt normalized/${{ matrix.leg }}.txt
           wc -l normalized/${{ matrix.leg }}.txt
 
       - name: Upload normalized outcomes
@@ -148,6 +150,8 @@ jobs:
         if: failure() && steps.compare.outcome == 'failure'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # No checkout in this job — gh needs the repo told explicitly.
+          GH_REPO: ${{ github.repository }}
         run: |
           {
             echo "The weekly cross-platform differential found platform-divergent test outcomes (or a leg that produced none)."

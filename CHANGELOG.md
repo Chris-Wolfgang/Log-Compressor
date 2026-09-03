@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **Empty source files now produce valid archives.** .NET's `GZipStream` and the LZ4 encoder emit zero bytes when no data is ever written, so compressing an empty file produced a 0-byte, malformed `.gz`/`.lz4` that failed verification (leaving the source in place and the run degraded). Empty sources now get the canonical empty gzip member / LZ4 frame. Found by the weekly fuzz sweep's first scheduled-cadence run (seed `6ynpRrX3UoE1`).
+- The weekly cross-platform differential no longer reports false divergence from macOS's locale-dependent sort collation (`LC_ALL=C`), and its issue-filing step works without a checkout (`GH_REPO`).
+
 ### Changed
 
 - `--on-error retry:N` now backs off between attempts (200 ms x attempt, capped at 2 s) instead of retrying immediately — transient conditions like a writer rotating the file rarely clear within microseconds.

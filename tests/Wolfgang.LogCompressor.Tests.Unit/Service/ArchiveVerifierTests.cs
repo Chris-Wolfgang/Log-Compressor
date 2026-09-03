@@ -266,6 +266,37 @@ public sealed class ArchiveVerifierTests : IDisposable
 
 
 
+    // Pinned from the weekly fuzz sweep (seed 6ynpRrX3UoE1): GZipStream and
+    // the K4os LZ4 encoder emit NOTHING for a source that never yields a
+    // byte, producing 0-byte malformed archives that fail verification.
+    // Every strategy must produce a verifiable archive for an EMPTY source.
+    [Theory]
+    [InlineData("zip")]
+    [InlineData("gz")]
+    [InlineData("brotli")]
+    [InlineData("zstd")]
+    [InlineData("lz4")]
+    public async Task VerifyAsync_when_strategyCompressesEmptySource_expected_true(string formatName)
+    {
+        var strategy = new Wolfgang.LogCompressor.Service.Compression.CompressionStrategyFactory()
+            .Create(Enum.Parse<Wolfgang.LogCompressor.Model.CompressionFormat>(formatName, ignoreCase: true), CompressionLevel.SmallestSize);
+        var archivePath = Path.Combine(_tempDir, $"empty-source.{strategy.FileExtension}");
+        using (var input = new MemoryStream())
+        {
+            var output = File.Create(archivePath);
+            await using (output.ConfigureAwait(false))
+            {
+                await strategy.CompressFileAsync(input, output, "empty.log");
+            }
+        }
+
+        var result = await _sut.VerifyAsync(archivePath, strategy.FileExtension, expectedUncompressedSize: 0);
+
+        Assert.True(result);
+    }
+
+
+
     [Fact]
     public async Task VerifyAsync_when_nullPath_expected_throwsArgumentNullException()
     {

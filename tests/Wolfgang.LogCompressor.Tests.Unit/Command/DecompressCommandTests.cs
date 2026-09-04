@@ -13,7 +13,7 @@ public sealed class DecompressCommandTests : IDisposable
     private readonly IConsole _console = Substitute.For<IConsole>();
     private readonly ILogger<Decompress> _logger = Substitute.For<ILogger<Decompress>>();
     private readonly DecompressService _decompressService;
-    private readonly ReportService _reportService = new();
+    private readonly ReportService _reportService = new(new FileSystemWrapper(), TimeProvider.System);
     private readonly string _tempDir;
 
 

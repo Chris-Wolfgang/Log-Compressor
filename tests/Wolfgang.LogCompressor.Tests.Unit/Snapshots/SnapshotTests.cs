@@ -60,7 +60,7 @@ public sealed class SnapshotTests : IDisposable
     [Fact]
     public async Task WriteReportAsync_when_json_expected_stableShape()
     {
-        var sut = new ReportService();
+        var sut = new ReportService(new FileSystemWrapper(), TimeProvider.System);
         var reportPath = Path.Combine(_tempDir.Path, "report.json");
 
         await sut.WriteReportAsync(SampleResults(), "json", reportPath, TimeSpan.FromMinutes(5));
@@ -74,7 +74,7 @@ public sealed class SnapshotTests : IDisposable
     [Fact]
     public async Task WriteReportAsync_when_csv_expected_stableShape()
     {
-        var sut = new ReportService();
+        var sut = new ReportService(new FileSystemWrapper(), TimeProvider.System);
         var reportPath = Path.Combine(_tempDir.Path, "report.csv");
 
         await sut.WriteReportAsync(SampleResults(), "csv", reportPath, TimeSpan.FromMinutes(5));

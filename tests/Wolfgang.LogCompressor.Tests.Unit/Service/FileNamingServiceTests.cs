@@ -6,7 +6,7 @@ namespace Wolfgang.LogCompressor.Tests.Unit.Service;
 public sealed class FileNamingServiceTests : IDisposable
 {
     private readonly TempDirectory _tempDir = new();
-    private readonly FileNamingService _sut = new();
+    private readonly FileNamingService _sut = new(TimeProvider.System);
 
 
 
@@ -206,6 +206,39 @@ public sealed class FileNamingServiceTests : IDisposable
 
         Assert.Matches(@"^rollup-\d{4}-\d{2}-\d{2}_\d{2}-\d{2}-\d{2}\.zip$", result);
         Assert.DoesNotContain(" to ", result, StringComparison.Ordinal);
+    }
+
+
+
+    [Fact]
+    public void GetCompressedFileName_when_compressedTimestamp_expected_exactInjectedTime()
+    {
+        var fixedNow = new DateTimeOffset(2026, 9, 4, 10, 20, 30, TimeSpan.Zero);
+        var sut = new FileNamingService(new FixedTimeProvider(fixedNow));
+        var file = new FileInfo(CreateTempFileWithWriteTime(new DateTime(2020, 1, 1)));
+
+        var result = sut.GetCompressedFileName(file, "gz", TimestampSource.Compressed);
+
+        Assert.Equal("test-2026-09-04_10-20-30.gz", result);
+    }
+
+
+
+    [Fact]
+    public void Ctor_when_timeProviderNull_expected_throwsWithParamName()
+    {
+        Assert.Equal("timeProvider", Assert.Throws<ArgumentNullException>(() => new FileNamingService(null!)).ParamName);
+    }
+
+
+
+    private sealed class FixedTimeProvider(DateTimeOffset now) : TimeProvider
+    {
+        public override DateTimeOffset GetUtcNow() => now;
+
+
+
+        public override TimeZoneInfo LocalTimeZone => TimeZoneInfo.Utc;
     }
 
 

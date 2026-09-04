@@ -8,6 +8,23 @@ namespace Wolfgang.LogCompressor.Service;
 /// </summary>
 internal sealed class FileFilterService : IFileFilter
 {
+    private readonly TimeProvider _timeProvider;
+
+
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="FileFilterService"/> class.
+    /// </summary>
+    /// <param name="timeProvider">The time source for the --older-than cutoff.</param>
+    public FileFilterService(TimeProvider timeProvider)
+    {
+        ArgumentNullException.ThrowIfNull(timeProvider);
+
+        _timeProvider = timeProvider;
+    }
+
+
+
     /// <inheritdoc />
     public IReadOnlyList<FileInfo> Apply
     (
@@ -25,7 +42,7 @@ internal sealed class FileFilterService : IFileFilter
 
         if (olderThanDays.HasValue)
         {
-            var threshold = DateTime.Today.AddDays(-olderThanDays.Value);
+            var threshold = _timeProvider.GetLocalNow().Date.AddDays(-olderThanDays.Value);
             query = query.Where(f => f.LastWriteTime < threshold);
         }
 

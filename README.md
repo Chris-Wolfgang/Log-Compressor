@@ -15,7 +15,7 @@ A cross-platform .NET CLI (`logc`) for compressing log files. Built for **unatte
   - `logc bundle <path>` — produces **one archive containing many files** (good for end-of-month rollups)
   - `logc init` — generates **starter configuration files** (`compress.rsp` / `bundle.rsp`) for scheduled jobs
   - `logc decompress <path>` — **extracts** logc archives (all formats, singles and bundles); archives are deleted only after every entry extracted successfully
-- **Five formats:** ZIP (default), GZip (`.tar.gz`), Brotli (`.tar.br`), Zstandard (`.tar.zst`), LZ4 (`.tar.lz4`)
+- **Five formats:** ZIP (default), GZip (`.gz` / `.tar.gz`), Brotli (`.br` / `.tar.br`), Zstandard (`.zst` / `.tar.zst`), LZ4 (`.lz4` / `.tar.lz4`) — raw extension for single files, `.tar.*` for bundles
 - **Filtering:**
   - `-r|--recurse` — descend into subdirectories
   - `--older-than <days>` — only files modified N+ calendar days ago

@@ -52,7 +52,8 @@ public sealed class ReportServiceTests : IDisposable
         var outputPath = Path.Combine(_tempDir, "guarded.csv");
         var results = new List<CompressionResult>
         {
-            new() { SourcePath = "=cmd|calc", OutputPath = "+sum.zip", Success = true }
+            new() { SourcePath = "=cmd|calc", OutputPath = "+sum.zip", Success = true },
+            new() { SourcePath = "	=tabbed", OutputPath = " @indirect.zip", Success = true }
         };
 
         await _sut.WriteReportAsync(results, "csv", outputPath, TimeSpan.Zero);
@@ -62,6 +63,9 @@ public sealed class ReportServiceTests : IDisposable
         // the guard prefixes an apostrophe.
         Assert.Contains("\"'=cmd|calc\"", csv, StringComparison.Ordinal);
         Assert.Contains("\"'+sum.zip\"", csv, StringComparison.Ordinal);
+        // Leading whitespace must not defeat the guard.
+        Assert.Contains("\"'	=tabbed\"", csv, StringComparison.Ordinal);
+        Assert.Contains("\"' @indirect.zip\"", csv, StringComparison.Ordinal);
     }
 
 

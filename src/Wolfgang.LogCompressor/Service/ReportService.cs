@@ -140,9 +140,11 @@ internal sealed class ReportService
     {
         var escaped = value.Replace("\"", "\"\"", StringComparison.Ordinal);
 
-        // Spreadsheet formula-injection guard: a leading =, +, - or @ is
-        // executed as a formula when the CSV opens in Excel/Sheets.
-        return escaped.Length > 0 && escaped[0] is '=' or '+' or '-' or '@'
+        // Spreadsheet formula-injection guard: a leading =, +, - or @ (even
+        // behind whitespace) is executed as a formula when the CSV opens in
+        // Excel/Sheets.
+        var significant = escaped.AsSpan().TrimStart();
+        return significant.Length > 0 && significant[0] is '=' or '+' or '-' or '@'
             ? "'" + escaped
             : escaped;
     }

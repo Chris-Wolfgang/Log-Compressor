@@ -58,6 +58,24 @@ public sealed class CompressCommandTests : IDisposable
 
 
     [Fact]
+    public async Task OnExecuteAsync_when_canceled_expected_canceledExitCode()
+    {
+        using var cts = new CancellationTokenSource();
+        await cts.CancelAsync();
+        _compressService.ExecuteAsync(Arg.Any<CompressionOptions>(), Arg.Any<CancellationToken>())
+            .Returns<IReadOnlyList<CompressionResult>>(_ => throw new OperationCanceledException(cts.Token));
+
+        var command = new Compress { Path = "/tmp/test.log", NoLock = true };
+
+        var result = await command.OnExecuteAsync(_console, _logger, _compressService, _reportService, _retentionService, cts.Token);
+
+        // Deliberate cancellation is not an application error.
+        Assert.Equal(ExitCode.Canceled, result);
+    }
+
+
+
+    [Fact]
     public async Task OnExecuteAsync_when_validArgs_expected_success()
     {
         _compressService.ExecuteAsync(Arg.Any<CompressionOptions>(), Arg.Any<CancellationToken>())

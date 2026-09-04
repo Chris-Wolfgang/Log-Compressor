@@ -58,6 +58,24 @@ public sealed class BundleCommandTests : IDisposable
 
 
     [Fact]
+    public async Task OnExecuteAsync_when_canceled_expected_canceledExitCode()
+    {
+        using var cts = new CancellationTokenSource();
+        await cts.CancelAsync();
+        _bundleService.ExecuteAsync(Arg.Any<CompressionOptions>(), Arg.Any<CancellationToken>())
+            .Returns<CompressionResult>(_ => throw new OperationCanceledException(cts.Token));
+
+        var command = new Bundle { Path = "/tmp/logs", NoLock = true };
+
+        var result = await command.OnExecuteAsync(_console, _logger, _bundleService, _reportService, _retentionService, cts.Token);
+
+        // Deliberate cancellation is not an application error.
+        Assert.Equal(ExitCode.Canceled, result);
+    }
+
+
+
+    [Fact]
     public async Task OnExecuteAsync_when_validArgs_expected_success()
     {
         _bundleService.ExecuteAsync(Arg.Any<CompressionOptions>(), Arg.Any<CancellationToken>())

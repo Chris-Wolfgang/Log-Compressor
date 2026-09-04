@@ -24,6 +24,14 @@ internal static class ExitCode
 
 
 
+    /// <summary>
+    /// The run was canceled (Ctrl+C / host shutdown) before completing.
+    /// Deliberate cancellation is not an application error.
+    /// </summary>
+    internal const int Canceled = 4;
+
+
+
     internal const int UnhandledException = 10;
 
 

@@ -50,7 +50,7 @@ internal class InitBundle
                       # Output directory (defaults to source parent directory)
                       # --output C:\ArchivedLogs
 
-                      # Compression format: zip, gz, brotli
+                      # Compression format: zip, gz, brotli, zstd, lz4
                       # --format zip
 
                       # Compression level: fastest, optimal, smallest
@@ -68,6 +68,15 @@ internal class InitBundle
 
                       # Exclude specific file patterns
                       # --exclude current.log
+
+                      # Timestamp embedded in archive names: modified (default), compressed
+                      # --timestamp modified
+
+                      # Custom base name for archives (colliding names get -2, -3, ...)
+                      # --name weblogs
+
+                      # When an item fails: skip (default), fail, or retry:N (1-100, then skip)
+                      # --on-error retry:3
 
                       # Skip archive verification before deleting originals
                       # --no-verify

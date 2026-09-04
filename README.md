@@ -11,8 +11,9 @@ A cross-platform .NET CLI (`logc`) for compressing log files. Built for **unatte
 ## ✨ Features
 
 - **Two compression modes:**
-  - `logc compress <path>` — produces **one archive per source file** (each log gets its own `.zip` / `.tar.gz` / `.tar.br`)
+  - `logc compress <path>` — produces **one archive per source file** (each log gets its own `.zip` / `.gz` / `.br` / `.zst` / `.lz4`)
   - `logc bundle <path>` — produces **one archive containing many files** (good for end-of-month rollups)
+  - `logc init` — generates **starter configuration files** (`compress.rsp` / `bundle.rsp`) for scheduled jobs
   - `logc decompress <path>` — **extracts** logc archives (all formats, singles and bundles); archives are deleted only after every entry extracted successfully
 - **Five formats:** ZIP (default), GZip (`.tar.gz`), Brotli (`.tar.br`), Zstandard (`.tar.zst`), LZ4 (`.tar.lz4`)
 - **Filtering:**
@@ -28,7 +29,7 @@ A cross-platform .NET CLI (`logc`) for compressing log files. Built for **unatte
 
 ## 🚀 Quick Start
 
-> **Status:** v0.1.0 — first release. Download a prebuilt archive from [Releases](https://github.com/Chris-Wolfgang/Log-Compressor/releases), or build from source below.
+> Download a prebuilt archive of the **latest release** from [Releases](https://github.com/Chris-Wolfgang/Log-Compressor/releases) (see [CHANGELOG.md](CHANGELOG.md) for what each version adds), or build from source below.
 
 ### Download & run (no .NET runtime required)
 
@@ -89,7 +90,7 @@ from source and confirm the release matches it byte for byte.
 ```bash
 git clone https://github.com/Chris-Wolfgang/Log-Compressor.git
 cd Log-Compressor
-git checkout v0.1.0
+git checkout $(git describe --tags --abbrev=0)   # latest release tag; omit to build main
 dotnet restore
 dotnet build --configuration Release
 dotnet test
@@ -165,9 +166,14 @@ logc decompress /var/log/archives --keep-archives
 | `--min-datetime <dt>` | Inclusive lower bound on last-modified date | (no filter) |
 | `--max-datetime <dt>` | Inclusive upper bound on last-modified date | (no filter) |
 | `-f`, `--format <fmt>` | `zip` \| `gz` \| `brotli` \| `zstd` \| `lz4` | `zip` |
+| `--level <lvl>` | Compression level: `fastest` \| `optimal` \| `smallest` | `smallest` |
 | `--include <glob>` | Only process files matching this glob (repeatable) | (no filter) |
 | `--exclude <glob>` | Skip files matching this glob (repeatable; applied after `--include`) | (no filter) |
 | `--on-error <policy>` | `skip` \| `fail` \| `retry:N` (1–100; retries with 200 ms–2 s backoff, then skips) | `skip` |
+| `--no-verify` | Skip archive integrity verification before deleting originals | off (verify on) |
+| `--no-lock` | Skip the single-instance directory lock | off |
+| `--report <fmt>` / `--report-path` | Summary report (`json` \| `csv`) | none |
+| `--delete-archives-older-than <days>` | Delete archives older than N days after compressing | (no cleanup) |
 
 `--older-than` is mutually exclusive with `--min-datetime` / `--max-datetime`. DateTime values are parsed using the local culture.
 
@@ -183,6 +189,10 @@ logc decompress /var/log/archives --keep-archives
 | 11 | Application error — the run failed (`--on-error fail` stopped at the first failure, or a fatal error) |
 
 Under `--on-error fail`, the first item that still fails after any retries stops the run and exits 11. Under the default `skip`, failures are logged, the item is left in place, and the run continues — ending in exit 3 so schedulers can tell a degraded run from a clean one.
+
+### `init` — starter configuration files
+
+`logc init compress` / `logc init bundle` write a commented `.rsp` starter file (default `compress.rsp` / `bundle.rsp`, override with `-o|--output <path>`) that documents every flag — edit it, then run `logc compress @compress.rsp`.
 
 ### Response files
 

@@ -135,9 +135,11 @@ public sealed class SerilogConfiguratorTests : IDisposable
         options.File.Enabled = false;
         options.Console.MinimumLevel = LogEventLevel.Information;
 
+        // Log output goes to STDERR — stdout is reserved for command results
+        // so the tool composes in a pipeline.
         var captured = new StringWriter();
-        var original = Console.Out;
-        Console.SetOut(captured);
+        var original = Console.Error;
+        Console.SetError(captured);
         try
         {
             var logger = new LoggerConfiguration().Apply(options).CreateLogger();
@@ -146,7 +148,7 @@ public sealed class SerilogConfiguratorTests : IDisposable
         }
         finally
         {
-            Console.SetOut(original);
+            Console.SetError(original);
         }
 
         Assert.Contains("console-marker", captured.ToString(), StringComparison.Ordinal);

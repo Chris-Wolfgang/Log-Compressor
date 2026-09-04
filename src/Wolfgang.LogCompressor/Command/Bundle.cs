@@ -23,6 +23,7 @@ internal class Bundle : SharedOptions
     /// <param name="bundleService">The bundle service.</param>
     /// <param name="reportService">The report service.</param>
     /// <param name="retentionService">The retention service.</param>
+    /// <param name="cancellationToken">Signaled on Ctrl+C / host shutdown; the run stops cleanly.</param>
     /// <returns>An exit code indicating success or failure.</returns>
 #pragma warning disable MA0051 // Linear command orchestration; splitting hurts readability
     internal async Task<int> OnExecuteAsync
@@ -32,7 +33,8 @@ internal class Bundle : SharedOptions
         ILogger<Bundle> logger,
         BundleService bundleService,
         ReportService reportService,
-        RetentionService retentionService
+        RetentionService retentionService,
+        CancellationToken cancellationToken = default
     )
     {
         logger.LogDebug("Starting {Command}", GetType().Name);
@@ -59,7 +61,7 @@ internal class Bundle : SharedOptions
         try
         {
             var sw = Stopwatch.StartNew();
-            var result = await bundleService.ExecuteAsync(options).ConfigureAwait(false);
+            var result = await bundleService.ExecuteAsync(options, cancellationToken).ConfigureAwait(false);
             sw.Stop();
 
             if (result.Success)

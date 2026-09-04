@@ -47,7 +47,7 @@ internal class Compress : SharedOptions
 
         using var processLock = new ProcessLock
         (
-            System.IO.Path.GetDirectoryName(options.SourcePath) ?? options.SourcePath,
+            ProcessLock.LockDirectoryFor(options.SourcePath),
             logger
         );
 

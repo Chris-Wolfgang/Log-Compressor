@@ -167,7 +167,9 @@ public sealed class DecompressCommandTests : IDisposable
     [Fact]
     public async Task OnExecuteAsync_when_lockAlreadyHeld_expected_alreadyRunning()
     {
-        var lockFile = Path.Combine(Path.GetDirectoryName(_tempDir)!, ".logc.lock");
+        // Directory source: the lock lives INSIDE the directory being
+        // processed, not its parent (#194).
+        var lockFile = Path.Combine(_tempDir, ".logc.lock");
         await using var heldLock = new FileStream
         (
             lockFile,

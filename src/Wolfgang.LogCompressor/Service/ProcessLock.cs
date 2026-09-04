@@ -29,6 +29,25 @@ internal sealed class ProcessLock : IDisposable
     /// </summary>
     internal const string LockFileName = ".logc.lock";
 
+    /// <summary>
+    /// Resolves the directory a run must lock for the given source path: the
+    /// source itself when it is a directory, otherwise its containing
+    /// directory. Locking the directory being processed (not its parent)
+    /// keeps sibling directories independently lockable (#194).
+    /// </summary>
+    /// <param name="sourcePath">The source file or directory path.</param>
+    /// <returns>The directory whose lock file guards this run.</returns>
+    internal static string LockDirectoryFor(string sourcePath)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(sourcePath);
+
+        return Directory.Exists(sourcePath)
+            ? sourcePath
+            : Path.GetDirectoryName(sourcePath) ?? sourcePath;
+    }
+
+
+
     private readonly string _lockFilePath;
     private readonly ILogger _logger;
     private FileStream? _lockStream;
@@ -63,6 +82,28 @@ internal sealed class ProcessLock : IDisposable
 
 
 
+    private static void WriteDiagnostics(FileStream lockStream)
+    {
+        // Refresh the diagnostic content for humans inspecting the
+        // directory. SetLength(0) discards whatever a previous (crashed)
+        // holder wrote.
+        lockStream.SetLength(0);
+
+        using (var writer = new StreamWriter(lockStream, leaveOpen: true))
+        {
+            writer.WriteLine($"PID={Environment.ProcessId}");
+            writer.WriteLine($"Started={DateTimeOffset.Now:O}");
+            writer.Flush();
+        }
+
+        // StreamWriter.Flush only pushes the writer buffer into the
+        // FileStream buffer; push the bytes to disk so anything reading
+        // the file for diagnostics sees the PID rather than an empty file.
+        lockStream.Flush(flushToDisk: true);
+    }
+
+
+
     /// <summary>
     /// Attempts to acquire the lock.
     /// </summary>
@@ -86,22 +127,7 @@ internal sealed class ProcessLock : IDisposable
                 FileOptions.None
             );
 
-            // Refresh the diagnostic content for humans inspecting the
-            // directory. SetLength(0) discards whatever a previous (crashed)
-            // holder wrote.
-            _lockStream.SetLength(0);
-
-            using (var writer = new StreamWriter(_lockStream, leaveOpen: true))
-            {
-                writer.WriteLine($"PID={Environment.ProcessId}");
-                writer.WriteLine($"Started={DateTimeOffset.Now:O}");
-                writer.Flush();
-            }
-
-            // StreamWriter.Flush only pushes the writer buffer into the
-            // FileStream buffer; push the bytes to disk so anything reading
-            // the file for diagnostics sees the PID rather than an empty file.
-            _lockStream.Flush(flushToDisk: true);
+            WriteDiagnostics(_lockStream);
 
             _logger.LogDebug("Lock acquired: {Path}", _lockFilePath);
             return true;
@@ -112,6 +138,20 @@ internal sealed class ProcessLock : IDisposable
             (
                 ex,
                 "Another instance is already processing this directory. Lock file: {Path}",
+                _lockFilePath
+            );
+            return false;
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            // Directory-source locks live inside the directory being
+            // processed (#194), so a read-only or ACL-denied source surfaces
+            // here rather than as an unhandled crash. --no-lock skips locking
+            // for sources the process may only read.
+            _logger.LogWarning
+            (
+                ex,
+                "Cannot create the lock file (access denied — is the directory read-only?). Use --no-lock to skip locking. Lock file: {Path}",
                 _lockFilePath
             );
             return false;

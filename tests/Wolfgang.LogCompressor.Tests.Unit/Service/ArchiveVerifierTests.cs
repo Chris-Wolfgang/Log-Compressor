@@ -279,7 +279,7 @@ public sealed class ArchiveVerifierTests : IDisposable
     public async Task VerifyAsync_when_strategyCompressesEmptySource_expected_true(string formatName)
     {
         var strategy = new Wolfgang.LogCompressor.Service.Compression.CompressionStrategyFactory()
-            .Create(Enum.Parse<Wolfgang.LogCompressor.Model.CompressionFormat>(formatName, ignoreCase: true), CompressionLevel.SmallestSize);
+            .Create(Enum.Parse<Wolfgang.LogCompressor.Model.CompressionFormat>(formatName, ignoreCase: true));
         var archivePath = Path.Combine(_tempDir, $"empty-source.{strategy.FileExtension}");
         using (var input = new MemoryStream())
         {

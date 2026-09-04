@@ -6,6 +6,10 @@ namespace Wolfgang.LogCompressor.Tests.Unit.Framework;
 
 public sealed class SerilogConfiguratorTests : IDisposable
 {
+    // Console.SetError swaps process-wide state; tests that redirect it
+    // must not overlap under xunit's parallel execution.
+    private static readonly object ConsoleRedirectGate = new();
+
     private readonly string _tempDir =
         Path.Combine(Path.GetTempPath(), "logc-serilog-tests-" + Guid.NewGuid().ToString("N"));
 
@@ -136,19 +140,23 @@ public sealed class SerilogConfiguratorTests : IDisposable
         options.Console.MinimumLevel = LogEventLevel.Information;
 
         // Log output goes to STDERR — stdout is reserved for command results
-        // so the tool composes in a pipeline.
+        // so the tool composes in a pipeline. Console.Error is process-wide
+        // state: serialize the redirection so parallel tests can't observe it.
         var captured = new StringWriter();
-        var original = Console.Error;
-        Console.SetError(captured);
-        try
+        lock (ConsoleRedirectGate)
         {
-            var logger = new LoggerConfiguration().Apply(options).CreateLogger();
-            logger.Warning("console-marker");
-            logger.Dispose();
-        }
-        finally
-        {
-            Console.SetError(original);
+            var original = Console.Error;
+            Console.SetError(captured);
+            try
+            {
+                var logger = new LoggerConfiguration().Apply(options).CreateLogger();
+                logger.Warning("console-marker");
+                logger.Dispose();
+            }
+            finally
+            {
+                Console.SetError(original);
+            }
         }
 
         Assert.Contains("console-marker", captured.ToString(), StringComparison.Ordinal);

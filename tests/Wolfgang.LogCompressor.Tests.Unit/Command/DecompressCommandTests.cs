@@ -56,6 +56,24 @@ public sealed class DecompressCommandTests : IDisposable
 
 
     [Fact]
+    public async Task OnExecuteAsync_when_canceled_expected_canceledExitCode()
+    {
+        using var cts = new CancellationTokenSource();
+        await cts.CancelAsync();
+        _decompressService.ExecuteAsync(Arg.Any<DecompressionOptions>(), Arg.Any<CancellationToken>())
+            .Returns<IReadOnlyList<CompressionResult>>(_ => throw new OperationCanceledException(cts.Token));
+
+        var command = new Decompress { Path = _tempDir, NoLock = true };
+
+        var result = await command.OnExecuteAsync(_console, _logger, _decompressService, _reportService, cts.Token);
+
+        // Deliberate cancellation is not an application error.
+        Assert.Equal(ExitCode.Canceled, result);
+    }
+
+
+
+    [Fact]
     public async Task OnExecuteAsync_when_allSucceed_expected_success()
     {
         _decompressService.ExecuteAsync(Arg.Any<DecompressionOptions>(), Arg.Any<CancellationToken>())

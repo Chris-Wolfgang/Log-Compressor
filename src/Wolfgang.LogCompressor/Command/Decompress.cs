@@ -211,6 +211,12 @@ internal class Decompress
 
             return ExitCode.Success;
         }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            logger.LogInformation("Run canceled.");
+            await console.Error.WriteLineAsync("Canceled.");
+            return ExitCode.Canceled;
+        }
         catch (Exception e)
         {
             logger.LogCritical(e, "Unhandled error: {Message}", e.Message);

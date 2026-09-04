@@ -15,7 +15,7 @@ public sealed class DecompressionRoundTripTests : IDisposable
 {
     private readonly TempDirectory _tempDir = new();
     private readonly FileSystemWrapper _fileSystem = new();
-    private readonly FileFilterService _fileFilter = new();
+    private readonly FileFilterService _fileFilter = new(TimeProvider.System);
     private readonly DecompressService _decompress;
 
 
@@ -33,7 +33,7 @@ public sealed class DecompressionRoundTripTests : IDisposable
         (
             _fileSystem,
             _fileFilter,
-            new FileNamingService(),
+            new FileNamingService(TimeProvider.System),
             new ArchiveVerifier(NullLogger<ArchiveVerifier>.Instance),
             new CompressionStrategyFactory(),
             NullLogger<CompressService>.Instance
@@ -48,7 +48,7 @@ public sealed class DecompressionRoundTripTests : IDisposable
         (
             _fileSystem,
             _fileFilter,
-            new FileNamingService(),
+            new FileNamingService(TimeProvider.System),
             new ArchiveVerifier(NullLogger<ArchiveVerifier>.Instance),
             new CompressionStrategyFactory(),
             NullLogger<BundleService>.Instance

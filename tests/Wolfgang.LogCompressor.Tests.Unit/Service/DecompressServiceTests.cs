@@ -18,7 +18,7 @@ public sealed class DecompressServiceTests : IDisposable
 
     public DecompressServiceTests()
     {
-        var fileFilter = new FileFilterService();
+        var fileFilter = new FileFilterService(TimeProvider.System);
         _sut = new DecompressService(_fileSystem, fileFilter, Substitute.For<ILogger<DecompressService>>());
 
         _fileSystem.CreateWrite(Arg.Any<string>()).Returns(call =>
@@ -240,7 +240,7 @@ public sealed class DecompressServiceTests : IDisposable
     [Fact]
     public void Ctor_when_anyDependencyNull_expected_throwsWithParamName()
     {
-        var fileFilter = new FileFilterService();
+        var fileFilter = new FileFilterService(TimeProvider.System);
         var logger = Substitute.For<ILogger<DecompressService>>();
 
         Assert.Equal("fileSystem", Assert.Throws<ArgumentNullException>(() => new DecompressService(null!, fileFilter, logger)).ParamName);

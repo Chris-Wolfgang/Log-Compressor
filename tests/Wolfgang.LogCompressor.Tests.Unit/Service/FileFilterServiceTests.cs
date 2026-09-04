@@ -5,7 +5,15 @@ namespace Wolfgang.LogCompressor.Tests.Unit.Service;
 public sealed class FileFilterServiceTests : IDisposable
 {
     private readonly TempDirectory _tempDir = new();
-    private readonly FileFilterService _sut = new();
+    private readonly FileFilterService _sut = new(TimeProvider.System);
+
+
+
+    [Fact]
+    public void Ctor_when_timeProviderNull_expected_throwsWithParamName()
+    {
+        Assert.Equal("timeProvider", Assert.Throws<ArgumentNullException>(() => new FileFilterService(null!)).ParamName);
+    }
 
 
 

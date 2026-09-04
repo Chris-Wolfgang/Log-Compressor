@@ -13,7 +13,7 @@ public sealed class CompressCommandTests : IDisposable
     private readonly IConsole _console = Substitute.For<IConsole>();
     private readonly ILogger<Compress> _logger = Substitute.For<ILogger<Compress>>();
     private readonly CompressService _compressService;
-    private readonly ReportService _reportService = new();
+    private readonly ReportService _reportService = new(new FileSystemWrapper(), TimeProvider.System);
     private readonly IFileSystem _retentionFileSystem = Substitute.For<IFileSystem>();
     private readonly RetentionService _retentionService;
     private readonly string _tempDir;
@@ -38,7 +38,8 @@ public sealed class CompressCommandTests : IDisposable
         _retentionService = new RetentionService
         (
             _retentionFileSystem,
-            Substitute.For<ILogger<RetentionService>>()
+            Substitute.For<ILogger<RetentionService>>(),
+            TimeProvider.System
         );
 
         _tempDir = Path.Combine(Path.GetTempPath(), "CompressCommandTests_" + Guid.NewGuid());

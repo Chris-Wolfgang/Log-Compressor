@@ -58,6 +58,7 @@ internal class Program
                 .ConfigureServices((_, serviceCollection) =>
                 {
                     serviceCollection
+                        .AddSingleton(TimeProvider.System)
                         .AddSingleton<IReporter, ConsoleReporter>()
                         .AddSingleton<IFileSystem, FileSystemWrapper>()
                         .AddSingleton<IFileFilter, FileFilterService>()

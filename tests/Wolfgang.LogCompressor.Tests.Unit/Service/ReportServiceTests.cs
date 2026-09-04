@@ -6,7 +6,7 @@ namespace Wolfgang.LogCompressor.Tests.Unit.Service;
 
 public sealed class ReportServiceTests : IDisposable
 {
-    private readonly ReportService _sut = new();
+    private readonly ReportService _sut = new(new FileSystemWrapper(), TimeProvider.System);
     private readonly string _tempDir;
 
 
@@ -25,6 +25,52 @@ public sealed class ReportServiceTests : IDisposable
         {
             Directory.Delete(_tempDir, recursive: true);
         }
+    }
+
+
+
+    [Fact]
+    public async Task WriteReportAsync_when_durationExceedsADay_expected_totalHoursNotClockFace()
+    {
+        var outputPath = Path.Combine(_tempDir, "long-run.json");
+        var results = new List<CompressionResult>
+        {
+            new() { SourcePath = "a.log", OutputPath = "a.zip", Success = true }
+        };
+
+        await _sut.WriteReportAsync(results, "json", outputPath, TimeSpan.FromHours(25));
+
+        // 25 hours must not wrap to "01:00:00".
+        Assert.Contains("\"duration\": \"25:00:00\"", await File.ReadAllTextAsync(outputPath), StringComparison.Ordinal);
+    }
+
+
+
+    [Fact]
+    public async Task WriteReportAsync_when_pathStartsWithFormulaCharacter_expected_csvInjectionGuarded()
+    {
+        var outputPath = Path.Combine(_tempDir, "guarded.csv");
+        var results = new List<CompressionResult>
+        {
+            new() { SourcePath = "=cmd|calc", OutputPath = "+sum.zip", Success = true }
+        };
+
+        await _sut.WriteReportAsync(results, "csv", outputPath, TimeSpan.Zero);
+
+        var csv = await File.ReadAllTextAsync(outputPath);
+        // A leading =, +, - or @ would execute as a formula in Excel/Sheets;
+        // the guard prefixes an apostrophe.
+        Assert.Contains("\"'=cmd|calc\"", csv, StringComparison.Ordinal);
+        Assert.Contains("\"'+sum.zip\"", csv, StringComparison.Ordinal);
+    }
+
+
+
+    [Fact]
+    public void Ctor_when_anyDependencyNull_expected_throwsWithParamName()
+    {
+        Assert.Equal("fileSystem", Assert.Throws<ArgumentNullException>(() => new ReportService(null!, TimeProvider.System)).ParamName);
+        Assert.Equal("timeProvider", Assert.Throws<ArgumentNullException>(() => new ReportService(new FileSystemWrapper(), null!)).ParamName);
     }
 
 

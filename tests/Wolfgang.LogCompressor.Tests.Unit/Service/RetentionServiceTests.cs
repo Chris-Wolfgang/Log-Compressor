@@ -15,7 +15,7 @@ public sealed class RetentionServiceTests : IDisposable
 
     public RetentionServiceTests()
     {
-        _sut = new RetentionService(_fileSystem, Substitute.For<ILogger<RetentionService>>());
+        _sut = new RetentionService(_fileSystem, Substitute.For<ILogger<RetentionService>>(), TimeProvider.System);
     }
 
 
@@ -39,6 +39,14 @@ public sealed class RetentionServiceTests : IDisposable
     public void IsArchiveFile_when_variousExtensions_expected_correctResult(string fileName, bool expected)
     {
         Assert.Equal(expected, RetentionService.IsArchiveFile(fileName));
+    }
+
+
+
+    [Fact]
+    public void Ctor_when_timeProviderNull_expected_throwsWithParamName()
+    {
+        Assert.Equal("timeProvider", Assert.Throws<ArgumentNullException>(() => new RetentionService(_fileSystem, Substitute.For<ILogger<RetentionService>>(), null!)).ParamName);
     }
 
 

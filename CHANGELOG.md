@@ -57,7 +57,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Test and CI hardening across the board: property-based fuzzing (CsCheck, weekly deep sweep), mutation testing enabled with a gated score floor (Stryker, floor 83%), per-PR benchmark deltas with an allocation-regression gate, OSSF Scorecard, workflow security linting (zizmor + actionlint), a transitive-dependency license audit, reproducible-build verification, and 100% line coverage across all assemblies (test code included).
 
-## [0.1.0] - 2026-06-11
+## [0.1.0] - 2026-06-14
 
 First release of `logc`, a cross-platform .NET CLI for compressing log files.
 

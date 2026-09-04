@@ -9,11 +9,11 @@ namespace Wolfgang.LogCompressor.Service;
 internal sealed class RetentionService
 {
     // A plain array: IsArchiveFile suffix-matches each entry, so a HashSet's
-    // O(1) lookup gives no benefit here.
+    // O(1) lookup gives no benefit here. Bundle extensions (.tar.gz etc.) are
+    // covered by their final-segment suffixes (.gz etc.) — no separate entries.
     private static readonly string[] ArchiveExtensions =
     [
-        ".zip", ".gz", ".br", ".zst", ".lz4",
-        ".tar.gz", ".tar.br", ".tar.zst", ".tar.lz4"
+        ".zip", ".gz", ".br", ".zst", ".lz4"
     ];
 
     private readonly IFileSystem _fileSystem;

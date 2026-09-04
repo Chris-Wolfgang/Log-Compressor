@@ -1,23 +1,23 @@
 Summary
-  Generated on: 9/3/2026 - 3:29:54 PM
-  Coverage date: 9/3/2026 - 3:29:37 PM - 9/3/2026 - 3:29:49 PM
+  Generated on: 9/4/2026 - 2:02:29 PM
+  Coverage date: 9/4/2026 - 2:02:11 PM - 9/4/2026 - 2:02:24 PM
   Parser: MultiReport (3x Cobertura)
   Assemblies: 4
   Classes: 60
   Files: 60
-  Line coverage: 99.8%
-  Covered lines: 5327
-  Uncovered lines: 9
-  Coverable lines: 5336
-  Total lines: 11863
-  Branch coverage: 94.4% (647 of 685)
-  Covered branches: 647
-  Total branches: 685
-  Method coverage: 99.8% (599 of 600)
-  Full method coverage: 99.5% (597 of 600)
-  Covered methods: 599
-  Fully covered methods: 597
-  Total methods: 600
+  Line coverage: 99.9%
+  Covered lines: 5347
+  Uncovered lines: 1
+  Coverable lines: 5348
+  Total lines: 11897
+  Branch coverage: 94.9% (645 of 679)
+  Covered branches: 645
+  Total branches: 679
+  Method coverage: 100% (602 of 602)
+  Full method coverage: 99.8% (601 of 602)
+  Covered methods: 602
+  Fully covered methods: 601
+  Total methods: 602
 
 logc                                                                                       100%
   Wolfgang.LogCompressor.Command.Bundle                                                    100%
@@ -47,8 +47,8 @@ logc                                                                            
   Wolfgang.LogCompressor.Service.ReportService                                             100%
   Wolfgang.LogCompressor.Service.RetentionService                                          100%
 
-Wolfgang.LogCompressor.Tests.Fuzz                                                         97.2%
-  Wolfgang.LogCompressor.Tests.Fuzz.CompressionFuzzTests                                  96.8%
+Wolfgang.LogCompressor.Tests.Fuzz                                                          100%
+  Wolfgang.LogCompressor.Tests.Fuzz.CompressionFuzzTests                                   100%
   Wolfgang.LogCompressor.Tests.Fuzz.TempDirectory                                          100%
   Wolfgang.LogCompressor.Tests.Fuzz.TempDirectoryTests                                     100%
 

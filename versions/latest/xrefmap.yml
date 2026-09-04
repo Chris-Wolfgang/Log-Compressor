@@ -3465,6 +3465,22 @@ references:
   isSpec: "True"
   fullName: Wolfgang.LogCompressor.Service.ProcessLock.IsLockFile
   nameWithType: ProcessLock.IsLockFile
+- uid: Wolfgang.LogCompressor.Service.ProcessLock.LockDirectoryFor(System.String)
+  name: LockDirectoryFor(string)
+  href: api/Wolfgang.LogCompressor.Service.ProcessLock.html#Wolfgang_LogCompressor_Service_ProcessLock_LockDirectoryFor_System_String_
+  commentId: M:Wolfgang.LogCompressor.Service.ProcessLock.LockDirectoryFor(System.String)
+  name.vb: LockDirectoryFor(String)
+  fullName: Wolfgang.LogCompressor.Service.ProcessLock.LockDirectoryFor(string)
+  fullName.vb: Wolfgang.LogCompressor.Service.ProcessLock.LockDirectoryFor(String)
+  nameWithType: ProcessLock.LockDirectoryFor(string)
+  nameWithType.vb: ProcessLock.LockDirectoryFor(String)
+- uid: Wolfgang.LogCompressor.Service.ProcessLock.LockDirectoryFor*
+  name: LockDirectoryFor
+  href: api/Wolfgang.LogCompressor.Service.ProcessLock.html#Wolfgang_LogCompressor_Service_ProcessLock_LockDirectoryFor_
+  commentId: Overload:Wolfgang.LogCompressor.Service.ProcessLock.LockDirectoryFor
+  isSpec: "True"
+  fullName: Wolfgang.LogCompressor.Service.ProcessLock.LockDirectoryFor
+  nameWithType: ProcessLock.LockDirectoryFor
 - uid: Wolfgang.LogCompressor.Service.ProcessLock.LockFileName
   name: LockFileName
   href: api/Wolfgang.LogCompressor.Service.ProcessLock.html#Wolfgang_LogCompressor_Service_ProcessLock_LockFileName
@@ -3497,6 +3513,19 @@ references:
   isSpec: "True"
   fullName: Wolfgang.LogCompressor.Service.ProcessLock.TryDeleteLockFile
   nameWithType: ProcessLock.TryDeleteLockFile
+- uid: Wolfgang.LogCompressor.Service.ProcessLock.WriteDiagnostics(System.IO.FileStream)
+  name: WriteDiagnostics(FileStream)
+  href: api/Wolfgang.LogCompressor.Service.ProcessLock.html#Wolfgang_LogCompressor_Service_ProcessLock_WriteDiagnostics_System_IO_FileStream_
+  commentId: M:Wolfgang.LogCompressor.Service.ProcessLock.WriteDiagnostics(System.IO.FileStream)
+  fullName: Wolfgang.LogCompressor.Service.ProcessLock.WriteDiagnostics(System.IO.FileStream)
+  nameWithType: ProcessLock.WriteDiagnostics(FileStream)
+- uid: Wolfgang.LogCompressor.Service.ProcessLock.WriteDiagnostics*
+  name: WriteDiagnostics
+  href: api/Wolfgang.LogCompressor.Service.ProcessLock.html#Wolfgang_LogCompressor_Service_ProcessLock_WriteDiagnostics_
+  commentId: Overload:Wolfgang.LogCompressor.Service.ProcessLock.WriteDiagnostics
+  isSpec: "True"
+  fullName: Wolfgang.LogCompressor.Service.ProcessLock.WriteDiagnostics
+  nameWithType: ProcessLock.WriteDiagnostics
 - uid: Wolfgang.LogCompressor.Service.ProcessLock._lockFilePath
   name: _lockFilePath
   href: api/Wolfgang.LogCompressor.Service.ProcessLock.html#Wolfgang_LogCompressor_Service_ProcessLock__lockFilePath

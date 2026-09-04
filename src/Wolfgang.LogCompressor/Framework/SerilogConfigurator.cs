@@ -1,4 +1,5 @@
 using Serilog;
+using Serilog.Events;
 
 namespace Wolfgang.LogCompressor.Framework;
 
@@ -46,7 +47,10 @@ internal static class SerilogConfigurator
             configuration.WriteTo.Console
             (
                 restrictedToMinimumLevel: options.Console.MinimumLevel,
-                outputTemplate: options.Console.OutputTemplate
+                outputTemplate: options.Console.OutputTemplate,
+                // All log events to stderr: stdout is reserved for command
+                // results so the tool composes in a pipeline.
+                standardErrorFromLevel: LevelAlias.Minimum
             );
         }
 

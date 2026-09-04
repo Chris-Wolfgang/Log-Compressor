@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- `logc --version` prints the version (previously an unrecognized-option error).
+- Ctrl+C cancels a run cleanly: in-flight work stops at the next safe point and the process exits with new code **4 — canceled** (previously the interrupt surfaced as an unhandled error).
+
+### Changed
+
+- Log output (console sink) now goes to **stderr**; stdout carries only command results, so the tool composes in pipelines.
+
 ## [0.3.2] - 2026-09-04
 
 ### Fixed

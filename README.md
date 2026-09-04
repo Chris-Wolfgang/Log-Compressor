@@ -185,6 +185,7 @@ logc decompress /var/log/archives --keep-archives
 | 1 | Invalid arguments |
 | 2 | Another instance already holds the directory lock |
 | 3 | Completed with skips — the run finished but one or more items failed and were skipped (`--on-error skip`, or `retry:N` exhausted) |
+| 4 | Canceled — the run was interrupted (Ctrl+C) before completing |
 | 10 | Unhandled exception |
 | 11 | Application error — the run failed (`--on-error fail` stopped at the first failure, or a fatal error) |
 

@@ -63,6 +63,9 @@ public sealed class BundleCommandTests : IDisposable
     {
         using var cts = new CancellationTokenSource();
         await cts.CancelAsync();
+        // The closure runs inside the awaited OnExecuteAsync call below,
+        // before cts is disposed at the end of this method.
+        // ReSharper disable once AccessToDisposedClosure
         _bundleService.ExecuteAsync(Arg.Any<CompressionOptions>(), Arg.Any<CancellationToken>())
             .Returns<CompressionResult>(_ => throw new OperationCanceledException(cts.Token));
 

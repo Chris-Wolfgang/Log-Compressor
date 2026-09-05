@@ -60,6 +60,9 @@ public sealed class DecompressCommandTests : IDisposable
     {
         using var cts = new CancellationTokenSource();
         await cts.CancelAsync();
+        // The closure runs inside the awaited OnExecuteAsync call below,
+        // before cts is disposed at the end of this method.
+        // ReSharper disable once AccessToDisposedClosure
         _decompressService.ExecuteAsync(Arg.Any<DecompressionOptions>(), Arg.Any<CancellationToken>())
             .Returns<IReadOnlyList<CompressionResult>>(_ => throw new OperationCanceledException(cts.Token));
 

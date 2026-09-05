@@ -8,7 +8,7 @@ public sealed class SerilogConfiguratorTests : IDisposable
 {
     // Console.SetError swaps process-wide state; tests that redirect it
     // must not overlap under xunit's parallel execution.
-    private static readonly object ConsoleRedirectGate = new();
+    private static readonly Lock ConsoleRedirectGate = new();
 
     private readonly string _tempDir =
         Path.Combine(Path.GetTempPath(), "logc-serilog-tests-" + Guid.NewGuid().ToString("N"));

@@ -19,8 +19,8 @@ public sealed class CompressionRoundTripTests
         return new CompressService
         (
             new FileSystemWrapper(),
-            new FileFilterService(),
-            new FileNamingService(),
+            new FileFilterService(TimeProvider.System),
+            new FileNamingService(TimeProvider.System),
             new ArchiveVerifier(NullLogger<ArchiveVerifier>.Instance),
             new CompressionStrategyFactory(),
             NullLogger<CompressService>.Instance
@@ -34,8 +34,8 @@ public sealed class CompressionRoundTripTests
         return new BundleService
         (
             new FileSystemWrapper(),
-            new FileFilterService(),
-            new FileNamingService(),
+            new FileFilterService(TimeProvider.System),
+            new FileNamingService(TimeProvider.System),
             new ArchiveVerifier(NullLogger<ArchiveVerifier>.Instance),
             new CompressionStrategyFactory(),
             NullLogger<BundleService>.Instance
@@ -233,7 +233,7 @@ public sealed class CompressionRoundTripTests
         var source = temp.WriteFile("app.log", "source data");
 
         // Pre-create a file at the exact output path the compressor will target.
-        var expectedName = new FileNamingService().GetCompressedFileName(new FileInfo(source), "zip");
+        var expectedName = new FileNamingService(TimeProvider.System).GetCompressedFileName(new FileInfo(source), "zip");
         var existing = temp.WriteFile(expectedName, "PRE-EXISTING ARCHIVE");
 
         var sut = CreateCompressService();

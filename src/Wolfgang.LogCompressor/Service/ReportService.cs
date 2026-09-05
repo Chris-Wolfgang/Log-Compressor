@@ -1,6 +1,8 @@
+using System.Globalization;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Wolfgang.LogCompressor.Abstraction;
 using Wolfgang.LogCompressor.Model;
 
 namespace Wolfgang.LogCompressor.Service;
@@ -10,6 +12,27 @@ namespace Wolfgang.LogCompressor.Service;
 /// </summary>
 internal sealed class ReportService
 {
+    private readonly IFileSystem _fileSystem;
+    private readonly TimeProvider _timeProvider;
+
+
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ReportService"/> class.
+    /// </summary>
+    /// <param name="fileSystem">The file system abstraction.</param>
+    /// <param name="timeProvider">The time source for the report timestamp.</param>
+    public ReportService(IFileSystem fileSystem, TimeProvider timeProvider)
+    {
+        ArgumentNullException.ThrowIfNull(fileSystem);
+        ArgumentNullException.ThrowIfNull(timeProvider);
+
+        _fileSystem = fileSystem;
+        _timeProvider = timeProvider;
+    }
+
+
+
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
         WriteIndented = true,
@@ -27,9 +50,7 @@ internal sealed class ReportService
     /// <param name="outputPath">The output path for the report file.</param>
     /// <param name="duration">The total operation duration.</param>
     /// <exception cref="ArgumentException">Thrown when <paramref name="format"/> is not supported.</exception>
-#pragma warning disable S2325 // Instance method by design: ReportService is injected into the commands as a service alongside their other dependencies; a static method would force the DI parameter out of the command signatures for zero behavioural gain.
-    public Task WriteReportAsync
-#pragma warning restore S2325
+    public async Task WriteReportAsync
     (
         IReadOnlyList<CompressionResult> results,
         string format,
@@ -49,22 +70,32 @@ internal sealed class ReportService
         };
 
         var directory = Path.GetDirectoryName(outputPath);
-        if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory))
+        if (!string.IsNullOrEmpty(directory) && !_fileSystem.DirectoryExists(directory))
         {
-            Directory.CreateDirectory(directory);
+            _fileSystem.CreateDirectory(directory);
         }
 
-        return File.WriteAllTextAsync(outputPath, content);
+        var stream = _fileSystem.CreateWrite(outputPath);
+        await using (stream.ConfigureAwait(false))
+        {
+            var writer = new StreamWriter(stream);
+            await using (writer.ConfigureAwait(false))
+            {
+                await writer.WriteAsync(content).ConfigureAwait(false);
+            }
+        }
     }
 
 
 
-    private static string GenerateJson(IReadOnlyList<CompressionResult> results, TimeSpan duration)
+    private string GenerateJson(IReadOnlyList<CompressionResult> results, TimeSpan duration)
     {
         var report = new
         {
-            Timestamp = DateTimeOffset.Now,
-            Duration = duration.ToString(@"hh\:mm\:ss"),
+            Timestamp = _timeProvider.GetLocalNow(),
+            // Total hours, not a 24h-wrapping clock face — a >24h run must
+            // not silently drop its days.
+            Duration = string.Create(CultureInfo.InvariantCulture, $"{(int)duration.TotalHours:D2}:{duration.Minutes:D2}:{duration.Seconds:D2}"),
             TotalFiles = results.Count,
             SucceededFiles = results.Count(r => r.Success),
             FailedFiles = results.Count(r => !r.Success),
@@ -107,6 +138,14 @@ internal sealed class ReportService
 
     private static string EscapeCsv(string value)
     {
-        return value.Replace("\"", "\"\"", StringComparison.Ordinal);
+        var escaped = value.Replace("\"", "\"\"", StringComparison.Ordinal);
+
+        // Spreadsheet formula-injection guard: a leading =, +, - or @ (even
+        // behind whitespace) is executed as a formula when the CSV opens in
+        // Excel/Sheets.
+        var significant = escaped.AsSpan().TrimStart();
+        return significant.Length > 0 && significant[0] is '=' or '+' or '-' or '@'
+            ? "'" + escaped
+            : escaped;
     }
 }

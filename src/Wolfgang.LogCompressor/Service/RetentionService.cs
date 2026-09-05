@@ -9,15 +9,16 @@ namespace Wolfgang.LogCompressor.Service;
 internal sealed class RetentionService
 {
     // A plain array: IsArchiveFile suffix-matches each entry, so a HashSet's
-    // O(1) lookup gives no benefit here.
+    // O(1) lookup gives no benefit here. Bundle extensions (.tar.gz etc.) are
+    // covered by their final-segment suffixes (.gz etc.) — no separate entries.
     private static readonly string[] ArchiveExtensions =
     [
-        ".zip", ".gz", ".br", ".zst", ".lz4",
-        ".tar.gz", ".tar.br", ".tar.zst", ".tar.lz4"
+        ".zip", ".gz", ".br", ".zst", ".lz4"
     ];
 
     private readonly IFileSystem _fileSystem;
     private readonly ILogger<RetentionService> _logger;
+    private readonly TimeProvider _timeProvider;
 
 
 
@@ -26,13 +27,16 @@ internal sealed class RetentionService
     /// </summary>
     /// <param name="fileSystem">The file system abstraction.</param>
     /// <param name="logger">The logger.</param>
-    public RetentionService(IFileSystem fileSystem, ILogger<RetentionService> logger)
+    /// <param name="timeProvider">The time source for the age cutoff.</param>
+    public RetentionService(IFileSystem fileSystem, ILogger<RetentionService> logger, TimeProvider timeProvider)
     {
         ArgumentNullException.ThrowIfNull(fileSystem);
         ArgumentNullException.ThrowIfNull(logger);
+        ArgumentNullException.ThrowIfNull(timeProvider);
 
         _fileSystem = fileSystem;
         _logger = logger;
+        _timeProvider = timeProvider;
     }
 
 
@@ -54,7 +58,8 @@ internal sealed class RetentionService
             return 0;
         }
 
-        var threshold = DateTime.Today.AddDays(-olderThanDays);
+        var today = _timeProvider.GetLocalNow().Date;
+        var threshold = today.AddDays(-olderThanDays);
         var deleted = 0;
 
         foreach (var filePath in _fileSystem.EnumerateFiles(directory, "*", SearchOption.TopDirectoryOnly))
@@ -76,7 +81,7 @@ internal sealed class RetentionService
                 "Deleting old archive: {Path} (last modified: {Modified}, age: {Age} days)",
                 fileInfo.FullName,
                 fileInfo.LastWriteTime,
-                (DateTime.Today - fileInfo.LastWriteTime.Date).Days
+                (today - fileInfo.LastWriteTime.Date).Days
             );
 
             _fileSystem.DeleteFile(fileInfo.FullName);

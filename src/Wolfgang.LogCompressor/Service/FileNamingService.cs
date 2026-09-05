@@ -18,10 +18,23 @@ internal sealed class FileNamingService : IFileNamer
 
 
     // Captured once on first use so every archive named during one run embeds
-    // the SAME "compressed" timestamp — per-call Now could straddle a second
+    // the SAME "compressed" timestamp — per-call now could straddle a second
     // boundary and scatter a batch across different suffixes. logc is a
     // one-shot CLI, so instance lifetime == run lifetime.
-    private readonly Lazy<DateTime> _runTimestamp = new(() => DateTimeOffset.Now.DateTime);
+    private readonly Lazy<DateTime> _runTimestamp;
+
+
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="FileNamingService"/> class.
+    /// </summary>
+    /// <param name="timeProvider">The time source for compressed-mode timestamps.</param>
+    public FileNamingService(TimeProvider timeProvider)
+    {
+        ArgumentNullException.ThrowIfNull(timeProvider);
+
+        _runTimestamp = new Lazy<DateTime>(() => timeProvider.GetLocalNow().DateTime);
+    }
 
 
 

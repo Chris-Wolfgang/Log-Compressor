@@ -23,6 +23,7 @@ namespace Wolfgang.LogCompressor;
 
     ResponseFileHandling = ResponseFileHandling.ParseArgsAsLineSeparated
 )]
+[VersionOptionFromMember("--version", MemberName = nameof(GetVersion))]
 [Subcommand(typeof(Compress))]
 [Subcommand(typeof(Bundle))]
 [Subcommand(typeof(Decompress))]
@@ -57,6 +58,7 @@ internal class Program
                 .ConfigureServices((_, serviceCollection) =>
                 {
                     serviceCollection
+                        .AddSingleton(TimeProvider.System)
                         .AddSingleton<IReporter, ConsoleReporter>()
                         .AddSingleton<IFileSystem, FileSystemWrapper>()
                         .AddSingleton<IFileFilter, FileFilterService>()
@@ -101,4 +103,12 @@ internal class Program
         return ExitCode.Success;
     }
 #pragma warning restore S2325
+
+
+
+    private static string GetVersion()
+    {
+        return typeof(Program).Assembly
+            .GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ?? "unknown";
+    }
 }

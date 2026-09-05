@@ -13,7 +13,7 @@ public sealed class DecompressCommandTests : IDisposable
     private readonly IConsole _console = Substitute.For<IConsole>();
     private readonly ILogger<Decompress> _logger = Substitute.For<ILogger<Decompress>>();
     private readonly DecompressService _decompressService;
-    private readonly ReportService _reportService = new();
+    private readonly ReportService _reportService = new(new FileSystemWrapper(), TimeProvider.System);
     private readonly string _tempDir;
 
 
@@ -52,6 +52,24 @@ public sealed class DecompressCommandTests : IDisposable
         OutputPath = "/out",
         Success = true
     };
+
+
+
+    [Fact]
+    public async Task OnExecuteAsync_when_canceled_expected_canceledExitCode()
+    {
+        using var cts = new CancellationTokenSource();
+        await cts.CancelAsync();
+        _decompressService.ExecuteAsync(Arg.Any<DecompressionOptions>(), Arg.Any<CancellationToken>())
+            .Returns<IReadOnlyList<CompressionResult>>(_ => throw new OperationCanceledException(cts.Token));
+
+        var command = new Decompress { Path = _tempDir, NoLock = true };
+
+        var result = await command.OnExecuteAsync(_console, _logger, _decompressService, _reportService, cts.Token);
+
+        // Deliberate cancellation is not an application error.
+        Assert.Equal(ExitCode.Canceled, result);
+    }
 
 
 

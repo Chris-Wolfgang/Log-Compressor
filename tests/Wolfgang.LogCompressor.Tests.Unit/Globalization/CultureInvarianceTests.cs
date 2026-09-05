@@ -79,7 +79,7 @@ public sealed class CultureInvarianceTests : IDisposable
         var path = _tempDir.WriteFile("app.log", "content");
         File.SetLastWriteTime(path, new DateTime(2026, 1, 5, 9, 30, 0));
         var file = new FileInfo(path);
-        var sut = new FileNamingService();
+        var sut = new FileNamingService(TimeProvider.System);
 
         RunUnder(cultureName, () =>
         {
@@ -100,7 +100,7 @@ public sealed class CultureInvarianceTests : IDisposable
         var second = _tempDir.WriteFile("b.log", "2");
         File.SetLastWriteTime(second, new DateTime(2026, 3, 22, 23, 13, 10));
         var files = new List<FileInfo> { new(first), new(second) };
-        var sut = new FileNamingService();
+        var sut = new FileNamingService(TimeProvider.System);
 
         RunUnder(cultureName, () =>
         {
@@ -120,7 +120,7 @@ public sealed class CultureInvarianceTests : IDisposable
     [MemberData(nameof(HostileCultures))]
     public async Task WriteReportAsync_when_csvUnderHostileCulture_expected_invariantContent(string cultureName)
     {
-        var sut = new ReportService();
+        var sut = new ReportService(new FileSystemWrapper(), TimeProvider.System);
         var reportPath = Path.Combine(_tempDir.Path, $"report-{cultureName}.csv");
         var results = new List<CompressionResult>
         {
@@ -152,7 +152,7 @@ public sealed class CultureInvarianceTests : IDisposable
     [MemberData(nameof(HostileCultures))]
     public async Task WriteReportAsync_when_jsonUnderHostileCulture_expected_invariantNumbers(string cultureName)
     {
-        var sut = new ReportService();
+        var sut = new ReportService(new FileSystemWrapper(), TimeProvider.System);
         var reportPath = Path.Combine(_tempDir.Path, $"report-{cultureName}.json");
         var results = new List<CompressionResult>
         {

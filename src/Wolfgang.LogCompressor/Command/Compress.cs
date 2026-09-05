@@ -24,6 +24,7 @@ internal class Compress : SharedOptions
     /// <param name="compressService">The compression service.</param>
     /// <param name="reportService">The report service.</param>
     /// <param name="retentionService">The retention service.</param>
+    /// <param name="cancellationToken">Signaled on Ctrl+C / host shutdown; the run stops cleanly.</param>
     /// <returns>An exit code indicating success or failure.</returns>
 #pragma warning disable MA0051 // Linear command orchestration; splitting hurts readability
     internal async Task<int> OnExecuteAsync
@@ -33,7 +34,8 @@ internal class Compress : SharedOptions
         ILogger<Compress> logger,
         CompressService compressService,
         ReportService reportService,
-        RetentionService retentionService
+        RetentionService retentionService,
+        CancellationToken cancellationToken = default
     )
     {
         logger.LogDebug("Starting {Command}", GetType().Name);
@@ -60,7 +62,7 @@ internal class Compress : SharedOptions
         try
         {
             var sw = Stopwatch.StartNew();
-            var results = await compressService.ExecuteAsync(options).ConfigureAwait(false);
+            var results = await compressService.ExecuteAsync(options, cancellationToken).ConfigureAwait(false);
             sw.Stop();
 
             var succeeded = results.Count(r => r.Success);
@@ -110,6 +112,12 @@ internal class Compress : SharedOptions
             }
 
             return ExitCode.Success;
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            logger.LogInformation("Run canceled.");
+            await console.Error.WriteLineAsync("Canceled.");
+            return ExitCode.Canceled;
         }
         catch (Exception e)
         {

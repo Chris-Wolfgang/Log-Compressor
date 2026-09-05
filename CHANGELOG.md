@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-09-05
+
+### Added
+
+- `logc --version` prints the version (previously an unrecognized-option error).
+- Ctrl+C cancels a run cleanly: in-flight work stops at the next safe point and the process exits with new code **4 — canceled** (previously the interrupt surfaced as an unhandled error).
+
+### Changed
+
+- Log output (console sink) now goes to **stderr**; stdout carries only command results, so the tool composes in pipelines.
+- Report durations longer than 24 hours render as total hours (`25:00:00`) instead of wrapping; CSV report fields starting with `=`, `+`, `-` or `@` (even behind whitespace) are apostrophe-guarded against spreadsheet formula injection.
+- `init` starter templates document all current formats and flags.
+
 ## [0.3.2] - 2026-09-04
 
 ### Fixed
@@ -57,7 +70,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Test and CI hardening across the board: property-based fuzzing (CsCheck, weekly deep sweep), mutation testing enabled with a gated score floor (Stryker, floor 83%), per-PR benchmark deltas with an allocation-regression gate, OSSF Scorecard, workflow security linting (zizmor + actionlint), a transitive-dependency license audit, reproducible-build verification, and 100% line coverage across all assemblies (test code included).
 
-## [0.1.0] - 2026-06-11
+## [0.1.0] - 2026-06-14
 
 First release of `logc`, a cross-platform .NET CLI for compressing log files.
 
@@ -78,7 +91,8 @@ First release of `logc`, a cross-platform .NET CLI for compressing log files.
 - Structured logging via Serilog (console + file sinks).
 - Self-contained, per-platform release archives for `win-x64`, `linux-x64`, and `osx-x64` (each bundles the single-file `logc` executable plus its `AppSettings.json`); no .NET runtime required on the target. Distributed via GitHub Releases, not NuGet.
 
-[Unreleased]: https://github.com/Chris-Wolfgang/Log-Compressor/compare/v0.3.2...HEAD
+[Unreleased]: https://github.com/Chris-Wolfgang/Log-Compressor/compare/v0.4.0...HEAD
+[0.4.0]: https://github.com/Chris-Wolfgang/Log-Compressor/compare/v0.3.2...v0.4.0
 [0.3.2]: https://github.com/Chris-Wolfgang/Log-Compressor/compare/v0.3.1...v0.3.2
 [0.3.1]: https://github.com/Chris-Wolfgang/Log-Compressor/compare/v0.3.0...v0.3.1
 [0.3.0]: https://github.com/Chris-Wolfgang/Log-Compressor/compare/v0.2.0...v0.3.0

@@ -317,15 +317,15 @@ references:
   commentId: T:Wolfgang.LogCompressor.Command.Bundle
   fullName: Wolfgang.LogCompressor.Command.Bundle
   nameWithType: Bundle
-- uid: Wolfgang.LogCompressor.Command.Bundle.OnExecuteAsync(McMaster.Extensions.CommandLineUtils.IConsole,Microsoft.Extensions.Logging.ILogger{Wolfgang.LogCompressor.Command.Bundle},Wolfgang.LogCompressor.Service.BundleService,Wolfgang.LogCompressor.Service.ReportService,Wolfgang.LogCompressor.Service.RetentionService)
-  name: OnExecuteAsync(IConsole, ILogger<Bundle>, BundleService, ReportService, RetentionService)
-  href: api/Wolfgang.LogCompressor.Command.Bundle.html#Wolfgang_LogCompressor_Command_Bundle_OnExecuteAsync_McMaster_Extensions_CommandLineUtils_IConsole_Microsoft_Extensions_Logging_ILogger_Wolfgang_LogCompressor_Command_Bundle__Wolfgang_LogCompressor_Service_BundleService_Wolfgang_LogCompressor_Service_ReportService_Wolfgang_LogCompressor_Service_RetentionService_
-  commentId: M:Wolfgang.LogCompressor.Command.Bundle.OnExecuteAsync(McMaster.Extensions.CommandLineUtils.IConsole,Microsoft.Extensions.Logging.ILogger{Wolfgang.LogCompressor.Command.Bundle},Wolfgang.LogCompressor.Service.BundleService,Wolfgang.LogCompressor.Service.ReportService,Wolfgang.LogCompressor.Service.RetentionService)
-  name.vb: OnExecuteAsync(IConsole, ILogger(Of Bundle), BundleService, ReportService, RetentionService)
-  fullName: Wolfgang.LogCompressor.Command.Bundle.OnExecuteAsync(McMaster.Extensions.CommandLineUtils.IConsole, Microsoft.Extensions.Logging.ILogger<Wolfgang.LogCompressor.Command.Bundle>, Wolfgang.LogCompressor.Service.BundleService, Wolfgang.LogCompressor.Service.ReportService, Wolfgang.LogCompressor.Service.RetentionService)
-  fullName.vb: Wolfgang.LogCompressor.Command.Bundle.OnExecuteAsync(McMaster.Extensions.CommandLineUtils.IConsole, Microsoft.Extensions.Logging.ILogger(Of Wolfgang.LogCompressor.Command.Bundle), Wolfgang.LogCompressor.Service.BundleService, Wolfgang.LogCompressor.Service.ReportService, Wolfgang.LogCompressor.Service.RetentionService)
-  nameWithType: Bundle.OnExecuteAsync(IConsole, ILogger<Bundle>, BundleService, ReportService, RetentionService)
-  nameWithType.vb: Bundle.OnExecuteAsync(IConsole, ILogger(Of Bundle), BundleService, ReportService, RetentionService)
+- uid: Wolfgang.LogCompressor.Command.Bundle.OnExecuteAsync(McMaster.Extensions.CommandLineUtils.IConsole,Microsoft.Extensions.Logging.ILogger{Wolfgang.LogCompressor.Command.Bundle},Wolfgang.LogCompressor.Service.BundleService,Wolfgang.LogCompressor.Service.ReportService,Wolfgang.LogCompressor.Service.RetentionService,System.Threading.CancellationToken)
+  name: OnExecuteAsync(IConsole, ILogger<Bundle>, BundleService, ReportService, RetentionService, CancellationToken)
+  href: api/Wolfgang.LogCompressor.Command.Bundle.html#Wolfgang_LogCompressor_Command_Bundle_OnExecuteAsync_McMaster_Extensions_CommandLineUtils_IConsole_Microsoft_Extensions_Logging_ILogger_Wolfgang_LogCompressor_Command_Bundle__Wolfgang_LogCompressor_Service_BundleService_Wolfgang_LogCompressor_Service_ReportService_Wolfgang_LogCompressor_Service_RetentionService_System_Threading_CancellationToken_
+  commentId: M:Wolfgang.LogCompressor.Command.Bundle.OnExecuteAsync(McMaster.Extensions.CommandLineUtils.IConsole,Microsoft.Extensions.Logging.ILogger{Wolfgang.LogCompressor.Command.Bundle},Wolfgang.LogCompressor.Service.BundleService,Wolfgang.LogCompressor.Service.ReportService,Wolfgang.LogCompressor.Service.RetentionService,System.Threading.CancellationToken)
+  name.vb: OnExecuteAsync(IConsole, ILogger(Of Bundle), BundleService, ReportService, RetentionService, CancellationToken)
+  fullName: Wolfgang.LogCompressor.Command.Bundle.OnExecuteAsync(McMaster.Extensions.CommandLineUtils.IConsole, Microsoft.Extensions.Logging.ILogger<Wolfgang.LogCompressor.Command.Bundle>, Wolfgang.LogCompressor.Service.BundleService, Wolfgang.LogCompressor.Service.ReportService, Wolfgang.LogCompressor.Service.RetentionService, System.Threading.CancellationToken)
+  fullName.vb: Wolfgang.LogCompressor.Command.Bundle.OnExecuteAsync(McMaster.Extensions.CommandLineUtils.IConsole, Microsoft.Extensions.Logging.ILogger(Of Wolfgang.LogCompressor.Command.Bundle), Wolfgang.LogCompressor.Service.BundleService, Wolfgang.LogCompressor.Service.ReportService, Wolfgang.LogCompressor.Service.RetentionService, System.Threading.CancellationToken)
+  nameWithType: Bundle.OnExecuteAsync(IConsole, ILogger<Bundle>, BundleService, ReportService, RetentionService, CancellationToken)
+  nameWithType.vb: Bundle.OnExecuteAsync(IConsole, ILogger(Of Bundle), BundleService, ReportService, RetentionService, CancellationToken)
 - uid: Wolfgang.LogCompressor.Command.Bundle.OnExecuteAsync*
   name: OnExecuteAsync
   href: api/Wolfgang.LogCompressor.Command.Bundle.html#Wolfgang_LogCompressor_Command_Bundle_OnExecuteAsync_
@@ -339,15 +339,15 @@ references:
   commentId: T:Wolfgang.LogCompressor.Command.Compress
   fullName: Wolfgang.LogCompressor.Command.Compress
   nameWithType: Compress
-- uid: Wolfgang.LogCompressor.Command.Compress.OnExecuteAsync(McMaster.Extensions.CommandLineUtils.IConsole,Microsoft.Extensions.Logging.ILogger{Wolfgang.LogCompressor.Command.Compress},Wolfgang.LogCompressor.Service.CompressService,Wolfgang.LogCompressor.Service.ReportService,Wolfgang.LogCompressor.Service.RetentionService)
-  name: OnExecuteAsync(IConsole, ILogger<Compress>, CompressService, ReportService, RetentionService)
-  href: api/Wolfgang.LogCompressor.Command.Compress.html#Wolfgang_LogCompressor_Command_Compress_OnExecuteAsync_McMaster_Extensions_CommandLineUtils_IConsole_Microsoft_Extensions_Logging_ILogger_Wolfgang_LogCompressor_Command_Compress__Wolfgang_LogCompressor_Service_CompressService_Wolfgang_LogCompressor_Service_ReportService_Wolfgang_LogCompressor_Service_RetentionService_
-  commentId: M:Wolfgang.LogCompressor.Command.Compress.OnExecuteAsync(McMaster.Extensions.CommandLineUtils.IConsole,Microsoft.Extensions.Logging.ILogger{Wolfgang.LogCompressor.Command.Compress},Wolfgang.LogCompressor.Service.CompressService,Wolfgang.LogCompressor.Service.ReportService,Wolfgang.LogCompressor.Service.RetentionService)
-  name.vb: OnExecuteAsync(IConsole, ILogger(Of Compress), CompressService, ReportService, RetentionService)
-  fullName: Wolfgang.LogCompressor.Command.Compress.OnExecuteAsync(McMaster.Extensions.CommandLineUtils.IConsole, Microsoft.Extensions.Logging.ILogger<Wolfgang.LogCompressor.Command.Compress>, Wolfgang.LogCompressor.Service.CompressService, Wolfgang.LogCompressor.Service.ReportService, Wolfgang.LogCompressor.Service.RetentionService)
-  fullName.vb: Wolfgang.LogCompressor.Command.Compress.OnExecuteAsync(McMaster.Extensions.CommandLineUtils.IConsole, Microsoft.Extensions.Logging.ILogger(Of Wolfgang.LogCompressor.Command.Compress), Wolfgang.LogCompressor.Service.CompressService, Wolfgang.LogCompressor.Service.ReportService, Wolfgang.LogCompressor.Service.RetentionService)
-  nameWithType: Compress.OnExecuteAsync(IConsole, ILogger<Compress>, CompressService, ReportService, RetentionService)
-  nameWithType.vb: Compress.OnExecuteAsync(IConsole, ILogger(Of Compress), CompressService, ReportService, RetentionService)
+- uid: Wolfgang.LogCompressor.Command.Compress.OnExecuteAsync(McMaster.Extensions.CommandLineUtils.IConsole,Microsoft.Extensions.Logging.ILogger{Wolfgang.LogCompressor.Command.Compress},Wolfgang.LogCompressor.Service.CompressService,Wolfgang.LogCompressor.Service.ReportService,Wolfgang.LogCompressor.Service.RetentionService,System.Threading.CancellationToken)
+  name: OnExecuteAsync(IConsole, ILogger<Compress>, CompressService, ReportService, RetentionService, CancellationToken)
+  href: api/Wolfgang.LogCompressor.Command.Compress.html#Wolfgang_LogCompressor_Command_Compress_OnExecuteAsync_McMaster_Extensions_CommandLineUtils_IConsole_Microsoft_Extensions_Logging_ILogger_Wolfgang_LogCompressor_Command_Compress__Wolfgang_LogCompressor_Service_CompressService_Wolfgang_LogCompressor_Service_ReportService_Wolfgang_LogCompressor_Service_RetentionService_System_Threading_CancellationToken_
+  commentId: M:Wolfgang.LogCompressor.Command.Compress.OnExecuteAsync(McMaster.Extensions.CommandLineUtils.IConsole,Microsoft.Extensions.Logging.ILogger{Wolfgang.LogCompressor.Command.Compress},Wolfgang.LogCompressor.Service.CompressService,Wolfgang.LogCompressor.Service.ReportService,Wolfgang.LogCompressor.Service.RetentionService,System.Threading.CancellationToken)
+  name.vb: OnExecuteAsync(IConsole, ILogger(Of Compress), CompressService, ReportService, RetentionService, CancellationToken)
+  fullName: Wolfgang.LogCompressor.Command.Compress.OnExecuteAsync(McMaster.Extensions.CommandLineUtils.IConsole, Microsoft.Extensions.Logging.ILogger<Wolfgang.LogCompressor.Command.Compress>, Wolfgang.LogCompressor.Service.CompressService, Wolfgang.LogCompressor.Service.ReportService, Wolfgang.LogCompressor.Service.RetentionService, System.Threading.CancellationToken)
+  fullName.vb: Wolfgang.LogCompressor.Command.Compress.OnExecuteAsync(McMaster.Extensions.CommandLineUtils.IConsole, Microsoft.Extensions.Logging.ILogger(Of Wolfgang.LogCompressor.Command.Compress), Wolfgang.LogCompressor.Service.CompressService, Wolfgang.LogCompressor.Service.ReportService, Wolfgang.LogCompressor.Service.RetentionService, System.Threading.CancellationToken)
+  nameWithType: Compress.OnExecuteAsync(IConsole, ILogger<Compress>, CompressService, ReportService, RetentionService, CancellationToken)
+  nameWithType.vb: Compress.OnExecuteAsync(IConsole, ILogger(Of Compress), CompressService, ReportService, RetentionService, CancellationToken)
 - uid: Wolfgang.LogCompressor.Command.Compress.OnExecuteAsync*
   name: OnExecuteAsync
   href: api/Wolfgang.LogCompressor.Command.Compress.html#Wolfgang_LogCompressor_Command_Compress_OnExecuteAsync_
@@ -439,15 +439,15 @@ references:
   isSpec: "True"
   fullName: Wolfgang.LogCompressor.Command.Decompress.OnError
   nameWithType: Decompress.OnError
-- uid: Wolfgang.LogCompressor.Command.Decompress.OnExecuteAsync(McMaster.Extensions.CommandLineUtils.IConsole,Microsoft.Extensions.Logging.ILogger{Wolfgang.LogCompressor.Command.Decompress},Wolfgang.LogCompressor.Service.DecompressService,Wolfgang.LogCompressor.Service.ReportService)
-  name: OnExecuteAsync(IConsole, ILogger<Decompress>, DecompressService, ReportService)
-  href: api/Wolfgang.LogCompressor.Command.Decompress.html#Wolfgang_LogCompressor_Command_Decompress_OnExecuteAsync_McMaster_Extensions_CommandLineUtils_IConsole_Microsoft_Extensions_Logging_ILogger_Wolfgang_LogCompressor_Command_Decompress__Wolfgang_LogCompressor_Service_DecompressService_Wolfgang_LogCompressor_Service_ReportService_
-  commentId: M:Wolfgang.LogCompressor.Command.Decompress.OnExecuteAsync(McMaster.Extensions.CommandLineUtils.IConsole,Microsoft.Extensions.Logging.ILogger{Wolfgang.LogCompressor.Command.Decompress},Wolfgang.LogCompressor.Service.DecompressService,Wolfgang.LogCompressor.Service.ReportService)
-  name.vb: OnExecuteAsync(IConsole, ILogger(Of Decompress), DecompressService, ReportService)
-  fullName: Wolfgang.LogCompressor.Command.Decompress.OnExecuteAsync(McMaster.Extensions.CommandLineUtils.IConsole, Microsoft.Extensions.Logging.ILogger<Wolfgang.LogCompressor.Command.Decompress>, Wolfgang.LogCompressor.Service.DecompressService, Wolfgang.LogCompressor.Service.ReportService)
-  fullName.vb: Wolfgang.LogCompressor.Command.Decompress.OnExecuteAsync(McMaster.Extensions.CommandLineUtils.IConsole, Microsoft.Extensions.Logging.ILogger(Of Wolfgang.LogCompressor.Command.Decompress), Wolfgang.LogCompressor.Service.DecompressService, Wolfgang.LogCompressor.Service.ReportService)
-  nameWithType: Decompress.OnExecuteAsync(IConsole, ILogger<Decompress>, DecompressService, ReportService)
-  nameWithType.vb: Decompress.OnExecuteAsync(IConsole, ILogger(Of Decompress), DecompressService, ReportService)
+- uid: Wolfgang.LogCompressor.Command.Decompress.OnExecuteAsync(McMaster.Extensions.CommandLineUtils.IConsole,Microsoft.Extensions.Logging.ILogger{Wolfgang.LogCompressor.Command.Decompress},Wolfgang.LogCompressor.Service.DecompressService,Wolfgang.LogCompressor.Service.ReportService,System.Threading.CancellationToken)
+  name: OnExecuteAsync(IConsole, ILogger<Decompress>, DecompressService, ReportService, CancellationToken)
+  href: api/Wolfgang.LogCompressor.Command.Decompress.html#Wolfgang_LogCompressor_Command_Decompress_OnExecuteAsync_McMaster_Extensions_CommandLineUtils_IConsole_Microsoft_Extensions_Logging_ILogger_Wolfgang_LogCompressor_Command_Decompress__Wolfgang_LogCompressor_Service_DecompressService_Wolfgang_LogCompressor_Service_ReportService_System_Threading_CancellationToken_
+  commentId: M:Wolfgang.LogCompressor.Command.Decompress.OnExecuteAsync(McMaster.Extensions.CommandLineUtils.IConsole,Microsoft.Extensions.Logging.ILogger{Wolfgang.LogCompressor.Command.Decompress},Wolfgang.LogCompressor.Service.DecompressService,Wolfgang.LogCompressor.Service.ReportService,System.Threading.CancellationToken)
+  name.vb: OnExecuteAsync(IConsole, ILogger(Of Decompress), DecompressService, ReportService, CancellationToken)
+  fullName: Wolfgang.LogCompressor.Command.Decompress.OnExecuteAsync(McMaster.Extensions.CommandLineUtils.IConsole, Microsoft.Extensions.Logging.ILogger<Wolfgang.LogCompressor.Command.Decompress>, Wolfgang.LogCompressor.Service.DecompressService, Wolfgang.LogCompressor.Service.ReportService, System.Threading.CancellationToken)
+  fullName.vb: Wolfgang.LogCompressor.Command.Decompress.OnExecuteAsync(McMaster.Extensions.CommandLineUtils.IConsole, Microsoft.Extensions.Logging.ILogger(Of Wolfgang.LogCompressor.Command.Decompress), Wolfgang.LogCompressor.Service.DecompressService, Wolfgang.LogCompressor.Service.ReportService, System.Threading.CancellationToken)
+  nameWithType: Decompress.OnExecuteAsync(IConsole, ILogger<Decompress>, DecompressService, ReportService, CancellationToken)
+  nameWithType.vb: Decompress.OnExecuteAsync(IConsole, ILogger(Of Decompress), DecompressService, ReportService, CancellationToken)
 - uid: Wolfgang.LogCompressor.Command.Decompress.OnExecuteAsync*
   name: OnExecuteAsync
   href: api/Wolfgang.LogCompressor.Command.Decompress.html#Wolfgang_LogCompressor_Command_Decompress_OnExecuteAsync_
@@ -574,6 +574,12 @@ references:
   isSpec: "True"
   fullName: Wolfgang.LogCompressor.Command.InitBundle.Output
   nameWithType: InitBundle.Output
+- uid: Wolfgang.LogCompressor.Command.InitBundle.TemplateContent
+  name: TemplateContent
+  href: api/Wolfgang.LogCompressor.Command.InitBundle.html#Wolfgang_LogCompressor_Command_InitBundle_TemplateContent
+  commentId: F:Wolfgang.LogCompressor.Command.InitBundle.TemplateContent
+  fullName: Wolfgang.LogCompressor.Command.InitBundle.TemplateContent
+  nameWithType: InitBundle.TemplateContent
 - uid: Wolfgang.LogCompressor.Command.InitCompress
   name: InitCompress
   href: api/Wolfgang.LogCompressor.Command.InitCompress.html
@@ -609,6 +615,12 @@ references:
   isSpec: "True"
   fullName: Wolfgang.LogCompressor.Command.InitCompress.Output
   nameWithType: InitCompress.Output
+- uid: Wolfgang.LogCompressor.Command.InitCompress.TemplateContent
+  name: TemplateContent
+  href: api/Wolfgang.LogCompressor.Command.InitCompress.html#Wolfgang_LogCompressor_Command_InitCompress_TemplateContent
+  commentId: F:Wolfgang.LogCompressor.Command.InitCompress.TemplateContent
+  fullName: Wolfgang.LogCompressor.Command.InitCompress.TemplateContent
+  nameWithType: InitCompress.TemplateContent
 - uid: Wolfgang.LogCompressor.Command.SharedOptions
   name: SharedOptions
   href: api/Wolfgang.LogCompressor.Command.SharedOptions.html
@@ -1008,6 +1020,12 @@ references:
   commentId: F:Wolfgang.LogCompressor.ExitCode.ApplicationError
   fullName: Wolfgang.LogCompressor.ExitCode.ApplicationError
   nameWithType: ExitCode.ApplicationError
+- uid: Wolfgang.LogCompressor.ExitCode.Canceled
+  name: Canceled
+  href: api/Wolfgang.LogCompressor.ExitCode.html#Wolfgang_LogCompressor_ExitCode_Canceled
+  commentId: F:Wolfgang.LogCompressor.ExitCode.Canceled
+  fullName: Wolfgang.LogCompressor.ExitCode.Canceled
+  nameWithType: ExitCode.Canceled
 - uid: Wolfgang.LogCompressor.ExitCode.CompletedWithSkips
   name: CompletedWithSkips
   href: api/Wolfgang.LogCompressor.ExitCode.html#Wolfgang_LogCompressor_ExitCode_CompletedWithSkips
@@ -1954,6 +1972,19 @@ references:
   commentId: T:Wolfgang.LogCompressor.Program
   fullName: Wolfgang.LogCompressor.Program
   nameWithType: Program
+- uid: Wolfgang.LogCompressor.Program.GetVersion
+  name: GetVersion()
+  href: api/Wolfgang.LogCompressor.Program.html#Wolfgang_LogCompressor_Program_GetVersion
+  commentId: M:Wolfgang.LogCompressor.Program.GetVersion
+  fullName: Wolfgang.LogCompressor.Program.GetVersion()
+  nameWithType: Program.GetVersion()
+- uid: Wolfgang.LogCompressor.Program.GetVersion*
+  name: GetVersion
+  href: api/Wolfgang.LogCompressor.Program.html#Wolfgang_LogCompressor_Program_GetVersion_
+  commentId: Overload:Wolfgang.LogCompressor.Program.GetVersion
+  isSpec: "True"
+  fullName: Wolfgang.LogCompressor.Program.GetVersion
+  nameWithType: Program.GetVersion
 - uid: Wolfgang.LogCompressor.Program.Main(System.String[])
   name: Main(string[])
   href: api/Wolfgang.LogCompressor.Program.html#Wolfgang_LogCompressor_Program_Main_System_String___
@@ -3211,6 +3242,25 @@ references:
   commentId: T:Wolfgang.LogCompressor.Service.FileFilterService
   fullName: Wolfgang.LogCompressor.Service.FileFilterService
   nameWithType: FileFilterService
+- uid: Wolfgang.LogCompressor.Service.FileFilterService.#ctor(System.TimeProvider)
+  name: FileFilterService(TimeProvider)
+  href: api/Wolfgang.LogCompressor.Service.FileFilterService.html#Wolfgang_LogCompressor_Service_FileFilterService__ctor_System_TimeProvider_
+  commentId: M:Wolfgang.LogCompressor.Service.FileFilterService.#ctor(System.TimeProvider)
+  name.vb: New(TimeProvider)
+  fullName: Wolfgang.LogCompressor.Service.FileFilterService.FileFilterService(System.TimeProvider)
+  fullName.vb: Wolfgang.LogCompressor.Service.FileFilterService.New(System.TimeProvider)
+  nameWithType: FileFilterService.FileFilterService(TimeProvider)
+  nameWithType.vb: FileFilterService.New(TimeProvider)
+- uid: Wolfgang.LogCompressor.Service.FileFilterService.#ctor*
+  name: FileFilterService
+  href: api/Wolfgang.LogCompressor.Service.FileFilterService.html#Wolfgang_LogCompressor_Service_FileFilterService__ctor_
+  commentId: Overload:Wolfgang.LogCompressor.Service.FileFilterService.#ctor
+  isSpec: "True"
+  name.vb: New
+  fullName: Wolfgang.LogCompressor.Service.FileFilterService.FileFilterService
+  fullName.vb: Wolfgang.LogCompressor.Service.FileFilterService.New
+  nameWithType: FileFilterService.FileFilterService
+  nameWithType.vb: FileFilterService.New
 - uid: Wolfgang.LogCompressor.Service.FileFilterService.Apply(System.Collections.Generic.IEnumerable{System.IO.FileInfo},System.Nullable{System.Int32},System.Nullable{System.DateTime},System.Nullable{System.DateTime},System.Collections.Generic.IReadOnlyList{System.String},System.Collections.Generic.IReadOnlyList{System.String})
   name: Apply(IEnumerable<FileInfo>, int?, DateTime?, DateTime?, IReadOnlyList<string>?, IReadOnlyList<string>?)
   href: api/Wolfgang.LogCompressor.Service.FileFilterService.html#Wolfgang_LogCompressor_Service_FileFilterService_Apply_System_Collections_Generic_IEnumerable_System_IO_FileInfo__System_Nullable_System_Int32__System_Nullable_System_DateTime__System_Nullable_System_DateTime__System_Collections_Generic_IReadOnlyList_System_String__System_Collections_Generic_IReadOnlyList_System_String__
@@ -3227,12 +3277,37 @@ references:
   isSpec: "True"
   fullName: Wolfgang.LogCompressor.Service.FileFilterService.Apply
   nameWithType: FileFilterService.Apply
+- uid: Wolfgang.LogCompressor.Service.FileFilterService._timeProvider
+  name: _timeProvider
+  href: api/Wolfgang.LogCompressor.Service.FileFilterService.html#Wolfgang_LogCompressor_Service_FileFilterService__timeProvider
+  commentId: F:Wolfgang.LogCompressor.Service.FileFilterService._timeProvider
+  fullName: Wolfgang.LogCompressor.Service.FileFilterService._timeProvider
+  nameWithType: FileFilterService._timeProvider
 - uid: Wolfgang.LogCompressor.Service.FileNamingService
   name: FileNamingService
   href: api/Wolfgang.LogCompressor.Service.FileNamingService.html
   commentId: T:Wolfgang.LogCompressor.Service.FileNamingService
   fullName: Wolfgang.LogCompressor.Service.FileNamingService
   nameWithType: FileNamingService
+- uid: Wolfgang.LogCompressor.Service.FileNamingService.#ctor(System.TimeProvider)
+  name: FileNamingService(TimeProvider)
+  href: api/Wolfgang.LogCompressor.Service.FileNamingService.html#Wolfgang_LogCompressor_Service_FileNamingService__ctor_System_TimeProvider_
+  commentId: M:Wolfgang.LogCompressor.Service.FileNamingService.#ctor(System.TimeProvider)
+  name.vb: New(TimeProvider)
+  fullName: Wolfgang.LogCompressor.Service.FileNamingService.FileNamingService(System.TimeProvider)
+  fullName.vb: Wolfgang.LogCompressor.Service.FileNamingService.New(System.TimeProvider)
+  nameWithType: FileNamingService.FileNamingService(TimeProvider)
+  nameWithType.vb: FileNamingService.New(TimeProvider)
+- uid: Wolfgang.LogCompressor.Service.FileNamingService.#ctor*
+  name: FileNamingService
+  href: api/Wolfgang.LogCompressor.Service.FileNamingService.html#Wolfgang_LogCompressor_Service_FileNamingService__ctor_
+  commentId: Overload:Wolfgang.LogCompressor.Service.FileNamingService.#ctor
+  isSpec: "True"
+  name.vb: New
+  fullName: Wolfgang.LogCompressor.Service.FileNamingService.FileNamingService
+  fullName.vb: Wolfgang.LogCompressor.Service.FileNamingService.New
+  nameWithType: FileNamingService.FileNamingService
+  nameWithType.vb: FileNamingService.New
 - uid: Wolfgang.LogCompressor.Service.FileNamingService.DateTimeFormat
   name: DateTimeFormat
   href: api/Wolfgang.LogCompressor.Service.FileNamingService.html#Wolfgang_LogCompressor_Service_FileNamingService_DateTimeFormat
@@ -3550,6 +3625,25 @@ references:
   commentId: T:Wolfgang.LogCompressor.Service.ReportService
   fullName: Wolfgang.LogCompressor.Service.ReportService
   nameWithType: ReportService
+- uid: Wolfgang.LogCompressor.Service.ReportService.#ctor(Wolfgang.LogCompressor.Abstraction.IFileSystem,System.TimeProvider)
+  name: ReportService(IFileSystem, TimeProvider)
+  href: api/Wolfgang.LogCompressor.Service.ReportService.html#Wolfgang_LogCompressor_Service_ReportService__ctor_Wolfgang_LogCompressor_Abstraction_IFileSystem_System_TimeProvider_
+  commentId: M:Wolfgang.LogCompressor.Service.ReportService.#ctor(Wolfgang.LogCompressor.Abstraction.IFileSystem,System.TimeProvider)
+  name.vb: New(IFileSystem, TimeProvider)
+  fullName: Wolfgang.LogCompressor.Service.ReportService.ReportService(Wolfgang.LogCompressor.Abstraction.IFileSystem, System.TimeProvider)
+  fullName.vb: Wolfgang.LogCompressor.Service.ReportService.New(Wolfgang.LogCompressor.Abstraction.IFileSystem, System.TimeProvider)
+  nameWithType: ReportService.ReportService(IFileSystem, TimeProvider)
+  nameWithType.vb: ReportService.New(IFileSystem, TimeProvider)
+- uid: Wolfgang.LogCompressor.Service.ReportService.#ctor*
+  name: ReportService
+  href: api/Wolfgang.LogCompressor.Service.ReportService.html#Wolfgang_LogCompressor_Service_ReportService__ctor_
+  commentId: Overload:Wolfgang.LogCompressor.Service.ReportService.#ctor
+  isSpec: "True"
+  name.vb: New
+  fullName: Wolfgang.LogCompressor.Service.ReportService.ReportService
+  fullName.vb: Wolfgang.LogCompressor.Service.ReportService.New
+  nameWithType: ReportService.ReportService
+  nameWithType.vb: ReportService.New
 - uid: Wolfgang.LogCompressor.Service.ReportService.EscapeCsv(System.String)
   name: EscapeCsv(string)
   href: api/Wolfgang.LogCompressor.Service.ReportService.html#Wolfgang_LogCompressor_Service_ReportService_EscapeCsv_System_String_
@@ -3620,21 +3714,33 @@ references:
   isSpec: "True"
   fullName: Wolfgang.LogCompressor.Service.ReportService.WriteReportAsync
   nameWithType: ReportService.WriteReportAsync
+- uid: Wolfgang.LogCompressor.Service.ReportService._fileSystem
+  name: _fileSystem
+  href: api/Wolfgang.LogCompressor.Service.ReportService.html#Wolfgang_LogCompressor_Service_ReportService__fileSystem
+  commentId: F:Wolfgang.LogCompressor.Service.ReportService._fileSystem
+  fullName: Wolfgang.LogCompressor.Service.ReportService._fileSystem
+  nameWithType: ReportService._fileSystem
+- uid: Wolfgang.LogCompressor.Service.ReportService._timeProvider
+  name: _timeProvider
+  href: api/Wolfgang.LogCompressor.Service.ReportService.html#Wolfgang_LogCompressor_Service_ReportService__timeProvider
+  commentId: F:Wolfgang.LogCompressor.Service.ReportService._timeProvider
+  fullName: Wolfgang.LogCompressor.Service.ReportService._timeProvider
+  nameWithType: ReportService._timeProvider
 - uid: Wolfgang.LogCompressor.Service.RetentionService
   name: RetentionService
   href: api/Wolfgang.LogCompressor.Service.RetentionService.html
   commentId: T:Wolfgang.LogCompressor.Service.RetentionService
   fullName: Wolfgang.LogCompressor.Service.RetentionService
   nameWithType: RetentionService
-- uid: Wolfgang.LogCompressor.Service.RetentionService.#ctor(Wolfgang.LogCompressor.Abstraction.IFileSystem,Microsoft.Extensions.Logging.ILogger{Wolfgang.LogCompressor.Service.RetentionService})
-  name: RetentionService(IFileSystem, ILogger<RetentionService>)
-  href: api/Wolfgang.LogCompressor.Service.RetentionService.html#Wolfgang_LogCompressor_Service_RetentionService__ctor_Wolfgang_LogCompressor_Abstraction_IFileSystem_Microsoft_Extensions_Logging_ILogger_Wolfgang_LogCompressor_Service_RetentionService__
-  commentId: M:Wolfgang.LogCompressor.Service.RetentionService.#ctor(Wolfgang.LogCompressor.Abstraction.IFileSystem,Microsoft.Extensions.Logging.ILogger{Wolfgang.LogCompressor.Service.RetentionService})
-  name.vb: New(IFileSystem, ILogger(Of RetentionService))
-  fullName: Wolfgang.LogCompressor.Service.RetentionService.RetentionService(Wolfgang.LogCompressor.Abstraction.IFileSystem, Microsoft.Extensions.Logging.ILogger<Wolfgang.LogCompressor.Service.RetentionService>)
-  fullName.vb: Wolfgang.LogCompressor.Service.RetentionService.New(Wolfgang.LogCompressor.Abstraction.IFileSystem, Microsoft.Extensions.Logging.ILogger(Of Wolfgang.LogCompressor.Service.RetentionService))
-  nameWithType: RetentionService.RetentionService(IFileSystem, ILogger<RetentionService>)
-  nameWithType.vb: RetentionService.New(IFileSystem, ILogger(Of RetentionService))
+- uid: Wolfgang.LogCompressor.Service.RetentionService.#ctor(Wolfgang.LogCompressor.Abstraction.IFileSystem,Microsoft.Extensions.Logging.ILogger{Wolfgang.LogCompressor.Service.RetentionService},System.TimeProvider)
+  name: RetentionService(IFileSystem, ILogger<RetentionService>, TimeProvider)
+  href: api/Wolfgang.LogCompressor.Service.RetentionService.html#Wolfgang_LogCompressor_Service_RetentionService__ctor_Wolfgang_LogCompressor_Abstraction_IFileSystem_Microsoft_Extensions_Logging_ILogger_Wolfgang_LogCompressor_Service_RetentionService__System_TimeProvider_
+  commentId: M:Wolfgang.LogCompressor.Service.RetentionService.#ctor(Wolfgang.LogCompressor.Abstraction.IFileSystem,Microsoft.Extensions.Logging.ILogger{Wolfgang.LogCompressor.Service.RetentionService},System.TimeProvider)
+  name.vb: New(IFileSystem, ILogger(Of RetentionService), TimeProvider)
+  fullName: Wolfgang.LogCompressor.Service.RetentionService.RetentionService(Wolfgang.LogCompressor.Abstraction.IFileSystem, Microsoft.Extensions.Logging.ILogger<Wolfgang.LogCompressor.Service.RetentionService>, System.TimeProvider)
+  fullName.vb: Wolfgang.LogCompressor.Service.RetentionService.New(Wolfgang.LogCompressor.Abstraction.IFileSystem, Microsoft.Extensions.Logging.ILogger(Of Wolfgang.LogCompressor.Service.RetentionService), System.TimeProvider)
+  nameWithType: RetentionService.RetentionService(IFileSystem, ILogger<RetentionService>, TimeProvider)
+  nameWithType.vb: RetentionService.New(IFileSystem, ILogger(Of RetentionService), TimeProvider)
 - uid: Wolfgang.LogCompressor.Service.RetentionService.#ctor*
   name: RetentionService
   href: api/Wolfgang.LogCompressor.Service.RetentionService.html#Wolfgang_LogCompressor_Service_RetentionService__ctor_
@@ -3695,3 +3801,9 @@ references:
   commentId: F:Wolfgang.LogCompressor.Service.RetentionService._logger
   fullName: Wolfgang.LogCompressor.Service.RetentionService._logger
   nameWithType: RetentionService._logger
+- uid: Wolfgang.LogCompressor.Service.RetentionService._timeProvider
+  name: _timeProvider
+  href: api/Wolfgang.LogCompressor.Service.RetentionService.html#Wolfgang_LogCompressor_Service_RetentionService__timeProvider
+  commentId: F:Wolfgang.LogCompressor.Service.RetentionService._timeProvider
+  fullName: Wolfgang.LogCompressor.Service.RetentionService._timeProvider
+  nameWithType: RetentionService._timeProvider

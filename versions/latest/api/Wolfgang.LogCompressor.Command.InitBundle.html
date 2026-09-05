@@ -16,7 +16,7 @@
       <meta name="docfx:rel" content="../">
       
       
-      <meta name="docfx:docurl" content="https://github.com/Chris-Wolfgang/Log-Compressor/new/v0.3.2/apiSpec/new?filename=Wolfgang_LogCompressor_Command_InitBundle.md&amp;value=---%0Auid%3A%20Wolfgang.LogCompressor.Command.InitBundle%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">
+      <meta name="docfx:docurl" content="https://github.com/Chris-Wolfgang/Log-Compressor/new/v0.4.0/apiSpec/new?filename=Wolfgang_LogCompressor_Command_InitBundle.md&amp;value=---%0Auid%3A%20Wolfgang.LogCompressor.Command.InitBundle%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">
       <meta name="loc:inThisArticle" content="In this article">
       <meta name="loc:searchResultsCount" content="{count} results for &quot;{query}&quot;">
       <meta name="loc:searchNoResults" content="No results for &quot;{query}&quot;">
@@ -75,7 +75,7 @@
 
 
   <h1 id="Wolfgang_LogCompressor_Command_InitBundle" data-uid="Wolfgang.LogCompressor.Command.InitBundle" class="text-break">
-Class InitBundle  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/v0.3.2/src/Wolfgang.LogCompressor/Command/InitBundle.cs/#L10"><i class="bi bi-code-slash"></i></a>
+Class InitBundle  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/v0.4.0/src/Wolfgang.LogCompressor/Command/InitBundle.cs/#L10"><i class="bi bi-code-slash"></i></a>
   </h1>
 
   <div class="facts text-secondary">
@@ -137,6 +137,40 @@ internal class InitBundle</code></pre>
 
 
 
+  <h2 class="section" id="fields">Fields
+</h2>
+
+
+
+  <h3 id="Wolfgang_LogCompressor_Command_InitBundle_TemplateContent" data-uid="Wolfgang.LogCompressor.Command.InitBundle.TemplateContent">
+  TemplateContent
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/v0.4.0/src/Wolfgang.LogCompressor/Command/InitBundle.cs/#L20"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">private const string TemplateContent = &quot;# logc bundle configuration\n# Usage: logc bundle @bundle.rsp\n#\n# Uncomment and modify the options below.\n\n# Source path (required)\n# C:\\Logs\\MyApp\n\n# Recurse into subdirectories\n# --recurse\n\n# Output directory (defaults to source parent directory)\n# --output C:\\ArchivedLogs\n\n# Compression format: zip, gz, brotli, zstd, lz4\n# --format zip\n\n# Compression level: fastest, optimal, smallest\n# --level optimal\n\n# Only bundle files older than N days\n# --older-than 7\n\n# Date range filter (mutually exclusive with --older-than)\n# --min-datetime 2026-01-01\n# --max-datetime 2026-12-31\n\n# Include only specific file patterns\n# --include *.log\n\n# Exclude specific file patterns\n# --exclude current.log\n\n# Timestamp embedded in archive names: modified (default), compressed\n# --timestamp modified\n\n# Custom base name for archives (colliding names get -2, -3, ...)\n# --name weblogs\n\n# When an item fails: skip (default), fail, or retry:N (1-100, then skip)\n# --on-error retry:3\n\n# Skip archive verification before deleting originals\n# --no-verify\n\n# Generate a summary report\n# --report json\n# --report-path ./bundle-report.json\n\n# Delete old archives after bundling\n# --delete-archives-older-than 365&quot;</code></pre>
+  </div>
+
+
+
+
+  <h4 class="section">Field Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+
   <h2 class="section" id="properties">Properties
 </h2>
 
@@ -145,7 +179,7 @@ internal class InitBundle</code></pre>
 
   <h3 id="Wolfgang_LogCompressor_Command_InitBundle_Output" data-uid="Wolfgang.LogCompressor.Command.InitBundle.Output">
   Output
-  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/v0.3.2/src/Wolfgang.LogCompressor/Command/InitBundle.cs/#L21"><i class="bi bi-code-slash"></i></a>
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/v0.4.0/src/Wolfgang.LogCompressor/Command/InitBundle.cs/#L79"><i class="bi bi-code-slash"></i></a>
   </h3>
 
   <div class="markdown level1 summary"><p>Gets or sets the output path for the config file.</p>
@@ -182,7 +216,7 @@ public string Output { get; set; }</code></pre>
 
   <h3 id="Wolfgang_LogCompressor_Command_InitBundle_OnExecuteAsync_McMaster_Extensions_CommandLineUtils_IConsole_Microsoft_Extensions_Logging_ILogger_Wolfgang_LogCompressor_Command_InitBundle__" data-uid="Wolfgang.LogCompressor.Command.InitBundle.OnExecuteAsync(McMaster.Extensions.CommandLineUtils.IConsole,Microsoft.Extensions.Logging.ILogger{Wolfgang.LogCompressor.Command.InitBundle})">
   OnExecuteAsync(IConsole, ILogger&lt;InitBundle&gt;)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/v0.3.2/src/Wolfgang.LogCompressor/Command/InitBundle.cs/#L36"><i class="bi bi-code-slash"></i></a>
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/v0.4.0/src/Wolfgang.LogCompressor/Command/InitBundle.cs/#L94"><i class="bi bi-code-slash"></i></a>
   </h3>
 
   <div class="markdown level1 summary"><p>Generates the bundle configuration file.</p>
@@ -224,7 +258,7 @@ public string Output { get; set; }</code></pre>
 </article>
 
         <div class="contribution d-print-none">
-          <a href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/v0.3.2/src/Wolfgang.LogCompressor/Command/InitBundle.cs/#L10" class="edit-link">Edit this page</a>
+          <a href="https://github.com/Chris-Wolfgang/Log-Compressor/blob/v0.4.0/src/Wolfgang.LogCompressor/Command/InitBundle.cs/#L10" class="edit-link">Edit this page</a>
         </div>
 
 

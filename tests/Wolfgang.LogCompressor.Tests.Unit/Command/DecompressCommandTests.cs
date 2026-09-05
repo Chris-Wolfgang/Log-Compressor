@@ -60,8 +60,10 @@ public sealed class DecompressCommandTests : IDisposable
     {
         using var cts = new CancellationTokenSource();
         await cts.CancelAsync();
+        // The closure runs inside the awaited OnExecuteAsync call below,
+        // before cts is disposed at the end of this method.
         _decompressService.ExecuteAsync(Arg.Any<DecompressionOptions>(), Arg.Any<CancellationToken>())
-            .Returns<IReadOnlyList<CompressionResult>>(_ => throw new OperationCanceledException(cts.Token));
+            .Returns<IReadOnlyList<CompressionResult>>(callInfo => throw new OperationCanceledException(callInfo.Arg<CancellationToken>()));
 
         var command = new Decompress { Path = _tempDir, NoLock = true };
 

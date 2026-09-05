@@ -65,9 +65,8 @@ public sealed class CompressCommandTests : IDisposable
         await cts.CancelAsync();
         // The closure runs inside the awaited OnExecuteAsync call below,
         // before cts is disposed at the end of this method.
-        // ReSharper disable once AccessToDisposedClosure
         _compressService.ExecuteAsync(Arg.Any<CompressionOptions>(), Arg.Any<CancellationToken>())
-            .Returns<IReadOnlyList<CompressionResult>>(_ => throw new OperationCanceledException(cts.Token));
+            .Returns<IReadOnlyList<CompressionResult>>(callInfo => throw new OperationCanceledException(callInfo.Arg<CancellationToken>()));
 
         var command = new Compress { Path = "/tmp/test.log", NoLock = true };
 

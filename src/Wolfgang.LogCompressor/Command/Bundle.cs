@@ -104,9 +104,9 @@ internal class Bundle : SharedOptions
             // reaching here).
             return result.SkippedCount > 0 ? ExitCode.CompletedWithSkips : ExitCode.ApplicationError;
         }
-        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        catch (OperationCanceledException ex) when (cancellationToken.IsCancellationRequested)
         {
-            logger.LogInformation("Run canceled.");
+            logger.LogInformation(ex, "Run canceled.");
             await console.Error.WriteLineAsync("Canceled.");
             return ExitCode.Canceled;
         }

@@ -1,0 +1,15 @@
+{
+  "template": "Chris-Wolfgang/repo-template",
+  "commit": "5faca9a6661b515eccbbde7e688165c6f361be04",
+  "updated": "2026-09-17",
+  "placeholders": {
+    "GITHUB_OWNER": "Chris-Wolfgang",
+    "REPO_NAME": "Log-Compressor",
+    "GITHUB_REPO_URL": "https://github.com/Chris-Wolfgang/Log-Compressor",
+    "DOCS_URL": "https://chris-wolfgang.github.io/Log-Compressor/",
+    "PROJECT_NAME": "Wolfgang.LogCompressor",
+    "PACKAGE_NAME": "Wolfgang.LogCompressor",
+    "LICENSE_TYPE": "MIT"
+  },
+  "note": "Written by scripts/setup.ps1 and scripts/upgrade.ps1; the template commit this repository last took template-managed files from, and the placeholder values setup used."
+}

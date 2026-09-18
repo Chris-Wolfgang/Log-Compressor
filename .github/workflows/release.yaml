@@ -893,11 +893,19 @@ jobs:
         with:
           subject-path: artifacts/logc-${{ matrix.rid }}.*
 
+      # `gh` is pre-installed on the runner, so no third-party action is needed
+      # to upload release assets (zizmor superfluous-actions).
       - name: Attach archive to release
-        uses: softprops/action-gh-release@efb35369e0ad2afab669f228072c1b0d510eae64  # v3.0.3
-        with:
-          tag_name: ${{ github.event.release.tag_name }}
-          files: artifacts/logc-${{ matrix.rid }}.*
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          TAG_NAME: ${{ github.event.release.tag_name }}
+          RID: ${{ matrix.rid }}
+        run: |
+          shopt -s nullglob
+          files=(artifacts/logc-"$RID".*)
+          echo "Uploading ${#files[@]} asset(s) to release $TAG_NAME"
+          gh release upload "$TAG_NAME" "${files[@]}" --clobber
 
   # SBOM + reproducible-build manifest (#77, #93). One SBOM per release (the
   # dependency graph is RID-independent) plus a manifest recording the
@@ -1011,12 +1019,15 @@ jobs:
             }' > supply-chain/reproducible-build-manifest.json
           cat supply-chain/reproducible-build-manifest.json
 
+      # `gh` is pre-installed on the runner, so no third-party action is needed
+      # to upload release assets (zizmor superfluous-actions).
       - name: Attach SBOM and manifest to release
-        uses: softprops/action-gh-release@efb35369e0ad2afab669f228072c1b0d510eae64  # v3.0.3
-        with:
-          tag_name: ${{ github.event.release.tag_name }}
-          files: |
-            supply-chain/logc.bom.json
-            supply-chain/reproducible-build-manifest.json
-            supply-chain/THIRD-PARTY-NOTICES.md
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          TAG_NAME: ${{ github.event.release.tag_name }}
+        run: |
+          files=(supply-chain/logc.bom.json supply-chain/reproducible-build-manifest.json supply-chain/THIRD-PARTY-NOTICES.md)
+          echo "Uploading ${#files[@]} asset(s) to release $TAG_NAME"
+          gh release upload "$TAG_NAME" "${files[@]}" --clobber
 

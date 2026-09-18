@@ -1,28 +1,34 @@
 name: License Audit
 
-# Audits the license of every NuGet dependency — direct AND transitive —
-# against the allowlist in .github/allowed-licenses.json (#86). Dependabot
-# tracks versions and CVEs; it does not check licenses, so an incompatible
-# license (GPL/AGPL/business-source) in a new transitive dependency would
-# otherwise land silently in an MIT-licensed distribution.
+# License audit of transitive dependencies. Validates every src/ project's full
+# (direct + transitive) dependency closure against an allow-list of OSI-permissive
+# licenses using the `nuget-license` tool, and FAILS if any dependency's license is
+# not allowed (e.g. a copyleft or non-OSI license slipping in via a bump).
 #
-# A new package with a license outside the allowlist fails this job; approve
-# it by adding the license to the allowlist in the same PR, with the
-# reasoning in the PR description. Release-time attribution is separate:
-# release.yaml generates THIRD-PARTY-NOTICES.md from the shipped project's
-# dependency graph and attaches it to the GitHub Release.
+# Config lives in .github/license-audit/:
+#  - allowed-licenses.json     — the licenses we accept: OSI-permissive ones plus one
+#    explicit non-OSI exception, MS-.NET-Library (the Microsoft .NET Library license
+#    some older System.* packages ship under - proprietary, but freely redistributable
+#    with the package, so it imposes nothing on consumers of ours).
+#  - url-license-mappings.json — maps packages that expose a license URL (not an SPDX
+#    expression) to a license identifier: the dotnet/standard LICENSE.TXT is MIT, the
+#    go.microsoft.com LinkId=329770 URL is MS-.NET-Library.
+#  - ignored-packages.json     — SonarAnalyzer.CSharp: a build-time analyzer
+#    (PrivateAssets=all, not shipped) under the non-OSI SONAR Source-Available
+#    License, so it imposes no obligation on consumers of the package.
+#
+# Skips automatically when the repo has no src/ project (e.g. the template repo).
 
 on:
   pull_request:
-    paths:
-      - '**/*.csproj'
-      - 'Directory.Build.props'
-      - '.github/allowed-licenses.json'
-      - '.github/workflows/license-audit.yaml'
+  push:
+    branches: [main]
+  # Weekly re-audit of main: a package can change its license between the
+  # versions Dependabot bumps, or a transitive can be re-licensed upstream
+  # without any PR touching this repo. Tuesdays 06:15 UTC, off the Monday
+  # Scorecard / Sunday CodeQL+Stryker slots.
   schedule:
-    # Sunday 06:00 UTC — matches scorecard.yaml's weekly cadence; catches
-    # license changes in re-published package versions between PRs.
-    - cron: '0 6 * * 0'
+    - cron: '15 6 * * 2'
   workflow_dispatch:
 
 permissions:
@@ -33,68 +39,46 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  audit:
+  license-audit:
     name: License audit
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 10
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
         with:
           persist-credentials: false
 
-      - name: Setup .NET
-        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
-        with:
-          dotnet-version: '10.0.x'
-
-      - name: Detect audit configuration
-        id: config
-        # The allowlist/override/ignore files are NOT protected files, so a
-        # protected-file split PR (or any branch state where the workflow
-        # arrives ahead of its configuration) can run this workflow without
-        # them. Skip gracefully instead of failing the audit on a missing
-        # config — the same pattern stryker.yaml uses for its config.
+      - name: Detect src projects
+        id: detect
         run: |
-          if [ -f .github/allowed-licenses.json ] && [ -f .github/license-overrides.json ] && [ -f .github/license-ignored-packages.json ]; then
+          if git ls-files 'src/**/*.csproj' 'src/*.csproj' | grep -q .; then
             echo "found=true" >> "$GITHUB_OUTPUT"
           else
-            echo "::notice::License-audit configuration files missing on this ref - skipping audit."
+            echo "No src/**/*.csproj found — skipping license audit."
             echo "found=false" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Restore
-        if: steps.config.outputs.found == 'true'
-        run: dotnet restore Wolfgang.LogCompressor.slnx
+      - name: Setup .NET
+        if: steps.detect.outputs.found == 'true'
+        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68  # v6.0.0
+        with:
+          dotnet-version: '10.0.x'
 
       - name: Install nuget-license
-        if: steps.config.outputs.found == 'true'
+        if: steps.detect.outputs.found == 'true'
         run: dotnet tool install --global nuget-license
 
-      - name: Audit licenses against allowlist
-        if: steps.config.outputs.found == 'true'
-        # -t includes transitive packages; the tool exits non-zero when any
-        # package's license is not in the allowlist. The JSON report is
-        # uploaded either way for inspection.
-        #
-        # license-overrides.json: packages whose metadata carries a license
-        # FILE or legacy URL the tool cannot classify, mapped to their known
-        # SPDX expression (xunit.abstractions 2.0.3 → Apache-2.0).
-        # license-ignored-packages.json: SonarAnalyzer.CSharp is LGPL-3.0-only
-        # but is a build-time-only Roslyn analyzer (PrivateAssets) — it is
-        # never distributed with the logc binaries, so it sits outside the
-        # distribution-license policy this audit enforces.
+      # Gate: fail if any src project's dependency license is not on the allow-list.
+      - name: Audit licenses (gate on allow-list)
+        if: steps.detect.outputs.found == 'true'
         run: |
-          nuget-license -i Wolfgang.LogCompressor.slnx -t \
-            -a .github/allowed-licenses.json \
-            -override .github/license-overrides.json \
-            -ignore .github/license-ignored-packages.json \
-            -o JsonPretty > license-report.json
-
-      - name: Upload license report
-        if: always() && steps.config.outputs.found == 'true'
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-        with:
-          name: license-report
-          path: license-report.json
-          retention-days: 30
+          while IFS= read -r proj; do
+            echo "== $proj =="
+            dotnet restore "$proj"
+            nuget-license -i "$proj" -t \
+              -a .github/license-audit/allowed-licenses.json \
+              -ignore .github/license-audit/ignored-packages.json \
+              -mapping .github/license-audit/url-license-mappings.json \
+              -o Table
+          done < <(git ls-files 'src/**/*.csproj' 'src/*.csproj')

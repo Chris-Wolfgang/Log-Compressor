@@ -68,7 +68,7 @@ jobs:
 
       - name: Install dotnet-stryker
         if: steps.check.outputs.found == 'true'
-        run: dotnet tool update -g dotnet-stryker || dotnet tool install -g dotnet-stryker
+        run: dotnet tool restore
 
       - name: Run Stryker
         if: steps.check.outputs.found == 'true'

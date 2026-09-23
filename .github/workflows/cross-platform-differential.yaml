@@ -59,6 +59,14 @@ jobs:
         with:
           python-version: '3.12'
 
+      - name: Install defusedxml
+        # Normalize-TestResults.py parses the TRX with defusedxml, which wraps
+        # expat and refuses a document that declares a DTD before the content
+        # is processed. Hash-pinned for the same reason semgrep.yaml pins its
+        # install (Scorecard Pinned-Dependencies).
+        shell: bash
+        run: python -m pip install --require-hashes -r .github/requirements/defusedxml.txt
+
       - name: Run full test suite
         shell: bash
         env:

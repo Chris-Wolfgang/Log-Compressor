@@ -18,7 +18,7 @@ fails on one leg surfaces as an outcome divergence; that leg's own test log
 carries the message.
 """
 import sys
-import xml.etree.ElementTree as ET  # nosemgrep: use-defused-xml
+import xml.etree.ElementTree as ET  # nosemgrep: python.lang.security.use-defused-xml.use-defused-xml
 
 NS = {"t": "http://microsoft.com/schemas/VisualStudio/TeamTest/2010"}
 
@@ -45,7 +45,7 @@ def main():
         print(f'{trx_path}: refusing to parse - the file declares a DTD or entities', file=sys.stderr)
         return 2
 
-    tree = ET.parse(trx_path)  # nosemgrep: use-defused-xml
+    tree = ET.parse(trx_path)  # nosemgrep: python.lang.security.use-defused-xml.use-defused-xml
 
     lines = []
     for result in tree.getroot().iter(f"{{{NS['t']}}}UnitTestResult"):

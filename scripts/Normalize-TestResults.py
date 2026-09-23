@@ -19,8 +19,44 @@ carries the message.
 """
 import sys
 import xml.etree.ElementTree as ET
+import xml.parsers.expat
 
 NS = {"t": "http://microsoft.com/schemas/VisualStudio/TeamTest/2010"}
+
+
+class _DtdFound(Exception):
+    pass
+
+
+class _RootReached(Exception):
+    pass
+
+
+def declares_dtd(path):
+    """True if the document declares a DTD.
+
+    expat decodes according to the XML declaration, so this sees a DOCTYPE in UTF-16 or any
+    other encoding, and it is not bounded by a byte window - a DOCTYPE preceded by a large
+    comment is still found. A DTD must precede the root element, so parsing stops there.
+    """
+    parser = xml.parsers.expat.ParserCreate()
+
+    def _doctype(*_args):
+        raise _DtdFound
+
+    def _root(*_args):
+        raise _RootReached
+
+    parser.StartDoctypeDeclHandler = _doctype
+    parser.StartElementHandler = _root
+    try:
+        with open(path, "rb") as handle:
+            parser.ParseFile(handle)
+    except _DtdFound:
+        return True
+    except _RootReached:
+        return False
+    return False
 
 
 def main():
@@ -35,22 +71,22 @@ def main():
     # (3.12) expat already refuses those - a bomb raises "limit on input amplification factor
     # (from DTD and entities) breached" - so this is defence in depth, not a live hole: it makes
     # the refusal explicit and keeps holding if the pinned version ever moves. Both vectors need
-    # a DTD with entity definitions, so refusing a DOCTYPE closes them without pulling defusedxml
-    # into CI; this script runs on setup-python with no pip step, and adding a dependency would
-    # be more supply-chain surface than the vector it removes. A TRX emitted by dotnet test never
-    # carries a DOCTYPE; one that does is not a TRX we should be reading.
+    # a DTD, so refusing one closes them without pulling defusedxml into CI; this script runs on
+    # setup-python with no pip step, and a dependency would be more supply-chain surface than the
+    # vector it removes. A TRX emitted by dotnet test never carries a DOCTYPE.
     #
-    # Semgrep's use-defused-xml alert stays OPEN on the import below, deliberately. Three forms of
-    # `# nosemgrep` (short id, full id, bare) all failed to suppress it, and every edit to that line
-    # mints a new alert fingerprint, which fails the PR's code-scanning check. Leaving the line
-    # untouched keeps the pre-existing alert pre-existing. Closing it properly means switching to
-    # defusedxml, which would add the first installed dependency to this workflow.
-    with open(trx_path, 'rb') as probe:
-        head = probe.read(8192)
-    if b'<!DOCTYPE' in head or b'<!ENTITY' in head:
-        print(f'{trx_path}: refusing to parse - the file declares a DTD or entities', file=sys.stderr)
+    # The check is done by expat rather than by scanning the first N bytes. A byte scan is
+    # evadable three ways, all verified: a DOCTYPE pushed past the window by a leading comment,
+    # a DOCTYPE straddling the window boundary, and UTF-16 input in which the ASCII bytes never
+    # appear at all.
+    #
+    # Semgrep's use-defused-xml alert stays OPEN on the import above, deliberately. Three forms of
+    # `# nosemgrep` all failed to suppress it, and every edit to that line mints a new alert
+    # fingerprint, which fails the PR's code-scanning check. Closing it properly means switching
+    # to defusedxml, which would add the first installed dependency to this workflow.
+    if declares_dtd(trx_path):
+        print(f"{trx_path}: refusing to parse - the file declares a DTD", file=sys.stderr)
         return 2
-
     tree = ET.parse(trx_path)
 
     lines = []

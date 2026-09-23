@@ -18,7 +18,7 @@ fails on one leg surfaces as an outcome divergence; that leg's own test log
 carries the message.
 """
 import sys
-import xml.etree.ElementTree as ET  # nosemgrep
+import xml.etree.ElementTree as ET
 
 NS = {"t": "http://microsoft.com/schemas/VisualStudio/TeamTest/2010"}
 
@@ -39,13 +39,19 @@ def main():
     # into CI; this script runs on setup-python with no pip step, and adding a dependency would
     # be more supply-chain surface than the vector it removes. A TRX emitted by dotnet test never
     # carries a DOCTYPE; one that does is not a TRX we should be reading.
+    #
+    # Semgrep's use-defused-xml alert stays OPEN on the import below, deliberately. Three forms of
+    # `# nosemgrep` (short id, full id, bare) all failed to suppress it, and every edit to that line
+    # mints a new alert fingerprint, which fails the PR's code-scanning check. Leaving the line
+    # untouched keeps the pre-existing alert pre-existing. Closing it properly means switching to
+    # defusedxml, which would add the first installed dependency to this workflow.
     with open(trx_path, 'rb') as probe:
         head = probe.read(8192)
     if b'<!DOCTYPE' in head or b'<!ENTITY' in head:
         print(f'{trx_path}: refusing to parse - the file declares a DTD or entities', file=sys.stderr)
         return 2
 
-    tree = ET.parse(trx_path)  # nosemgrep
+    tree = ET.parse(trx_path)
 
     lines = []
     for result in tree.getroot().iter(f"{{{NS['t']}}}UnitTestResult"):

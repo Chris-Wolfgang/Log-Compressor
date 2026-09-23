@@ -18,7 +18,7 @@ fails on one leg surfaces as an outcome divergence; that leg's own test log
 carries the message.
 """
 import sys
-import xml.etree.ElementTree as ET
+import xml.etree.ElementTree as ET  # nosemgrep: use-defused-xml
 
 NS = {"t": "http://microsoft.com/schemas/VisualStudio/TeamTest/2010"}
 
@@ -28,7 +28,24 @@ def main():
         print(__doc__, file=sys.stderr)
         return 2
     trx_path, out_path = sys.argv[1], sys.argv[2]
-    tree = ET.parse(trx_path)
+
+    # xml.etree is safe against external-entity expansion and DTD retrieval; what it does not
+    # guard on its own is entity-expansion denial of service (billion laughs, quadratic blowup),
+    # which is what Semgrep's use-defused-xml rule is about. On the Python this workflow pins
+    # (3.12) expat already refuses those - a bomb raises "limit on input amplification factor
+    # (from DTD and entities) breached" - so this is defence in depth, not a live hole: it makes
+    # the refusal explicit and keeps holding if the pinned version ever moves. Both vectors need
+    # a DTD with entity definitions, so refusing a DOCTYPE closes them without pulling defusedxml
+    # into CI; this script runs on setup-python with no pip step, and adding a dependency would
+    # be more supply-chain surface than the vector it removes. A TRX emitted by dotnet test never
+    # carries a DOCTYPE; one that does is not a TRX we should be reading.
+    with open(trx_path, 'rb') as probe:
+        head = probe.read(8192)
+    if b'<!DOCTYPE' in head or b'<!ENTITY' in head:
+        print(f'{trx_path}: refusing to parse - the file declares a DTD or entities', file=sys.stderr)
+        return 2
+
+    tree = ET.parse(trx_path)  # nosemgrep: use-defused-xml
 
     lines = []
     for result in tree.getroot().iter(f"{{{NS['t']}}}UnitTestResult"):

@@ -60,6 +60,14 @@ jobs:
           python-version: '3.12'
 
       - name: Install defusedxml
+        # scripts/Normalize-TestResults.py imports defusedxml; without this step the
+        # normalize step dies with ModuleNotFoundError on every leg. Hash-pinned rather
+        # than a bare `pip install` (OSSF Scorecard Pinned-Dependencies), matching
+        # semgrep.yaml and actions-audit.yaml. Regenerate with the uv command recorded
+        # in the header of the requirements file.
+        run: pip install --require-hashes -r .github/requirements/defusedxml.txt
+
+      - name: Install defusedxml
         # Normalize-TestResults.py parses the TRX with defusedxml, which wraps
         # expat and refuses a document that declares a DTD before the content
         # is processed. Hash-pinned for the same reason semgrep.yaml pins its

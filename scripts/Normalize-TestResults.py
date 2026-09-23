@@ -18,7 +18,9 @@ fails on one leg surfaces as an outcome divergence; that leg's own test log
 carries the message.
 """
 import sys
-import xml.etree.ElementTree as ET
+
+import defusedxml.ElementTree as ET
+from defusedxml.common import DTDForbidden
 
 NS = {"t": "http://microsoft.com/schemas/VisualStudio/TeamTest/2010"}
 
@@ -28,13 +30,25 @@ def main():
         print(__doc__, file=sys.stderr)
         return 2
     trx_path, out_path = sys.argv[1], sys.argv[2]
-    tree = ET.parse(trx_path)
+
+    # forbid_dtd refuses the document outright if it declares a DTD. Entity-expansion denial of
+    # service (billion laughs, quadratic blowup) and external-entity retrieval both need one, so
+    # this closes them at the door rather than relying on the parser's own limits. On the Python
+    # this workflow pins (3.12) expat already refuses amplification - a bomb raises "limit on
+    # input amplification factor (from DTD and entities) breached" - so this is defence in depth,
+    # not a live hole; it keeps holding if the pinned version ever moves. A TRX emitted by
+    # dotnet test never carries a DOCTYPE.
+    try:
+        tree = ET.parse(trx_path, forbid_dtd=True)
+    except DTDForbidden:
+        print(f"{trx_path}: refusing to parse - the file declares a DTD", file=sys.stderr)
+        return 2
 
     lines = []
     for result in tree.getroot().iter(f"{{{NS['t']}}}UnitTestResult"):
         name = result.get("testName") or ""
         outcome = result.get("outcome") or "Unknown"
-        # Theory rows repeat testName with parameters embedded — keep as-is,
+        # Theory rows repeat testName with parameters embedded - keep as-is,
         # they're deterministic. NotExecuted == skipped; keep visible so a
         # test silently skipping on ONE platform also counts as divergence.
         lines.append(f"{outcome}\t{name}")
@@ -45,7 +59,7 @@ def main():
 
     print(f"{len(lines)} test outcomes -> {out_path}")
     if not lines:
-        print("ERROR: no test results found in TRX — treat as failure", file=sys.stderr)
+        print("ERROR: no test results found in TRX - treat as failure", file=sys.stderr)
         return 1
     return 0
 

@@ -59,8 +59,8 @@ public sealed class ReportServiceTests : IDisposable
         await _sut.WriteReportAsync(results, "csv", outputPath, TimeSpan.Zero);
 
         var csv = await File.ReadAllTextAsync(outputPath);
-        // A leading =, +, - or @ would execute as a formula in Excel/Sheets;
-        // the guard prefixes an apostrophe.
+        // A leading equals, plus, minus or at sign would execute as a formula in
+        // Excel or Sheets; the guard prefixes an apostrophe.
         Assert.Contains("\"'=cmd|calc\"", csv, StringComparison.Ordinal);
         Assert.Contains("\"'+sum.zip\"", csv, StringComparison.Ordinal);
         // Leading whitespace must not defeat the guard.

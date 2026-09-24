@@ -60,8 +60,12 @@ public sealed class DecompressCommandTests : IDisposable
     {
         using var cts = new CancellationTokenSource();
         await cts.CancelAsync();
+        // Capture the token, not the source: the lambda below outlives this scope as far
+        // as the analyzer can tell, and a CancellationToken is a struct that stays valid
+        // after its source is disposed (ResharperAccessToDisposedClosure).
+        var canceledToken = cts.Token;
         _decompressService.ExecuteAsync(Arg.Any<DecompressionOptions>(), Arg.Any<CancellationToken>())
-            .Returns<IReadOnlyList<CompressionResult>>(_ => throw new OperationCanceledException(cts.Token));
+            .Returns<IReadOnlyList<CompressionResult>>(_ => throw new OperationCanceledException(canceledToken));
 
         var command = new Decompress { Path = _tempDir, NoLock = true };
 

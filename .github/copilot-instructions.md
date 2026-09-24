@@ -92,7 +92,7 @@ root/
   - `.github/workflows/release.yaml` — release/publish pipeline.
   - `.github/workflows/docfx.yaml` — documentation build/deploy.
 - **Issue/PR Templates:** Bug reports (YAML) and feature requests (Markdown); structured PR template.
-- **CODEOWNERS:** `.github/CODEOWNERS` still contains the unfilled `{{GITHUB_USERNAME}}` template token; ownership rules are not yet enforced. Treat the de-facto owner as `@Chris-Wolfgang` until the file is updated.
+- **CODEOWNERS:** `.github/CODEOWNERS` assigns `@Chris-Wolfgang` as the owner of everything (`*`) and of `.github/` specifically, so changes there request review from the code owner.
 - **Dependabot:** Configured for NuGet packages.
 
 ### Continuous Integration Pipeline (`.github/workflows/pr.yaml`)

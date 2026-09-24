@@ -1,20 +1,42 @@
 {
   "$comment": "Mutation-score floor for the Stryker gate (#74). stryker-config.json's thresholds.break MUST equal 'floor' — Stryker exits non-zero below it, failing the weekly stryker.yaml run, which auto-files an issue. Ratchet policy: the floor only moves UP, in a PR that shows the new sustained score; lowering it requires a written rationale in the same PR. History lives in this file's git log.",
   "project": "src/Wolfgang.LogCompressor/Wolfgang.LogCompressor.csproj",
-  "floor": 85,
+  "floor": 88,
   "measured": {
-    "date": "2026-09-02",
-    "score": 86.84,
-    "killed": 559,
-    "survived": 95,
-    "timeout": 94,
-    "runtimeMinutes": 14,
-    "environment": "local win-x64, dotnet-stryker 4.16.0, Release unit suite (376 tests)"
+    "date": "2026-09-23",
+    "score": 89.65,
+    "killed": 541,
+    "survived": 64,
+    "timeout": 19,
+    "runtimeMinutes": 7,
+    "environment": "local win-x64, dotnet-stryker 5.0.0, Release unit suite (392 tests)",
+    "note": "Conservative of two identical-config runs the same evening: 90.61 % (541 killed / 55 survived / 30 timeout) and 89.65 % (541 killed / 64 survived / 19 timeout). `killed` is stable; the ~1-point spread is timeout variance, and a timeout scores as a kill while the same mutant surviving scores against. Quote the LOW run when setting the floor."
   },
   "history": [
-    { "date": "2026-08-29", "score": 71.99, "floor": 71, "note": "first real run (stryker.yaml had been a config-less no-op)" },
-    { "date": "2026-08-29", "score": 84.50, "floor": 83, "note": "#176 pass: 18 behavioural killing tests (verify/recurse flags, exit codes, retention dir + boundary, report counts, filter order, sink defaults) + ignore-methods for Log*/WriteLine* — log-statement mutants are unassertable by design, excluding them turns the score into signal" },
-    { "date": "2026-09-02", "score": 86.84, "floor": 85, "note": "#176 second pass after the v0.3.0 features dropped the score to 81.12 (below the 83 gate): 27 killing tests - verifier tar-walk isolation (valid compression wrapping non-tar bytes), ctor null-guards, exact retry-attempt counts, skip-mode continuation, byte-count/OriginalSize sums, uniquifier counter progression, directory-entry extraction, expected-size-zero boundary" }
+    {
+      "date": "2026-08-29",
+      "score": 71.99,
+      "floor": 71,
+      "note": "first real run (stryker.yaml had been a config-less no-op)"
+    },
+    {
+      "date": "2026-08-29",
+      "score": 84.5,
+      "floor": 83,
+      "note": "#176 pass: 18 behavioural killing tests (verify/recurse flags, exit codes, retention dir + boundary, report counts, filter order, sink defaults) + ignore-methods for Log*/WriteLine* — log-statement mutants are unassertable by design, excluding them turns the score into signal"
+    },
+    {
+      "date": "2026-09-02",
+      "score": 86.84,
+      "floor": 85,
+      "note": "#176 second pass after the v0.3.0 features dropped the score to 81.12 (below the 83 gate): 27 killing tests - verifier tar-walk isolation (valid compression wrapping non-tar bytes), ctor null-guards, exact retry-attempt counts, skip-mode continuation, byte-count/OriginalSize sums, uniquifier counter progression, directory-entry extraction, expected-size-zero boundary"
+    },
+    {
+      "date": "2026-09-23",
+      "score": 89.65,
+      "floor": 88,
+      "note": "#268: added ConfigureAwait to ignore-methods. 81 of the 129 survivors in the pre-change run were the same ConfigureAwait(false)->true flip, equivalent by construction in a console app with no SynchronizationContext - the same reasoning that excluded Log*/WriteLine* on 2026-08-29. NOT a testing gain: the pre-change score was 82.84 %, FOUR points below the 2026-09-02 baseline of 86.84 and under the 85 floor, so v0.4.0 code landed without killing tests. Floor moves 85 -> 88 so that regression cannot hide behind the excluded mutants; 88 rather than 89 because two identical-config runs spread 89.65-90.61 on timeout variance and 89 would flake. The 55-64 genuine survivors are the outstanding work."
+    }
   ],
-  "survivorProfile": "95 survivors + 4 no-coverage - dominated by ConfigureAwait(false)->true boolean flips (equivalent under xunit: no SynchronizationContext) and leaveOpen argument booleans (disposal semantics indistinguishable in context), plus a few unreachable-by-construction branches (root-directory bundle sources, whitespace folder names). Raising the floor past ~88 means hunting those case-by-case; check the HTML report from the weekly stryker.yaml artifact."
+  "survivorProfile": "55 genuine survivors after ConfigureAwait mutants are excluded (they no longer reach the report at all): 16 statement, 12 boolean, 10 string, 7 equality, 4 block removal, 2 negate, 2 null-coalescing, 1 logical, concentrated in ArchiveVerifier (8), DecompressService (8), the Decompress command (7), Compress (4) and RetentionService (4). The leaveOpen argument booleans and unreachable-by-construction branches called out in the previous profile are part of this set. These are real gaps from v0.4.0 code, not equivalent mutants - killing them is what should raise the floor next. HTML report: the stryker-report-* artifact on the weekly stryker.yaml run."
 }

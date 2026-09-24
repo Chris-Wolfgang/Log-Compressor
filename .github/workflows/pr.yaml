@@ -34,14 +34,7 @@ env:
   # This is LINE coverage; branch coverage legitimately can't reach 100%
   # (compiler-generated async state machines), and the gate reads only the
   # line-coverage column that ReportGenerator puts at end-of-row.
-  # Repository floor, raised 76 -> 98 (never lowered). 100 is the template value and is
-  # NOT reachable on this gate's platform: the gate runs on Linux, and TempDirectory's
-  # catch (IOException) / catch (UnauthorizedAccessException) cleanup blocks only execute
-  # on Windows, where a read-only file makes Directory.Delete throw. TempDirectoryTests
-  # guards the matching assertion with `if (File.Exists(...))` for the same reason. Getting
-  # to 100 means making that cleanup failure reproducible on Linux (chmod the parent) or
-  # excluding the helper - see the tracking issue before raising this again.
-  CODECOV_TEST_MINIMUM: 98
+  CODECOV_TEST_MINIMUM: 100
 
 on:
   pull_request:

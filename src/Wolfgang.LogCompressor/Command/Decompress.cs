@@ -213,7 +213,9 @@ internal class Decompress
         }
         catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
         {
+#pragma warning disable S6667 // Cancellation is a user action, not a fault. The exception filter has already proven the token was canceled, so the exception adds no diagnostic value; passing it would put a stack trace in an Information-level log for a normal Ctrl-C.
             logger.LogInformation("Run canceled.");
+#pragma warning restore S6667
             await console.Error.WriteLineAsync("Canceled.");
             return ExitCode.Canceled;
         }

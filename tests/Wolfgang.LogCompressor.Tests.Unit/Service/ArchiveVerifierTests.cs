@@ -205,6 +205,20 @@ public sealed class ArchiveVerifierTests : IDisposable
 
 
 
+    [Fact]
+    public void CompressRaw_when_formatIsUnknown_expected_argumentOutOfRange()
+    {
+        // The helper's default switch arm is unreachable from the other tests, which all pass
+        // one of the four known formats. Calling it directly is what makes the guard a tested
+        // contract rather than dead code the coverage gate has to be told to ignore.
+        Assert.Throws<ArgumentOutOfRangeException>
+        (
+            () => CompressRaw("tar.unknown", [1, 2, 3])
+        );
+    }
+
+
+
     private static byte[] CompressRaw(string format, byte[] content)
     {
         using var buffer = new MemoryStream();

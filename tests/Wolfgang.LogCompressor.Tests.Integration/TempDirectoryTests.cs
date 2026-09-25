@@ -80,21 +80,26 @@ public sealed class TempDirectoryTests
 
 
     [Fact]
-    public void Dispose_when_readOnlyFileInside_expected_swallowedAndCleanedUpLater()
+    public void Dispose_when_deleteIsBlocked_expected_swallowedAndCleanedUpLater()
     {
-        // On Windows a read-only file makes Directory.Delete throw
-        // UnauthorizedAccessException — the second best-effort catch path.
         var sut = new TempDirectory();
-        var filePath = sut.WriteFile("readonly.log", "keep");
-        File.SetAttributes(filePath, FileAttributes.ReadOnly);
+        File.WriteAllText(Path.Combine(sut.Path, "keep.log"), "keep");
+
+        // Marking the DIRECTORY read-only blocks the delete on every platform, so
+        // this exercises the catch without an `if (OperatingSystem...)` - which
+        // would leave the untaken branch uncovered on the other platform, the very
+        // problem this test used to have. Windows raises IOException for a
+        // read-only directory; Unix clears the directory's write bit, so its
+        // entries cannot be unlinked (EACCES -> UnauthorizedAccessException).
+        File.SetAttributes(sut.Path, FileAttributes.ReadOnly);
 
         sut.Dispose();
 
-        // On Linux/macOS the first dispose already deleted the tree.
-        if (File.Exists(filePath))
-        {
-            File.SetAttributes(filePath, FileAttributes.Normal);
-        }
+        // The failure was swallowed and the tree is still there.
+        Assert.True(Directory.Exists(sut.Path));
+
+        // Clear only the read-only bit, leaving the rest of the attributes alone.
+        File.SetAttributes(sut.Path, File.GetAttributes(sut.Path) & ~FileAttributes.ReadOnly);
 
         sut.Dispose();
         Assert.False(Directory.Exists(sut.Path));

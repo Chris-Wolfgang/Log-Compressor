@@ -45,13 +45,15 @@ internal sealed class TempDirectory : IDisposable
                 Directory.Delete(Path, recursive: true);
             }
         }
-        catch (IOException)
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
         {
-            // Best-effort cleanup — a lingering temp dir must not fail the test.
-        }
-        catch (UnauthorizedAccessException)
-        {
-            // Best-effort cleanup.
+            // Best-effort cleanup - a lingering temp dir must not fail the test.
+            // One filtered catch rather than two: which of the two exceptions a
+            // blocked delete raises is platform-dependent (Windows raises
+            // IOException for a read-only directory, Unix raises
+            // UnauthorizedAccessException when the directory's write bit is
+            // cleared), so two separate blocks can never both be covered on one
+            // platform.
         }
     }
 }

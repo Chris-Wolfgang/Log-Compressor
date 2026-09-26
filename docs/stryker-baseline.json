@@ -1,5 +1,5 @@
 {
-  "$comment": "Mutation-score floor for the Stryker gate (#74). stryker-config.json's thresholds.break MUST equal 'floor' — Stryker exits non-zero below it, failing the weekly stryker.yaml run, which auto-files an issue. Ratchet policy: the floor only moves UP, in a PR that shows the new sustained score; lowering it requires a written rationale in the same PR. History lives in this file's git log.",
+  "$comment": "Mutation-score floor for the Stryker gate (#74). stryker-config.json's thresholds.break MUST equal 'floor' — Stryker exits non-zero below it, failing stryker.yaml: the PR gate on src/ and test changes, and the weekly run, which publishes the score to gh-pages /dev/stryker and keeps the single kind:mutation-survives issue current. Ratchet policy: the floor only moves UP, in a PR that shows the new sustained score; lowering it requires a written rationale in the same PR. History lives in this file's git log.",
   "project": "src/Wolfgang.LogCompressor/Wolfgang.LogCompressor.csproj",
   "floor": 88,
   "measured": {

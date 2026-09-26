@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.1] - 2026-09-26
+
+### Internal
+
+- Runtime dependencies (`Microsoft.Extensions.Hosting`, `Microsoft.Extensions.FileSystemGlobbing`, `System.Configuration.ConfigurationManager`, `System.IO.Hashing`) move to the 10.0.12 servicing releases; no behaviour change.
+- Suppressed S6667 on the three cancellation catches in the command handlers; no behaviour change — a canceled run still logs `Run canceled.` and exits with the canceled exit code. (#283)
+
 ## [0.4.0] - 2026-09-05
 
 ### Added
@@ -91,7 +98,8 @@ First release of `logc`, a cross-platform .NET CLI for compressing log files.
 - Structured logging via Serilog (console + file sinks).
 - Self-contained, per-platform release archives for `win-x64`, `linux-x64`, and `osx-x64` (each bundles the single-file `logc` executable plus its `AppSettings.json`); no .NET runtime required on the target. Distributed via GitHub Releases, not NuGet.
 
-[Unreleased]: https://github.com/Chris-Wolfgang/Log-Compressor/compare/v0.4.0...HEAD
+[Unreleased]: https://github.com/Chris-Wolfgang/Log-Compressor/compare/v0.4.1...HEAD
+[0.4.1]: https://github.com/Chris-Wolfgang/Log-Compressor/compare/v0.4.0...v0.4.1
 [0.4.0]: https://github.com/Chris-Wolfgang/Log-Compressor/compare/v0.3.2...v0.4.0
 [0.3.2]: https://github.com/Chris-Wolfgang/Log-Compressor/compare/v0.3.1...v0.3.2
 [0.3.1]: https://github.com/Chris-Wolfgang/Log-Compressor/compare/v0.3.0...v0.3.1

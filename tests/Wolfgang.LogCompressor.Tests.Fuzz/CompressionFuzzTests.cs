@@ -368,39 +368,72 @@ public class CompressionFuzzTests
         Gen.Select(Gen.Byte.Array[1, 4096], Gen.OneOfConst("zip", "gz", "br"), Gen.Int[1, 64]).Sample(
             (content, format, cut) =>
             {
-                ICompressionStrategy strategy = format switch
-                {
-                    "zip" => new ZipCompressionStrategy(),
-                    "gz" => new GZipCompressionStrategy(),
-                    _ => new BrotliCompressionStrategy()
-                };
-
-                var archive = CompressSingle(strategy, content, "file.log");
-                var truncated = archive[..Math.Max(1, archive.Length - cut)];
-
-                using var temp = new TempDirectory();
-                var path = Path.Combine(temp.Path, "archive." + format);
-                File.WriteAllBytes(path, truncated);
-
-                var verifier = new ArchiveVerifier(NullLogger<ArchiveVerifier>.Instance);
-                // Safe sync-over-async: CsCheck Sample lambdas must be synchronous.
-#pragma warning disable VSTHRD002
-                var verified = verifier.VerifyAsync(path, format, content.Length).GetAwaiter().GetResult();
-#pragma warning restore VSTHRD002
-
-                if (verified)
-                {
-                    // Zip and gzip carry end-of-stream integrity data, so a
-                    // truncated archive must NEVER pass — only brotli has the
-                    // legitimate cut-framing-only case.
-                    Assert.Equal("br", format);
-
-                    // And even then, a pass is only acceptable when the
-                    // content survived the truncation byte-for-byte.
-                    Assert.Equal(content, DecodeBrotli(truncated));
-                }
+                // Discarded: a pass is checked inside the helper; returning the
+                // bool would make CsCheck treat a failed verification as a failure.
+                _ = AssertTruncationIsDetectedOrLossless(content, format, cut);
             },
             iter: Iterations);
+    }
+
+
+
+    [Fact]
+    public void Verifier_passes_a_brotli_archive_cut_only_in_its_end_framing()
+    {
+        // The property above reaches its "verified" branch only when CsCheck
+        // happens to draw a brotli case whose cut removes nothing but framing,
+        // so whether that branch ran - and whether this assembly met its 100 %
+        // coverage gate - depended on the seed. Pin one such case: a short
+        // payload is stored in a single meta-block, and dropping the final byte
+        // removes only the empty last-meta-block marker.
+        var content = Enumerable.Range(0, 16).Select(i => (byte)(i * 7)).ToArray();
+
+        Assert.True(AssertTruncationIsDetectedOrLossless(content, "br", cut: 1));
+    }
+
+
+
+    /// <summary>
+    /// Truncates a <paramref name="format"/> archive of <paramref name="content"/> by
+    /// <paramref name="cut"/> bytes and asserts the verifier either rejects it or the
+    /// content survived byte-for-byte.
+    /// </summary>
+    /// <returns><see langword="true"/> when the truncated archive passed verification.</returns>
+    private static bool AssertTruncationIsDetectedOrLossless(byte[] content, string format, int cut)
+    {
+        ICompressionStrategy strategy = format switch
+        {
+            "zip" => new ZipCompressionStrategy(),
+            "gz" => new GZipCompressionStrategy(),
+            _ => new BrotliCompressionStrategy()
+        };
+
+        var archive = CompressSingle(strategy, content, "file.log");
+        var truncated = archive[..Math.Max(1, archive.Length - cut)];
+
+        using var temp = new TempDirectory();
+        var path = Path.Combine(temp.Path, "archive." + format);
+        File.WriteAllBytes(path, truncated);
+
+        var verifier = new ArchiveVerifier(NullLogger<ArchiveVerifier>.Instance);
+        // Safe sync-over-async: CsCheck Sample lambdas must be synchronous.
+#pragma warning disable VSTHRD002
+        var verified = verifier.VerifyAsync(path, format, content.Length).GetAwaiter().GetResult();
+#pragma warning restore VSTHRD002
+
+        if (verified)
+        {
+            // Zip and gzip carry end-of-stream integrity data, so a
+            // truncated archive must NEVER pass — only brotli has the
+            // legitimate cut-framing-only case.
+            Assert.Equal("br", format);
+
+            // And even then, a pass is only acceptable when the
+            // content survived the truncation byte-for-byte.
+            Assert.Equal(content, DecodeBrotli(truncated));
+        }
+
+        return verified;
     }
 
 

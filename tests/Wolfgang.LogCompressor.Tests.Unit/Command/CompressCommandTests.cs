@@ -389,4 +389,40 @@ public sealed class CompressCommandTests : IDisposable
         _retentionFileSystem.Received(1).DirectoryExists(Path.GetFullPath(outputDir));
     }
 
+
+
+    [Fact]
+    public async Task OnExecuteAsync_when_someFilesFail_expected_failureCountOnStderr()
+    {
+        _compressService.ExecuteAsync(Arg.Any<CompressionOptions>(), Arg.Any<CancellationToken>())
+            .Returns
+            (
+                new List<CompressionResult>
+                {
+                    new() { SourcePath = "a.log", OutputPath = "a.zip", Success = true },
+                    new() { SourcePath = "b.log", OutputPath = "b.zip", Success = false, ErrorMessage = "error" }
+                }
+            );
+
+        var command = new Compress { Path = Path.Combine(_tempDir, "test.log"), NoLock = true };
+
+        await command.OnExecuteAsync(_console, _logger, _compressService, _reportService, _retentionService);
+
+        Assert.Contains("1 file(s) failed to compress.", _console.Error.ToString(), StringComparison.Ordinal);
+    }
+
+
+
+    [Fact]
+    public async Task OnExecuteAsync_when_allSucceed_expected_noFailureLineOnStderr()
+    {
+        _compressService.ExecuteAsync(Arg.Any<CompressionOptions>(), Arg.Any<CancellationToken>())
+            .Returns([new CompressionResult { SourcePath = "a.log", OutputPath = "a.zip", Success = true }]);
+
+        var command = new Compress { Path = Path.Combine(_tempDir, "test.log"), NoLock = true };
+
+        await command.OnExecuteAsync(_console, _logger, _compressService, _reportService, _retentionService);
+
+        Assert.DoesNotContain("failed to compress", _console.Error.ToString(), StringComparison.Ordinal);
+    }
 }

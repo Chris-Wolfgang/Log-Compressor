@@ -329,6 +329,7 @@ public sealed class DecompressServiceTests : IDisposable
         // The directory entry is skipped; only the file contributes bytes.
         Assert.True(Assert.Single(results).Success);
         Assert.Equal(3, results[0].CompressedSize);
+        Assert.EndsWith("a.log", Assert.Single(_written.Keys), StringComparison.Ordinal);
     }
 
 
@@ -342,6 +343,7 @@ public sealed class DecompressServiceTests : IDisposable
 
         Assert.True(Assert.Single(results).Success);
         Assert.Equal(3, results[0].CompressedSize);
+        Assert.EndsWith("a.log", Assert.Single(_written.Keys), StringComparison.Ordinal);
     }
 
 

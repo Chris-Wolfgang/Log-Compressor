@@ -142,7 +142,9 @@ public sealed class FileFilterServiceTests : IDisposable
     [Fact]
     public void Apply_when_nullFiles_expected_throwsArgumentNullException()
     {
-        Assert.Throws<ArgumentNullException>(() => _sut.Apply(null!, null, null, null));
+        var ex = Assert.Throws<ArgumentNullException>(() => _sut.Apply(null!, null, null, null));
+
+        Assert.Equal("files", ex.ParamName);
     }
 
 

@@ -66,6 +66,8 @@ public sealed class BundleServiceTests : IDisposable
         var result = await _sut.ExecuteAsync(options);
 
         Assert.True(result.Success);
+        // No --output: a directory source bundles into its PARENT, next to the folder.
+        Assert.Equal(Path.Combine(new DirectoryInfo(dir).Parent!.FullName, "bundle.zip"), result.OutputPath);
         foreach (var file in files)
         {
             _fileSystem.Received(1).DeleteFile(file);
@@ -233,6 +235,8 @@ public sealed class BundleServiceTests : IDisposable
         var result = await _sut.ExecuteAsync(options);
 
         Assert.True(result.Success);
+        // No --output: a file source bundles next to the file, not into the working directory.
+        Assert.Equal(Path.Combine(fileInfo.DirectoryName!, "bundle.zip"), result.OutputPath);
         _fileSystem.Received(1).DeleteFile(file);
     }
 

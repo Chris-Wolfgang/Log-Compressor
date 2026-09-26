@@ -131,10 +131,13 @@ public sealed class ReportServiceTests : IDisposable
         var results = CreateSampleResults();
         var outputPath = Path.Combine(_tempDir, "report.txt");
 
-        await Assert.ThrowsAsync<ArgumentException>
+        var ex = await Assert.ThrowsAsync<ArgumentException>
         (
             () => _sut.WriteReportAsync(results, "xml", outputPath, TimeSpan.Zero)
         );
+
+        Assert.Equal("format", ex.ParamName);
+        Assert.Contains("Unsupported report format: xml", ex.Message, StringComparison.Ordinal);
     }
 
 
@@ -283,4 +286,18 @@ public sealed class ReportServiceTests : IDisposable
         Assert.Equal(2, doc.RootElement.GetProperty("errors").GetArrayLength());
     }
 
+
+
+    [Fact]
+    public async Task WriteReportAsync_when_emptyOutputPath_expected_throwsWithParamName()
+    {
+        var results = CreateSampleResults();
+
+        var ex = await Assert.ThrowsAsync<ArgumentException>
+        (
+            () => _sut.WriteReportAsync(results, "json", "", TimeSpan.Zero)
+        );
+
+        Assert.Equal("outputPath", ex.ParamName);
+    }
 }

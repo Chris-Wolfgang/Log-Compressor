@@ -259,4 +259,79 @@ public sealed class DecompressCommandTests : IDisposable
         Assert.True(captured.Force);
         Assert.True(captured.KeepArchives);
     }
+
+
+
+    [Fact]
+    public async Task OnExecuteAsync_when_anyArchiveFails_expected_failureCountOnStderr()
+    {
+        _decompressService.ExecuteAsync(Arg.Any<DecompressionOptions>(), Arg.Any<CancellationToken>())
+            .Returns(
+            [
+                Ok(),
+                new CompressionResult { SourcePath = "b.zip", OutputPath = "/out", Success = false, ErrorMessage = "boom" }
+            ]);
+
+        var command = new Decompress { Path = _tempDir, NoLock = true };
+
+        await command.OnExecuteAsync(_console, _logger, _decompressService, _reportService);
+
+        Assert.Contains("1 archive(s) failed to extract.", _console.Error.ToString(), StringComparison.Ordinal);
+    }
+
+
+
+    [Fact]
+    public async Task OnExecuteAsync_when_allSucceed_expected_noFailureLineOnStderr()
+    {
+        _decompressService.ExecuteAsync(Arg.Any<DecompressionOptions>(), Arg.Any<CancellationToken>())
+            .Returns([Ok()]);
+
+        var command = new Decompress { Path = _tempDir, NoLock = true };
+
+        await command.OnExecuteAsync(_console, _logger, _decompressService, _reportService);
+
+        Assert.DoesNotContain("failed to extract", _console.Error.ToString(), StringComparison.Ordinal);
+    }
+
+
+
+    [Fact]
+    public async Task OnExecuteAsync_when_noLock_andLockHeld_expected_runsAnyway()
+    {
+        // --no-lock must skip the lock entirely, not merely tolerate a free one.
+        var lockFile = Path.Combine(_tempDir, ".logc.lock");
+        await using var heldLock = new FileStream
+        (
+            lockFile,
+            FileMode.OpenOrCreate,
+            FileAccess.Write,
+            FileShare.None
+        );
+        _decompressService.ExecuteAsync(Arg.Any<DecompressionOptions>(), Arg.Any<CancellationToken>())
+            .Returns([Ok()]);
+
+        var command = new Decompress { Path = _tempDir, NoLock = true };
+
+        var result = await command.OnExecuteAsync(_console, _logger, _decompressService, _reportService);
+
+        Assert.Equal(ExitCode.Success, result);
+    }
+
+
+
+    [Fact]
+    public async Task OnExecuteAsync_when_csvReportRequested_expected_reportWritten()
+    {
+        _decompressService.ExecuteAsync(Arg.Any<DecompressionOptions>(), Arg.Any<CancellationToken>())
+            .Returns([Ok()]);
+        var reportPath = Path.Combine(_tempDir, "report.csv");
+
+        var command = new Decompress { Path = _tempDir, NoLock = true, Report = "csv", ReportPath = reportPath };
+
+        var result = await command.OnExecuteAsync(_console, _logger, _decompressService, _reportService);
+
+        Assert.Equal(ExitCode.Success, result);
+        Assert.True(File.Exists(reportPath));
+    }
 }

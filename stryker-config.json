@@ -12,8 +12,8 @@
     ],
     "thresholds": {
       "high": 95,
-      "low": 88,
-      "break": 88
+      "low": 91,
+      "break": 91
     },
     "ignore-methods": [
       "LogTrace",

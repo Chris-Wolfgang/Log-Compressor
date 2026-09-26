@@ -585,4 +585,19 @@ public sealed class SharedOptionsValidationTests
         Assert.Equal("json", result.ReportFormat);
         Assert.Equal("/tmp/report.json", result.ReportPath);
     }
+
+
+
+    [Theory]
+    [InlineData("")]
+    [InlineData("/weblogs")]
+    public void ValidateOptions_when_nameEmptyOrStartsWithInvalidChar_expected_false(string name)
+    {
+        var console = Substitute.For<IConsole>();
+        console.Error.Returns(new StringWriter());
+
+        var options = new TestOptions { Path = "/tmp", Name = name };
+
+        Assert.False(options.ValidateOptions(console));
+    }
 }

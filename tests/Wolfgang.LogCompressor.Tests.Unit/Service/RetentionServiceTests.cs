@@ -59,6 +59,7 @@ public sealed class RetentionServiceTests : IDisposable
         var result = _sut.DeleteOldArchives("/nonexistent", 30);
 
         Assert.Equal(0, result);
+        _fileSystem.DidNotReceiveWithAnyArgs().EnumerateFiles(default!, default!, default);
     }
 
 
@@ -185,4 +186,26 @@ public sealed class RetentionServiceTests : IDisposable
         _fileSystem.DidNotReceive().DeleteFile(Arg.Any<string>());
     }
 
+
+
+    [Fact]
+    public void Ctor_when_fileSystemOrLoggerNull_expected_throwsWithParamName()
+    {
+        var logger = Substitute.For<ILogger<RetentionService>>();
+
+        Assert.Equal("fileSystem", Assert.Throws<ArgumentNullException>(() => new RetentionService(null!, logger, TimeProvider.System)).ParamName);
+        Assert.Equal("logger", Assert.Throws<ArgumentNullException>(() => new RetentionService(_fileSystem, null!, TimeProvider.System)).ParamName);
+    }
+
+
+
+    [Fact]
+    public void DeleteOldArchives_when_olderThanDaysBelowOne_expected_throwsWithParamName()
+    {
+        _fileSystem.DirectoryExists("/logs").Returns(returnThis: false);
+
+        var ex = Assert.Throws<ArgumentOutOfRangeException>(() => _sut.DeleteOldArchives("/logs", 0));
+
+        Assert.Equal("olderThanDays", ex.ParamName);
+    }
 }

@@ -498,6 +498,38 @@ public sealed class ArchiveVerifierTests : IDisposable
 
 
 
+    [Fact]
+    public async Task VerifyAsync_when_zipEntryDataCorruptedButDirectoryIntact_expected_false()
+    {
+        // A stored (uncompressed) entry puts the content bytes verbatim in the
+        // file, so one flipped byte leaves the central directory readable and
+        // only the CRC-32 check on reading the entry data can catch it.
+        var archivePath = Path.Combine(_tempDir, "bad-entry.zip");
+        var content = "zip-entry-payload-0123456789"u8.ToArray();
+        await using (var fileStream = File.Create(archivePath))
+        {
+            using var archive = new ZipArchive(fileStream, ZipArchiveMode.Create, leaveOpen: true);
+            var entry = archive.CreateEntry("test.txt", CompressionLevel.NoCompression);
+            var entryStream = await entry.OpenAsync();
+            await using (entryStream)
+            {
+                await entryStream.WriteAsync(content);
+            }
+        }
+
+        var bytes = await File.ReadAllBytesAsync(archivePath);
+        var offset = bytes.AsSpan().IndexOf(content);
+        Assert.True(offset > 0);
+        bytes[offset] ^= 0xFF;
+        await File.WriteAllBytesAsync(archivePath, bytes);
+
+        var result = await _sut.VerifyAsync(archivePath, "zip");
+
+        Assert.False(result);
+    }
+
+
+
     private static async Task TruncateAsync(string path, int bytesToRemove)
     {
         var bytes = await File.ReadAllBytesAsync(path);

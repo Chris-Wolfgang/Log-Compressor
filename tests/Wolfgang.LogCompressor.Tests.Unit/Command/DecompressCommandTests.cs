@@ -334,4 +334,23 @@ public sealed class DecompressCommandTests : IDisposable
         Assert.Equal(ExitCode.Success, result);
         Assert.True(File.Exists(reportPath));
     }
+
+
+
+    [Fact]
+    public async Task OnExecuteAsync_when_reportRequestedWithoutPath_expected_defaultFileNameFromFormat()
+    {
+        _decompressService.ExecuteAsync(Arg.Any<DecompressionOptions>(), Arg.Any<CancellationToken>())
+            .Returns([Ok()]);
+        var fileSystem = Substitute.For<IFileSystem>();
+        fileSystem.CreateWrite(Arg.Any<string>()).Returns(_ => new MemoryStream());
+        var reportService = new ReportService(fileSystem, TimeProvider.System);
+
+        var command = new Decompress { Path = _tempDir, NoLock = true, Report = "csv" };
+
+        var result = await command.OnExecuteAsync(_console, _logger, _decompressService, reportService);
+
+        Assert.Equal(ExitCode.Success, result);
+        fileSystem.Received(1).CreateWrite("decompress-report.csv");
+    }
 }

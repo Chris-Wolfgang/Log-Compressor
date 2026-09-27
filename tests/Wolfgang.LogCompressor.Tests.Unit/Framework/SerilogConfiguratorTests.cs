@@ -177,6 +177,40 @@ public sealed class SerilogConfiguratorTests : IDisposable
 
 
 
+    [Fact]
+    public void Apply_when_event_logged_expected_applicationPropertyEnriched()
+    {
+        var options = NewOptions(consoleEnabled: false, filePath: Path.Combine(_tempDir, "enrich.log"));
+        var sink = new CapturingSink();
+
+        var logger = new LoggerConfiguration()
+            .Apply(options)
+            .WriteTo.Sink(sink)
+            .CreateLogger();
+        logger.Information("enrich-marker");
+        logger.Dispose();
+
+        var logEvent = Assert.Single(sink.Events);
+        Assert.Equal
+        (
+            "\"Wolfgang.LogCompressor\"",
+            logEvent.Properties["Application"].ToString()
+        );
+    }
+
+
+
+    private sealed class CapturingSink : Serilog.Core.ILogEventSink
+    {
+        public List<LogEvent> Events { get; } = [];
+
+
+
+        public void Emit(LogEvent logEvent) => Events.Add(logEvent);
+    }
+
+
+
     private static LoggingOptions NewOptions(bool consoleEnabled, string filePath)
     {
         return new LoggingOptions

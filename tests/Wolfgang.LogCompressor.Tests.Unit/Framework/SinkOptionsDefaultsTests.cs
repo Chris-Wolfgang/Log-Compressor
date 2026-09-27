@@ -28,4 +28,14 @@ public sealed class SinkOptionsDefaultsTests
         Assert.True(sut.RollOnFileSizeLimit);
         Assert.Equal(10 * 1024 * 1024, sut.FileSizeLimitBytes);
     }
+
+
+
+    [Fact]
+    public void FileSinkOptions_defaults_expected_dailyRollingPathUnderLogs()
+    {
+        var sut = new FileSinkOptions();
+
+        Assert.Equal("logs/log-.txt", sut.Path);
+    }
 }

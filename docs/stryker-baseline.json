@@ -1,16 +1,15 @@
 {
   "$comment": "Mutation-score floor for the Stryker gate (#74). stryker-config.json's thresholds.break MUST equal 'floor' — Stryker exits non-zero below it, failing stryker.yaml: the PR gate on src/ and test changes, and the weekly run, which publishes the score to gh-pages /dev/stryker and keeps the single kind:mutation-survives issue current. Ratchet policy: the floor only moves UP, in a PR that shows the new sustained score; lowering it requires a written rationale in the same PR. History lives in this file's git log.",
   "project": "src/Wolfgang.LogCompressor/Wolfgang.LogCompressor.csproj",
-  "floor": 91,
+  "floor": 92,
   "measured": {
-    "date": "2026-09-26",
-    "score": 92.52,
-    "killed": 570,
-    "survived": 43,
+    "date": "2026-09-27",
+    "score": 93.36,
+    "killed": 580,
+    "survived": 39,
     "timeout": 11,
-    "runtimeMinutes": 15,
-    "environment": "GitHub ubuntu-latest, stryker.yaml workflow_dispatch on test/kill-stryker-survivors (run 36266649000), dotnet-stryker from .config/dotnet-tools.json, Release unit suite (408 tests)",
-    "note": "Single CI run. A local win-x64 run of the same commit reported 93.79 % but with 38 timeouts on an overloaded machine (each scored as a kill), so it was not used; killed counts agree within 1 of the prediction (542 + 27 targeted)."
+    "environment": "GitHub ubuntu-latest, stryker.yaml PR gate on test/burndown-stryker-1 (run 36341050865, head 184869b), dotnet-stryker from .config/dotnet-tools.json, Release unit suite (413 tests)",
+    "note": "Single CI run. Killed rose 570 -> 580 with timeouts unchanged at 11, so the gain is kills, not timeout variance."
   },
   "history": [
     {
@@ -42,7 +41,13 @@
       "score": 92.52,
       "floor": 91,
       "note": "#300: 16 new tests + assertions added to 5 existing ones, killing 27 genuine survivors (stderr failure line x6, RetentionService guards + missing-dir early return, SharedOptions --name validation, per-strategy compression level incl. Lz4/Zstd MapLevel, default bundle output dir, zip/tar directory entries, --no-lock, csv report, guard ParamNames). Prompted by #298's new PR gate scoring 88.06 % against the 88 floor. First floor set from a Linux CI run rather than a local Windows one; 91 leaves 1.5 points for the ~1-point timeout variance."
+    },
+    {
+      "date": "2026-09-27",
+      "score": 93.36,
+      "floor": 92,
+      "note": "#304 burndown: 5 new tests killing 7 survivors (CompressionOptions.Verify default, file sink default path, Serilog Application enrichment, decompress default report path, VerifyZipAsync entry loop). The zip test exposed a real bug - ZipArchive does not check entry CRC-32 on read, so corrupt entry data verified - fixed by comparing each entry's recorded CRC-32/length. Floor 91 -> 92 leaves 1.36 points for timeout variance."
     }
   ],
-  "survivorProfile": "43 survivors + 4 no-coverage after #300, mostly equivalent by construction: leaveOpen true->false on decompressor/TarWriter wrappers (13), ThrowIfCancellationRequested inside loops whose awaited calls already observe the token (6), sw.Stop() whose elapsed time is only reported (3), message/log strings (~8), FileFilter `Count > 0` -> `>= 0` (an empty exclude matcher excludes nothing), the gzip trailer `||` -> `&&` (the reader rejects a patched ISIZE first) and the gzip <18-byte guard. Remaining genuine candidates: BundleService root-directory name fallback, SharedOptions.ParseDateTime null early-return, CompressionOptions.Verify default. HTML report: the stryker-report-* artifact on the stryker.yaml run."
+  "survivorProfile": "39 survivors after #304, all judged equivalent by construction: leaveOpen true->false on decompressor/TarWriter wrappers (13), ThrowIfCancellationRequested inside loops whose awaited calls already observe the token (6), sw.Stop() whose elapsed time is only reported (3), exception/log message strings (~9), the verifier tar DataStream copy block (TarReader still reads through entry data to reach the next header), FileFilter `Count > 0` -> `>= 0` (an empty exclude matcher excludes nothing), the gzip trailer `||` -> `&&` (the reader rejects a patched ISIZE first), the gzip <18-byte guard, SharedOptions.ParseDateTime null early-return (DateTime.TryParse(null) already yields null), the Decompress.Path default (always bound by the parser), and the BundleService/Bundle/Compress root-path fallbacks (DirectoryInfo.Name and GetDirectoryName are never empty/null for a non-root source). HTML report: the stryker-report-* artifact on the stryker.yaml run."
 }

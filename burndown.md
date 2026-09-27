@@ -32,4 +32,4 @@ so the stack is rooted on **main**.
 
 | PR | Cluster | Mutation before → after | Blockers before → after | Status |
 |----|---------|-------------------------|-------------------------|--------|
-| (this PR) | Option defaults, Serilog enrichment, decompress default report path, zip entry CRC (real bug) | 92.52 → see PR (scoped files: 6 survivors killed) | 0 → 0 | open |
+| #304 | Option defaults, Serilog enrichment, decompress default report path, zip entry CRC (real bug) | 92.52 → 93.36 (CI, 570→580 killed, floor 91→92) | 0 → 0 | open |

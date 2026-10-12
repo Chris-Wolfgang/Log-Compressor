@@ -125,12 +125,25 @@ internal sealed class ArchiveVerifier : IArchiveVerifier
         await using var stream = File.OpenRead(path);
         using var archive = new ZipArchive(stream, ZipArchiveMode.Read);
 
+        // ZipArchive does not check an entry's CRC-32 on read: a flipped byte
+        // in the entry data (always visible for stored entries, and often
+        // decodable garbage for deflated ones) reads back without error while
+        // the central directory stays intact. Compare the CRC-32 and length
+        // the archive recorded against the data actually read.
         foreach (var entry in archive.Entries)
         {
+            var crc = new Crc32();
+            long count;
+
             var entryStream = await entry.OpenAsync().ConfigureAwait(false);
             await using (entryStream.ConfigureAwait(false))
             {
-                await entryStream.CopyToAsync(Stream.Null).ConfigureAwait(false);
+                count = await DrainAsync(entryStream, crc).ConfigureAwait(false);
+            }
+
+            if (crc.GetCurrentHashAsUInt32() != entry.Crc32 || count != entry.Length)
+            {
+                throw new InvalidDataException($"Zip entry '{entry.FullName}' does not match its recorded CRC-32/length — the archive is corrupt.");
             }
         }
     }

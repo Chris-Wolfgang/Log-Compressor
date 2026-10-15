@@ -285,7 +285,7 @@ jobs:
 
           dotnet tool restore
 
-          reportgenerator `
+          dotnet reportgenerator `
             -reports:"TestResults/**/coverage.cobertura.xml" `
             -targetdir:"CoverageReport" `
             -reporttypes:"TextSummary;Html"
@@ -646,12 +646,12 @@ jobs:
 
       - name: Build DocFX metadata
         if: steps.check.outputs.found == 'true'
-        run: docfx metadata
+        run: dotnet docfx metadata
         working-directory: docfx_project
 
       - name: Build documentation (no deploy)
         if: steps.check.outputs.found == 'true'
-        run: docfx build
+        run: dotnet docfx build
         working-directory: docfx_project
 
       - name: Verify documentation output
@@ -963,7 +963,7 @@ jobs:
             echo "Licenses of all NuGet packages (direct and transitive) in the \`logc\` dependency graph,"
             echo "generated at release time for tag ${RELEASE_TAG} by nuget-license."
             echo
-            nuget-license -i src/Wolfgang.LogCompressor/Wolfgang.LogCompressor.csproj -t \
+            dotnet nuget-license -i src/Wolfgang.LogCompressor/Wolfgang.LogCompressor.csproj -t \
               -override .github/license-overrides.json \
               -ignore .github/license-ignored-packages.json \
               -o Markdown

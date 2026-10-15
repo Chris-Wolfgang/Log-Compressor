@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.2] - 2026-10-15
+
+### Fixed
+
+- Archive verification now checks each zip entry's recorded CRC-32 and length, so a zip whose entry data is corrupt (but whose directory is intact) fails verification and the original file is kept instead of deleted. (#304)
+
 ## [0.4.1] - 2026-09-26
 
 ### Internal

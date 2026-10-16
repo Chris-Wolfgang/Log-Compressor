@@ -385,7 +385,9 @@ jobs:
           # Security → Code scanning) but don't gate merge — raise to `error`
           # later when the noise floor is acceptable.
           count=$(jq '[.runs[].results[] | select(.level=="error")] | length' inspect.sarif)
-          if ! printf '%s' "$count" | grep -qE '^[0-9]+$'; then
+          # Whole-string match (not grep, which tests line by line): jq prints one count per
+          # top-level JSON document, so a SARIF holding two documents yields "0<newline>1".
+          if [[ ! "$count" =~ ^[0-9]+$ ]]; then
             echo "::error::Could not read a finding count from inspect.sarif (got '$count'). Treating as a failure, not a pass."
             exit 1
           fi
@@ -1179,13 +1181,21 @@ jobs:
             echo "has-coverage=true" >> $env:GITHUB_OUTPUT
             Write-Host "✅ Coverage files found"
           } else {
-            # Do NOT skip. A missing coverage file on this stage used to bypass the whole gate
-            # silently, so a broken collector reported green. The step above has already
-            # exited 0 if there were no test projects at all, so tests ran here: absence of
-            # coverage means collection broke.
-            Write-Host "::error::No coverage files produced on this stage. The coverage gate cannot run."
-            Write-Host "Check that the test projects still reference coverlet.collector."
-            exit 1
+            # Coverage is EXPECTED only when the test step recorded at least one assembly that ran
+            # a coverage-collecting framework. Without that, absence is legitimate and is skipped as
+            # before: the test step exits early (no tests / template-pack shape) before it writes the
+            # ledger, and net4x/netcoreapp3.1 run without the XPlat collector by design, so a
+            # project that only targets those records nothing. When it WAS expected, a missing
+            # coverage file means collection broke and the gate must fail rather than be skipped.
+            $ranFile = Join-Path $env:RUNNER_TEMP 'stage2-ran-test-assemblies.txt'
+            $expected = (Test-Path $ranFile) -and (@(Get-Content $ranFile | Where-Object { $_.Trim() }).Count -gt 0)
+            if ($expected) {
+              Write-Host "::error::Tests ran with coverage collection but produced no coverage files - the coverage gate cannot run."
+              Write-Host "Check that the test projects still reference coverlet.collector."
+              exit 1
+            }
+            echo "has-coverage=false" >> $env:GITHUB_OUTPUT
+            Write-Host "ℹ️  No coverage expected on this stage (no coverage-collecting test ran) - skipping coverage report generation"
           }
         shell: pwsh
 
@@ -1741,17 +1751,22 @@ jobs:
 
           # Every test assembly that ran must appear in the report. A missing row means
           # its coverage was never collected, and an unmeasured assembly must not pass.
+          # Coverage files exist at this point (the step exits 0 above when there are none), so a
+          # missing or empty ledger means the row check would validate nothing - refuse that
+          # rather than let a report with only a passing source row through.
           ran_assemblies_file="$RUNNER_TEMP/stage3-ran-test-assemblies.txt"
-          if [ -f "$ran_assemblies_file" ]; then
-            while IFS= read -r asm; do
-              [ -z "$asm" ] && continue
-              if ! awk -v asm="$asm" '/^[^ ]/ && $1 == asm { found = 1 } END { exit !found }' CoverageReport/Summary.txt; then
-                echo "Checking test module: '$asm' - Coverage: none collected"
-                echo "  ❌ FAIL: tests ran but no coverage was recorded (is coverlet.collector referenced?)"
-                FAILED=1
-              fi
-            done < <(sort -u "$ran_assemblies_file")
+          if [ ! -s "$ran_assemblies_file" ]; then
+            echo "❌ Coverage files exist but no test assembly was recorded as having run - refusing to pass a check that measured nothing."
+            exit 1
           fi
+          while IFS= read -r asm; do
+            [ -z "$asm" ] && continue
+            if ! awk -v asm="$asm" '/^[^ ]/ && $1 == asm { found = 1 } END { exit !found }' CoverageReport/Summary.txt; then
+              echo "Checking test module: '$asm' - Coverage: none collected"
+              echo "  ❌ FAIL: tests ran but no coverage was recorded (is coverlet.collector referenced?)"
+              FAILED=1
+            fi
+          done < <(sort -u "$ran_assemblies_file")
 
           if [ "$FAILED" -ne 0 ]; then
             echo ""

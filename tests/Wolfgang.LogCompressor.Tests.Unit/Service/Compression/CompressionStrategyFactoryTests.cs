@@ -64,4 +64,16 @@ public sealed class CompressionStrategyFactoryTests
     {
         Assert.Throws<ArgumentOutOfRangeException>(() => _sut.Create((CompressionFormat)99));
     }
+
+
+
+    [Fact]
+    public void Create_when_invalidFormat_expected_messageNamesTheFormatAndTheProblem()
+    {
+        var exception = Assert.Throws<ArgumentOutOfRangeException>(() => _sut.Create((CompressionFormat)99));
+
+        Assert.Equal("format", exception.ParamName);
+        Assert.Equal((CompressionFormat)99, exception.ActualValue);
+        Assert.Contains("Unsupported compression format", exception.Message, StringComparison.Ordinal);
+    }
 }

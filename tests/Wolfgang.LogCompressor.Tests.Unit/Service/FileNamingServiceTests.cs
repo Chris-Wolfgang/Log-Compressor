@@ -89,6 +89,17 @@ public sealed class FileNamingServiceTests : IDisposable
 
 
     [Fact]
+    public void GetBundleFileName_when_emptyFiles_expected_messageNamesTheProblemAndTheParameter()
+    {
+        var exception = Assert.Throws<ArgumentException>(() => _sut.GetBundleFileName("Logs", [], "zip"));
+
+        Assert.Equal("files", exception.ParamName);
+        Assert.Contains("At least one file is required", exception.Message, StringComparison.Ordinal);
+    }
+
+
+
+    [Fact]
     public void GetBundleFileName_when_nullFolderName_expected_throwsArgumentNullException()
     {
         var files = new List<FileInfo> { CreateFileInfo(DateTime.Now) };

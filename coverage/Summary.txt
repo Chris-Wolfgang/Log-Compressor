@@ -1,6 +1,6 @@
 Summary
-  Generated on: 10/15/2026 - 6:21:03 PM
-  Coverage date: 10/15/2026 - 6:20:48 PM - 10/15/2026 - 6:21:01 PM
+  Generated on: 10/16/2026 - 12:05:04 PM
+  Coverage date: 10/16/2026 - 12:04:44 PM - 10/16/2026 - 12:05:01 PM
   Parser: MultiReport (3x Cobertura)
   Assemblies: 4
   Classes: 62
@@ -10,8 +10,8 @@ Summary
   Uncovered lines: 0
   Coverable lines: 5618
   Total lines: 12617
-  Branch coverage: 95.2% (618 of 649)
-  Covered branches: 618
+  Branch coverage: 95% (617 of 649)
+  Covered branches: 617
   Total branches: 649
   Method coverage: 100% (642 of 642)
   Full method coverage: 100% (642 of 642)

@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.3] - 2026-10-16
+
+### Internal
+
+- Release pipeline repairs; no change to the `logc` binary. v0.4.1 and v0.4.2 were tagged but their release runs failed, so neither published binaries, the SBOM/manifest or provenance; v0.4.3 is the first release of the 0.4.x line that does, and carries the v0.4.2 changes below. The manifest-restored CI tools (`reportgenerator`, `docfx`, `nuget-license`) are now invoked as `dotnet <tool>` (#319), and the third-party-notices step reads the policy files from `.github/license-audit/` (#323).
+
 ## [0.4.2] - 2026-10-15
 
 ### Fixed

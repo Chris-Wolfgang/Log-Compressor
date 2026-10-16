@@ -44,6 +44,33 @@ public sealed class CompressionStrategyCancellationTests
 
 
 
+    [Theory]
+    [InlineData("Zip")]
+    [InlineData("Gz")]
+    [InlineData("Brotli")]
+    [InlineData("Zstd")]
+    [InlineData("Lz4")]
+    public async Task CompressFilesAsync_when_notCanceled_expected_entryIsReadThroughTheSubstitute(string formatName)
+    {
+        // Positive control for the test above: proves the substitute really records reads, so
+        // "no reads" there means the strategy never touched the entry rather than that
+        // the substitute could not see it.
+        var strategy = _factory.Create(Enum.Parse<CompressionFormat>(formatName));
+        using var source = Substitute.ForPartsOf<MemoryStream>("payload"u8.ToArray());
+        using var output = new MemoryStream();
+
+        await strategy.CompressFilesAsync(SingleEntry(source), output);
+
+        var readCalls = source
+            .ReceivedCalls()
+            .Select(call => call.GetMethodInfo().Name)
+            .Where(name => name.StartsWith("Read", StringComparison.Ordinal) || name.StartsWith("CopyTo", StringComparison.Ordinal))
+            .ToList();
+        Assert.NotEmpty(readCalls);
+    }
+
+
+
     // Ignores the token on purpose (no [EnumeratorCancellation]): only the strategy can notice the cancel.
     private static async IAsyncEnumerable<(Stream Stream, string EntryName)> SingleEntry(Stream stream)
     {

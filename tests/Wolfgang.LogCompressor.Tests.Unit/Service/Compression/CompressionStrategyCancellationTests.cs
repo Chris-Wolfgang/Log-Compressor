@@ -5,9 +5,11 @@ using Wolfgang.LogCompressor.Service.Compression;
 namespace Wolfgang.LogCompressor.Tests.Unit.Service.Compression;
 
 /// <summary>
-/// Every bundle strategy checks the cancellation token between entries. The source sequence here
-/// deliberately ignores the token it is handed, so the strategy's own per-entry check is the only
-/// thing standing between a canceled run and one more entry being read and written.
+/// Regression tests for cancellation: a canceled run must stop before the next entry is read or
+/// written. The source sequence here deliberately ignores the token it is handed, so any stop has
+/// to come from the strategy itself. These tests do not isolate the strategy's explicit per-entry
+/// <c>ThrowIfCancellationRequested()</c>: the downstream archive APIs also observe the token, so
+/// removing that call still leaves them passing.
 /// </summary>
 public sealed class CompressionStrategyCancellationTests
 {

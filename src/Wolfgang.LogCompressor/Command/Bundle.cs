@@ -60,9 +60,9 @@ internal class Bundle : SharedOptions
 
         try
         {
-            var sw = Stopwatch.StartNew();
+            var started = Stopwatch.GetTimestamp();
             var result = await bundleService.ExecuteAsync(options, cancellationToken).ConfigureAwait(false);
-            sw.Stop();
+            var elapsed = Stopwatch.GetElapsedTime(started);
 
             if (result.Success)
             {
@@ -80,7 +80,7 @@ internal class Bundle : SharedOptions
                 var reportPath = options.ReportPath
                     ?? $"bundle-report.{options.ReportFormat.ToLowerInvariant()}";
 
-                await reportService.WriteReportAsync([result], options.ReportFormat, reportPath, sw.Elapsed)
+                await reportService.WriteReportAsync([result], options.ReportFormat, reportPath, elapsed)
                     .ConfigureAwait(false);
 
                 logger.LogInformation("Report written to {Path}", reportPath);

@@ -335,11 +335,7 @@ internal abstract class SharedOptions
 
     private static DateTime? ParseDateTime(string? value)
     {
-        if (value == null)
-        {
-            return null;
-        }
-
+        // TryParse is false for null, so an absent value yields null without a separate guard.
         return DateTime.TryParse(value, CultureInfo.CurrentCulture, DateTimeStyles.None, out var result)
             ? result
             : null;

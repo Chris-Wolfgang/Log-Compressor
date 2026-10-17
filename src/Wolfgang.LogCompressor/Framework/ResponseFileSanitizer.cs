@@ -78,11 +78,12 @@ internal static class ResponseFileSanitizer
         CancellationToken cancellationToken
     )
     {
-        if (arg.Length < 2 || arg[0] != '@')
+        if (!arg.StartsWith('@'))
         {
             return arg;
         }
 
+        // A bare "@" leaves an empty path, and File.Exists("") is false, so it falls out below.
         var path = arg[1..];
         if (!File.Exists(path))
         {

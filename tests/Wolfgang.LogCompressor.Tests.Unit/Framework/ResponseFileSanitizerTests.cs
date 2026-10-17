@@ -47,6 +47,32 @@ public sealed class ResponseFileSanitizerTests : IDisposable
 
 
     [Fact]
+    public async Task SanitizeAsync_when_argumentIsNotAtPrefixedButItsTailNamesARealFile_expected_untouched()
+    {
+        // Only a leading '@' marks a response file. "!" + a real path must not be mistaken for one,
+        // even though everything after the first character names an existing file that needs cleaning.
+        var path = _directory.WriteFile("edited.rsp", "compress\n\n/logs\n");
+        var notAtPrefixed = "!" + path;
+
+        using var sanitized = await ResponseFileSanitizer.SanitizeAsync([notAtPrefixed], _copies);
+
+        Assert.Equal([notAtPrefixed], sanitized.Args);
+        Assert.Empty(Directory.GetFiles(_copies));
+    }
+
+
+
+    [Fact]
+    public async Task SanitizeAsync_when_argumentIsEmptyString_expected_untouched()
+    {
+        using var sanitized = await ResponseFileSanitizer.SanitizeAsync(["compress", "", "--recurse"], _copies);
+
+        Assert.Equal(["compress", "", "--recurse"], sanitized.Args);
+    }
+
+
+
+    [Fact]
     public async Task SanitizeAsync_when_noArgs_expected_empty()
     {
         using var sanitized = await ResponseFileSanitizer.SanitizeAsync([], _copies);

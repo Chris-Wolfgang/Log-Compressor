@@ -12,6 +12,10 @@
          workflow does not pass an explicit settings file (e.g. release.yaml). An
          explicit settings file on the CLI still overrides this. -->
     <RunSettingsFilePath>$(MSBuildThisFileDirectory)..\..\coverlet.runsettings</RunSettingsFilePath>
+    <!-- Run the tests the way a trimmed logc runs: with reflection-based System.Text.Json
+         switched off. Any JSON the app serializes must go through a source-generated
+         context, so a regression fails here instead of only in a trimmed release build. -->
+    <JsonSerializerIsReflectionEnabledByDefault>false</JsonSerializerIsReflectionEnabledByDefault>
   </PropertyGroup>
 
   <ItemGroup>

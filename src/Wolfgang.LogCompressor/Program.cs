@@ -35,6 +35,10 @@ internal class Program
     {
         try
         {
+            // McMaster turns blank and indented-comment lines in an @response file into empty
+            // arguments; hand it a cleaned copy where needed (see ResponseFileSanitizer).
+            using var sanitized = await ResponseFileSanitizer.SanitizeAsync(args).ConfigureAwait(false);
+
             return await new HostBuilder()
                 .AddConfigurationFile
                 (
@@ -72,7 +76,7 @@ internal class Program
                         .AddTransient<DecompressService>()
                         ;
                 })
-                .RunCommandLineApplicationAsync<Program>(args);
+                .RunCommandLineApplicationAsync<Program>(sanitized.Args);
         }
         catch (Exception e)
         {

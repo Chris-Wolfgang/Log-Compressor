@@ -841,6 +841,15 @@ jobs:
             --output publish/${{ matrix.rid }}
           if ($LASTEXITCODE -ne 0) { Write-Error "❌ Publish failed for ${{ matrix.rid }}"; exit $LASTEXITCODE }
 
+      # The binaries are trimmed (ADR-0006). All three RIDs build on this Linux runner, so
+      # only linux-x64 can be executed here; the Windows and macOS binaries are smoke-tested
+      # on their own OS by the "Published binary smoke" job in pr.yaml. A failing smoke test
+      # stops this RID before its archive is staged and attached.
+      - name: Smoke-test the published binary (${{ matrix.rid }})
+        if: matrix.rid == 'linux-x64'
+        shell: pwsh
+        run: ./scripts/smoke-published.ps1 -Exe publish/linux-x64/logc
+
       - name: Stage release archive
         shell: pwsh
         run: |

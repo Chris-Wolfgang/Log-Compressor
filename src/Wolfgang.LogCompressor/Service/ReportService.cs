@@ -1,7 +1,6 @@
 using System.Globalization;
 using System.Text;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using Wolfgang.LogCompressor.Abstraction;
 using Wolfgang.LogCompressor.Model;
 
@@ -30,15 +29,6 @@ internal sealed class ReportService
         _fileSystem = fileSystem;
         _timeProvider = timeProvider;
     }
-
-
-
-    private static readonly JsonSerializerOptions JsonOptions = new()
-    {
-        WriteIndented = true,
-        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
-    };
 
 
 
@@ -90,30 +80,27 @@ internal sealed class ReportService
 
     private string GenerateJson(IReadOnlyList<CompressionResult> results, TimeSpan duration)
     {
-        var report = new
-        {
-            Timestamp = _timeProvider.GetLocalNow(),
+        var report = new ReportDocument
+        (
+            Timestamp: _timeProvider.GetLocalNow(),
             // Total hours, not a 24h-wrapping clock face — a >24h run must
             // not silently drop its days.
-            Duration = string.Create(CultureInfo.InvariantCulture, $"{(int)duration.TotalHours:D2}:{duration.Minutes:D2}:{duration.Seconds:D2}"),
-            TotalFiles = results.Count,
-            SucceededFiles = results.Count(r => r.Success),
-            FailedFiles = results.Count(r => !r.Success),
-            OriginalSizeBytes = results.Sum(r => r.OriginalSize),
-            CompressedSizeBytes = results.Where(r => r.Success).Sum(r => r.CompressedSize),
-            Files = results.Select(r => new
-            {
-                r.SourcePath,
-                r.OutputPath,
-                r.OriginalSize,
-                r.CompressedSize,
-                r.Success,
-                r.ErrorMessage
-            }),
-            Errors = results.Where(r => !r.Success).Select(r => new { r.SourcePath, r.ErrorMessage })
-        };
+            Duration: string.Create(CultureInfo.InvariantCulture, $"{(int)duration.TotalHours:D2}:{duration.Minutes:D2}:{duration.Seconds:D2}"),
+            TotalFiles: results.Count,
+            SucceededFiles: results.Count(r => r.Success),
+            FailedFiles: results.Count(r => !r.Success),
+            OriginalSizeBytes: results.Sum(r => r.OriginalSize),
+            CompressedSizeBytes: results.Where(r => r.Success).Sum(r => r.CompressedSize),
+            Files: results
+                .Select(r => new ReportFileEntry(r.SourcePath, r.OutputPath, r.OriginalSize, r.CompressedSize, r.Success, r.ErrorMessage))
+                .ToList(),
+            Errors: results
+                .Where(r => !r.Success)
+                .Select(r => new ReportErrorEntry(r.SourcePath, r.ErrorMessage))
+                .ToList()
+        );
 
-        return JsonSerializer.Serialize(report, JsonOptions);
+        return JsonSerializer.Serialize(report, ReportJsonContext.Default.ReportDocument);
     }
 
 

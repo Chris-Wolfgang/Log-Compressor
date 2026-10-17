@@ -217,6 +217,25 @@ jobs:
           $firstHeaderEnd = ($sections | Measure-Object -Property PointerToRawData -Minimum).Minimum
           Write-Host "differing bytes in the headers (before the first section): $(@($diff | Where-Object { $_ -lt $firstHeaderEnd }).Count)"
           Write-Host ("first 40 differing offsets: " + (($diff | Select-Object -First 40) -join ', '))
+          # The same offsets as contiguous ranges, each with a sample of both sides, so the content shows.
+          $ranges = [System.Collections.Generic.List[object]]::new()
+          foreach ($o in $diff) {
+              if ($ranges.Count -gt 0 -and $o -le $ranges[$ranges.Count - 1].End + 1) { $ranges[$ranges.Count - 1].End = $o }
+              else { $ranges.Add([pscustomobject]@{ Start = $o; End = $o }) }
+          }
+          Write-Host "differing ranges: $($ranges.Count)"
+          function Show-Bytes($bytes, $start, $length) {
+              $slice = $bytes[$start..([Math]::Min($bytes.Length, $start + $length) - 1)]
+              $hex = ($slice | ForEach-Object { '{0:x2}' -f $_ }) -join ' '
+              $text = -join ($slice | ForEach-Object { if ($_ -ge 32 -and $_ -lt 127) { [char]$_ } else { '.' } })
+              "$hex  |$text|"
+          }
+          foreach ($r in ($ranges | Select-Object -First 24)) {
+              $len = [Math]::Min(24, $r.End - $r.Start + 1)
+              Write-Host ("range {0}-{1} ({2} bytes)" -f $r.Start, $r.End, ($r.End - $r.Start + 1))
+              Write-Host ("   ubuntu : " + (Show-Bytes $x $r.Start $len))
+              Write-Host ("   windows: " + (Show-Bytes $y $r.Start $len))
+          }
           foreach ($name in 'ubuntu', 'windows') {
               $bytes = if ($name -eq 'ubuntu') { $x } else { $y }
               $r = [System.Reflection.PortableExecutable.PEReader]::new([System.IO.MemoryStream]::new($bytes))

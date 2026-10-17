@@ -1880,3 +1880,66 @@ jobs:
           name: devskim-results
           path: devskim-results.txt
           if-no-files-found: warn
+
+  # ============================================================================
+  # PUBLISHED-BINARY SMOKE: the trimmed, self-contained logc, run for real on
+  # each OS. Unit tests exercise the un-trimmed assemblies, so they cannot see a
+  # trim removing something McMaster or System.Text.Json looks up by name (the
+  # first trimmed build failed every command, then --report json). This job
+  # publishes exactly as release.yaml does and drives the executable through
+  # scripts/smoke-published.ps1 (round trip per format, report, exit codes, an
+  # edited init response file). macOS publishes osx-arm64 because the runner is
+  # Apple silicon and cannot execute the osx-x64 binary the release ships; the
+  # trimming behaviour under test is the same.
+  # ============================================================================
+  published-binary-smoke:
+    name: "Published binary smoke (${{ matrix.rid }})"
+    runs-on: ${{ matrix.os }}
+    needs: detect-projects
+    if: github.repository != 'Chris-Wolfgang/repo-template' && needs.detect-projects.outputs.has-projects == 'true'
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            rid: linux-x64
+            exe: logc
+          - os: windows-latest
+            rid: win-x64
+            exe: logc.exe
+          - os: macos-latest
+            rid: osx-arm64
+            exe: logc
+    env:
+      RID: ${{ matrix.rid }}
+      EXE: ${{ matrix.exe }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68  # v6.0.0
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Publish self-contained single-file binary
+        shell: pwsh
+        run: |
+          dotnet publish src/Wolfgang.LogCompressor/Wolfgang.LogCompressor.csproj `
+            --configuration Release `
+            --runtime $env:RID `
+            --self-contained true `
+            -p:PublishSingleFile=true `
+            -p:EnableCompressionInSingleFile=true `
+            --output "publish/$env:RID"
+          if ($LASTEXITCODE -ne 0) { Write-Error "Publish failed for $env:RID"; exit $LASTEXITCODE }
+
+      - name: Smoke-test the published binary
+        shell: pwsh
+        run: ./scripts/smoke-published.ps1 -Exe "publish/$env:RID/$env:EXE"

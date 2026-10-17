@@ -151,7 +151,10 @@ jobs:
                   $hash = [System.BitConverter]::ToString($reader.GetBlobBytes($doc.Hash)).Replace('-', '').ToLowerInvariant()
                   '{0}  {1}' -f $hash.Substring(0, 16), (Get-DocumentName $reader $doc.Name)
               }
-              $rows | Sort-Object { ($_ -split '  ', 2)[1] } | Set-Content -Path documents.txt -Encoding utf8
+              # LF line endings explicitly: Set-Content writes CRLF on Windows, which would make
+              # every line differ from the Linux copy when the two lists are diffed.
+              $sorted = $rows | Sort-Object { ($_ -split '  ', 2)[1] }
+              [System.IO.File]::WriteAllText('documents.txt', (($sorted -join "`n") + "`n"))
           }
           finally { $stream.Dispose() }
           Write-Host "documents: $((Get-Content documents.txt).Count)"

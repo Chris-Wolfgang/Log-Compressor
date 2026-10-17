@@ -1,6 +1,6 @@
 # ADR-0005: Ship untrimmed self-contained binaries — no PublishTrimmed / PublishAot
 
-- **Status:** Accepted
+- **Status:** Superseded by [ADR-0006](0006-trim-self-contained-binaries-in-partial-mode.md)
 - **Date:** 2026-08-29
 
 ## Context

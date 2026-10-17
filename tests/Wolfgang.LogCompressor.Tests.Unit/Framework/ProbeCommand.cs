@@ -9,15 +9,18 @@ namespace Wolfgang.LogCompressor.Tests.Unit.Framework;
 internal sealed class ProbeCommand
 {
     [Argument(0)]
+    // ReSharper disable once UnusedAutoPropertyAccessor.Global — McMaster sets the bound properties via reflection
     public string? Path { get; set; }
 
 
 
     [Option("--recurse")]
+    // ReSharper disable once UnusedAutoPropertyAccessor.Global — McMaster sets the bound properties via reflection
     public bool Recurse { get; set; }
 
 
 
     [Option("--older-than")]
+    // ReSharper disable once UnusedAutoPropertyAccessor.Global — McMaster sets the bound properties via reflection
     public int? OlderThan { get; set; }
 }

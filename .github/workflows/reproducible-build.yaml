@@ -166,6 +166,7 @@ jobs:
           path: |
             manifest.txt
             documents.txt
+            ${{ env.OUT }}/logc.dll
           if-no-files-found: error
 
   cross-os-compare:
@@ -192,6 +193,36 @@ jobs:
         run: |
           echo "Documents whose hash differs between Ubuntu (-) and Windows (+); no output means identical:"
           diff -u ubuntu/documents.txt windows/documents.txt | grep -E '^[-+][0-9a-f]{16}  ' || true
+
+      # When the PDBs agree but the DLLs do not, say where the bytes differ and in which PE section.
+      - name: Show where the DLLs differ
+        if: always()
+        shell: pwsh
+        run: |
+          $a = 'ubuntu/src/Wolfgang.LogCompressor/bin/Release/net10.0/logc.dll'
+          $b = 'windows/src/Wolfgang.LogCompressor/bin/Release/net10.0/logc.dll'
+          $x = [System.IO.File]::ReadAllBytes($a)
+          $y = [System.IO.File]::ReadAllBytes($b)
+          Write-Host "sizes: ubuntu=$($x.Length) windows=$($y.Length)"
+          $diff = [System.Collections.Generic.List[int]]::new()
+          for ($i = 0; $i -lt [Math]::Min($x.Length, $y.Length); $i++) { if ($x[$i] -ne $y[$i]) { $diff.Add($i) } }
+          Write-Host "differing bytes: $($diff.Count)"
+          Add-Type -AssemblyName System.Reflection.Metadata
+          $pe = [System.Reflection.PortableExecutable.PEReader]::new([System.IO.MemoryStream]::new($x))
+          $sections = $pe.PEHeaders.SectionHeaders
+          foreach ($s in $sections) {
+              $inside = @($diff | Where-Object { $_ -ge $s.PointerToRawData -and $_ -lt ($s.PointerToRawData + $s.SizeOfRawData) }).Count
+              Write-Host ("section {0,-8} rawOffset={1,8} rawSize={2,8} differingBytes={3}" -f $s.Name, $s.PointerToRawData, $s.SizeOfRawData, $inside)
+          }
+          $firstHeaderEnd = ($sections | Measure-Object -Property PointerToRawData -Minimum).Minimum
+          Write-Host "differing bytes in the headers (before the first section): $(@($diff | Where-Object { $_ -lt $firstHeaderEnd }).Count)"
+          Write-Host ("first 40 differing offsets: " + (($diff | Select-Object -First 40) -join ', '))
+          foreach ($name in 'ubuntu', 'windows') {
+              $bytes = if ($name -eq 'ubuntu') { $x } else { $y }
+              $r = [System.Reflection.PortableExecutable.PEReader]::new([System.IO.MemoryStream]::new($bytes))
+              $md = [System.Reflection.Metadata.PEReaderExtensions]::GetMetadataReader($r)
+              Write-Host ("{0}: mvid={1} header-timestamp=0x{2:x8} codeview={3}" -f $name, $md.GetGuid($md.GetModuleDefinition().Mvid), $r.PEHeaders.CoffHeader.TimeDateStamp, ($r.ReadDebugDirectory() | Where-Object { $_.Type -eq 'CodeView' } | ForEach-Object { $r.ReadCodeViewDebugDirectoryData($_).Path }))
+          }
 
       - name: Compare
         shell: bash

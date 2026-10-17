@@ -20,9 +20,6 @@
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
     <AssemblyName>logc</AssemblyName>
     <PublishSingleFile>true</PublishSingleFile>
-    <!-- Bind IConfiguration via the source generator (reflection-free) so single-file
-         and trimmed publishes are clean. This replaces the suppressed SYSLIB1104. -->
-    <EnableConfigurationBindingGenerator>true</EnableConfigurationBindingGenerator>
     <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
   </PropertyGroup>
 

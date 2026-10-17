@@ -49,9 +49,7 @@ internal class Program
 
                 .UseSerilog((context, configuration) =>
                 {
-                    var options = context.Configuration
-                        .GetSection("Logging")
-                        .Get<LoggingOptions>() ?? new LoggingOptions();
+                    var options = LoggingOptionsBinder.Bind(context.Configuration.GetSection("Logging"));
 
                     configuration
                         .Apply(options)

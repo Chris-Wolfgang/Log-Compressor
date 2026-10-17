@@ -9,10 +9,19 @@ name: Build Reproducibility
 # ContinuousIntegrationBuild=true (which normalises source paths to /_/), and
 # fail if the produced assemblies don't hash identically.
 #
-# The unit of verification is logc.dll — the managed assembly. The shipped
-# single-file per-RID bundles are NOT byte-reproducible (they embed the
-# runtime and archive timestamps); docs/REPRODUCIBLE-BUILD.md explains the
+# The unit of verification is logc.dll — the managed assembly — and its logc.pdb.
+# The shipped single-file per-RID bundles are NOT byte-reproducible (they embed
+# the runtime and archive timestamps); docs/REPRODUCIBLE-BUILD.md explains the
 # split and how a third party verifies a release out-of-band.
+#
+# Two guarantees are checked:
+#   1. Same OS, different directory: the `reproducible` job (below).
+#   2. Different OS, same commit: the `cross-os-build` / `cross-os-compare` jobs
+#      build on ubuntu and windows and hard-fail on any logc.dll / logc.pdb hash
+#      difference. This holds only because Directory.Build.targets rewrites the
+#      SDK-generated sources to LF (they are CRLF on Windows, LF on Linux, and the
+#      PDB records each source's hash), so a third party on either OS can
+#      reproduce the release assembly.
 #
 # Premise verified locally 2026-08-29: two clean checkouts of the same commit
 # produced identical logc.dll hashes on win-x64.
@@ -77,3 +86,82 @@ jobs:
             exit 1
           fi
           echo "✅ Reproducible: $ha"
+
+  cross-os-build:
+    name: Build (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    env:
+      PROJ: src/Wolfgang.LogCompressor/Wolfgang.LogCompressor.csproj
+      OUT: src/Wolfgang.LogCompressor/bin/Release/net10.0
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Build
+        shell: bash
+        run: dotnet build "$PROJ" -c Release -p:ContinuousIntegrationBuild=true -p:Deterministic=true
+
+      - name: Hash the assembly and its symbols
+        shell: bash
+        run: |
+          set -euo pipefail
+          : > manifest.txt
+          for f in logc.dll logc.pdb; do
+            echo "$(sha256sum "${OUT}/${f}" | cut -d' ' -f1)  ${f}" >> manifest.txt
+          done
+          echo "--- ${RUNNER_OS} output hashes ---"
+          cat manifest.txt
+
+      - name: Upload manifest
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: repro-manifest-${{ matrix.os }}
+          path: manifest.txt
+          if-no-files-found: error
+
+  cross-os-compare:
+    name: Compare hashes across operating systems
+    needs: cross-os-build
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Download Ubuntu manifest
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: repro-manifest-ubuntu-latest
+          path: ubuntu
+
+      - name: Download Windows manifest
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: repro-manifest-windows-latest
+          path: windows
+
+      - name: Compare
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "Ubuntu manifest:"
+          cat ubuntu/manifest.txt
+          echo
+          echo "Windows manifest:"
+          cat windows/manifest.txt
+          echo
+          if diff -u ubuntu/manifest.txt windows/manifest.txt; then
+            echo "Reproducible: Ubuntu and Windows produced byte-identical logc.dll and logc.pdb."
+          else
+            echo "::error::logc.dll or logc.pdb differ across runners - the build is not byte-identical cross-OS."
+            exit 1
+          fi

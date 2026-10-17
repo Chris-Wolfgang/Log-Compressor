@@ -175,9 +175,9 @@ internal class Decompress
 
         try
         {
-            var sw = Stopwatch.StartNew();
+            var started = Stopwatch.GetTimestamp();
             var results = await decompressService.ExecuteAsync(options, cancellationToken).ConfigureAwait(false);
-            sw.Stop();
+            var elapsed = Stopwatch.GetElapsedTime(started);
 
             var succeeded = results.Count(r => r.Success);
             var failed = results.Count - succeeded;
@@ -194,7 +194,7 @@ internal class Decompress
                 var reportPath = options.ReportPath
                     ?? $"decompress-report.{options.ReportFormat.ToLowerInvariant()}";
 
-                await reportService.WriteReportAsync(results, options.ReportFormat, reportPath, sw.Elapsed)
+                await reportService.WriteReportAsync(results, options.ReportFormat, reportPath, elapsed)
                     .ConfigureAwait(false);
 
                 logger.LogInformation("Report written to {Path}", reportPath);

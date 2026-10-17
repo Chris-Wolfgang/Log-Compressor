@@ -94,6 +94,31 @@ public sealed class ArchiveVerifierFailureReasonTests : IDisposable
 
 
     [Fact]
+    public async Task VerifyAsync_when_gzTruncatedInsideTrailer_expected_logsTrailerMismatch()
+    {
+        // GZipStream rejects a corrupted trailer itself, but silently returns partial data when the
+        // file is cut short. Cutting the last 4 bytes drops the length field, so only the verifier's
+        // own CRC-32/length comparison can reject the archive.
+        var archivePath = Path.Combine(_tempDir, "truncated.gz");
+        var content = "test content"u8.ToArray();
+        await using (var fileStream = File.Create(archivePath))
+        {
+            await using var gzip = new GZipStream(fileStream, CompressionLevel.Optimal, leaveOpen: true);
+            await gzip.WriteAsync(content);
+        }
+
+        var bytes = await File.ReadAllBytesAsync(archivePath);
+        await File.WriteAllBytesAsync(archivePath, bytes[..^4]);
+
+        var result = await _sut.VerifyAsync(archivePath, "gz");
+
+        Assert.False(result);
+        AssertLoggedFailureContains("Gzip trailer (CRC-32/length) does not match");
+    }
+
+
+
+    [Fact]
     public async Task VerifyAsync_when_gzDecompressesToUnexpectedSize_expected_logsBothLengths()
     {
         var archivePath = Path.Combine(_tempDir, "test.gz");

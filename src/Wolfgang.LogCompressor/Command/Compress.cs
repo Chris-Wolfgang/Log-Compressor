@@ -61,9 +61,9 @@ internal class Compress : SharedOptions
 
         try
         {
-            var sw = Stopwatch.StartNew();
+            var started = Stopwatch.GetTimestamp();
             var results = await compressService.ExecuteAsync(options, cancellationToken).ConfigureAwait(false);
-            sw.Stop();
+            var elapsed = Stopwatch.GetElapsedTime(started);
 
             var succeeded = results.Count(r => r.Success);
             var failed = results.Count(r => !r.Success);
@@ -80,7 +80,7 @@ internal class Compress : SharedOptions
                 var reportPath = options.ReportPath
                     ?? $"compress-report.{options.ReportFormat.ToLowerInvariant()}";
 
-                await reportService.WriteReportAsync(results, options.ReportFormat, reportPath, sw.Elapsed)
+                await reportService.WriteReportAsync(results, options.ReportFormat, reportPath, elapsed)
                     .ConfigureAwait(false);
 
                 logger.LogInformation("Report written to {Path}", reportPath);

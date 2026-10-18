@@ -151,7 +151,7 @@ public sealed class LoggingOptionsBinderTests
 
 
 
-    public static TheoryData<string, (string, string?)[]> ValidConfigurations() => new()
+    public static TheoryData<string, (string Key, string? Value)[]> ValidConfigurations() => new()
     {
         { "nothing", [] },
         { "shipped", [("MinimumLevel", "Information"), ("Overrides:Microsoft", "Warning"), ("Overrides:System", "Warning"), ("Console:Enabled", "true"), ("Console:MinimumLevel", "Warning"), ("Console:OutputTemplate", "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}"), ("File:Enabled", "true"), ("File:Path", "logs/log-.txt"), ("File:MinimumLevel", "Information"), ("File:RollingInterval", "Day"), ("File:RollOnFileSizeLimit", "true"), ("File:FileSizeLimitBytes", "10485760"), ("File:OutputTemplate", "[{Timestamp:yyyy-MM-dd HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}")] },

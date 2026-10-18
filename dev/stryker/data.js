@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1791699744871,
+  "lastUpdate": 1792304537407,
   "repoUrl": "https://github.com/Chris-Wolfgang/Log-Compressor",
   "entries": {
     "Mutation score": [
@@ -80,6 +80,33 @@ window.BENCHMARK_DATA = {
           {
             "name": "Mutation score",
             "value": 92.52,
+            "unit": "%"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "name": "Chris Wolfgang",
+            "username": "Chris-Wolfgang",
+            "email": "210299580+Chris-Wolfgang@users.noreply.github.com"
+          },
+          "committer": {
+            "name": "GitHub",
+            "username": "web-flow",
+            "email": "noreply@github.com"
+          },
+          "id": "972607e7dffc0b146848835d4f36c141b58f7a79",
+          "message": "ci: run the trimmed binary through the smoke test on every OS (#340)\n\nTrimming (ADR-0006) can leave a binary that builds cleanly and still fails at\nrun time, which unit tests of the un-trimmed assemblies cannot see.\n\npr.yaml gets a \"Published binary smoke\" job: on ubuntu, windows and macOS it\npublishes the self-contained single-file binary exactly as release.yaml does and\nruns scripts/smoke-published.ps1 against it. macOS publishes osx-arm64 because the\nrunner is Apple silicon and cannot execute the osx-x64 binary the release ships.\n\nrelease.yaml smoke-tests the linux-x64 binary before staging its archive. All three\nRIDs build on one Linux runner, so linux-x64 is the only one that can be executed\nthere; the others are covered by the pr.yaml job.\n\nCo-authored-by: Claude Sonnet 5.5 <noreply@anthropic.com>",
+          "timestamp": "2026-10-17T18:41:02Z",
+          "url": "https://github.com/Chris-Wolfgang/Log-Compressor/commit/972607e7dffc0b146848835d4f36c141b58f7a79"
+        },
+        "date": 1792304533923,
+        "tool": "customBiggerIsBetter",
+        "benches": [
+          {
+            "name": "Mutation score",
+            "value": 95.27,
             "unit": "%"
           }
         ]

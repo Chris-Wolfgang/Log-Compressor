@@ -6,20 +6,33 @@ that source and nothing else. This page is the **consumer side** of that
 guarantee: how *you* independently verify a release.
 
 > Related: [`reproducible-build.yaml`](../.github/workflows/reproducible-build.yaml)
-> proves the build is reproducible on every PR (it builds the same commit twice
-> in different paths and fails if the assemblies differ). This document is about
-> a third party reproducing it out-of-band.
+> proves the build is reproducible on every PR. It builds the same commit twice
+> in different directories on one runner, and also builds it on `ubuntu-latest`
+> and `windows-latest` and fails if `logc.dll` or `logc.pdb` differ between the
+> two operating systems. This document is about a third party reproducing it
+> out-of-band.
 
 ## What is reproducible — and what is not
 
-The unit of verification is the **managed assembly `logc.dll`**
-(single target, `net10.0`). It is byte-for-byte reproducible because the build
-sets:
+The unit of verification is the **managed assembly `logc.dll`** and its
+symbols file **`logc.pdb`** (single target, `net10.0`). Both are byte-for-byte
+reproducible, **across Linux and Windows** as well as across checkout
+directories, because the build sets:
 
 - `Deterministic` (default) — no timestamps or random GUIDs baked into the IL;
 - `ContinuousIntegrationBuild=true` on CI — normalizes source paths to `/_/` so
   the checkout directory doesn't affect output;
-- `EmbedUntrackedSources` + SourceLink — provenance is embedded deterministically.
+- `EmbedUntrackedSources` + SourceLink — provenance is embedded deterministically;
+- LF line endings in everything that is hashed into the output. The .NET SDK
+  writes `AssemblyInfo`, `AssemblyAttributes` and `GlobalUsings` sources with the
+  build machine's newline (CRLF on Windows), and the PDB records a hash of each
+  source; `Directory.Build.targets` rewrites them to LF before compilation. The
+  project also avoids .NET source generators (their output exists only in
+  memory and used the machine's newline) and ships its own LF `app.manifest`
+  instead of the compiler's default Win32 manifest, which differed by OS.
+
+The guarantee covers **Linux and Windows**. macOS builds are not compared, so
+a macOS hash match is not promised.
 
 > **The downloadable release archives (`logc-win-x64.zip`,
 > `logc-linux-x64.tar.gz`, `logc-osx-x64.tar.gz`) are *not* byte-for-byte
@@ -86,8 +99,15 @@ dotnet build src/Wolfgang.LogCompressor/Wolfgang.LogCompressor.csproj \
 sha256sum src/Wolfgang.LogCompressor/bin/Release/net10.0/logc.dll
 ```
 
+On Windows, hash it with
+`Get-FileHash src/Wolfgang.LogCompressor/bin/Release/net10.0/logc.dll`
+et10.0\logc.dll`
+(PowerShell). The result is the same as on Linux.
+
 If your `sha256` matches the manifest's `assemblies[0].sha256`, the published
-release is reproducible from source on your machine.
+release is reproducible from source on your machine. The manifest records the
+assembly hash only; `logc.pdb` is not in it, so compare the PDB between two of
+your own builds, or between your OS and CI's.
 
 ## If a hash does not match
 
@@ -96,6 +116,8 @@ toolchain difference, or something more serious.
 
 1. Double-check you used the **exact** `dotnetSdk` from the manifest
    (`dotnet --version` must match) and passed `-p:ContinuousIntegrationBuild=true`.
+   If you build on macOS, expect that this may not match: it is outside what CI
+   compares.
 2. [Open an issue](https://github.com/Chris-Wolfgang/Log-Compressor/issues/new)
    titled `reproducible-build discrepancy: <tag>` and include: the tag, your
    `dotnet --version`, your OS, and the assembly hash you got versus the

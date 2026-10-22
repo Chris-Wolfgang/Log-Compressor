@@ -18,7 +18,7 @@ A cross-platform .NET CLI (`logc`) for compressing log files, built for unattend
 
 ## Installation
 
-Wolfgang.LogCompressor ships as a self-contained `logc` executable (Windows, Linux, macOS) — no .NET runtime required. Until v0.1.0 is published, [build it from source](docs/getting-started.md#installation).
+Wolfgang.LogCompressor ships as a self-contained `logc` executable (Windows, Linux, macOS) — no .NET runtime required. Download it from the [latest release](https://github.com/Chris-Wolfgang/Log-Compressor/releases/latest), or see [Getting Started](docs/getting-started.md#installation).
 
 ## Documentation Sections
 

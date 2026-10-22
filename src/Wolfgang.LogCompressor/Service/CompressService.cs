@@ -162,9 +162,11 @@ internal class CompressService
             await Task.Delay(ErrorPolicy.RetryDelay(attempt), cancellationToken).ConfigureAwait(false);
 
             // Every attempt reuses the SAME reserved path. The path was free
-            // before the first attempt, so anything here now is the failed
-            // attempt's partial or unverified output — clear it for a clean
-            // retry.
+            // before the first attempt, so anything here now is a finished
+            // archive of the failed attempt whose source could not be deleted
+            // — clear it for a clean retry. (Partial and unverified output never
+            // reaches this path: it is written under .partial and moved here
+            // only after verification.)
             if (_fileSystem.FileExists(outputPath))
             {
                 _fileSystem.DeleteFile(outputPath);
@@ -232,7 +234,8 @@ internal class CompressService
             // output, and the single-instance lock file — this run's own live lock
             // sits in the source directory and must never be compressed/deleted
             // (#172).
-            .Where(p => !RetentionService.IsArchiveFile(p) && !ProcessLock.IsLockFile(p))
+            // A .partial/.failed archive of an earlier run is ours too.
+            .Where(p => !RetentionService.IsArchiveFile(p) && !ArchiveWorkFile.IsWorkFile(p) && !ProcessLock.IsLockFile(p))
             .Select(p => _fileSystem.GetFileInfo(p))
             .ToList();
     }
@@ -250,6 +253,12 @@ internal class CompressService
         CancellationToken cancellationToken
     )
     {
+        // Written under a .partial name and moved to outputPath only once it is
+        // complete and verified: a crash or failure therefore never leaves a
+        // file at the final name that the next run would mistake for a finished
+        // archive (and refuse to overwrite, blocking the source forever).
+        var partialPath = ArchiveWorkFile.GetPartialPath(outputPath);
+
         try
         {
             if (options.OutputPath != null && !_fileSystem.DirectoryExists(options.OutputPath))
@@ -257,10 +266,13 @@ internal class CompressService
                 _fileSystem.CreateDirectory(options.OutputPath);
             }
 
+            // A leftover from a crashed earlier attempt at this same path.
+            DeleteIfExists(partialPath);
+
             long compressedSize;
 
             await using (var inputStream = _fileSystem.OpenRead(sourceFile.FullName))
-            await using (var outputStream = _fileSystem.CreateWrite(outputPath))
+            await using (var outputStream = _fileSystem.CreateWrite(partialPath))
             {
                 await strategy.CompressFileAsync
                 (
@@ -281,9 +293,13 @@ internal class CompressService
             // while its read handle is open. Both must run after the using block.
             // The source length lets the verifier catch truncated gz/br output
             // (their decompressors return partial data instead of failing).
-            if (options.Verify && !await _archiveVerifier.VerifyAsync(outputPath, strategy.FileExtension, sourceFile.Length).ConfigureAwait(false))
+            if (options.Verify && !await _archiveVerifier.VerifyAsync(partialPath, strategy.FileExtension, sourceFile.Length).ConfigureAwait(false))
             {
-                _logger.LogError("Archive verification failed for {Output}, original file preserved", outputPath);
+                // Kept for inspection (ADR-0003) under a name that neither counts
+                // as an archive nor blocks the next run.
+                var failedPath = ArchiveWorkFile.GetFailedPath(outputPath);
+                _fileSystem.MoveFile(partialPath, failedPath, overwrite: true);
+                _logger.LogError("Archive verification failed for {Output}, original file preserved, suspect archive kept as {Failed}", outputPath, failedPath);
 
                 return new CompressionResult
                 {
@@ -296,6 +312,7 @@ internal class CompressService
                 };
             }
 
+            _fileSystem.MoveFile(partialPath, outputPath, overwrite: false);
             _fileSystem.DeleteFile(sourceFile.FullName);
 
             _logger.LogInformation
@@ -316,8 +333,14 @@ internal class CompressService
                 Success = true
             };
         }
-        catch (Exception ex) when (ex is not OperationCanceledException)
+        catch (OperationCanceledException)
         {
+            ArchiveWorkFile.DeleteQuietly(_fileSystem, _logger, partialPath);
+            throw;
+        }
+        catch (Exception ex)
+        {
+            ArchiveWorkFile.DeleteQuietly(_fileSystem, _logger, partialPath);
             _logger.LogError(ex, "Failed to compress {Source}: {Message}", sourceFile.FullName, ex.Message);
 
             return new CompressionResult
@@ -328,6 +351,16 @@ internal class CompressService
                 Success = false,
                 ErrorMessage = ex.Message
             };
+        }
+    }
+
+
+
+    private void DeleteIfExists(string path)
+    {
+        if (_fileSystem.FileExists(path))
+        {
+            _fileSystem.DeleteFile(path);
         }
     }
 }

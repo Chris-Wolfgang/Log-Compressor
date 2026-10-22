@@ -251,4 +251,62 @@ public sealed class CompressionRoundTripTests
         Assert.True(File.Exists(source));                              // original preserved (not deleted)
         Assert.Equal("PRE-EXISTING ARCHIVE", File.ReadAllText(existing)); // existing archive not overwritten
     }
+
+
+
+    [Fact]
+    public async Task ExecuteAsync_when_directoryHoldsLeftoverWorkFiles_expected_sourceCompressedAndWorkFilesUntouched()
+    {
+        // A crash leftover (.partial) and a quarantined suspect archive
+        // (.failed) from earlier runs must neither block the source nor be
+        // compressed as sources themselves (#351).
+        using var temp = new TempDirectory();
+        temp.WriteFile("app.log", "the quick brown fox jumps over the lazy dog");
+        var partial = temp.WriteFile("old.log.zip.partial", "torn");
+        var failed = temp.WriteFile("old.log.zip.failed", "suspect");
+        var sut = CreateCompressService();
+
+        var results = await sut.ExecuteAsync
+        (
+            new CompressionOptions
+            {
+                SourcePath = temp.Path,
+                Format = CompressionFormat.Zip,
+                Verify = true
+            }
+        );
+
+        var result = Assert.Single(results);
+        Assert.True(result.Success, result.ErrorMessage);
+        Assert.True(File.Exists(result.OutputPath));
+        Assert.False(File.Exists(result.OutputPath + ".partial"));
+        Assert.Equal("torn", await File.ReadAllTextAsync(partial));
+        Assert.Equal("suspect", await File.ReadAllTextAsync(failed));
+    }
+
+
+
+    [Fact]
+    public async Task ExecuteAsync_when_bundleSucceeds_expected_noPartialLeftBehind()
+    {
+        using var temp = new TempDirectory();
+        var logDir = Path.Combine(temp.Path, "MyApp");
+        Directory.CreateDirectory(logDir);
+        await File.WriteAllTextAsync(Path.Combine(logDir, "a.log"), "alpha");
+        var sut = CreateBundleService();
+
+        var result = await sut.ExecuteAsync
+        (
+            new CompressionOptions
+            {
+                SourcePath = logDir,
+                Format = CompressionFormat.Zip,
+                Verify = true
+            }
+        );
+
+        Assert.True(result.Success, result.ErrorMessage);
+        Assert.True(File.Exists(result.OutputPath));
+        Assert.Empty(Directory.EnumerateFiles(temp.Path, "*.partial", SearchOption.AllDirectories));
+    }
 }

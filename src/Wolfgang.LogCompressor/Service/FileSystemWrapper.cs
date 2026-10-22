@@ -70,4 +70,12 @@ internal sealed class FileSystemWrapper : IFileSystem
     {
         Directory.CreateDirectory(path);
     }
+
+
+
+    /// <inheritdoc />
+    public void MoveFile(string sourcePath, string destinationPath, bool overwrite)
+    {
+        File.Move(sourcePath, destinationPath, overwrite);
+    }
 }

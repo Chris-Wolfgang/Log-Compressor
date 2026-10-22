@@ -51,7 +51,8 @@ public sealed class HashingReadStreamTests
         var first = sut.Read(new byte[4], 0, 4);
         var rest = sut.Read(new byte[Data.Length].AsSpan());
 
-        Assert.Equal(Data.Length, first + rest);
+        Assert.Equal(4, first);
+        Assert.Equal(Data.Length - 4, rest);
         Assert.Equal(Crc32.HashToUInt32(Data), crc.GetCurrentHashAsUInt32());
     }
 

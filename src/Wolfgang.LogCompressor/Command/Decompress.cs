@@ -22,7 +22,7 @@ internal class Decompress
     /// </summary>
     [Argument(0, Description = "Archive file, or directory containing archives")]
     [Required]
-    public string Path { get; set; } = string.Empty;
+    public required string Path { get; set; }
 
 
 

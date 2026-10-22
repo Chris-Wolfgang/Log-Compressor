@@ -443,4 +443,49 @@ public sealed class BundleCommandTests : IDisposable
         var lines = await File.ReadAllLinesAsync(reportPath);
         Assert.Single(lines);   // header only: no archive, no row
     }
+
+
+
+    [Fact]
+    public async Task OnExecuteAsync_when_bundleWritten_expected_reportHasItsRow()
+    {
+        // "Nothing matched" needs BOTH success and an empty output path; a
+        // written bundle must still get its report row (#303).
+        _bundleService.ExecuteAsync(Arg.Any<CompressionOptions>(), Arg.Any<CancellationToken>())
+            .Returns(new CompressionResult { SourcePath = "/tmp/logs", OutputPath = "/tmp/bundle.zip", Success = true });
+        var reportPath = Path.Combine(_temp.Path, "written-report.csv");
+
+        var command = new Bundle { Path = "/tmp/logs", NoLock = true, Report = "csv", ReportPath = reportPath };
+
+        var result = await command.OnExecuteAsync(_console, _logger, _bundleService, _reportService, _retentionService);
+
+        Assert.Equal(ExitCode.Success, result);
+        Assert.Equal(2, (await File.ReadAllLinesAsync(reportPath)).Length);
+    }
+
+
+
+    [Fact]
+    public async Task OnExecuteAsync_when_namePrefixWithRetention_expected_archivesOfThatPrefixDeleted()
+    {
+        // With --name the bundle's archives carry the prefix, not the folder
+        // name, so retention must match on the prefix (#303).
+        var logDir = Path.Combine(_temp.Path, "MyApp");
+        Directory.CreateDirectory(logDir);
+        var own = Path.Combine(_temp.Path, "nightly-2026-01-01_00-00-00 to 2026-01-02_00-00-00.zip");
+        await File.WriteAllTextAsync(own, "x");
+        File.SetLastWriteTime(own, DateTime.Today.AddDays(-90));
+        _retentionFileSystem.GetFileInfo(own).Returns(new FileInfo(own));
+        _retentionFileSystem.DirectoryExists(Path.GetFullPath(_temp.Path)).Returns(returnThis: true);
+        _retentionFileSystem.EnumerateFiles(Path.GetFullPath(_temp.Path), "*", SearchOption.TopDirectoryOnly).Returns([own]);
+        _bundleService.ExecuteAsync(Arg.Any<CompressionOptions>(), Arg.Any<CancellationToken>())
+            .Returns(new CompressionResult { SourcePath = logDir, OutputPath = own, Success = true });
+
+        var command = new Bundle { Path = logDir, Name = "nightly", NoLock = true, DeleteArchivesOlderThan = 30 };
+
+        var result = await command.OnExecuteAsync(_console, _logger, _bundleService, _reportService, _retentionService);
+
+        Assert.Equal(ExitCode.Success, result);
+        _retentionFileSystem.Received(1).DeleteFile(own);
+    }
 }

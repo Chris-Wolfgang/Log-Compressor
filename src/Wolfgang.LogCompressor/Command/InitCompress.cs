@@ -25,6 +25,7 @@ internal class InitCompress
 
         # Source path (required)
         # C:\Logs\MyApp
+        # /var/log/myapp
 
         # Recurse into subdirectories
         # --recurse
@@ -88,6 +89,18 @@ internal class InitCompress
 
 
     /// <summary>
+    /// Gets or sets a value indicating whether an existing file at <see cref="Output"/> is overwritten.
+    /// </summary>
+    [Option
+    (
+        "--force",
+        Description = "Overwrite the config file if it already exists"
+    )]
+    public bool Force { get; set; }
+
+
+
+    /// <summary>
     /// Generates the compress configuration file.
     /// </summary>
     /// <param name="console">The console.</param>
@@ -95,6 +108,12 @@ internal class InitCompress
     /// <returns>The exit code.</returns>
     internal async Task<int> OnExecuteAsync(IConsole console, ILogger<InitCompress> logger)
     {
+        if (!Force && File.Exists(Output))
+        {
+            // Never clobber a hand-edited configuration file (#353).
+            await console.Error.WriteLineAsync($"Error: {Output} already exists. Use --force to overwrite it.").ConfigureAwait(false);
+            return ExitCode.InvalidArguments;
+        }
 
         await File.WriteAllTextAsync(Output, TemplateContent).ConfigureAwait(false);
 

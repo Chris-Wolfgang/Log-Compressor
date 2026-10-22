@@ -434,4 +434,22 @@ public sealed class BundleCommandTests : IDisposable
         _retentionFileSystem.DidNotReceive().DeleteFile(otherApp);
         _retentionFileSystem.DidNotReceive().DeleteFile(thirdParty);
     }
+
+
+
+    [Fact]
+    public async Task OnExecuteAsync_when_noFilesMatched_expected_successAndEmptyReport()
+    {
+        _bundleService.ExecuteAsync(Arg.Any<CompressionOptions>(), Arg.Any<CancellationToken>())
+            .Returns(new CompressionResult { SourcePath = "/tmp/logs", OutputPath = string.Empty, Success = true });
+        var reportPath = Path.Combine(_tempDir, "empty-report.csv");
+
+        var command = new Bundle { Path = "/tmp/logs", NoLock = true, Report = "csv", ReportPath = reportPath };
+
+        var result = await command.OnExecuteAsync(_console, _logger, _bundleService, _reportService, _retentionService);
+
+        Assert.Equal(ExitCode.Success, result);
+        var lines = await File.ReadAllLinesAsync(reportPath);
+        Assert.Single(lines);   // header only: no archive, no row
+    }
 }

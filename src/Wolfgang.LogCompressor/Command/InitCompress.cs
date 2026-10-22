@@ -69,6 +69,7 @@ internal class InitCompress
         # --report-path ./compress-report.json
 
         # Delete old archives after compression
+        # (only archives named the way logc names them; see the README, Retention)
         # --delete-archives-older-than 365
         """;
 

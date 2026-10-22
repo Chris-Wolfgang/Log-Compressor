@@ -425,4 +425,35 @@ public sealed class CompressCommandTests : IDisposable
 
         Assert.DoesNotContain("failed to compress", _console.Error.ToString(), StringComparison.Ordinal);
     }
+
+
+
+    [Theory]
+    [InlineData(false, SearchOption.AllDirectories)]
+    [InlineData(true, SearchOption.TopDirectoryOnly)]
+    public async Task OnExecuteAsync_when_recurseWithRetention_expected_retentionWalksWhereArchivesAreWritten(bool withOutput, SearchOption expected)
+    {
+        // compress --recurse without --output writes each archive next to its
+        // source, in subdirectories too; with --output they all land in one
+        // directory (#352).
+        _compressService.ExecuteAsync(Arg.Any<CompressionOptions>(), Arg.Any<CancellationToken>())
+            .Returns(new List<CompressionResult>());
+        var output = Path.Combine(_tempDir, "out");
+        _retentionFileSystem.DirectoryExists(Arg.Any<string>()).Returns(returnThis: true);
+        _retentionFileSystem.EnumerateFiles(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<SearchOption>()).Returns([]);
+
+        var command = new Compress
+        {
+            Path = _tempDir,
+            Recurse = true,
+            Output = withOutput ? output : null,
+            NoLock = true,
+            DeleteArchivesOlderThan = 30
+        };
+
+        var result = await command.OnExecuteAsync(_console, _logger, _compressService, _reportService, _retentionService);
+
+        Assert.Equal(ExitCode.Success, result);
+        _retentionFileSystem.Received(1).EnumerateFiles(Arg.Any<string>(), "*", expected);
+    }
 }

@@ -19,6 +19,10 @@ internal interface IArchiveVerifier
     /// and <see cref="System.IO.Compression.BrotliStream"/> return partial data
     /// instead of throwing.
     /// </param>
+    /// <param name="cancellationToken">
+    /// A token to cancel the verification. A cancellation is thrown as
+    /// <see cref="OperationCanceledException"/>, not reported as a failed verification.
+    /// </param>
     /// <returns><see langword="true"/> if the archive is valid; otherwise, <see langword="false"/>.</returns>
-    Task<bool> VerifyAsync(string archivePath, string format, long? expectedUncompressedSize = null);
+    Task<bool> VerifyAsync(string archivePath, string format, long? expectedUncompressedSize = null, CancellationToken cancellationToken = default);
 }

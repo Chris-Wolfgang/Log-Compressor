@@ -293,7 +293,7 @@ internal class CompressService
             // while its read handle is open. Both must run after the using block.
             // The source length lets the verifier catch truncated gz/br output
             // (their decompressors return partial data instead of failing).
-            if (options.Verify && !await _archiveVerifier.VerifyAsync(partialPath, strategy.FileExtension, sourceFile.Length).ConfigureAwait(false))
+            if (options.Verify && !await _archiveVerifier.VerifyAsync(partialPath, strategy.FileExtension, sourceFile.Length, cancellationToken).ConfigureAwait(false))
             {
                 // Kept for inspection (ADR-0003) under a name that neither counts
                 // as an archive nor blocks the next run.

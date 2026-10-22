@@ -89,8 +89,10 @@ internal sealed class GZipCompressionStrategy : ICompressionStrategy
         CancellationToken cancellationToken = default
     )
     {
-        await using var gzipStream = new GZipStream(outputStream, _level, leaveOpen: true);
-        await using var tarWriter = new TarWriter(gzipStream, leaveOpen: true);
+        var gzipStream = new GZipStream(outputStream, _level, leaveOpen: true);
+        await using var gzipStreamDisposal = gzipStream.ConfigureAwait(false);
+        var tarWriter = new TarWriter(gzipStream, leaveOpen: true);
+        await using var tarWriterDisposal = tarWriter.ConfigureAwait(false);
 
         await foreach (var (stream, entryName) in inputs.WithCancellation(cancellationToken).ConfigureAwait(false))
         {

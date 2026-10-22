@@ -68,6 +68,7 @@ internal class InitBundle
         # --report-path ./bundle-report.json
 
         # Delete old archives after bundling
+        # (only archives named the way logc names them; see the README, Retention)
         # --delete-archives-older-than 365
         """;
 

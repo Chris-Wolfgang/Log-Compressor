@@ -88,8 +88,11 @@ internal class Bundle : SharedOptions
 
             if (options.DeleteArchivesOlderThanDays.HasValue)
             {
-                var archiveDir = options.OutputPath ?? System.IO.Path.GetDirectoryName(options.SourcePath) ?? ".";
-                retentionService.DeleteOldArchives(archiveDir, options.DeleteArchivesOlderThanDays.Value);
+                // Scan the directory the bundle was written to (for a directory
+                // source that is its PARENT), and only archives named like this
+                // bundle's: other files there belong to someone else (#352).
+                var (archiveDir, folderName) = BundleService.ResolveTarget(options.SourcePath, File.Exists(options.SourcePath), options.OutputPath);
+                retentionService.DeleteOldArchives(archiveDir, options.DeleteArchivesOlderThanDays.Value, SearchOption.TopDirectoryOnly, options.NamePrefix ?? folderName);
             }
 
             logger.LogDebug("Completed {Command}", GetType().Name);

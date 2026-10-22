@@ -104,21 +104,7 @@ internal class BundleService
             };
         }
 
-        string folderName;
-        string outputDir;
-
-        if (_fileSystem.FileExists(options.SourcePath))
-        {
-            var fileInfo = _fileSystem.GetFileInfo(options.SourcePath);
-            folderName = Path.GetFileNameWithoutExtension(fileInfo.Name);
-            outputDir = options.OutputPath ?? fileInfo.DirectoryName ?? Directory.GetCurrentDirectory();
-        }
-        else
-        {
-            var sourceDirectory = new DirectoryInfo(options.SourcePath);
-            folderName = string.IsNullOrWhiteSpace(sourceDirectory.Name) ? "archive" : sourceDirectory.Name;
-            outputDir = options.OutputPath ?? sourceDirectory.Parent?.FullName ?? sourceDirectory.FullName;
-        }
+        var (outputDir, folderName) = ResolveTarget(options.SourcePath, _fileSystem.FileExists(options.SourcePath), options.OutputPath);
         var outputFileName = _fileNamer.GetBundleFileName(folderName, filtered, strategy.BundleFileExtension, options.TimestampSource, options.NamePrefix);
         var outputPath = Path.Combine(outputDir, outputFileName);
 
@@ -340,6 +326,33 @@ internal class BundleService
             CompressedSize = compressedSize,
             Success = true
         };
+    }
+
+
+
+    /// <summary>
+    /// Resolves where a bundle of <paramref name="sourcePath"/> is written and the folder name its
+    /// archive is named after. The <c>bundle</c> command uses the same answer to point retention at
+    /// the directory the archive actually went to.
+    /// </summary>
+    /// <param name="sourcePath">The bundle source: a file or a directory.</param>
+    /// <param name="sourceIsFile"><see langword="true"/> when <paramref name="sourcePath"/> is a file.</param>
+    /// <param name="outputPath">The <c>--output</c> directory, if any.</param>
+    /// <returns>
+    /// The output directory (<paramref name="outputPath"/>, else the file's directory, else the source
+    /// directory's parent) and the folder name (the file name without extension, else the directory name).
+    /// </returns>
+    internal static (string OutputDirectory, string FolderName) ResolveTarget(string sourcePath, bool sourceIsFile, string? outputPath)
+    {
+        if (sourceIsFile)
+        {
+            var fileInfo = new FileInfo(sourcePath);
+            return (outputPath ?? fileInfo.DirectoryName ?? Directory.GetCurrentDirectory(), Path.GetFileNameWithoutExtension(fileInfo.Name));
+        }
+
+        var sourceDirectory = new DirectoryInfo(sourcePath);
+        var folderName = string.IsNullOrWhiteSpace(sourceDirectory.Name) ? "archive" : sourceDirectory.Name;
+        return (outputPath ?? sourceDirectory.Parent?.FullName ?? sourceDirectory.FullName, folderName);
     }
 
 

@@ -174,9 +174,18 @@ logc decompress /var/log/archives --keep-archives
 | `--no-verify` | Skip archive integrity verification before deleting originals | off (verify on) |
 | `--no-lock` | Skip the single-instance directory lock | off |
 | `--report <fmt>` / `--report-path` | Summary report (`json` \| `csv`) | none |
-| `--delete-archives-older-than <days>` | Delete archives older than N days after compressing | (no cleanup) |
+| `--delete-archives-older-than <days>` | After the run, delete logc-named archives older than N days (see [Retention](#retention)) | (no cleanup) |
 
 `--older-than` is mutually exclusive with `--min-datetime` / `--max-datetime`. DateTime values are parsed using the local culture.
+
+### Retention
+
+`--delete-archives-older-than <days>` deletes, after the run, archives whose last-modified date is more than N days before today. It only ever considers files **named the way logc names its archives**: `<name>-yyyy-MM-dd_HH-mm-ss[ to yyyy-MM-dd_HH-mm-ss][-N].<ext>` with `<ext>` one of `zip`, `gz`, `br`, `zst`, `lz4`, `tar.gz`, `tar.br`, `tar.zst`, `tar.lz4`. Any other file is left alone, whatever its extension, and so are `.partial` and `.failed` files.
+
+| Command | Directory scanned | Files considered |
+|---------|-------------------|------------------|
+| `compress` | `--output`, else the source directory (the file's directory for a file source); with `--recurse` and no `--output`, its subdirectories too | every logc-named archive there |
+| `bundle` | `--output`, else the directory the bundle is written to: the source's **parent** for a directory source, the file's directory for a file source | only archives whose name starts with this bundle's base name (`--name`, else the source folder/file name) followed by `-` |
 
 ### Exit codes
 

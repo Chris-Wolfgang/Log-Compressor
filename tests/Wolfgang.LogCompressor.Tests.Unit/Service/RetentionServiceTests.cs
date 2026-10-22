@@ -68,8 +68,8 @@ public sealed class RetentionServiceTests : IDisposable
     public void DeleteOldArchives_when_oldArchivesExist_expected_deletesOldOnes()
     {
         var dir = "/tmp/archives";
-        var oldArchive = "/tmp/archives/old.zip";
-        var newArchive = "/tmp/archives/new.zip";
+        var oldArchive = "/tmp/archives/old-2026-01-01_00-00-00.zip";
+        var newArchive = "/tmp/archives/new-2026-01-01_00-00-00.zip";
 
         _fileSystem.DirectoryExists(dir).Returns(returnThis: true);
         _fileSystem.EnumerateFiles(dir, "*", SearchOption.TopDirectoryOnly)
@@ -77,12 +77,12 @@ public sealed class RetentionServiceTests : IDisposable
 
         var tempDir = _tempDir.CreateSubdirectory();
 
-        var oldTempPath = Path.Combine(tempDir, "old.zip");
+        var oldTempPath = Path.Combine(tempDir, "old-2026-01-01_00-00-00.zip");
         File.WriteAllText(oldTempPath, "old");
         File.SetLastWriteTime(oldTempPath, DateTime.Today.AddDays(-60));
         var oldFi = new FileInfo(oldTempPath);
 
-        var newTempPath = Path.Combine(tempDir, "new.zip");
+        var newTempPath = Path.Combine(tempDir, "new-2026-01-01_00-00-00.zip");
         File.WriteAllText(newTempPath, "new");
         File.SetLastWriteTime(newTempPath, DateTime.Today.AddDays(-1));
         var newFi = new FileInfo(newTempPath);
@@ -167,13 +167,13 @@ public sealed class RetentionServiceTests : IDisposable
         // equals Today-N is NOT older than N days and must be kept (#176:
         // the >= vs > equality mutant survived without this case).
         var dir = "/tmp/archives";
-        var archive = "/tmp/archives/edge.zip";
+        var archive = "/tmp/archives/edge-2026-01-01_00-00-00.zip";
 
         _fileSystem.DirectoryExists(dir).Returns(returnThis: true);
         _fileSystem.EnumerateFiles(dir, "*", SearchOption.TopDirectoryOnly).Returns([archive]);
 
         var tempDir = _tempDir.CreateSubdirectory();
-        var tempPath = Path.Combine(tempDir, "edge.zip");
+        var tempPath = Path.Combine(tempDir, "edge-2026-01-01_00-00-00.zip");
         File.WriteAllText(tempPath, "edge");
         File.SetLastWriteTime(tempPath, DateTime.Today.AddDays(-30));
         var fi = new FileInfo(tempPath);
@@ -207,5 +207,86 @@ public sealed class RetentionServiceTests : IDisposable
         var ex = Assert.Throws<ArgumentOutOfRangeException>(() => _sut.DeleteOldArchives("/logs", 0));
 
         Assert.Equal("olderThanDays", ex.ParamName);
+    }
+
+
+
+    [Theory]
+    [InlineData("app-2026-01-01_00-00-00.zip", true)]
+    [InlineData("app-2026-01-01_00-00-00.GZ", true)]
+    [InlineData("app-2026-01-01_00-00-00-2.zst", true)]
+    [InlineData("my.app-2026-01-01_00-00-00.lz4", true)]
+    [InlineData("MyApp-2026-01-01_00-00-00 to 2026-01-02_00-00-00.tar.gz", true)]
+    [InlineData("MyApp-2026-01-01_00-00-00 to 2026-01-02_00-00-00.zip", true)]
+    [InlineData("MyApp-2026-01-01_00-00-00.tar.br", true)]
+    [InlineData("backup.zip", false)]
+    [InlineData("photos-2026.tar.gz", false)]
+    [InlineData("app-2026-01-01.zip", false)]
+    [InlineData("app-2026-01-01_00-00-00.zip.partial", false)]
+    [InlineData("app-2026-01-01_00-00-00.log", false)]
+    [InlineData("app-2026-01-01_00-00-00.7z", false)]
+    public void IsRetentionCandidate_when_noBaseName_expected_onlyLogcNamedArchives(string fileName, bool expected)
+    {
+        Assert.Equal(expected, RetentionService.IsRetentionCandidate(fileName, baseName: null));
+    }
+
+
+
+    [Theory]
+    [InlineData("MyApp-2026-01-01_00-00-00 to 2026-01-02_00-00-00.zip", true)]
+    [InlineData("myapp-2026-01-01_00-00-00.zip", true)]
+    [InlineData("OtherApp-2026-01-01_00-00-00 to 2026-01-02_00-00-00.zip", false)]
+    [InlineData("MyAppX-2026-01-01_00-00-00.zip", false)]
+    public void IsRetentionCandidate_when_baseNameGiven_expected_onlyThatBaseName(string fileName, bool expected)
+    {
+        Assert.Equal(expected, RetentionService.IsRetentionCandidate(fileName, "MyApp"));
+    }
+
+
+
+    [Fact]
+    public void DeleteOldArchives_when_oldUnrelatedArchive_expected_keptAndOnlyLogcArchiveDeleted()
+    {
+        // The blast-radius fix (#352): an old third-party archive that merely
+        // shares an extension is never deleted.
+        var dir = _tempDir.CreateSubdirectory();
+        var unrelated = Path.Combine(dir, "backup.zip");
+        var own = Path.Combine(dir, "app-2026-01-01_00-00-00.zip");
+        foreach (var path in new[] { unrelated, own })
+        {
+            File.WriteAllText(path, "x");
+            File.SetLastWriteTime(path, DateTime.Today.AddDays(-90));
+            _fileSystem.GetFileInfo(path).Returns(new FileInfo(path));
+        }
+
+        _fileSystem.DirectoryExists(dir).Returns(returnThis: true);
+        _fileSystem.EnumerateFiles(dir, "*", SearchOption.TopDirectoryOnly).Returns([unrelated, own]);
+
+        var result = _sut.DeleteOldArchives(dir, 30);
+
+        Assert.Equal(1, result);
+        _fileSystem.Received(1).DeleteFile(own);
+        _fileSystem.DidNotReceive().DeleteFile(unrelated);
+    }
+
+
+
+    [Fact]
+    public void DeleteOldArchives_when_allDirectories_expected_subdirectoriesScanned()
+    {
+        var dir = _tempDir.CreateSubdirectory();
+        var nested = Path.Combine(dir, "sub");
+        Directory.CreateDirectory(nested);
+        var archive = Path.Combine(nested, "app-2026-01-01_00-00-00.gz");
+        File.WriteAllText(archive, "x");
+        File.SetLastWriteTime(archive, DateTime.Today.AddDays(-90));
+        _fileSystem.GetFileInfo(archive).Returns(new FileInfo(archive));
+        _fileSystem.DirectoryExists(dir).Returns(returnThis: true);
+        _fileSystem.EnumerateFiles(dir, "*", SearchOption.AllDirectories).Returns([archive]);
+
+        var result = _sut.DeleteOldArchives(dir, 30, SearchOption.AllDirectories);
+
+        Assert.Equal(1, result);
+        _fileSystem.Received(1).DeleteFile(archive);
     }
 }

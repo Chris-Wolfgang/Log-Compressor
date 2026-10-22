@@ -44,7 +44,8 @@ internal sealed class BrotliCompressionStrategy : ICompressionStrategy
     )
     {
         _ = entryName; // Not used by single-stream Brotli format
-        await using var brotliStream = new BrotliStream(outputStream, _level, leaveOpen: true);
+        var brotliStream = new BrotliStream(outputStream, _level, leaveOpen: true);
+        await using var brotliStreamDisposal = brotliStream.ConfigureAwait(false);
         await inputStream.CopyToAsync(brotliStream, cancellationToken).ConfigureAwait(false);
     }
 
@@ -58,8 +59,10 @@ internal sealed class BrotliCompressionStrategy : ICompressionStrategy
         CancellationToken cancellationToken = default
     )
     {
-        await using var brotliStream = new BrotliStream(outputStream, _level, leaveOpen: true);
-        await using var tarWriter = new TarWriter(brotliStream, leaveOpen: true);
+        var brotliStream = new BrotliStream(outputStream, _level, leaveOpen: true);
+        await using var brotliStreamDisposal = brotliStream.ConfigureAwait(false);
+        var tarWriter = new TarWriter(brotliStream, leaveOpen: true);
+        await using var tarWriterDisposal = tarWriter.ConfigureAwait(false);
 
         await foreach (var (stream, entryName) in inputs.WithCancellation(cancellationToken).ConfigureAwait(false))
         {

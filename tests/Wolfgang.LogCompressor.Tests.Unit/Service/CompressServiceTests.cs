@@ -24,7 +24,7 @@ public sealed class CompressServiceTests : IDisposable
         var strategyFactory = Substitute.For<CompressionStrategyFactory>();
         strategyFactory.Create(Arg.Any<CompressionFormat>(), Arg.Any<System.IO.Compression.CompressionLevel>()).Returns(_strategy);
         _strategy.FileExtension.Returns("zip");
-        _archiveVerifier.VerifyAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<long?>()).Returns(Task.FromResult(true));
+        _archiveVerifier.VerifyAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<long?>(), Arg.Any<CancellationToken>()).Returns(Task.FromResult(true));
 
         _sut = new CompressService
         (
@@ -305,7 +305,7 @@ public sealed class CompressServiceTests : IDisposable
         _fileNamer.GetCompressedFileName(fileInfo, "zip").Returns("out.zip");
         _fileSystem.OpenRead(tempFile).Returns(new MemoryStream("content"u8.ToArray()));
         _fileSystem.CreateWrite(Arg.Any<string>()).Returns(new MemoryStream());
-        _archiveVerifier.VerifyAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<long?>()).Returns(Task.FromResult(false));
+        _archiveVerifier.VerifyAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<long?>(), Arg.Any<CancellationToken>()).Returns(Task.FromResult(false));
 
         var options = new CompressionOptions { SourcePath = tempFile, Verify = true };
         var results = await _sut.ExecuteAsync(options);
@@ -379,7 +379,7 @@ public sealed class CompressServiceTests : IDisposable
         var results = await _sut.ExecuteAsync(options);
 
         Assert.True(Assert.Single(results).Success);
-        await _archiveVerifier.DidNotReceive().VerifyAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<long?>());
+        await _archiveVerifier.DidNotReceive().VerifyAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<long?>(), Arg.Any<CancellationToken>());
         _fileSystem.Received(1).DeleteFile(tempFile);
     }
 
@@ -555,7 +555,7 @@ public sealed class CompressServiceTests : IDisposable
         _fileNamer.GetCompressedFileName(Arg.Any<FileInfo>(), "zip", Arg.Any<TimestampSource>(), Arg.Any<string?>()).Returns("out.zip");
         _fileSystem.OpenRead(Arg.Any<string>()).Returns(_ => new MemoryStream("content"u8.ToArray()));
         _fileSystem.CreateWrite(Arg.Any<string>()).Returns(_ => new MemoryStream());
-        _archiveVerifier.VerifyAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<long?>()).Returns(Task.FromResult(false));
+        _archiveVerifier.VerifyAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<long?>(), Arg.Any<CancellationToken>()).Returns(Task.FromResult(false));
 
         var options = new CompressionOptions
         {
@@ -593,7 +593,7 @@ public sealed class CompressServiceTests : IDisposable
         _fileSystem.OpenRead(tempFile).Returns(_ => new MemoryStream("content"u8.ToArray()));
         _fileSystem.CreateWrite(Arg.Any<string>()).Returns(_ => new MemoryStream());
         // Fails verification once, passes on the retry.
-        _archiveVerifier.VerifyAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<long?>())
+        _archiveVerifier.VerifyAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<long?>(), Arg.Any<CancellationToken>())
             .Returns(Task.FromResult(false), Task.FromResult(true));
 
         var options = new CompressionOptions
@@ -606,7 +606,7 @@ public sealed class CompressServiceTests : IDisposable
 
         var result = Assert.Single(results);
         Assert.True(result.Success);
-        await _archiveVerifier.Received(2).VerifyAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<long?>());
+        await _archiveVerifier.Received(2).VerifyAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<long?>(), Arg.Any<CancellationToken>());
         // Every attempt reuses the SAME reserved output path — a retry must
         // not be diverted to a "-2" name by its own first attempt.
         Assert.EndsWith("out.zip", result.OutputPath, StringComparison.Ordinal);
@@ -689,7 +689,7 @@ public sealed class CompressServiceTests : IDisposable
         _fileNamer.GetCompressedFileName(Arg.Any<FileInfo>(), "zip", Arg.Any<TimestampSource>(), Arg.Any<string?>()).Returns("out.zip");
         _fileSystem.OpenRead(tempFile).Returns(_ => new MemoryStream("content"u8.ToArray()));
         _fileSystem.CreateWrite(Arg.Any<string>()).Returns(_ => new MemoryStream());
-        _archiveVerifier.VerifyAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<long?>()).Returns(Task.FromResult(false));
+        _archiveVerifier.VerifyAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<long?>(), Arg.Any<CancellationToken>()).Returns(Task.FromResult(false));
 
         var options = new CompressionOptions
         {
@@ -783,7 +783,7 @@ public sealed class CompressServiceTests : IDisposable
         _fileSystem.OpenRead(Arg.Any<string>()).Returns(_ => new MemoryStream("content"u8.ToArray()));
         _fileSystem.CreateWrite(Arg.Any<string>()).Returns(_ => new MemoryStream());
         // First file fails verification, second passes.
-        _archiveVerifier.VerifyAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<long?>())
+        _archiveVerifier.VerifyAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<long?>(), Arg.Any<CancellationToken>())
             .Returns(Task.FromResult(false), Task.FromResult(true));
 
         var options = new CompressionOptions { SourcePath = dir, Verify = true };

@@ -278,4 +278,3 @@ public sealed class ResponseFileSanitizerTests : IDisposable
         return application.Model;
     }
 }
-

@@ -58,15 +58,7 @@ public sealed class BundleServicePartialArchiveTests : IDisposable
         _fileSystem.GetFileInfo(_source).Returns(fileInfo);
         _fileSystem.OpenRead(_source).Returns(_ => new MemoryStream("content"u8.ToArray()));
         _fileSystem.CreateWrite(Arg.Any<string>()).Returns(_ => new MemoryStream());
-        _fileFilter.Apply
-        (
-            Arg.Any<IEnumerable<FileInfo>>(),
-            Arg.Any<int?>(),
-            Arg.Any<DateTime?>(),
-            Arg.Any<DateTime?>(),
-            Arg.Any<IReadOnlyList<string>>(),
-            Arg.Any<IReadOnlyList<string>>()
-        ).Returns([fileInfo]);
+        StubFilterPassThrough([fileInfo]);
         _fileNamer.GetBundleFileName("MyApp", Arg.Any<IReadOnlyList<FileInfo>>(), "zip", Arg.Any<TimestampSource>(), Arg.Any<string?>()).Returns("bundle.zip");
 
         _sut = new BundleService
@@ -219,6 +211,23 @@ public sealed class BundleServicePartialArchiveTests : IDisposable
         _fileSystem.Received(1).DeleteFile(_partial);
         _fileSystem.DidNotReceive().MoveFile(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<bool>());
         _fileSystem.DidNotReceive().DeleteFile(_source);
+    }
+
+
+
+    private void StubFilterPassThrough(IReadOnlyList<FileInfo> files)
+    {
+        // Any filter arguments: these tests are about what the service does with
+        // the files the filter returns, not about the filter itself.
+        _fileFilter.Apply
+        (
+            Arg.Any<IEnumerable<FileInfo>>(),
+            Arg.Any<int?>(),
+            Arg.Any<DateTime?>(),
+            Arg.Any<DateTime?>(),
+            Arg.Any<IReadOnlyList<string>>(),
+            Arg.Any<IReadOnlyList<string>>()
+        ).Returns(files);
     }
 
 

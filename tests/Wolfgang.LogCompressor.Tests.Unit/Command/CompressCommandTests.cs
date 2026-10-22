@@ -16,7 +16,7 @@ public sealed class CompressCommandTests : IDisposable
     private readonly ReportService _reportService = new(new FileSystemWrapper(), TimeProvider.System);
     private readonly IFileSystem _retentionFileSystem = Substitute.For<IFileSystem>();
     private readonly RetentionService _retentionService;
-    private readonly string _tempDir;
+    private readonly TempDirectory _temp = new();
 
 
 
@@ -42,18 +42,13 @@ public sealed class CompressCommandTests : IDisposable
             TimeProvider.System
         );
 
-        _tempDir = Path.Combine(Path.GetTempPath(), "CompressCommandTests_" + Guid.NewGuid());
-        Directory.CreateDirectory(_tempDir);
     }
 
 
 
     public void Dispose()
     {
-        if (Directory.Exists(_tempDir))
-        {
-            Directory.Delete(_tempDir, recursive: true);
-        }
+        _temp.Dispose();
     }
 
 
@@ -169,7 +164,7 @@ public sealed class CompressCommandTests : IDisposable
                 }
             );
 
-        var reportPath = Path.Combine(_tempDir, "compress-report.json");
+        var reportPath = Path.Combine(_temp.Path, "compress-report.json");
         var command = new Compress
         {
             Path = "/tmp/test.log",
@@ -214,7 +209,7 @@ public sealed class CompressCommandTests : IDisposable
         _compressService.ExecuteAsync(Arg.Any<CompressionOptions>(), Arg.Any<CancellationToken>())
             .Returns(new List<CompressionResult>());
 
-        var command = new Compress { Path = _tempDir, NoLock = true, DeleteArchivesOlderThan = 30 };
+        var command = new Compress { Path = _temp.Path, NoLock = true, DeleteArchivesOlderThan = 30 };
 
         var result = await command.OnExecuteAsync(_console, _logger, _compressService, _reportService, _retentionService);
 
@@ -222,7 +217,7 @@ public sealed class CompressCommandTests : IDisposable
 
         // Retention must scan the source directory itself (where compress writes the
         // archives), not its parent.
-        _retentionFileSystem.Received(1).DirectoryExists(Path.GetFullPath(_tempDir));
+        _retentionFileSystem.Received(1).DirectoryExists(Path.GetFullPath(_temp.Path));
     }
 
 
@@ -241,7 +236,7 @@ public sealed class CompressCommandTests : IDisposable
 
         // NoLock omitted -> the real ProcessLock acquires a lock in the source
         // directory (a clean temp dir, so acquisition succeeds and is released).
-        var command = new Compress { Path = Path.Combine(_tempDir, "test.log") };
+        var command = new Compress { Path = Path.Combine(_temp.Path, "test.log") };
 
         var result = await command.OnExecuteAsync(_console, _logger, _compressService, _reportService, _retentionService);
 
@@ -256,7 +251,7 @@ public sealed class CompressCommandTests : IDisposable
         // Hold the lock file open with FileShare.None — an open handle IS the
         // lock under the OpenOrCreate protocol (a mere leftover file no longer
         // blocks; see #172) — so the command's ProcessLock.TryAcquire fails.
-        var lockFile = Path.Combine(_tempDir, ".logc.lock");
+        var lockFile = Path.Combine(_temp.Path, ".logc.lock");
         await using var heldLock = new FileStream
         (
             lockFile,
@@ -265,7 +260,7 @@ public sealed class CompressCommandTests : IDisposable
             FileShare.None
         );
 
-        var command = new Compress { Path = Path.Combine(_tempDir, "test.log") };
+        var command = new Compress { Path = Path.Combine(_temp.Path, "test.log") };
 
         var result = await command.OnExecuteAsync(_console, _logger, _compressService, _reportService, _retentionService);
 
@@ -287,25 +282,21 @@ public sealed class CompressCommandTests : IDisposable
             );
 
         // Report set but ReportPath omitted -> the default "compress-report.<fmt>"
-        // name (relative to the working directory) is used.
-        const string defaultReport = "compress-report.json";
-        try
-        {
-            var command = new Compress { Path = "/tmp/test.log", NoLock = true, Report = "json" };
+        // name (relative to the working directory) is used. A substitute file
+        // system records the path without writing into the test host's working
+        // directory, where parallel tests would race on it.
+        var fileSystem = Substitute.For<IFileSystem>();
+        fileSystem.CreateWrite(Arg.Any<string>()).Returns(_ => new MemoryStream());
+        var reportService = new ReportService(fileSystem, TimeProvider.System);
+        var command = new Compress { Path = "/tmp/test.log", NoLock = true, Report = "json" };
 
-            var result = await command.OnExecuteAsync(_console, _logger, _compressService, _reportService, _retentionService);
+        var result = await command.OnExecuteAsync(_console, _logger, _compressService, reportService, _retentionService);
 
-            Assert.Equal(ExitCode.Success, result);
-            Assert.True(File.Exists(defaultReport));
-        }
-        finally
-        {
-            if (File.Exists(defaultReport))
-            {
-                File.Delete(defaultReport);
-            }
-        }
+        Assert.Equal(ExitCode.Success, result);
+        fileSystem.Received(1).CreateWrite("compress-report.json");
     }
+
+
 
     [Fact]
     public async Task OnExecuteAsync_when_allSucceed_withoutReport_expected_success()
@@ -313,7 +304,7 @@ public sealed class CompressCommandTests : IDisposable
         _compressService.ExecuteAsync(Arg.Any<CompressionOptions>(), Arg.Any<CancellationToken>())
             .Returns([new CompressionResult { SourcePath = "a.log", OutputPath = "a.zip", Success = true }]);
 
-        var command = new Compress { Path = Path.Combine(_tempDir, "test.log"), NoLock = true };
+        var command = new Compress { Path = Path.Combine(_temp.Path, "test.log"), NoLock = true };
 
         var result = await command.OnExecuteAsync(_console, _logger, _compressService, _reportService, _retentionService);
 
@@ -332,7 +323,7 @@ public sealed class CompressCommandTests : IDisposable
                 new CompressionResult { SourcePath = "b.log", OutputPath = "b.zip", Success = false, ErrorMessage = "boom" }
             ]);
 
-        var command = new Compress { Path = Path.Combine(_tempDir, "test.log"), NoLock = true, OnError = "fail" };
+        var command = new Compress { Path = Path.Combine(_temp.Path, "test.log"), NoLock = true, OnError = "fail" };
 
         var result = await command.OnExecuteAsync(_console, _logger, _compressService, _reportService, _retentionService);
 
@@ -346,7 +337,7 @@ public sealed class CompressCommandTests : IDisposable
     {
         _compressService.ExecuteAsync(Arg.Any<CompressionOptions>(), Arg.Any<CancellationToken>())
             .Returns([new CompressionResult { SourcePath = "a.log", OutputPath = "a.zip", Success = true }]);
-        var sourceFile = Path.Combine(_tempDir, "test.log");
+        var sourceFile = Path.Combine(_temp.Path, "test.log");
         await File.WriteAllTextAsync(sourceFile, "x");
 
         var command = new Compress { Path = sourceFile, NoLock = true, DeleteArchivesOlderThan = 30 };
@@ -354,7 +345,7 @@ public sealed class CompressCommandTests : IDisposable
         await command.OnExecuteAsync(_console, _logger, _compressService, _reportService, _retentionService);
 
         // SourcePath is a FILE, so retention must scan its parent directory.
-        _retentionFileSystem.Received(1).DirectoryExists(Path.GetFullPath(_tempDir));
+        _retentionFileSystem.Received(1).DirectoryExists(Path.GetFullPath(_temp.Path));
     }
 
 
@@ -365,11 +356,11 @@ public sealed class CompressCommandTests : IDisposable
         _compressService.ExecuteAsync(Arg.Any<CompressionOptions>(), Arg.Any<CancellationToken>())
             .Returns([new CompressionResult { SourcePath = "a.log", OutputPath = "a.zip", Success = true }]);
 
-        var command = new Compress { Path = _tempDir, NoLock = true, DeleteArchivesOlderThan = 30 };
+        var command = new Compress { Path = _temp.Path, NoLock = true, DeleteArchivesOlderThan = 30 };
 
         await command.OnExecuteAsync(_console, _logger, _compressService, _reportService, _retentionService);
 
-        _retentionFileSystem.Received(1).DirectoryExists(Path.GetFullPath(_tempDir));
+        _retentionFileSystem.Received(1).DirectoryExists(Path.GetFullPath(_temp.Path));
     }
 
 
@@ -379,10 +370,10 @@ public sealed class CompressCommandTests : IDisposable
     {
         _compressService.ExecuteAsync(Arg.Any<CompressionOptions>(), Arg.Any<CancellationToken>())
             .Returns([new CompressionResult { SourcePath = "a.log", OutputPath = "a.zip", Success = true }]);
-        var outputDir = Path.Combine(_tempDir, "archives");
+        var outputDir = Path.Combine(_temp.Path, "archives");
         Directory.CreateDirectory(outputDir);
 
-        var command = new Compress { Path = _tempDir, Output = outputDir, NoLock = true, DeleteArchivesOlderThan = 30 };
+        var command = new Compress { Path = _temp.Path, Output = outputDir, NoLock = true, DeleteArchivesOlderThan = 30 };
 
         await command.OnExecuteAsync(_console, _logger, _compressService, _reportService, _retentionService);
 
@@ -404,7 +395,7 @@ public sealed class CompressCommandTests : IDisposable
                 }
             );
 
-        var command = new Compress { Path = Path.Combine(_tempDir, "test.log"), NoLock = true };
+        var command = new Compress { Path = Path.Combine(_temp.Path, "test.log"), NoLock = true };
 
         await command.OnExecuteAsync(_console, _logger, _compressService, _reportService, _retentionService);
 
@@ -419,7 +410,7 @@ public sealed class CompressCommandTests : IDisposable
         _compressService.ExecuteAsync(Arg.Any<CompressionOptions>(), Arg.Any<CancellationToken>())
             .Returns([new CompressionResult { SourcePath = "a.log", OutputPath = "a.zip", Success = true }]);
 
-        var command = new Compress { Path = Path.Combine(_tempDir, "test.log"), NoLock = true };
+        var command = new Compress { Path = Path.Combine(_temp.Path, "test.log"), NoLock = true };
 
         await command.OnExecuteAsync(_console, _logger, _compressService, _reportService, _retentionService);
 
@@ -438,13 +429,13 @@ public sealed class CompressCommandTests : IDisposable
         // directory (#352).
         _compressService.ExecuteAsync(Arg.Any<CompressionOptions>(), Arg.Any<CancellationToken>())
             .Returns(new List<CompressionResult>());
-        var output = Path.Combine(_tempDir, "out");
+        var output = Path.Combine(_temp.Path, "out");
         _retentionFileSystem.DirectoryExists(Arg.Any<string>()).Returns(returnThis: true);
         _retentionFileSystem.EnumerateFiles(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<SearchOption>()).Returns([]);
 
         var command = new Compress
         {
-            Path = _tempDir,
+            Path = _temp.Path,
             Recurse = true,
             Output = withOutput ? output : null,
             NoLock = true,

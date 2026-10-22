@@ -5,7 +5,6 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Wolfgang.LogCompressor.Abstraction;
 using Wolfgang.LogCompressor.Service;
 using Wolfgang.LogCompressor.Service.Compression;
-using Xunit;
 
 namespace Wolfgang.LogCompressor.Tests.Fuzz;
 
@@ -81,7 +80,7 @@ public class CompressionFuzzTests
 
 
     [Fact]
-    public void Zip_single_file_round_trips_through_independent_reader()
+    public void CompressFileAsync_when_zip_expected_roundTripsThroughIndependentReader()
     {
         Gen.Select(Content, EntryName).Sample(
             (content, entryName) =>
@@ -106,7 +105,7 @@ public class CompressionFuzzTests
 
 
     [Fact]
-    public void GZip_single_file_round_trips_through_independent_reader()
+    public void CompressFileAsync_when_gzip_expected_roundTripsThroughIndependentReader()
     {
         Content.Sample(
             content =>
@@ -127,7 +126,7 @@ public class CompressionFuzzTests
 
 
     [Fact]
-    public void Brotli_single_file_round_trips_through_independent_reader()
+    public void CompressFileAsync_when_brotli_expected_roundTripsThroughIndependentReader()
     {
         Content.Sample(
             content =>
@@ -159,7 +158,7 @@ public class CompressionFuzzTests
 
 
     [Fact]
-    public void Zip_bundle_round_trips_every_entry()
+    public void CompressFilesAsync_when_zip_expected_everyEntryRoundTrips()
     {
         BundleEntries.Sample(
             entries =>
@@ -189,7 +188,7 @@ public class CompressionFuzzTests
 
 
     [Fact]
-    public void GZip_bundle_round_trips_every_entry_through_tar_reader()
+    public void CompressFilesAsync_when_gzip_expected_everyEntryRoundTripsThroughTarReader()
     {
         BundleEntries.Sample(
             entries => AssertTarBundleRoundTrips
@@ -204,7 +203,7 @@ public class CompressionFuzzTests
 
 
     [Fact]
-    public void Brotli_bundle_round_trips_every_entry_through_tar_reader()
+    public void CompressFilesAsync_when_brotli_expected_everyEntryRoundTripsThroughTarReader()
     {
         BundleEntries.Sample(
             entries => AssertTarBundleRoundTrips
@@ -250,7 +249,7 @@ public class CompressionFuzzTests
 
 
     [Fact]
-    public void Zstd_single_file_round_trips_through_decompression()
+    public void CompressFileAsync_when_zstd_expected_roundTripsThroughDecompression()
     {
         Content.Sample(
             content =>
@@ -271,7 +270,7 @@ public class CompressionFuzzTests
 
 
     [Fact]
-    public void Lz4_single_file_round_trips_through_decompression()
+    public void CompressFileAsync_when_lz4_expected_roundTripsThroughDecompression()
     {
         Content.Sample(
             content =>
@@ -292,7 +291,7 @@ public class CompressionFuzzTests
 
 
     [Fact]
-    public void Zstd_bundle_round_trips_every_entry_through_tar_reader()
+    public void CompressFilesAsync_when_zstd_expected_everyEntryRoundTripsThroughTarReader()
     {
         BundleEntries.Sample(
             entries => AssertTarBundleRoundTrips
@@ -307,7 +306,7 @@ public class CompressionFuzzTests
 
 
     [Fact]
-    public void Lz4_bundle_round_trips_every_entry_through_tar_reader()
+    public void CompressFilesAsync_when_lz4_expected_everyEntryRoundTripsThroughTarReader()
     {
         BundleEntries.Sample(
             entries => AssertTarBundleRoundTrips
@@ -322,7 +321,7 @@ public class CompressionFuzzTests
 
 
     [Fact]
-    public void Verifier_accepts_every_archive_the_strategies_produce()
+    public void VerifyAsync_when_archiveFromAnyStrategy_expected_accepted()
     {
         Gen.Select(Content, Gen.OneOfConst("zip", "gz", "br", "zst", "lz4")).Sample(
             (content, format) =>
@@ -352,7 +351,7 @@ public class CompressionFuzzTests
 
 
     [Fact]
-    public void Verifier_never_passes_a_truncated_archive_whose_content_is_lost()
+    public void VerifyAsync_when_truncatedAndContentLost_expected_neverPasses()
     {
         // The safety contract behind verify-then-delete (ADR-0003): a passing
         // verification means every source byte is recoverable — because a
@@ -378,7 +377,7 @@ public class CompressionFuzzTests
 
 
     [Fact]
-    public void Verifier_passes_a_brotli_archive_cut_only_in_its_end_framing()
+    public void VerifyAsync_when_brotliCutOnlyInEndFraming_expected_passes()
     {
         // The property above reaches its "verified" branch only when CsCheck
         // happens to draw a brotli case whose cut removes nothing but framing,

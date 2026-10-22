@@ -46,6 +46,8 @@ Or browse every release on the [Releases page](https://github.com/Chris-Wolfgang
 
 Each archive contains the `logc` executable **and** its `AppSettings.json` — keep the two together in the same folder (`logc` reads `AppSettings.json` from beside itself at startup).
 
+`logc` writes its own log to `logs/log-<date>.txt` **next to the executable** (the `Logging:File:Path` setting in `AppSettings.json`; a relative path is resolved against the executable's folder, never the working directory a scheduler happens to start it in). If that folder is not writable for the account running the job, set an absolute `Path` there, or set `Logging:File:Enabled` to `false`.
+
 **Linux / macOS**
 
 ```bash

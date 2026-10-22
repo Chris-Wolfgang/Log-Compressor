@@ -97,4 +97,40 @@ public sealed class ProcessLockTests
         Assert.True(ProcessLock.IsLockFile("/logs/.LOGC.LOCK"));
         Assert.False(ProcessLock.IsLockFile("/some/dir/app.log"));
     }
+
+
+
+    [Fact]
+    public void TryAcquire_when_lockPathIsADirectory_expected_falseNotACrash()
+    {
+        // Stands in for a read-only / ACL-denied source directory: opening the
+        // lock file fails with UnauthorizedAccessException, which must be a
+        // clean "cannot lock" (false), not an unhandled crash.
+        using var temp = new TempDirectory();
+        Directory.CreateDirectory(Path.Combine(temp.Path, ProcessLock.LockFileName));
+
+        using var sut = new ProcessLock(temp.Path, NullLogger.Instance);
+
+        Assert.False(sut.TryAcquire());
+    }
+
+
+
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public void Dispose_when_eitherReleaseOrder_expected_lockReacquirable(bool unlinkWhileHeld)
+    {
+        // Both platform release orders run on every OS. On Windows the
+        // unlink-while-held order fails to delete the open file; that failure
+        // is best-effort and must not block the next acquire.
+        using var temp = new TempDirectory();
+
+        var first = new ProcessLock(temp.Path, NullLogger.Instance, unlinkWhileHeld);
+        Assert.True(first.TryAcquire());
+        first.Dispose();
+
+        using var second = new ProcessLock(temp.Path, NullLogger.Instance);
+        Assert.True(second.TryAcquire());
+    }
 }

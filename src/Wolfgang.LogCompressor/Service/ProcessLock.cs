@@ -1,4 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
 using Microsoft.Extensions.Logging;
 
 namespace Wolfgang.LogCompressor.Service;
@@ -19,7 +18,6 @@ namespace Wolfgang.LogCompressor.Service;
 /// owner (issue #172). The file's PID/Started content is diagnostic only and
 /// plays no part in the locking protocol.
 /// </remarks>
-[ExcludeFromCodeCoverage]
 internal sealed class ProcessLock : IDisposable
 {
     /// <summary>
@@ -50,6 +48,7 @@ internal sealed class ProcessLock : IDisposable
 
     private readonly string _lockFilePath;
     private readonly ILogger _logger;
+    private readonly bool _unlinkWhileHeld;
     private FileStream? _lockStream;
 
 
@@ -60,12 +59,30 @@ internal sealed class ProcessLock : IDisposable
     /// <param name="directory">The directory to lock.</param>
     /// <param name="logger">The logger.</param>
     public ProcessLock(string directory, ILogger logger)
+        : this(directory, logger, unlinkWhileHeld: !OperatingSystem.IsWindows())
+    {
+    }
+
+
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ProcessLock"/> class with an explicit release
+    /// order, so tests on one operating system can exercise the other's order.
+    /// </summary>
+    /// <param name="directory">The directory to lock.</param>
+    /// <param name="logger">The logger.</param>
+    /// <param name="unlinkWhileHeld">
+    /// <see langword="true"/> to delete the lock file before closing it (the Unix order);
+    /// <see langword="false"/> to close it first (the Windows order). See <see cref="Dispose"/>.
+    /// </param>
+    internal ProcessLock(string directory, ILogger logger, bool unlinkWhileHeld)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(directory);
         ArgumentNullException.ThrowIfNull(logger);
 
         _lockFilePath = Path.Combine(directory, LockFileName);
         _logger = logger;
+        _unlinkWhileHeld = unlinkWhileHeld;
     }
 
 
@@ -92,7 +109,7 @@ internal sealed class ProcessLock : IDisposable
         using (var writer = new StreamWriter(lockStream, leaveOpen: true))
         {
             writer.WriteLine($"PID={Environment.ProcessId}");
-            writer.WriteLine($"Started={DateTimeOffset.Now:O}");
+            writer.WriteLine($"Started={TimeProvider.System.GetLocalNow():O}");
             writer.Flush();
         }
 
@@ -180,15 +197,15 @@ internal sealed class ProcessLock : IDisposable
         //   against our own handle), so delete AFTER close. Safe there: if a
         //   successor acquires between our close and delete, the delete
         //   fails with a sharing violation and is swallowed as best-effort.
-        if (OperatingSystem.IsWindows())
+        if (_unlinkWhileHeld)
         {
-            _lockStream.Dispose();
             TryDeleteLockFile();
+            _lockStream.Dispose();
         }
         else
         {
-            TryDeleteLockFile();
             _lockStream.Dispose();
+            TryDeleteLockFile();
         }
 
         _lockStream = null;

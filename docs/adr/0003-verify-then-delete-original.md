@@ -20,7 +20,14 @@ delete the original**, in that order:
 - Verification re-opens the written archive and checks it is structurally
   sound for its format (`ArchiveVerifier`).
 - If verification fails, the original is kept, the result is reported as a
-  failure, and the (suspect) archive is left for inspection.
+  failure, and the (suspect) archive is left for inspection as
+  `<archive>.failed`.
+- The archive is written as `<archive>.partial` and renamed to its final name
+  only after it is complete and verified (#351). A final-named archive is
+  therefore always a finished one: a crash or failed attempt never leaves a
+  file there that the next run would refuse to overwrite, and a leftover
+  `.partial` is deleted by the next attempt at the same path. `.partial` and
+  `.failed` files are never compressed, bundled or removed by retention.
 - `--no-verify` exists as an explicit opt-out for callers who prefer speed
   over the safety re-read (e.g. enormous archives on slow storage) — the
   default is always verify.

@@ -140,7 +140,7 @@ public sealed class BundleServiceTests : IDisposable
 
 
     [Fact]
-    public async Task ExecuteAsync_when_noFilesMatch_expected_failureResult()
+    public async Task ExecuteAsync_when_noFilesMatch_expected_successWithNoArchive()
     {
         var dir = "/tmp/logs/MyApp";
 
@@ -160,9 +160,12 @@ public sealed class BundleServiceTests : IDisposable
         var options = new CompressionOptions { SourcePath = dir };
         var result = await _sut.ExecuteAsync(options);
 
-        Assert.False(result.Success);
+        // Nothing to do is success, like compress of an empty directory (#353);
+        // the empty OutputPath says no archive was written.
+        Assert.True(result.Success);
         Assert.Equal(string.Empty, result.OutputPath);
-        Assert.Equal("No files matched the specified criteria.", result.ErrorMessage);
+        Assert.Null(result.ErrorMessage);
+        _fileSystem.DidNotReceive().CreateWrite(Arg.Any<string>());
     }
 
 

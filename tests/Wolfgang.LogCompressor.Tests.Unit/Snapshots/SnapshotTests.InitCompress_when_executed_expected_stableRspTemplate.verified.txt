@@ -5,6 +5,7 @@
 
 # Source path (required)
 # C:\Logs\MyApp
+# /var/log/myapp
 
 # Recurse into subdirectories
 # --recurse

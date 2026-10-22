@@ -353,4 +353,22 @@ public sealed class DecompressCommandTests : IDisposable
         Assert.Equal(ExitCode.Success, result);
         fileSystem.Received(1).CreateWrite("decompress-report.csv");
     }
+
+
+
+    [Theory]
+    [InlineData("JSON")]
+    [InlineData("Csv")]
+    public async Task OnExecuteAsync_when_reportFormatUpperCase_expected_acceptedLikeCompress(string format)
+    {
+        // compress/bundle accept the report format case-insensitively; so must
+        // decompress (#353).
+        _decompressService.ExecuteAsync(Arg.Any<DecompressionOptions>(), Arg.Any<CancellationToken>())
+            .Returns([Ok()]);
+        var command = new Decompress { Path = _tempDir, NoLock = true, Report = format, ReportPath = Path.Combine(_tempDir, "r.report") };
+
+        var exitCode = await command.OnExecuteAsync(_console, _logger, _decompressService, _reportService);
+
+        Assert.Equal(ExitCode.Success, exitCode);
+    }
 }

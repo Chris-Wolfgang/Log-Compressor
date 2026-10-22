@@ -160,7 +160,7 @@ logc decompress /var/log/archives --keep-archives
 | Flag | Purpose | Default |
 |------|---------|---------|
 | `-r`, `--recurse` | Recurse subdirectories | `false` |
-| `-o`, `--output <dir>` | Output directory | source directory |
+| `-o`, `--output <dir>` | Output directory | `compress`: the source directory; `bundle`: the source's parent directory (the file's directory for a file source) |
 | `--timestamp <src>` | Timestamp in archive names: `modified` \| `compressed` | `modified` |
 | `--name <prefix>` | Custom base name for archives (collisions this run get `-2`, `-3`, ...) | source file/folder name |
 | `--older-than <days>` | Only files modified N+ days ago | (no filter) |
@@ -203,7 +203,7 @@ Under `--on-error fail`, the first item that still fails after any retries stops
 
 ### `init` — starter configuration files
 
-`logc init compress` / `logc init bundle` write a commented `.rsp` starter file (default `compress.rsp` / `bundle.rsp`, override with `-o|--output <path>`) that documents every flag — edit it, then run `logc compress @compress.rsp`.
+`logc init compress` / `logc init bundle` write a commented `.rsp` starter file (default `compress.rsp` / `bundle.rsp`, override with `-o|--output <path>`; an existing file is kept unless you pass `--force`) that documents every flag — edit it, then run `logc compress @compress.rsp`.
 
 ### Response files
 

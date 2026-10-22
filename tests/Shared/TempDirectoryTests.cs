@@ -1,9 +1,9 @@
-namespace Wolfgang.LogCompressor.Tests.Unit;
+namespace Wolfgang.LogCompressor.Tests;
 
 /// <summary>
-/// Tests for the unit-test <see cref="TempDirectory"/> helper itself, so the
-/// fixture every file-system test relies on is held to the same coverage bar
-/// as the rest of the test code.
+/// Tests for the shared <see cref="TempDirectory"/> helper itself, linked into every test project
+/// next to the helper, so each test assembly holds the fixture to the same coverage bar as the rest
+/// of its test code.
 /// </summary>
 public sealed class TempDirectoryTests
 {

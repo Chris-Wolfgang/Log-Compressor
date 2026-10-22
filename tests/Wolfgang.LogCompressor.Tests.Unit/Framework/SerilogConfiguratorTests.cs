@@ -10,34 +10,19 @@ public sealed class SerilogConfiguratorTests : IDisposable
     // must not overlap under xunit's parallel execution.
     private static readonly Lock ConsoleRedirectGate = new();
 
-    private readonly string _tempDir =
-        Path.Combine(Path.GetTempPath(), "logc-serilog-tests-" + Guid.NewGuid().ToString("N"));
-
-
-
-    public SerilogConfiguratorTests()
-    {
-        Directory.CreateDirectory(_tempDir);
-    }
+    private readonly TempDirectory _temp = new();
 
 
 
     public void Dispose()
     {
-        try
-        {
-            Directory.Delete(_tempDir, recursive: true);
-        }
-        catch (DirectoryNotFoundException)
-        {
-            // already gone
-        }
+        _temp.Dispose();
     }
 
 
 
     [Fact]
-    public void Apply_when_configuration_is_null_throws_ArgumentNullException()
+    public void Apply_when_configurationNull_expected_throwsArgumentNullException()
     {
         Assert.Throws<ArgumentNullException>
         (
@@ -48,7 +33,7 @@ public sealed class SerilogConfiguratorTests : IDisposable
 
 
     [Fact]
-    public void Apply_when_options_is_null_throws_ArgumentNullException()
+    public void Apply_when_optionsNull_expected_throwsArgumentNullException()
     {
         Assert.Throws<ArgumentNullException>
         (
@@ -59,9 +44,9 @@ public sealed class SerilogConfiguratorTests : IDisposable
 
 
     [Fact]
-    public void Apply_when_file_sink_enabled_writes_log_to_file()
+    public void Apply_when_fileSinkEnabled_expected_logWrittenToFile()
     {
-        var path = Path.Combine(_tempDir, "enabled.log");
+        var path = Path.Combine(_temp.Path, "enabled.log");
         var options = NewOptions(consoleEnabled: false, filePath: path);
 
         var logger = new LoggerConfiguration().Apply(options).CreateLogger();
@@ -74,9 +59,9 @@ public sealed class SerilogConfiguratorTests : IDisposable
 
 
     [Fact]
-    public void Apply_when_file_sink_disabled_does_not_create_file()
+    public void Apply_when_fileSinkDisabled_expected_noFileCreated()
     {
-        var path = Path.Combine(_tempDir, "disabled.log");
+        var path = Path.Combine(_temp.Path, "disabled.log");
         var options = NewOptions(consoleEnabled: false, filePath: path);
         options.File.Enabled = false;
 
@@ -90,9 +75,9 @@ public sealed class SerilogConfiguratorTests : IDisposable
 
 
     [Fact]
-    public void Apply_when_minimum_level_set_filters_lower_level_events()
+    public void Apply_when_minimumLevelSet_expected_lowerLevelEventsFiltered()
     {
-        var path = Path.Combine(_tempDir, "filtered.log");
+        var path = Path.Combine(_temp.Path, "filtered.log");
         var options = NewOptions(consoleEnabled: false, filePath: path);
         options.MinimumLevel = LogEventLevel.Warning;
 
@@ -110,9 +95,9 @@ public sealed class SerilogConfiguratorTests : IDisposable
 
 
     [Fact]
-    public void Apply_when_overrides_specified_are_honored()
+    public void Apply_when_overridesSpecified_expected_honored()
     {
-        var path = Path.Combine(_tempDir, "overrides.log");
+        var path = Path.Combine(_temp.Path, "overrides.log");
         var options = NewOptions(consoleEnabled: false, filePath: path);
         options.MinimumLevel = LogEventLevel.Debug;
         options.Overrides["Wolfgang.LogCompressor.Tests.Unit.Framework.Noisy"] = LogEventLevel.Error;
@@ -133,9 +118,9 @@ public sealed class SerilogConfiguratorTests : IDisposable
 
 
     [Fact]
-    public void Apply_when_console_sink_enabled_writes_to_console()
+    public void Apply_when_consoleSinkEnabled_expected_writtenToConsole()
     {
-        var options = NewOptions(consoleEnabled: true, filePath: Path.Combine(_tempDir, "unused.log"));
+        var options = NewOptions(consoleEnabled: true, filePath: Path.Combine(_temp.Path, "unused.log"));
         options.File.Enabled = false;
         options.Console.MinimumLevel = LogEventLevel.Information;
 
@@ -165,22 +150,9 @@ public sealed class SerilogConfiguratorTests : IDisposable
 
 
     [Fact]
-    public void Dispose_when_tempDirAlreadyDeleted_expected_noThrow()
-    {
-        // Exercises the DirectoryNotFoundException catch in this fixture's own
-        // Dispose: deleting the directory here means xunit's dispose call after
-        // the test hits the already-gone path.
-        Directory.Delete(_tempDir, recursive: true);
-
-        Assert.False(Directory.Exists(_tempDir));
-    }
-
-
-
-    [Fact]
     public void Apply_when_event_logged_expected_applicationPropertyEnriched()
     {
-        var options = NewOptions(consoleEnabled: false, filePath: Path.Combine(_tempDir, "enrich.log"));
+        var options = NewOptions(consoleEnabled: false, filePath: Path.Combine(_temp.Path, "enrich.log"));
         var sink = new CapturingSink();
 
         var logger = new LoggerConfiguration()

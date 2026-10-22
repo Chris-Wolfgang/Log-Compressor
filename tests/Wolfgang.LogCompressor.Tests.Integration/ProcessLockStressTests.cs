@@ -169,6 +169,7 @@ public sealed class ProcessLockStressTests
     }
 
 
+
     [Fact]
     public void LockDirectoryFor_when_sourceIsDirectory_expected_directoryItself()
     {

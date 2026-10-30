@@ -76,7 +76,11 @@ internal class Program
                         .AddTransient<DecompressService>()
                         ;
                 })
-                .RunCommandLineApplicationAsync<Program>(sanitized.Args);
+                .RunCommandLineApplicationAsync<Program>
+                (
+                    sanitized.Args,
+                    PrecompileValueParsers
+                );
         }
         catch (Exception e)
         {
@@ -107,6 +111,34 @@ internal class Program
         return ExitCode.Success;
     }
 #pragma warning restore S2325
+
+
+
+    /// <summary>
+    /// Makes the value parsers McMaster needs for this app's option types exist in the Native AOT
+    /// binary.
+    /// </summary>
+    /// <remarks>
+    /// McMaster.Extensions.CommandLineUtils picks a parser for each option by calling
+    /// <c>ValueParserProvider.GetParser&lt;T&gt;</c> through <c>MethodInfo.MakeGenericMethod</c>.
+    /// Native AOT cannot create code at run time, so for a value type <c>T</c> that instantiation
+    /// only exists if something calls it statically; without it every command that has an
+    /// <see cref="int"/>? option fails at startup with "missing native code". Calling
+    /// <c>GetParser&lt;T&gt;</c> here makes the compiler emit that instantiation. Only the
+    /// value-typed options that take a value need one: today that is <see cref="int"/>?
+    /// (<c>--older-than</c>, <c>--delete-archives-older-than</c>); <see cref="bool"/> switches take
+    /// no value, and reference types (<see cref="string"/>, <see cref="string"/>[]) share one
+    /// instantiation. A new option of another value type (an enum, <see cref="long"/>,
+    /// <see cref="TimeSpan"/>) must be added here; scripts/smoke-published.ps1 fails until it is.
+    /// </remarks>
+    /// <param name="application">The root command line application.</param>
+    private static void PrecompileValueParsers
+    (
+        CommandLineApplication<Program> application
+    )
+    {
+        _ = application.ValueParsers.GetParser<int?>();
+    }
 
 
 

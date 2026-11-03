@@ -39,7 +39,7 @@ public class CompressionFuzzTests
         Gen.Select
         (
             Gen.String[Gen.Char.AlphaNumeric, 1, 20],
-            Gen.OneOfConst(".log", ".txt", ""),
+            Gen.OneOf(".log", ".txt", ""),
             (stem, ext) => stem + ext
         );
 
@@ -323,7 +323,7 @@ public class CompressionFuzzTests
     [Fact]
     public void VerifyAsync_when_archiveFromAnyStrategy_expected_accepted()
     {
-        Gen.Select(Content, Gen.OneOfConst("zip", "gz", "br", "zst", "lz4")).Sample(
+        Gen.Select(Content, Gen.OneOf("zip", "gz", "br", "zst", "lz4")).Sample(
             (content, format) =>
             {
                 ICompressionStrategy strategy = format switch
@@ -364,7 +364,7 @@ public class CompressionFuzzTests
         // instead of throwing, so "decompress without error" alone proves
         // nothing. Zip fails via its central directory, gzip via its
         // CRC/length trailer, brotli via the expected-size comparison.
-        Gen.Select(Gen.Byte.Array[1, 4096], Gen.OneOfConst("zip", "gz", "br"), Gen.Int[1, 64]).Sample(
+        Gen.Select(Gen.Byte.Array[1, 4096], Gen.OneOf("zip", "gz", "br"), Gen.Int[1, 64]).Sample(
             (content, format, cut) =>
             {
                 // Discarded: a pass is checked inside the helper; returning the

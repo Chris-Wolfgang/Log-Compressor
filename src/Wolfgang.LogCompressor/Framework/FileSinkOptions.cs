@@ -23,6 +23,23 @@ internal sealed class FileSinkOptions
 
 
     /// <summary>
+    /// Resolves <paramref name="path"/> for the file sink. A relative path is anchored to
+    /// <paramref name="baseDirectory"/> (the application directory, where <c>AppSettings.json</c>
+    /// lives) rather than the current working directory, which a scheduler chooses (Task Scheduler:
+    /// <c>C:\Windows\System32</c>; cron: <c>$HOME</c>) and which may even be the log directory being
+    /// compressed.
+    /// </summary>
+    /// <param name="path">The configured path.</param>
+    /// <param name="baseDirectory">The directory a relative path is resolved against.</param>
+    /// <returns>An absolute path.</returns>
+    internal static string ResolvePath(string path, string baseDirectory)
+    {
+        return System.IO.Path.GetFullPath(path, baseDirectory);
+    }
+
+
+
+    /// <summary>
     /// The minimum level written to the file. Defaults to <see cref="LogEventLevel.Debug"/>.
     /// </summary>
     public LogEventLevel MinimumLevel { get; set; } = LogEventLevel.Debug;

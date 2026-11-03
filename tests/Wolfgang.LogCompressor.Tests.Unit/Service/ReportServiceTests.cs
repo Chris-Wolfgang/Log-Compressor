@@ -1,4 +1,6 @@
 using System.Text.Json;
+using NSubstitute;
+using Wolfgang.LogCompressor.Abstraction;
 using Wolfgang.LogCompressor.Model;
 using Wolfgang.LogCompressor.Service;
 
@@ -7,24 +9,19 @@ namespace Wolfgang.LogCompressor.Tests.Unit.Service;
 public sealed class ReportServiceTests : IDisposable
 {
     private readonly ReportService _sut = new(new FileSystemWrapper(), TimeProvider.System);
-    private readonly string _tempDir;
+    private readonly TempDirectory _temp = new();
 
 
 
     public ReportServiceTests()
     {
-        _tempDir = Path.Combine(Path.GetTempPath(), "ReportServiceTests_" + Guid.NewGuid());
-        Directory.CreateDirectory(_tempDir);
     }
 
 
 
     public void Dispose()
     {
-        if (Directory.Exists(_tempDir))
-        {
-            Directory.Delete(_tempDir, recursive: true);
-        }
+        _temp.Dispose();
     }
 
 
@@ -32,7 +29,7 @@ public sealed class ReportServiceTests : IDisposable
     [Fact]
     public async Task WriteReportAsync_when_durationExceedsADay_expected_totalHoursNotClockFace()
     {
-        var outputPath = Path.Combine(_tempDir, "long-run.json");
+        var outputPath = Path.Combine(_temp.Path, "long-run.json");
         var results = new List<CompressionResult>
         {
             new() { SourcePath = "a.log", OutputPath = "a.zip", Success = true }
@@ -49,7 +46,7 @@ public sealed class ReportServiceTests : IDisposable
     [Fact]
     public async Task WriteReportAsync_when_pathStartsWithFormulaCharacter_expected_csvInjectionGuarded()
     {
-        var outputPath = Path.Combine(_tempDir, "guarded.csv");
+        var outputPath = Path.Combine(_temp.Path, "guarded.csv");
         var results = new List<CompressionResult>
         {
             new() { SourcePath = "=cmd|calc", OutputPath = "+sum.zip", Success = true },
@@ -83,7 +80,7 @@ public sealed class ReportServiceTests : IDisposable
     public async Task WriteReportAsync_when_jsonFormat_expected_validJsonFile()
     {
         var results = CreateSampleResults();
-        var outputPath = Path.Combine(_tempDir, "report.json");
+        var outputPath = Path.Combine(_temp.Path, "report.json");
 
         await _sut.WriteReportAsync(results, "json", outputPath, TimeSpan.FromSeconds(42));
 
@@ -105,7 +102,7 @@ public sealed class ReportServiceTests : IDisposable
     public async Task WriteReportAsync_when_csvFormat_expected_validCsvFile()
     {
         var results = CreateSampleResults();
-        var outputPath = Path.Combine(_tempDir, "report.csv");
+        var outputPath = Path.Combine(_temp.Path, "report.csv");
 
         await _sut.WriteReportAsync(results, "csv", outputPath, TimeSpan.FromSeconds(10));
 
@@ -113,7 +110,7 @@ public sealed class ReportServiceTests : IDisposable
 
         var lines = await File.ReadAllLinesAsync(outputPath);
 
-        Assert.True(lines.Length >= 3);
+        Assert.Equal(3, lines.Length);   // header + one row per result
         Assert.Equal
         (
             "SourcePath,OutputPath,OriginalSize,CompressedSize,Success,ErrorMessage",
@@ -129,7 +126,7 @@ public sealed class ReportServiceTests : IDisposable
     public async Task WriteReportAsync_when_invalidFormat_expected_throwsArgumentException()
     {
         var results = CreateSampleResults();
-        var outputPath = Path.Combine(_tempDir, "report.txt");
+        var outputPath = Path.Combine(_temp.Path, "report.txt");
 
         var ex = await Assert.ThrowsAsync<ArgumentException>
         (
@@ -145,7 +142,7 @@ public sealed class ReportServiceTests : IDisposable
     [Fact]
     public async Task WriteReportAsync_when_nullResults_expected_throwsArgumentNullException()
     {
-        var outputPath = Path.Combine(_tempDir, "report.json");
+        var outputPath = Path.Combine(_temp.Path, "report.json");
 
         await Assert.ThrowsAsync<ArgumentNullException>
         (
@@ -159,7 +156,7 @@ public sealed class ReportServiceTests : IDisposable
     public async Task WriteReportAsync_when_nullFormat_expected_throwsArgumentNullException()
     {
         var results = CreateSampleResults();
-        var outputPath = Path.Combine(_tempDir, "report.json");
+        var outputPath = Path.Combine(_temp.Path, "report.json");
 
         await Assert.ThrowsAsync<ArgumentNullException>
         (
@@ -186,7 +183,7 @@ public sealed class ReportServiceTests : IDisposable
     public async Task WriteReportAsync_when_directoryNotExists_expected_createsDirectory()
     {
         var results = CreateSampleResults();
-        var nestedDir = Path.Combine(_tempDir, "sub", "dir");
+        var nestedDir = Path.Combine(_temp.Path, "sub", "dir");
         var outputPath = Path.Combine(nestedDir, "report.json");
 
         await _sut.WriteReportAsync(results, "json", outputPath, TimeSpan.FromSeconds(1));
@@ -201,7 +198,7 @@ public sealed class ReportServiceTests : IDisposable
     public async Task WriteReportAsync_when_emptyResults_expected_validJsonWithZeroCounts()
     {
         IReadOnlyList<CompressionResult> results = [];
-        var outputPath = Path.Combine(_tempDir, "empty.json");
+        var outputPath = Path.Combine(_temp.Path, "empty.json");
 
         await _sut.WriteReportAsync(results, "json", outputPath, TimeSpan.Zero);
 
@@ -229,7 +226,7 @@ public sealed class ReportServiceTests : IDisposable
                 Success = true
             }
         };
-        var outputPath = Path.Combine(_tempDir, "escaped.csv");
+        var outputPath = Path.Combine(_temp.Path, "escaped.csv");
 
         await _sut.WriteReportAsync(results, "csv", outputPath, TimeSpan.Zero);
 
@@ -264,6 +261,8 @@ public sealed class ReportServiceTests : IDisposable
         ];
     }
 
+
+
     [Fact]
     public async Task WriteReportAsync_when_asymmetricOutcomes_expected_countsMatchSides()
     {
@@ -276,7 +275,7 @@ public sealed class ReportServiceTests : IDisposable
             new() { SourcePath = "b.log", OutputPath = "b.zip", Success = false, ErrorMessage = "boom" },
             new() { SourcePath = "c.log", OutputPath = "c.zip", Success = false, ErrorMessage = "bang" }
         ];
-        var outputPath = Path.Combine(_tempDir, "asymmetric.json");
+        var outputPath = Path.Combine(_temp.Path, "asymmetric.json");
 
         await _sut.WriteReportAsync(results, "json", outputPath, TimeSpan.Zero);
 
@@ -299,5 +298,22 @@ public sealed class ReportServiceTests : IDisposable
         );
 
         Assert.Equal("outputPath", ex.ParamName);
+    }
+
+
+
+    [Fact]
+    public async Task WriteReportAsync_when_pathHasNoDirectory_expected_noDirectoryCreated()
+    {
+        // A bare file name ("report.csv") is relative to the working directory:
+        // there is nothing to create (#303).
+        var fileSystem = Substitute.For<IFileSystem>();
+        fileSystem.CreateWrite(Arg.Any<string>()).Returns(_ => new MemoryStream());
+        var sut = new ReportService(fileSystem, TimeProvider.System);
+
+        await sut.WriteReportAsync(CreateSampleResults(), "csv", "report.csv", TimeSpan.FromSeconds(1));
+
+        fileSystem.DidNotReceive().CreateDirectory(Arg.Any<string>());
+        fileSystem.Received(1).CreateWrite("report.csv");
     }
 }

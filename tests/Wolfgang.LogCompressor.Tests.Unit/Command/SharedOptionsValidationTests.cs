@@ -85,7 +85,6 @@ public sealed class SharedOptionsValidationTests
 
 
 
-
     [Fact]
     public void ValidateOptions_when_olderThanAndMinDateTime_expected_false()
     {

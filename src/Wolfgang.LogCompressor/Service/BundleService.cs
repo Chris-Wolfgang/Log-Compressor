@@ -342,7 +342,8 @@ internal class BundleService
     /// <param name="outputPath">The <c>--output</c> directory, if any.</param>
     /// <returns>
     /// The output directory (<paramref name="outputPath"/>, else the file's directory, else the source
-    /// directory's parent) and the folder name (the file name without extension, else the directory name).
+    /// directory's parent; a root directory is its own output directory) and the folder name (the file
+    /// name without extension, else the directory name, or <c>archive</c> for a root directory).
     /// </returns>
     internal static (string OutputDirectory, string FolderName) ResolveTarget(string sourcePath, bool sourceIsFile, string? outputPath)
     {
@@ -353,8 +354,13 @@ internal class BundleService
         }
 
         var sourceDirectory = new DirectoryInfo(sourcePath);
-        var folderName = string.IsNullOrWhiteSpace(sourceDirectory.Name) ? "archive" : sourceDirectory.Name;
-        return (outputPath ?? sourceDirectory.Parent?.FullName ?? sourceDirectory.FullName, folderName);
+
+        // A root ("C:\", "/") has no parent to write into and its Name is the
+        // root itself ("C:\", "/"), which is not a usable archive name: write
+        // into the root, named "archive".
+        return sourceDirectory.Parent is null
+            ? (outputPath ?? sourceDirectory.FullName, "archive")
+            : (outputPath ?? sourceDirectory.Parent.FullName, sourceDirectory.Name);
     }
 
 

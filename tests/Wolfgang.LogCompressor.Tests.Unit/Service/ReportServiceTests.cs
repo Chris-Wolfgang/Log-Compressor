@@ -1,4 +1,6 @@
 using System.Text.Json;
+using NSubstitute;
+using Wolfgang.LogCompressor.Abstraction;
 using Wolfgang.LogCompressor.Model;
 using Wolfgang.LogCompressor.Service;
 
@@ -296,5 +298,22 @@ public sealed class ReportServiceTests : IDisposable
         );
 
         Assert.Equal("outputPath", ex.ParamName);
+    }
+
+
+
+    [Fact]
+    public async Task WriteReportAsync_when_pathHasNoDirectory_expected_noDirectoryCreated()
+    {
+        // A bare file name ("report.csv") is relative to the working directory:
+        // there is nothing to create (#303).
+        var fileSystem = Substitute.For<IFileSystem>();
+        fileSystem.CreateWrite(Arg.Any<string>()).Returns(_ => new MemoryStream());
+        var sut = new ReportService(fileSystem, TimeProvider.System);
+
+        await sut.WriteReportAsync(CreateSampleResults(), "csv", "report.csv", TimeSpan.FromSeconds(1));
+
+        fileSystem.DidNotReceive().CreateDirectory(Arg.Any<string>());
+        fileSystem.Received(1).CreateWrite("report.csv");
     }
 }

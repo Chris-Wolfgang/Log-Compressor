@@ -14,25 +14,20 @@ public sealed class ArchiveVerifierFailureReasonTests : IDisposable
 {
     private readonly ILogger<ArchiveVerifier> _logger = Substitute.For<ILogger<ArchiveVerifier>>();
     private readonly ArchiveVerifier _sut;
-    private readonly string _tempDir;
+    private readonly TempDirectory _temp = new();
 
 
 
     public ArchiveVerifierFailureReasonTests()
     {
         _sut = new ArchiveVerifier(_logger);
-        _tempDir = Path.Combine(Path.GetTempPath(), "ArchiveVerifierFailureReasonTests_" + Guid.NewGuid());
-        Directory.CreateDirectory(_tempDir);
     }
 
 
 
     public void Dispose()
     {
-        if (Directory.Exists(_tempDir))
-        {
-            Directory.Delete(_tempDir, recursive: true);
-        }
+        _temp.Dispose();
     }
 
 
@@ -42,7 +37,7 @@ public sealed class ArchiveVerifierFailureReasonTests : IDisposable
     {
         // A stored entry keeps its bytes verbatim, so one flipped byte leaves the central
         // directory readable and only the entry's CRC-32 check can reject the archive.
-        var archivePath = Path.Combine(_tempDir, "bad-entry.zip");
+        var archivePath = Path.Combine(_temp.Path, "bad-entry.zip");
         var content = "zip-entry-payload-0123456789"u8.ToArray();
         await using (var fileStream = File.Create(archivePath))
         {
@@ -81,7 +76,7 @@ public sealed class ArchiveVerifierFailureReasonTests : IDisposable
             0x03, 0x00,
             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
         ];
-        var archivePath = Path.Combine(_tempDir, "tiny.gz");
+        var archivePath = Path.Combine(_temp.Path, "tiny.gz");
         await File.WriteAllBytesAsync(archivePath, emptyGz[..16]);
 
         var result = await _sut.VerifyAsync(archivePath, "gz");
@@ -99,7 +94,7 @@ public sealed class ArchiveVerifierFailureReasonTests : IDisposable
         // GZipStream rejects a corrupted trailer itself, but silently returns partial data when the
         // file is cut short. Cutting the last 4 bytes drops the length field, so only the verifier's
         // own CRC-32/length comparison can reject the archive.
-        var archivePath = Path.Combine(_tempDir, "truncated.gz");
+        var archivePath = Path.Combine(_temp.Path, "truncated.gz");
         var content = "test content"u8.ToArray();
         await using (var fileStream = File.Create(archivePath))
         {
@@ -121,7 +116,7 @@ public sealed class ArchiveVerifierFailureReasonTests : IDisposable
     [Fact]
     public async Task VerifyAsync_when_gzDecompressesToUnexpectedSize_expected_logsBothLengths()
     {
-        var archivePath = Path.Combine(_tempDir, "test.gz");
+        var archivePath = Path.Combine(_temp.Path, "test.gz");
         var content = "test content"u8.ToArray();
         await using (var fileStream = File.Create(archivePath))
         {

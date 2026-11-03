@@ -64,7 +64,13 @@ internal class Bundle : SharedOptions
             var result = await bundleService.ExecuteAsync(options, cancellationToken).ConfigureAwait(false);
             var elapsed = Stopwatch.GetElapsedTime(started);
 
-            if (result.Success)
+            var nothingMatched = result.Success && result.OutputPath.Length == 0;
+
+            if (nothingMatched)
+            {
+                await console.Out.WriteLineAsync("No files matched; nothing bundled.");
+            }
+            else if (result.Success)
             {
                 await console.Out.WriteLineAsync($"Bundled files to {result.OutputPath}");
                 await console.Out.WriteLineAsync($"  Original: {result.OriginalSize:N0} bytes");
@@ -80,7 +86,8 @@ internal class Bundle : SharedOptions
                 var reportPath = options.ReportPath
                     ?? $"bundle-report.{options.ReportFormat.ToLowerInvariant()}";
 
-                await reportService.WriteReportAsync([result], options.ReportFormat, reportPath, elapsed)
+                // Like compress of an empty directory: a report with no rows.
+                await reportService.WriteReportAsync(nothingMatched ? [] : [result], options.ReportFormat, reportPath, elapsed)
                     .ConfigureAwait(false);
 
                 logger.LogInformation("Report written to {Path}", reportPath);
@@ -88,8 +95,11 @@ internal class Bundle : SharedOptions
 
             if (options.DeleteArchivesOlderThanDays.HasValue)
             {
-                var archiveDir = options.OutputPath ?? System.IO.Path.GetDirectoryName(options.SourcePath) ?? ".";
-                retentionService.DeleteOldArchives(archiveDir, options.DeleteArchivesOlderThanDays.Value);
+                // Scan the directory the bundle was written to (for a directory
+                // source that is its PARENT), and only archives named like this
+                // bundle's: other files there belong to someone else (#352).
+                var (archiveDir, folderName) = BundleService.ResolveTarget(options.SourcePath, File.Exists(options.SourcePath), options.OutputPath);
+                retentionService.DeleteOldArchives(archiveDir, options.DeleteArchivesOlderThanDays.Value, SearchOption.TopDirectoryOnly, options.NamePrefix ?? folderName);
             }
 
             logger.LogDebug("Completed {Command}", GetType().Name);

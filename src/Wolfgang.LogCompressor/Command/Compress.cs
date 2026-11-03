@@ -90,13 +90,17 @@ internal class Compress : SharedOptions
             {
                 // Retention must scan where archives are actually written: alongside
                 // each source (the source directory itself when SourcePath is a
-                // directory), or the source's directory when SourcePath is a file.
+                // directory, and its subdirectories under --recurse), or the
+                // source's directory when SourcePath is a file.
                 var archiveDir = options.OutputPath
                     ?? (Directory.Exists(options.SourcePath)
                         ? options.SourcePath
                         : System.IO.Path.GetDirectoryName(options.SourcePath))
                     ?? ".";
-                retentionService.DeleteOldArchives(archiveDir, options.DeleteArchivesOlderThanDays.Value);
+                var searchOption = options.Recurse && options.OutputPath is null
+                    ? SearchOption.AllDirectories
+                    : SearchOption.TopDirectoryOnly;
+                retentionService.DeleteOldArchives(archiveDir, options.DeleteArchivesOlderThanDays.Value, searchOption);
             }
 
             logger.LogDebug("Completed {Command}", GetType().Name);

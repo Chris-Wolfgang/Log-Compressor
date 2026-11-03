@@ -45,7 +45,8 @@ internal sealed class ZstdCompressionStrategy : ICompressionStrategy
     )
     {
         _ = entryName; // Not used by single-stream zstd format
-        await using var zstdStream = new CompressionStream(outputStream, _level, leaveOpen: true);
+        var zstdStream = new CompressionStream(outputStream, _level, leaveOpen: true);
+        await using var zstdStreamDisposal = zstdStream.ConfigureAwait(false);
         await inputStream.CopyToAsync(zstdStream, cancellationToken).ConfigureAwait(false);
     }
 
@@ -59,8 +60,10 @@ internal sealed class ZstdCompressionStrategy : ICompressionStrategy
         CancellationToken cancellationToken = default
     )
     {
-        await using var zstdStream = new CompressionStream(outputStream, _level, leaveOpen: true);
-        await using var tarWriter = new TarWriter(zstdStream, leaveOpen: true);
+        var zstdStream = new CompressionStream(outputStream, _level, leaveOpen: true);
+        await using var zstdStreamDisposal = zstdStream.ConfigureAwait(false);
+        var tarWriter = new TarWriter(zstdStream, leaveOpen: true);
+        await using var tarWriterDisposal = tarWriter.ConfigureAwait(false);
 
         await foreach (var (stream, entryName) in inputs.WithCancellation(cancellationToken).ConfigureAwait(false))
         {

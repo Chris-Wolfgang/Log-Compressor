@@ -19,10 +19,11 @@
     <RepositoryType>git</RepositoryType>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
     <AssemblyName>logc</AssemblyName>
+    <!-- Without a manifest of its own, the compiler embeds a default one written with the build
+         machine's newline (CRLF on Windows, LF on Linux), which made logc.dll differ by OS. This
+         file has the same content as that default, with LF endings. -->
+    <ApplicationManifest>app.manifest</ApplicationManifest>
     <PublishSingleFile>true</PublishSingleFile>
-    <!-- Bind IConfiguration via the source generator (reflection-free) so single-file
-         and trimmed publishes are clean. This replaces the suppressed SYSLIB1104. -->
-    <EnableConfigurationBindingGenerator>true</EnableConfigurationBindingGenerator>
     <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
   </PropertyGroup>
 
@@ -51,19 +52,17 @@
     <PackageReference Include="K4os.Compression.LZ4.Streams" Version="1.3.8" />
     <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="5.1.0" />
     <PackageReference Include="McMaster.Extensions.Hosting.CommandLine" Version="5.1.0" />
-    <PackageReference Include="Microsoft.Extensions.FileSystemGlobbing" Version="10.0.13" />
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.13" />
+    <PackageReference Include="Microsoft.Extensions.FileSystemGlobbing" Version="10.0.14" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.14" />
     <PackageReference Include="Serilog" Version="4.4.0" />
-    <PackageReference Include="Serilog.Exceptions" Version="8.4.0" />
     <PackageReference Include="Serilog.Extensions.Hosting" Version="10.0.0" />
     <PackageReference Include="Serilog.Extensions.Logging" Version="10.0.0" />
     <PackageReference Include="Serilog.Sinks.Console" Version="6.1.1" />
     <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
-    <PackageReference Include="System.Configuration.ConfigurationManager" Version="10.0.13" />
     <!-- CRC-32 for gzip trailer validation in ArchiveVerifier: GZipStream no
          longer fails on truncated input, so the verifier checks the stream's
          own trailer itself. -->
-    <PackageReference Include="System.IO.Hashing" Version="10.0.13" />
+    <PackageReference Include="System.IO.Hashing" Version="10.0.14" />
     <PackageReference Include="ZstdSharp.Port" Version="0.8.8" />
   </ItemGroup>
 

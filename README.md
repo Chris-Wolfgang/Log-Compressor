@@ -11,12 +11,12 @@ A cross-platform .NET CLI (`logc`) for compressing log files. Built for **unatte
 
 ## ✨ Features
 
-- **Two compression modes:**
+- **Commands:**
   - `logc compress <path>` — produces **one archive per source file** (each log gets its own `.zip` / `.gz` / `.br` / `.zst` / `.lz4`)
   - `logc bundle <path>` — produces **one archive containing many files** (good for end-of-month rollups)
   - `logc init` — generates **starter configuration files** (`compress.rsp` / `bundle.rsp`) for scheduled jobs
   - `logc decompress <path>` — **extracts** logc archives (all formats, singles and bundles); archives are deleted only after every entry extracted successfully
-- **Five formats:** ZIP (default), GZip (`.gz` / `.tar.gz`), Brotli (`.br` / `.tar.br`), Zstandard (`.zst` / `.tar.zst`), LZ4 (`.lz4` / `.tar.lz4`) — raw extension for single files, `.tar.*` for bundles
+- **Five formats:** ZIP (default), GZip (`.gz` / `.tar.gz`), Brotli (`.br` / `.tar.br`), Zstandard (`.zst` / `.tar.zst`), LZ4 (`.lz4` / `.tar.lz4`) — raw extension for single files; bundles are `.zip` for ZIP and `.tar.*` for the other formats
 - **Filtering:**
   - `-r|--recurse` — descend into subdirectories
   - `--older-than <days>` — only files modified N+ calendar days ago
@@ -45,6 +45,8 @@ Each release attaches one self-contained archive per platform. Download the one 
 Or browse every release on the [Releases page](https://github.com/Chris-Wolfgang/Log-Compressor/releases).
 
 Each archive contains the `logc` executable **and** its `AppSettings.json` — keep the two together in the same folder (`logc` reads `AppSettings.json` from beside itself at startup).
+
+`logc` writes its own log to `logs/log-<date>.txt` **next to the executable** (the `Logging:File:Path` setting in `AppSettings.json`; a relative path is resolved against the executable's folder, never the working directory a scheduler happens to start it in). If that folder is not writable for the account running the job, set an absolute `Path` there, or set `Logging:File:Enabled` to `false`.
 
 **Linux / macOS**
 
@@ -160,7 +162,7 @@ logc decompress /var/log/archives --keep-archives
 | Flag | Purpose | Default |
 |------|---------|---------|
 | `-r`, `--recurse` | Recurse subdirectories | `false` |
-| `-o`, `--output <dir>` | Output directory | source directory |
+| `-o`, `--output <dir>` | Output directory | `compress`: the source directory; `bundle`: the source's parent directory (the file's directory for a file source) |
 | `--timestamp <src>` | Timestamp in archive names: `modified` \| `compressed` | `modified` |
 | `--name <prefix>` | Custom base name for archives (collisions this run get `-2`, `-3`, ...) | source file/folder name |
 | `--older-than <days>` | Only files modified N+ days ago | (no filter) |
@@ -174,9 +176,18 @@ logc decompress /var/log/archives --keep-archives
 | `--no-verify` | Skip archive integrity verification before deleting originals | off (verify on) |
 | `--no-lock` | Skip the single-instance directory lock | off |
 | `--report <fmt>` / `--report-path` | Summary report (`json` \| `csv`) | none |
-| `--delete-archives-older-than <days>` | Delete archives older than N days after compressing | (no cleanup) |
+| `--delete-archives-older-than <days>` | After the run, delete logc-named archives older than N days (see [Retention](#retention)) | (no cleanup) |
 
 `--older-than` is mutually exclusive with `--min-datetime` / `--max-datetime`. DateTime values are parsed using the local culture.
+
+### Retention
+
+`--delete-archives-older-than <days>` deletes, after the run, archives whose last-modified date is more than N days before today. It only ever considers files **named the way logc names its archives**: `<name>-yyyy-MM-dd_HH-mm-ss[ to yyyy-MM-dd_HH-mm-ss][-N].<ext>` with `<ext>` one of `zip`, `gz`, `br`, `zst`, `lz4`, `tar.gz`, `tar.br`, `tar.zst`, `tar.lz4`. Any other file is left alone, whatever its extension, and so are `.partial` and `.failed` files.
+
+| Command | Directory scanned | Files considered |
+|---------|-------------------|------------------|
+| `compress` | `--output`, else the source directory (the file's directory for a file source); with `--recurse` and no `--output`, its subdirectories too | every logc-named archive there |
+| `bundle` | `--output`, else the directory the bundle is written to: the source's **parent** for a directory source, the file's directory for a file source | only archives whose name starts with this bundle's base name (`--name`, else the source folder/file name) followed by `-` |
 
 ### Exit codes
 
@@ -194,7 +205,7 @@ Under `--on-error fail`, the first item that still fails after any retries stops
 
 ### `init` — starter configuration files
 
-`logc init compress` / `logc init bundle` write a commented `.rsp` starter file (default `compress.rsp` / `bundle.rsp`, override with `-o|--output <path>`) that documents every flag — edit it, then run `logc compress @compress.rsp`.
+`logc init compress` / `logc init bundle` write a commented `.rsp` starter file (default `compress.rsp` / `bundle.rsp`, override with `-o|--output <path>`; an existing file is kept unless you pass `--force`) that documents every flag — edit it, then run `logc compress @compress.rsp`.
 
 ### Response files
 
@@ -283,13 +294,14 @@ Numbers are single-run wall-clock on one machine — treat relative differences 
 
 ## 🧩 Architecture
 
-Three layers, all `internal` and exposed to the test project via `InternalsVisibleTo`:
+Everything is `internal` and exposed to the test projects (unit, integration, fuzz) and the benchmarks via `InternalsVisibleTo`:
 
-| Layer | Examples |
+| Layer | Contents |
 |-------|----------|
-| **Command** | `SharedOptions`, `Compress`, `Bundle` (McMaster CommandLineUtils) |
-| **Service** | `CompressService`, `BundleService`, `FileFilterService`, `FileNamingService`, compression strategies |
-| **Abstraction** | `IFileSystem`, `ICompressionStrategy`, `IFileFilter`, `IFileNamer` |
+| **Command** | `Compress`, `Bundle`, `Decompress`, `Init` / `InitCompress` / `InitBundle`, the shared `SharedOptions` and `RunOptionValidation` (McMaster CommandLineUtils) |
+| **Service** | `CompressService`, `BundleService`, `DecompressService`, `ArchiveVerifier`, `RetentionService`, `ReportService`, `ProcessLock`, `FileFilterService`, `FileNamingService`, `FileSystemWrapper`, compression strategies |
+| **Abstraction** | `IFileSystem`, `ICompressionStrategy`, `IArchiveVerifier`, `IFileFilter`, `IFileNamer` |
+| **Framework** | Hosting and logging set-up: `SerilogConfigurator`, sink options, `ResponseFileSanitizer` |
 
 Compression strategies (`ZipCompressionStrategy`, `GZipCompressionStrategy`, `BrotliCompressionStrategy`, `ZstdCompressionStrategy`, `Lz4CompressionStrategy`) are dispatched via `CompressionStrategyFactory`. The non-ZIP formats use `System.Formats.Tar.TarWriter` to wrap many files into a single tar before compressing — `.tar.gz`, `.tar.br`, `.tar.zst`, and `.tar.lz4` respectively. Zstandard uses [ZstdSharp.Port](https://www.nuget.org/packages/ZstdSharp.Port/) and LZ4 uses [K4os.Compression.LZ4](https://www.nuget.org/packages/K4os.Compression.LZ4.Streams/) (both pure-managed, cross-platform).
 
@@ -325,8 +337,8 @@ The output lands in `bin/Release/net10.0/linux-x64/publish/` as `logc` alongside
 
 | Metric | Value |
 |--------|-------|
-| Unit tests (xunit 2.9.3, NSubstitute) | 183 |
-| Integration tests (real file system, all OSes) | 14 |
+| Tests | xunit 2.9.3: unit (NSubstitute), integration (real file system, all OSes) and property-based fuzz (CsCheck) projects |
+| Mutation testing | Stryker.NET; the score floor is in [`docs/stryker-baseline.json`](docs/stryker-baseline.json) |
 | Code coverage | 100% line, 95% branch; 95% per-module gate in CI |
 | Benchmarks | BenchmarkDotNet (compression-format throughput) |
 

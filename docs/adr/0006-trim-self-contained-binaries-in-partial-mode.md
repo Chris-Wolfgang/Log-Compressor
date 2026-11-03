@@ -30,7 +30,8 @@ in the csproj, conditional on `SelfContained`).
 - The JSON report is built from named records and serialized by a source-generated
   `JsonSerializerContext`. The unit tests run with reflection-based JSON switched off, so a
   regression fails an ordinary test.
-- `IL2104` (McMaster, Serilog.Exceptions, System.Configuration.ConfigurationManager) is listed
+- `IL2104` (McMaster; Serilog.Exceptions and System.Configuration.ConfigurationManager also
+  raised it until those two unused packages were removed in #355) is listed
   in `WarningsNotAsErrors`. **This departs from ADR-0005's "no IL2104 suppressions":** the
   warnings are not hidden and still appear in every publish. What replaces the build error as the
   safeguard is `scripts/smoke-published.ps1`, which runs the published executable (version and
@@ -51,7 +52,7 @@ in the csproj, conditional on `SelfContained`).
   reflection (a new serializer call, a new reflection-driven library) will fail it, which is the
   point; the fix is to give it a source-generated or otherwise trim-safe path.
 - Not verified when this was written: the Linux and macOS binaries (the first CI run of the smoke
-  test on those runners is their check), and whether Serilog.Exceptions logs the same exception
-  detail when the framework types it reflects over have been trimmed.
+  test on those runners is their check). (The open question about Serilog.Exceptions under
+  trimming is moot: the package was never used and was removed in #355.)
 - Revisit full trimming and AOT together with a move off McMaster (see ADR-0002), which is the
   only dependency that blocks either.

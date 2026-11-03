@@ -60,7 +60,6 @@ internal class Program
                 {
                     serviceCollection
                         .AddSingleton(TimeProvider.System)
-                        .AddSingleton<IReporter, ConsoleReporter>()
                         .AddSingleton<IFileSystem, FileSystemWrapper>()
                         .AddSingleton<IFileFilter, FileFilterService>()
                         .AddSingleton<IFileNamer, FileNamingService>()

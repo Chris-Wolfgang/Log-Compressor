@@ -617,4 +617,55 @@ public sealed class DecompressServiceTests : IDisposable
         Assert.All(results, r => Assert.True(r.Success));
         _fileSystem.DidNotReceive().OpenRead(txtPath);
     }
+
+
+    [Fact]
+    public async Task ExecuteAsync_when_tokenAlreadyCanceled_expected_canceledBeforeTheArchiveIsOpened()
+    {
+        var archive = SetupSingleArchive("a.gz", GzBytes("a"));
+        using var cancellation = new CancellationTokenSource();
+        await cancellation.CancelAsync();
+
+        await Assert.ThrowsAnyAsync<OperationCanceledException>
+        (
+            () => _sut.ExecuteAsync(new DecompressionOptions { SourcePath = archive }, cancellation.Token)
+        );
+
+        // The per-archive check must stop the run before the archive is read or an
+        // output file is created; the copy observing the token later is too late.
+        _fileSystem.DidNotReceive().OpenRead(Arg.Any<string>());
+        _fileSystem.DidNotReceive().CreateWrite(Arg.Any<string>());
+    }
+
+
+
+    [Theory]
+    [InlineData("bad.zst", true)]
+    [InlineData("bad.lz4", false)]
+    public async Task ExecuteAsync_when_zstdOrLz4StreamCorrupt_expected_archiveSkippedAndRunContinues(string badName, bool zstd)
+    {
+        // A decoder that throws its own exception type for corrupt input must
+        // not escape the per-archive handler: under the default --on-error skip
+        // the bad archive fails and the next one is still extracted (#354).
+        var dir = _tempDir.Path;
+        var valid = zstd
+            ? ZstdBytes(new string('x', 4096) + "tail")
+            : Lz4Bytes(new string('x', 4096) + "tail");
+        var corrupt = valid.ToArray();
+        for (var i = 4; i < corrupt.Length; i++)
+        {
+            corrupt[i] = (byte)(corrupt[i] ^ 0xA5);
+        }
+
+        var bad = SetupSingleArchive(badName, corrupt);
+        var good = SetupSingleArchive("good.gz", GzBytes("good"));
+        _fileSystem.FileExists(dir).Returns(returnThis: false);
+        _fileSystem.EnumerateFiles(dir, "*", SearchOption.TopDirectoryOnly).Returns([bad, good]);
+
+        var results = await _sut.ExecuteAsync(new DecompressionOptions { SourcePath = dir });
+
+        Assert.Equal(2, results.Count);
+        Assert.False(results[0].Success);
+        Assert.True(results[1].Success);
+    }
 }

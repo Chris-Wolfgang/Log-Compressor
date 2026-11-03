@@ -24,7 +24,7 @@ public sealed class CompressServiceTests : IDisposable
         var strategyFactory = Substitute.For<CompressionStrategyFactory>();
         strategyFactory.Create(Arg.Any<CompressionFormat>(), Arg.Any<System.IO.Compression.CompressionLevel>()).Returns(_strategy);
         _strategy.FileExtension.Returns("zip");
-        _archiveVerifier.VerifyAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<long?>()).Returns(Task.FromResult(true));
+        _archiveVerifier.VerifyAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<long?>(), Arg.Any<CancellationToken>()).Returns(Task.FromResult(true));
 
         _sut = new CompressService
         (
@@ -47,15 +47,7 @@ public sealed class CompressServiceTests : IDisposable
 
         _fileSystem.FileExists(tempFile).Returns(returnThis: true);
         _fileSystem.GetFileInfo(tempFile).Returns(fileInfo);
-        _fileFilter.Apply
-        (
-            Arg.Any<IEnumerable<FileInfo>>(),
-            Arg.Any<int?>(),
-            Arg.Any<DateTime?>(),
-            Arg.Any<DateTime?>(),
-            Arg.Any<IReadOnlyList<string>>(),
-            Arg.Any<IReadOnlyList<string>>()
-        ).Returns([fileInfo]);
+        StubFilterPassThrough([fileInfo]);
         _fileNamer.GetCompressedFileName(fileInfo, "zip").Returns("test-2026-01-01_00-00-00.zip");
         _fileSystem.OpenRead(tempFile).Returns(new MemoryStream("content"u8.ToArray()));
         _fileSystem.CreateWrite(Arg.Any<string>()).Returns(new MemoryStream());
@@ -82,15 +74,7 @@ public sealed class CompressServiceTests : IDisposable
         _fileSystem.EnumerateFiles(dir, "*", SearchOption.TopDirectoryOnly).Returns(files);
         _fileSystem.GetFileInfo(files[0]).Returns(fileInfos[0]);
         _fileSystem.GetFileInfo(files[1]).Returns(fileInfos[1]);
-        _fileFilter.Apply
-        (
-            Arg.Any<IEnumerable<FileInfo>>(),
-            Arg.Any<int?>(),
-            Arg.Any<DateTime?>(),
-            Arg.Any<DateTime?>(),
-            Arg.Any<IReadOnlyList<string>>(),
-            Arg.Any<IReadOnlyList<string>>()
-        ).Returns(fileInfos);
+        StubFilterPassThrough(fileInfos);
         _fileNamer.GetCompressedFileName(Arg.Any<FileInfo>(), "zip").Returns("out.zip");
         _fileSystem.OpenRead(Arg.Any<string>()).Returns(_ => new MemoryStream("content"u8.ToArray()));
         _fileSystem.CreateWrite(Arg.Any<string>()).Returns(_ => new MemoryStream());
@@ -115,15 +99,7 @@ public sealed class CompressServiceTests : IDisposable
         _fileSystem.DirectoryExists(dir).Returns(returnThis: true);
         _fileSystem.EnumerateFiles(dir, "*", SearchOption.AllDirectories).Returns([file]);
         _fileSystem.GetFileInfo(file).Returns(fileInfo);
-        _fileFilter.Apply
-        (
-            Arg.Any<IEnumerable<FileInfo>>(),
-            Arg.Any<int?>(),
-            Arg.Any<DateTime?>(),
-            Arg.Any<DateTime?>(),
-            Arg.Any<IReadOnlyList<string>>(),
-            Arg.Any<IReadOnlyList<string>>()
-        ).Returns([fileInfo]);
+        StubFilterPassThrough([fileInfo]);
         _fileNamer.GetCompressedFileName(Arg.Any<FileInfo>(), "zip").Returns("out.zip");
         _fileSystem.OpenRead(Arg.Any<string>()).Returns(new MemoryStream("content"u8.ToArray()));
         _fileSystem.CreateWrite(Arg.Any<string>()).Returns(new MemoryStream());
@@ -146,15 +122,7 @@ public sealed class CompressServiceTests : IDisposable
 
         _fileSystem.FileExists(tempFile).Returns(returnThis: true);
         _fileSystem.GetFileInfo(tempFile).Returns(fileInfo);
-        _fileFilter.Apply
-        (
-            Arg.Any<IEnumerable<FileInfo>>(),
-            Arg.Any<int?>(),
-            Arg.Any<DateTime?>(),
-            Arg.Any<DateTime?>(),
-            Arg.Any<IReadOnlyList<string>>(),
-            Arg.Any<IReadOnlyList<string>>()
-        ).Returns([fileInfo]);
+        StubFilterPassThrough([fileInfo]);
         _fileNamer.GetCompressedFileName(fileInfo, "zip").Returns("out.zip");
         _fileSystem.DirectoryExists(outputDir).Returns(returnThis: false);
         _fileSystem.OpenRead(tempFile).Returns(new MemoryStream("content"u8.ToArray()));
@@ -178,15 +146,7 @@ public sealed class CompressServiceTests : IDisposable
 
         _fileSystem.FileExists(tempFile).Returns(returnThis: true);
         _fileSystem.GetFileInfo(tempFile).Returns(fileInfo);
-        _fileFilter.Apply
-        (
-            Arg.Any<IEnumerable<FileInfo>>(),
-            Arg.Any<int?>(),
-            Arg.Any<DateTime?>(),
-            Arg.Any<DateTime?>(),
-            Arg.Any<IReadOnlyList<string>>(),
-            Arg.Any<IReadOnlyList<string>>()
-        ).Returns([fileInfo]);
+        StubFilterPassThrough([fileInfo]);
         _fileNamer.GetCompressedFileName(fileInfo, "zip").Returns("out.zip");
         _fileSystem.OpenRead(tempFile).Returns(new MemoryStream("content"u8.ToArray()));
         _fileSystem.CreateWrite(Arg.Any<string>()).Returns(_ => throw new IOException("disk full"));
@@ -210,15 +170,7 @@ public sealed class CompressServiceTests : IDisposable
         _fileSystem.FileExists(dir).Returns(returnThis: false);
         _fileSystem.DirectoryExists(dir).Returns(returnThis: true);
         _fileSystem.EnumerateFiles(dir, "*", SearchOption.TopDirectoryOnly).Returns([]);
-        _fileFilter.Apply
-        (
-            Arg.Any<IEnumerable<FileInfo>>(),
-            Arg.Any<int?>(),
-            Arg.Any<DateTime?>(),
-            Arg.Any<DateTime?>(),
-            Arg.Any<IReadOnlyList<string>>(),
-            Arg.Any<IReadOnlyList<string>>()
-        ).Returns([]);
+        StubFilterPassThrough([]);
 
         var options = new CompressionOptions { SourcePath = dir };
         var results = await _sut.ExecuteAsync(options);
@@ -260,15 +212,7 @@ public sealed class CompressServiceTests : IDisposable
 
         _fileSystem.FileExists(tempFile).Returns(returnThis: true);
         _fileSystem.GetFileInfo(tempFile).Returns(fileInfo);
-        _fileFilter.Apply
-        (
-            Arg.Any<IEnumerable<FileInfo>>(),
-            Arg.Any<int?>(),
-            Arg.Any<DateTime?>(),
-            Arg.Any<DateTime?>(),
-            Arg.Any<IReadOnlyList<string>>(),
-            Arg.Any<IReadOnlyList<string>>()
-        ).Returns([fileInfo]);
+        StubFilterPassThrough([fileInfo]);
         _fileNamer.GetCompressedFileName(fileInfo, "zip").Returns("out.zip");
         _fileSystem.OpenRead(tempFile).Returns(_ => new MemoryStream("content"u8.ToArray()));
         _fileSystem.CreateWrite(Arg.Any<string>()).Returns(_ => new MemoryStream());
@@ -293,19 +237,11 @@ public sealed class CompressServiceTests : IDisposable
 
         _fileSystem.FileExists(tempFile).Returns(returnThis: true);
         _fileSystem.GetFileInfo(tempFile).Returns(fileInfo);
-        _fileFilter.Apply
-        (
-            Arg.Any<IEnumerable<FileInfo>>(),
-            Arg.Any<int?>(),
-            Arg.Any<DateTime?>(),
-            Arg.Any<DateTime?>(),
-            Arg.Any<IReadOnlyList<string>>(),
-            Arg.Any<IReadOnlyList<string>>()
-        ).Returns([fileInfo]);
+        StubFilterPassThrough([fileInfo]);
         _fileNamer.GetCompressedFileName(fileInfo, "zip").Returns("out.zip");
         _fileSystem.OpenRead(tempFile).Returns(new MemoryStream("content"u8.ToArray()));
         _fileSystem.CreateWrite(Arg.Any<string>()).Returns(new MemoryStream());
-        _archiveVerifier.VerifyAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<long?>()).Returns(Task.FromResult(false));
+        _archiveVerifier.VerifyAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<long?>(), Arg.Any<CancellationToken>()).Returns(Task.FromResult(false));
 
         var options = new CompressionOptions { SourcePath = tempFile, Verify = true };
         var results = await _sut.ExecuteAsync(options);
@@ -332,15 +268,7 @@ public sealed class CompressServiceTests : IDisposable
         _fileSystem.DirectoryExists(dir).Returns(returnThis: true);
         _fileSystem.EnumerateFiles(dir, "*", SearchOption.TopDirectoryOnly).Returns([file, lockPath]);
         _fileSystem.GetFileInfo(file).Returns(fileInfo);
-        _fileFilter.Apply
-        (
-            Arg.Any<IEnumerable<FileInfo>>(),
-            Arg.Any<int?>(),
-            Arg.Any<DateTime?>(),
-            Arg.Any<DateTime?>(),
-            Arg.Any<IReadOnlyList<string>>(),
-            Arg.Any<IReadOnlyList<string>>()
-        ).Returns([fileInfo]);
+        StubFilterPassThrough([fileInfo]);
         _fileNamer.GetCompressedFileName(Arg.Any<FileInfo>(), "zip").Returns("out.zip");
         _fileSystem.OpenRead(Arg.Any<string>()).Returns(_ => new MemoryStream("content"u8.ToArray()));
         _fileSystem.CreateWrite(Arg.Any<string>()).Returns(_ => new MemoryStream());
@@ -362,15 +290,7 @@ public sealed class CompressServiceTests : IDisposable
 
         _fileSystem.FileExists(tempFile).Returns(returnThis: true);
         _fileSystem.GetFileInfo(tempFile).Returns(fileInfo);
-        _fileFilter.Apply
-        (
-            Arg.Any<IEnumerable<FileInfo>>(),
-            Arg.Any<int?>(),
-            Arg.Any<DateTime?>(),
-            Arg.Any<DateTime?>(),
-            Arg.Any<IReadOnlyList<string>>(),
-            Arg.Any<IReadOnlyList<string>>()
-        ).Returns([fileInfo]);
+        StubFilterPassThrough([fileInfo]);
         _fileNamer.GetCompressedFileName(fileInfo, "zip").Returns("out.zip");
         _fileSystem.OpenRead(tempFile).Returns(new MemoryStream("content"u8.ToArray()));
         _fileSystem.CreateWrite(Arg.Any<string>()).Returns(new MemoryStream());
@@ -379,7 +299,7 @@ public sealed class CompressServiceTests : IDisposable
         var results = await _sut.ExecuteAsync(options);
 
         Assert.True(Assert.Single(results).Success);
-        await _archiveVerifier.DidNotReceive().VerifyAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<long?>());
+        await _archiveVerifier.DidNotReceive().VerifyAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<long?>(), Arg.Any<CancellationToken>());
         _fileSystem.Received(1).DeleteFile(tempFile);
     }
 
@@ -393,15 +313,7 @@ public sealed class CompressServiceTests : IDisposable
         _fileSystem.FileExists(dir).Returns(returnThis: false);
         _fileSystem.DirectoryExists(dir).Returns(returnThis: true);
         _fileSystem.EnumerateFiles(dir, "*", Arg.Any<SearchOption>()).Returns([]);
-        _fileFilter.Apply
-        (
-            Arg.Any<IEnumerable<FileInfo>>(),
-            Arg.Any<int?>(),
-            Arg.Any<DateTime?>(),
-            Arg.Any<DateTime?>(),
-            Arg.Any<IReadOnlyList<string>>(),
-            Arg.Any<IReadOnlyList<string>>()
-        ).Returns([]);
+        StubFilterPassThrough([]);
 
         await _sut.ExecuteAsync(new CompressionOptions { SourcePath = dir, Recurse = false });
 
@@ -426,15 +338,7 @@ public sealed class CompressServiceTests : IDisposable
         _fileSystem.EnumerateFiles(dir, "*", SearchOption.TopDirectoryOnly).Returns(files);
         _fileSystem.GetFileInfo(files[0]).Returns(fileInfos[0]);
         _fileSystem.GetFileInfo(files[1]).Returns(fileInfos[1]);
-        _fileFilter.Apply
-        (
-            Arg.Any<IEnumerable<FileInfo>>(),
-            Arg.Any<int?>(),
-            Arg.Any<DateTime?>(),
-            Arg.Any<DateTime?>(),
-            Arg.Any<IReadOnlyList<string>>(),
-            Arg.Any<IReadOnlyList<string>>()
-        ).Returns(fileInfos);
+        StubFilterPassThrough(fileInfos);
         _fileNamer.GetCompressedFileName(Arg.Any<FileInfo>(), "zip", Arg.Any<TimestampSource>(), Arg.Any<string?>())
             .Returns("weblogs-2026-01-01_12-00-00.zip");
         _fileSystem.OpenRead(Arg.Any<string>()).Returns(_ => new MemoryStream("content"u8.ToArray()));
@@ -463,15 +367,7 @@ public sealed class CompressServiceTests : IDisposable
         _fileSystem.EnumerateFiles(dir, "*", SearchOption.TopDirectoryOnly).Returns(files);
         _fileSystem.GetFileInfo(files[0]).Returns(fileInfos[0]);
         _fileSystem.GetFileInfo(files[1]).Returns(fileInfos[1]);
-        _fileFilter.Apply
-        (
-            Arg.Any<IEnumerable<FileInfo>>(),
-            Arg.Any<int?>(),
-            Arg.Any<DateTime?>(),
-            Arg.Any<DateTime?>(),
-            Arg.Any<IReadOnlyList<string>>(),
-            Arg.Any<IReadOnlyList<string>>()
-        ).Returns(fileInfos);
+        StubFilterPassThrough(fileInfos);
         _fileNamer.GetCompressedFileName(Arg.Any<FileInfo>(), "zip", Arg.Any<TimestampSource>(), Arg.Any<string?>())
             .Returns("my.app-2026-01-01_12-00-00.zip");
         _fileSystem.OpenRead(Arg.Any<string>()).Returns(_ => new MemoryStream("content"u8.ToArray()));
@@ -507,15 +403,7 @@ public sealed class CompressServiceTests : IDisposable
         _fileSystem.EnumerateFiles(dir, "*", SearchOption.AllDirectories).Returns([fileA, fileB]);
         _fileSystem.GetFileInfo(fileA).Returns(fileInfos[0]);
         _fileSystem.GetFileInfo(fileB).Returns(fileInfos[1]);
-        _fileFilter.Apply
-        (
-            Arg.Any<IEnumerable<FileInfo>>(),
-            Arg.Any<int?>(),
-            Arg.Any<DateTime?>(),
-            Arg.Any<DateTime?>(),
-            Arg.Any<IReadOnlyList<string>>(),
-            Arg.Any<IReadOnlyList<string>>()
-        ).Returns(fileInfos);
+        StubFilterPassThrough(fileInfos);
         _fileNamer.GetCompressedFileName(Arg.Any<FileInfo>(), "zip", Arg.Any<TimestampSource>(), Arg.Any<string?>())
             .Returns("app-2026-01-01_12-00-00.zip");
         _fileSystem.OpenRead(Arg.Any<string>()).Returns(_ => new MemoryStream("content"u8.ToArray()));
@@ -543,19 +431,11 @@ public sealed class CompressServiceTests : IDisposable
         _fileSystem.EnumerateFiles(dir, "*", SearchOption.TopDirectoryOnly).Returns(files);
         _fileSystem.GetFileInfo(files[0]).Returns(fileInfos[0]);
         _fileSystem.GetFileInfo(files[1]).Returns(fileInfos[1]);
-        _fileFilter.Apply
-        (
-            Arg.Any<IEnumerable<FileInfo>>(),
-            Arg.Any<int?>(),
-            Arg.Any<DateTime?>(),
-            Arg.Any<DateTime?>(),
-            Arg.Any<IReadOnlyList<string>>(),
-            Arg.Any<IReadOnlyList<string>>()
-        ).Returns(fileInfos);
+        StubFilterPassThrough(fileInfos);
         _fileNamer.GetCompressedFileName(Arg.Any<FileInfo>(), "zip", Arg.Any<TimestampSource>(), Arg.Any<string?>()).Returns("out.zip");
         _fileSystem.OpenRead(Arg.Any<string>()).Returns(_ => new MemoryStream("content"u8.ToArray()));
         _fileSystem.CreateWrite(Arg.Any<string>()).Returns(_ => new MemoryStream());
-        _archiveVerifier.VerifyAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<long?>()).Returns(Task.FromResult(false));
+        _archiveVerifier.VerifyAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<long?>(), Arg.Any<CancellationToken>()).Returns(Task.FromResult(false));
 
         var options = new CompressionOptions
         {
@@ -580,20 +460,12 @@ public sealed class CompressServiceTests : IDisposable
 
         _fileSystem.FileExists(tempFile).Returns(returnThis: true);
         _fileSystem.GetFileInfo(tempFile).Returns(fileInfo);
-        _fileFilter.Apply
-        (
-            Arg.Any<IEnumerable<FileInfo>>(),
-            Arg.Any<int?>(),
-            Arg.Any<DateTime?>(),
-            Arg.Any<DateTime?>(),
-            Arg.Any<IReadOnlyList<string>>(),
-            Arg.Any<IReadOnlyList<string>>()
-        ).Returns([fileInfo]);
+        StubFilterPassThrough([fileInfo]);
         _fileNamer.GetCompressedFileName(Arg.Any<FileInfo>(), "zip", Arg.Any<TimestampSource>(), Arg.Any<string?>()).Returns("out.zip");
         _fileSystem.OpenRead(tempFile).Returns(_ => new MemoryStream("content"u8.ToArray()));
         _fileSystem.CreateWrite(Arg.Any<string>()).Returns(_ => new MemoryStream());
         // Fails verification once, passes on the retry.
-        _archiveVerifier.VerifyAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<long?>())
+        _archiveVerifier.VerifyAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<long?>(), Arg.Any<CancellationToken>())
             .Returns(Task.FromResult(false), Task.FromResult(true));
 
         var options = new CompressionOptions
@@ -606,49 +478,41 @@ public sealed class CompressServiceTests : IDisposable
 
         var result = Assert.Single(results);
         Assert.True(result.Success);
-        await _archiveVerifier.Received(2).VerifyAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<long?>());
+        await _archiveVerifier.Received(2).VerifyAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<long?>(), Arg.Any<CancellationToken>());
         // Every attempt reuses the SAME reserved output path — a retry must
         // not be diverted to a "-2" name by its own first attempt.
         Assert.EndsWith("out.zip", result.OutputPath, StringComparison.Ordinal);
         Assert.DoesNotContain("-2", Path.GetFileName(result.OutputPath), StringComparison.Ordinal);
-        _fileSystem.Received(2).CreateWrite(result.OutputPath);
+        _fileSystem.Received(2).CreateWrite(result.OutputPath + ".partial");
     }
 
 
 
     [Fact]
-    public async Task ExecuteAsync_when_retry_withLeftoverPartialOutput_expected_partialDeletedBeforeRetry()
+    public async Task ExecuteAsync_when_retry_withArchiveLeftAtOutputPath_expected_archiveDeletedBeforeRetry()
     {
         var tempFile = CreateTempFile();
         var fileInfo = new FileInfo(tempFile);
 
         _fileSystem.FileExists(tempFile).Returns(returnThis: true);
         _fileSystem.GetFileInfo(tempFile).Returns(fileInfo);
-        _fileFilter.Apply
-        (
-            Arg.Any<IEnumerable<FileInfo>>(),
-            Arg.Any<int?>(),
-            Arg.Any<DateTime?>(),
-            Arg.Any<DateTime?>(),
-            Arg.Any<IReadOnlyList<string>>(),
-            Arg.Any<IReadOnlyList<string>>()
-        ).Returns([fileInfo]);
+        StubFilterPassThrough([fileInfo]);
         _fileNamer.GetCompressedFileName(Arg.Any<FileInfo>(), "zip", Arg.Any<TimestampSource>(), Arg.Any<string?>()).Returns("out.zip");
         _fileSystem.OpenRead(tempFile).Returns(_ => new MemoryStream("content"u8.ToArray()));
         _fileSystem.CreateWrite(Arg.Any<string>()).Returns(_ => new MemoryStream());
-        _archiveVerifier.VerifyAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<long?>())
-            .Returns(Task.FromResult(false), Task.FromResult(true));
-        // The output path is free before attempt 1 but occupied (by attempt
-        // 1's unverified archive) when the retry inspects it.
+        // The output path is free before attempt 1. Attempt 1 moves its
+        // verified archive there but then cannot delete the source, so the
+        // path is occupied (by attempt 1's archive) when the retry inspects it.
         var expectedOutput = Path.Combine(fileInfo.DirectoryName!, "out.zip");
         _fileSystem.FileExists(expectedOutput).Returns(returnThis: false);
-        var firstAttemptDone = false;
-        _fileSystem.When(f => f.CreateWrite(expectedOutput)).Do(_ =>
+        _fileSystem.When(f => f.MoveFile(expectedOutput + ".partial", expectedOutput, false)).Do(_ =>
+            _fileSystem.FileExists(expectedOutput).Returns(returnThis: true));
+        var sourceDeletes = 0;
+        _fileSystem.When(f => f.DeleteFile(tempFile)).Do(_ =>
         {
-            if (!firstAttemptDone)
+            if (sourceDeletes++ == 0)
             {
-                firstAttemptDone = true;
-                _fileSystem.FileExists(expectedOutput).Returns(returnThis: true);
+                throw new IOException("source locked");
             }
         });
 
@@ -661,9 +525,10 @@ public sealed class CompressServiceTests : IDisposable
         var results = await _sut.ExecuteAsync(options);
 
         Assert.True(Assert.Single(results).Success);
-        // The failed attempt's leftover was cleared before the retry wrote to
+        // The failed attempt's archive was cleared before the retry wrote to
         // the same path (source deletion is a separate DeleteFile call).
         _fileSystem.Received(1).DeleteFile(expectedOutput);
+        _fileSystem.Received(2).DeleteFile(tempFile);
     }
 
 
@@ -676,19 +541,11 @@ public sealed class CompressServiceTests : IDisposable
 
         _fileSystem.FileExists(tempFile).Returns(returnThis: true);
         _fileSystem.GetFileInfo(tempFile).Returns(fileInfo);
-        _fileFilter.Apply
-        (
-            Arg.Any<IEnumerable<FileInfo>>(),
-            Arg.Any<int?>(),
-            Arg.Any<DateTime?>(),
-            Arg.Any<DateTime?>(),
-            Arg.Any<IReadOnlyList<string>>(),
-            Arg.Any<IReadOnlyList<string>>()
-        ).Returns([fileInfo]);
+        StubFilterPassThrough([fileInfo]);
         _fileNamer.GetCompressedFileName(Arg.Any<FileInfo>(), "zip", Arg.Any<TimestampSource>(), Arg.Any<string?>()).Returns("out.zip");
         _fileSystem.OpenRead(tempFile).Returns(_ => new MemoryStream("content"u8.ToArray()));
         _fileSystem.CreateWrite(Arg.Any<string>()).Returns(_ => new MemoryStream());
-        _archiveVerifier.VerifyAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<long?>()).Returns(Task.FromResult(false));
+        _archiveVerifier.VerifyAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<long?>(), Arg.Any<CancellationToken>()).Returns(Task.FromResult(false));
 
         var options = new CompressionOptions
         {
@@ -718,15 +575,7 @@ public sealed class CompressServiceTests : IDisposable
         _fileSystem.EnumerateFiles(dir, "*", SearchOption.TopDirectoryOnly).Returns(files);
         _fileSystem.GetFileInfo(files[0]).Returns(fileInfos[0]);
         _fileSystem.GetFileInfo(files[1]).Returns(fileInfos[1]);
-        _fileFilter.Apply
-        (
-            Arg.Any<IEnumerable<FileInfo>>(),
-            Arg.Any<int?>(),
-            Arg.Any<DateTime?>(),
-            Arg.Any<DateTime?>(),
-            Arg.Any<IReadOnlyList<string>>(),
-            Arg.Any<IReadOnlyList<string>>()
-        ).Returns(fileInfos);
+        StubFilterPassThrough(fileInfos);
         // A name whose ONLY dot is the leading one has no extension to
         // preserve — the counter belongs at the end, not before ".hidden".
         _fileNamer.GetCompressedFileName(Arg.Any<FileInfo>(), "zip", Arg.Any<TimestampSource>(), Arg.Any<string?>()).Returns(".hidden");
@@ -769,20 +618,12 @@ public sealed class CompressServiceTests : IDisposable
         _fileSystem.EnumerateFiles(dir, "*", SearchOption.TopDirectoryOnly).Returns(files);
         _fileSystem.GetFileInfo(files[0]).Returns(fileInfos[0]);
         _fileSystem.GetFileInfo(files[1]).Returns(fileInfos[1]);
-        _fileFilter.Apply
-        (
-            Arg.Any<IEnumerable<FileInfo>>(),
-            Arg.Any<int?>(),
-            Arg.Any<DateTime?>(),
-            Arg.Any<DateTime?>(),
-            Arg.Any<IReadOnlyList<string>>(),
-            Arg.Any<IReadOnlyList<string>>()
-        ).Returns(fileInfos);
+        StubFilterPassThrough(fileInfos);
         _fileNamer.GetCompressedFileName(Arg.Any<FileInfo>(), "zip", Arg.Any<TimestampSource>(), Arg.Any<string?>()).Returns("out.zip");
         _fileSystem.OpenRead(Arg.Any<string>()).Returns(_ => new MemoryStream("content"u8.ToArray()));
         _fileSystem.CreateWrite(Arg.Any<string>()).Returns(_ => new MemoryStream());
         // First file fails verification, second passes.
-        _archiveVerifier.VerifyAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<long?>())
+        _archiveVerifier.VerifyAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<long?>(), Arg.Any<CancellationToken>())
             .Returns(Task.FromResult(false), Task.FromResult(true));
 
         var options = new CompressionOptions { SourcePath = dir, Verify = true };
@@ -809,15 +650,7 @@ public sealed class CompressServiceTests : IDisposable
         _fileSystem.GetFileInfo(files[0]).Returns(fileInfos[0]);
         _fileSystem.GetFileInfo(files[1]).Returns(fileInfos[1]);
         _fileSystem.GetFileInfo(files[2]).Returns(fileInfos[2]);
-        _fileFilter.Apply
-        (
-            Arg.Any<IEnumerable<FileInfo>>(),
-            Arg.Any<int?>(),
-            Arg.Any<DateTime?>(),
-            Arg.Any<DateTime?>(),
-            Arg.Any<IReadOnlyList<string>>(),
-            Arg.Any<IReadOnlyList<string>>()
-        ).Returns(fileInfos);
+        StubFilterPassThrough(fileInfos);
         _fileNamer.GetCompressedFileName(Arg.Any<FileInfo>(), "zip", Arg.Any<TimestampSource>(), Arg.Any<string?>()).Returns("logs.zip");
         _fileSystem.OpenRead(Arg.Any<string>()).Returns(_ => new MemoryStream("content"u8.ToArray()));
         _fileSystem.CreateWrite(Arg.Any<string>()).Returns(_ => new MemoryStream());
@@ -836,6 +669,23 @@ public sealed class CompressServiceTests : IDisposable
     private string CreateTempFile()
     {
         return _tempDir.WriteFile(Guid.NewGuid() + ".log", "test content");
+    }
+
+
+
+    private void StubFilterPassThrough(IReadOnlyList<FileInfo> files)
+    {
+        // Any filter arguments: these tests are about what the service does with
+        // the files the filter returns, not about the filter itself.
+        _fileFilter.Apply
+        (
+            Arg.Any<IEnumerable<FileInfo>>(),
+            Arg.Any<int?>(),
+            Arg.Any<DateTime?>(),
+            Arg.Any<DateTime?>(),
+            Arg.Any<IReadOnlyList<string>>(),
+            Arg.Any<IReadOnlyList<string>>()
+        ).Returns(files);
     }
 
 

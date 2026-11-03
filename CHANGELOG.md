@@ -110,7 +110,9 @@ First release of `logc`, a cross-platform .NET CLI for compressing log files.
 - Structured logging via Serilog (console + file sinks).
 - Self-contained, per-platform release archives for `win-x64`, `linux-x64`, and `osx-x64` (each bundles the single-file `logc` executable plus its `AppSettings.json`); no .NET runtime required on the target. Distributed via GitHub Releases, not NuGet.
 
-[Unreleased]: https://github.com/Chris-Wolfgang/Log-Compressor/compare/v0.4.1...HEAD
+[Unreleased]: https://github.com/Chris-Wolfgang/Log-Compressor/compare/v0.4.3...HEAD
+[0.4.3]: https://github.com/Chris-Wolfgang/Log-Compressor/compare/v0.4.2...v0.4.3
+[0.4.2]: https://github.com/Chris-Wolfgang/Log-Compressor/compare/v0.4.1...v0.4.2
 [0.4.1]: https://github.com/Chris-Wolfgang/Log-Compressor/compare/v0.4.0...v0.4.1
 [0.4.0]: https://github.com/Chris-Wolfgang/Log-Compressor/compare/v0.3.2...v0.4.0
 [0.3.2]: https://github.com/Chris-Wolfgang/Log-Compressor/compare/v0.3.1...v0.3.2

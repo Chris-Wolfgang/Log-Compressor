@@ -80,27 +80,63 @@ internal sealed class ReportService
 
     private string GenerateJson(IReadOnlyList<CompressionResult> results, TimeSpan duration)
     {
-        var report = new ReportDocument
-        (
-            Timestamp: _timeProvider.GetLocalNow(),
+        // Written with Utf8JsonWriter rather than a serializer: no reflection (trim-safe) and no
+        // source generator either. The .NET generators emit their code with the build machine's
+        // newline, which made logc.dll differ between Windows and Linux builds.
+        using var stream = new MemoryStream();
+        using (var writer = new Utf8JsonWriter(stream, new JsonWriterOptions { Indented = true }))
+        {
+            writer.WriteStartObject();
+            writer.WriteString("timestamp", _timeProvider.GetLocalNow());
             // Total hours, not a 24h-wrapping clock face — a >24h run must
             // not silently drop its days.
-            Duration: string.Create(CultureInfo.InvariantCulture, $"{(int)duration.TotalHours:D2}:{duration.Minutes:D2}:{duration.Seconds:D2}"),
-            TotalFiles: results.Count,
-            SucceededFiles: results.Count(r => r.Success),
-            FailedFiles: results.Count(r => !r.Success),
-            OriginalSizeBytes: results.Sum(r => r.OriginalSize),
-            CompressedSizeBytes: results.Where(r => r.Success).Sum(r => r.CompressedSize),
-            Files: results
-                .Select(r => new ReportFileEntry(r.SourcePath, r.OutputPath, r.OriginalSize, r.CompressedSize, r.Success, r.ErrorMessage))
-                .ToList(),
-            Errors: results
-                .Where(r => !r.Success)
-                .Select(r => new ReportErrorEntry(r.SourcePath, r.ErrorMessage))
-                .ToList()
-        );
+            writer.WriteString("duration", string.Create(CultureInfo.InvariantCulture, $"{(int)duration.TotalHours:D2}:{duration.Minutes:D2}:{duration.Seconds:D2}"));
+            writer.WriteNumber("totalFiles", results.Count);
+            writer.WriteNumber("succeededFiles", results.Count(r => r.Success));
+            writer.WriteNumber("failedFiles", results.Count(r => !r.Success));
+            writer.WriteNumber("originalSizeBytes", results.Sum(r => r.OriginalSize));
+            writer.WriteNumber("compressedSizeBytes", results.Where(r => r.Success).Sum(r => r.CompressedSize));
 
-        return JsonSerializer.Serialize(report, ReportJsonContext.Default.ReportDocument);
+            writer.WriteStartArray("files");
+            foreach (var result in results)
+            {
+                writer.WriteStartObject();
+                writer.WriteString("sourcePath", result.SourcePath);
+                writer.WriteString("outputPath", result.OutputPath);
+                writer.WriteNumber("originalSize", result.OriginalSize);
+                writer.WriteNumber("compressedSize", result.CompressedSize);
+                writer.WriteBoolean("success", result.Success);
+                WriteErrorMessage(writer, result);
+                writer.WriteEndObject();
+            }
+
+            writer.WriteEndArray();
+
+            writer.WriteStartArray("errors");
+            foreach (var result in results.Where(r => !r.Success))
+            {
+                writer.WriteStartObject();
+                writer.WriteString("sourcePath", result.SourcePath);
+                WriteErrorMessage(writer, result);
+                writer.WriteEndObject();
+            }
+
+            writer.WriteEndArray();
+            writer.WriteEndObject();
+        }
+
+        return Encoding.UTF8.GetString(stream.GetBuffer(), 0, (int)stream.Length);
+    }
+
+
+
+    // A missing message is left out of the report rather than written as null.
+    private static void WriteErrorMessage(Utf8JsonWriter writer, CompressionResult result)
+    {
+        if (result.ErrorMessage is not null)
+        {
+            writer.WriteString("errorMessage", result.ErrorMessage);
+        }
     }
 
 

@@ -93,32 +93,20 @@ internal class BundleService
 
         if (filtered.Count == 0)
         {
-            _logger.LogWarning("No files matched the specified criteria");
+            // Nothing to do is not a failure: a scheduled bundle on a quiet day
+            // must exit 0, exactly like compress of an empty directory (#353).
+            // An empty OutputPath tells the caller no archive was written.
+            _logger.LogInformation("No files matched the specified criteria; nothing to bundle");
 
             return new CompressionResult
             {
                 SourcePath = options.SourcePath,
                 OutputPath = string.Empty,
-                Success = false,
-                ErrorMessage = "No files matched the specified criteria."
+                Success = true
             };
         }
 
-        string folderName;
-        string outputDir;
-
-        if (_fileSystem.FileExists(options.SourcePath))
-        {
-            var fileInfo = _fileSystem.GetFileInfo(options.SourcePath);
-            folderName = Path.GetFileNameWithoutExtension(fileInfo.Name);
-            outputDir = options.OutputPath ?? fileInfo.DirectoryName ?? Directory.GetCurrentDirectory();
-        }
-        else
-        {
-            var sourceDirectory = new DirectoryInfo(options.SourcePath);
-            folderName = string.IsNullOrWhiteSpace(sourceDirectory.Name) ? "archive" : sourceDirectory.Name;
-            outputDir = options.OutputPath ?? sourceDirectory.Parent?.FullName ?? sourceDirectory.FullName;
-        }
+        var (outputDir, folderName) = ResolveTarget(options.SourcePath, _fileSystem.FileExists(options.SourcePath), options.OutputPath);
         var outputFileName = _fileNamer.GetBundleFileName(folderName, filtered, strategy.BundleFileExtension, options.TimestampSource, options.NamePrefix);
         var outputPath = Path.Combine(outputDir, outputFileName);
 
@@ -147,8 +135,14 @@ internal class BundleService
             return await CompressAndDeleteAsync(filtered, outputPath, strategy, options, cancellationToken)
                 .ConfigureAwait(false);
         }
-        catch (Exception ex) when (ex is not OperationCanceledException)
+        catch (OperationCanceledException)
         {
+            ArchiveWorkFile.DeleteQuietly(_fileSystem, _logger, ArchiveWorkFile.GetPartialPath(outputPath));
+            throw;
+        }
+        catch (Exception ex)
+        {
+            ArchiveWorkFile.DeleteQuietly(_fileSystem, _logger, ArchiveWorkFile.GetPartialPath(outputPath));
             _logger.LogError(ex, "Failed to bundle files from {Source}: {Message}", options.SourcePath, ex.Message);
 
             return new CompressionResult
@@ -234,7 +228,18 @@ internal class BundleService
 
         long compressedSize;
 
-        await using (var outputStream = _fileSystem.CreateWrite(outputPath))
+        // Written under a .partial name and moved to outputPath only once it is
+        // complete and verified, so a crash or failure never leaves a file at
+        // the final name that would block every later bundle of these files.
+        var partialPath = ArchiveWorkFile.GetPartialPath(outputPath);
+
+        // A leftover from a crashed earlier attempt at this same path.
+        if (_fileSystem.FileExists(partialPath))
+        {
+            _fileSystem.DeleteFile(partialPath);
+        }
+
+        await using (var outputStream = _fileSystem.CreateWrite(partialPath))
         {
             await strategy.CompressFilesAsync(OpenInputsAsync(cancellationToken), outputStream, cancellationToken).ConfigureAwait(false);
             await outputStream.FlushAsync(cancellationToken).ConfigureAwait(false);
@@ -244,7 +249,7 @@ internal class BundleService
         if (bundled.Count == 0)
         {
             // Every candidate file was unreadable — remove the empty archive.
-            _fileSystem.DeleteFile(outputPath);
+            _fileSystem.DeleteFile(partialPath);
             _logger.LogError("No readable files to bundle from {Source}; {Skipped} file(s) skipped", options.SourcePath, skipped);
 
             return new CompressionResult
@@ -260,9 +265,13 @@ internal class BundleService
 
         // Verify after the write stream is closed (the verifier opens the archive
         // for reading) and before any deletion.
-        if (options.Verify && !await _archiveVerifier.VerifyAsync(outputPath, strategy.BundleFileExtension).ConfigureAwait(false))
+        if (options.Verify && !await _archiveVerifier.VerifyAsync(partialPath, strategy.BundleFileExtension, expectedUncompressedSize: null, cancellationToken).ConfigureAwait(false))
         {
-            _logger.LogError("Archive verification failed for {Output}, original files preserved", outputPath);
+            // Kept for inspection (ADR-0003) under a name that neither counts as
+            // an archive nor blocks the next run.
+            var failedPath = ArchiveWorkFile.GetFailedPath(outputPath);
+            _fileSystem.MoveFile(partialPath, failedPath, overwrite: true);
+            _logger.LogError("Archive verification failed for {Output}, original files preserved, suspect archive kept as {Failed}", outputPath, failedPath);
 
             return new CompressionResult
             {
@@ -274,6 +283,8 @@ internal class BundleService
                 ErrorMessage = "Archive verification failed."
             };
         }
+
+        _fileSystem.MoveFile(partialPath, outputPath, overwrite: false);
 
         // Delete only the files that were successfully bundled; skipped (unreadable)
         // files are left in place.
@@ -321,6 +332,39 @@ internal class BundleService
 
 
 
+    /// <summary>
+    /// Resolves where a bundle of <paramref name="sourcePath"/> is written and the folder name its
+    /// archive is named after. The <c>bundle</c> command uses the same answer to point retention at
+    /// the directory the archive actually went to.
+    /// </summary>
+    /// <param name="sourcePath">The bundle source: a file or a directory.</param>
+    /// <param name="sourceIsFile"><see langword="true"/> when <paramref name="sourcePath"/> is a file.</param>
+    /// <param name="outputPath">The <c>--output</c> directory, if any.</param>
+    /// <returns>
+    /// The output directory (<paramref name="outputPath"/>, else the file's directory, else the source
+    /// directory's parent; a root directory is its own output directory) and the folder name (the file
+    /// name without extension, else the directory name, or <c>archive</c> for a root directory).
+    /// </returns>
+    internal static (string OutputDirectory, string FolderName) ResolveTarget(string sourcePath, bool sourceIsFile, string? outputPath)
+    {
+        if (sourceIsFile)
+        {
+            var fileInfo = new FileInfo(sourcePath);
+            return (outputPath ?? fileInfo.DirectoryName ?? Directory.GetCurrentDirectory(), Path.GetFileNameWithoutExtension(fileInfo.Name));
+        }
+
+        var sourceDirectory = new DirectoryInfo(sourcePath);
+
+        // A root ("C:\", "/") has no parent to write into and its Name is the
+        // root itself ("C:\", "/"), which is not a usable archive name: write
+        // into the root, named "archive".
+        return sourceDirectory.Parent is null
+            ? (outputPath ?? sourceDirectory.FullName, "archive")
+            : (outputPath ?? sourceDirectory.Parent.FullName, sourceDirectory.Name);
+    }
+
+
+
     private List<FileInfo> EnumerateSourceFiles(CompressionOptions options)
     {
         if (_fileSystem.FileExists(options.SourcePath))
@@ -341,7 +385,8 @@ internal class BundleService
             // output, and the single-instance lock file — this run's own live lock
             // sits in the source directory and must never be bundled/deleted
             // (#172).
-            .Where(p => !RetentionService.IsArchiveFile(p) && !ProcessLock.IsLockFile(p))
+            // A .partial/.failed archive of an earlier run is ours too.
+            .Where(p => !RetentionService.IsArchiveFile(p) && !ArchiveWorkFile.IsWorkFile(p) && !ProcessLock.IsLockFile(p))
             .Select(p => _fileSystem.GetFileInfo(p))
             .ToList();
     }

@@ -80,24 +80,25 @@ All checkout steps include `persist-credentials: false` to prevent the checkout 
 
 ```yaml
 - name: Checkout code
-  uses: actions/checkout@v6
+  uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
   with:
-    ref: refs/pull/${{ github.event.pull_request.number }}/head
     persist-credentials: false
 ```
+
+(The real workflows pin every action to a full commit SHA, as above; a tag such as `@v7` is never used.)
 
 **Note**: This prevents the token from being stored in git config, but does NOT prevent steps from accessing `GITHUB_TOKEN` if explicitly exposed.
 
 ### 4. Minimal Permissions
 
-The workflow runs with minimal required permissions:
+The workflow-level default is minimal:
 
 ```yaml
 permissions:
   contents: read
 ```
 
-This limits the impact if the `GITHUB_TOKEN` is somehow exposed or misused.
+Individual jobs raise only what they need, and only in jobs that never check out PR code: for example `inspectcode-upload` in `pr.yaml` has `security-events: write` to upload its SARIF. This limits the impact if the `GITHUB_TOKEN` is somehow exposed or misused.
 
 ## Attack Scenarios Prevented
 

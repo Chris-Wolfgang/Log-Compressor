@@ -2,6 +2,8 @@
 
 - **Status:** Accepted
 - **Date:** 2026-08-29 (decision originally made during initial development; recorded retroactively)
+- **Addendum (2026-10):** the `decompress` sub-command was added later on the same framework; the
+  System.CommandLine re-evaluation is tracked in #305.
 
 ## Context
 

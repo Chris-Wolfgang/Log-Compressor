@@ -9,10 +9,19 @@ name: Build Reproducibility
 # ContinuousIntegrationBuild=true (which normalises source paths to /_/), and
 # fail if the produced assemblies don't hash identically.
 #
-# The unit of verification is logc.dll — the managed assembly. The shipped
-# single-file per-RID bundles are NOT byte-reproducible (they embed the
-# runtime and archive timestamps); docs/REPRODUCIBLE-BUILD.md explains the
+# The unit of verification is logc.dll — the managed assembly — and its logc.pdb.
+# The shipped single-file per-RID bundles are NOT byte-reproducible (they embed
+# the runtime and archive timestamps); docs/REPRODUCIBLE-BUILD.md explains the
 # split and how a third party verifies a release out-of-band.
+#
+# Two guarantees are checked:
+#   1. Same OS, different directory: the `reproducible` job (below).
+#   2. Different OS, same commit: the `cross-os-build` / `cross-os-compare` jobs
+#      build on ubuntu and windows and hard-fail on any logc.dll / logc.pdb hash
+#      difference. This holds only because Directory.Build.targets rewrites the
+#      SDK-generated sources to LF (they are CRLF on Windows, LF on Linux, and the
+#      PDB records each source's hash), so a third party on either OS can
+#      reproduce the release assembly.
 #
 # Premise verified locally 2026-08-29: two clean checkouts of the same commit
 # produced identical logc.dll hashes on win-x64.
@@ -77,3 +86,176 @@ jobs:
             exit 1
           fi
           echo "✅ Reproducible: $ha"
+
+  cross-os-build:
+    name: Build (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    env:
+      PROJ: src/Wolfgang.LogCompressor/Wolfgang.LogCompressor.csproj
+      OUT: src/Wolfgang.LogCompressor/bin/Release/net10.0
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Build
+        shell: bash
+        run: dotnet build "$PROJ" -c Release -p:ContinuousIntegrationBuild=true -p:Deterministic=true
+
+      - name: Hash the assembly and its symbols
+        shell: bash
+        run: |
+          set -euo pipefail
+          : > manifest.txt
+          for f in logc.dll logc.pdb; do
+            echo "$(sha256sum "${OUT}/${f}" | cut -d' ' -f1)  ${f}" >> manifest.txt
+          done
+          echo "--- ${RUNNER_OS} output hashes ---"
+          cat manifest.txt
+
+      # The documents the PDB records (path + hash of each source it compiled, generated
+      # sources included). When the cross-OS compare fails, diffing these says which input
+      # differed instead of leaving two opaque hashes.
+      - name: List the PDB's source documents
+        shell: pwsh
+        run: |
+          Add-Type -AssemblyName System.Reflection.Metadata
+          function Get-DocumentName {
+              param($Reader, $Handle)
+              $blob = $Reader.GetBlobReader($Handle)
+              $separator = [char]$blob.ReadByte()
+              $parts = [System.Collections.Generic.List[string]]::new()
+              while ($blob.RemainingBytes -gt 0) {
+                  $partHandle = [System.Reflection.Metadata.Ecma335.MetadataTokens]::BlobHandle($blob.ReadCompressedInteger())
+                  if ($partHandle.IsNil) { $parts.Add('') }
+                  else { $parts.Add([System.Text.Encoding]::UTF8.GetString($Reader.GetBlobBytes($partHandle))) }
+              }
+              $parts -join $separator
+          }
+          $stream = [System.IO.File]::OpenRead((Join-Path $env:OUT 'logc.pdb'))
+          try {
+              $reader = [System.Reflection.Metadata.MetadataReaderProvider]::FromPortablePdbStream($stream).GetMetadataReader()
+              $rows = foreach ($handle in $reader.Documents) {
+                  $doc = $reader.GetDocument($handle)
+                  $hash = [System.BitConverter]::ToString($reader.GetBlobBytes($doc.Hash)).Replace('-', '').ToLowerInvariant()
+                  '{0}  {1}' -f $hash.Substring(0, 16), (Get-DocumentName $reader $doc.Name)
+              }
+              # LF line endings explicitly: Set-Content writes CRLF on Windows, which would make
+              # every line differ from the Linux copy when the two lists are diffed.
+              $sorted = $rows | Sort-Object { ($_ -split '  ', 2)[1] }
+              [System.IO.File]::WriteAllText('documents.txt', (($sorted -join "`n") + "`n"))
+          }
+          finally { $stream.Dispose() }
+          Write-Host "documents: $((Get-Content documents.txt).Count)"
+
+      - name: Upload manifest
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: repro-manifest-${{ matrix.os }}
+          path: |
+            manifest.txt
+            documents.txt
+            ${{ env.OUT }}/logc.dll
+          if-no-files-found: error
+
+  cross-os-compare:
+    name: Compare hashes across operating systems
+    needs: cross-os-build
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Download Ubuntu manifest
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: repro-manifest-ubuntu-latest
+          path: ubuntu
+
+      - name: Download Windows manifest
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: repro-manifest-windows-latest
+          path: windows
+
+      - name: Show which PDB source documents differ
+        if: always()
+        shell: bash
+        run: |
+          echo "Documents whose hash differs between Ubuntu (-) and Windows (+); no output means identical:"
+          diff -u ubuntu/documents.txt windows/documents.txt | grep -E '^[-+][0-9a-f]{16}  ' || true
+
+      # When the PDBs agree but the DLLs do not, say where the bytes differ and in which PE section.
+      - name: Show where the DLLs differ
+        if: always()
+        shell: pwsh
+        run: |
+          $a = 'ubuntu/src/Wolfgang.LogCompressor/bin/Release/net10.0/logc.dll'
+          $b = 'windows/src/Wolfgang.LogCompressor/bin/Release/net10.0/logc.dll'
+          $x = [System.IO.File]::ReadAllBytes($a)
+          $y = [System.IO.File]::ReadAllBytes($b)
+          Write-Host "sizes: ubuntu=$($x.Length) windows=$($y.Length)"
+          $diff = [System.Collections.Generic.List[int]]::new()
+          for ($i = 0; $i -lt [Math]::Min($x.Length, $y.Length); $i++) { if ($x[$i] -ne $y[$i]) { $diff.Add($i) } }
+          Write-Host "differing bytes: $($diff.Count)"
+          Add-Type -AssemblyName System.Reflection.Metadata
+          $pe = [System.Reflection.PortableExecutable.PEReader]::new([System.IO.MemoryStream]::new($x))
+          $sections = $pe.PEHeaders.SectionHeaders
+          foreach ($s in $sections) {
+              $inside = @($diff | Where-Object { $_ -ge $s.PointerToRawData -and $_ -lt ($s.PointerToRawData + $s.SizeOfRawData) }).Count
+              Write-Host ("section {0,-8} rawOffset={1,8} rawSize={2,8} differingBytes={3}" -f $s.Name, $s.PointerToRawData, $s.SizeOfRawData, $inside)
+          }
+          $firstHeaderEnd = ($sections | Measure-Object -Property PointerToRawData -Minimum).Minimum
+          Write-Host "differing bytes in the headers (before the first section): $(@($diff | Where-Object { $_ -lt $firstHeaderEnd }).Count)"
+          Write-Host ("first 40 differing offsets: " + (($diff | Select-Object -First 40) -join ', '))
+          # The same offsets as contiguous ranges, each with a sample of both sides, so the content shows.
+          $ranges = [System.Collections.Generic.List[object]]::new()
+          foreach ($o in $diff) {
+              if ($ranges.Count -gt 0 -and $o -le $ranges[$ranges.Count - 1].End + 1) { $ranges[$ranges.Count - 1].End = $o }
+              else { $ranges.Add([pscustomobject]@{ Start = $o; End = $o }) }
+          }
+          Write-Host "differing ranges: $($ranges.Count)"
+          function Show-Bytes($bytes, $start, $length) {
+              $slice = $bytes[$start..([Math]::Min($bytes.Length, $start + $length) - 1)]
+              $hex = ($slice | ForEach-Object { '{0:x2}' -f $_ }) -join ' '
+              $text = -join ($slice | ForEach-Object { if ($_ -ge 32 -and $_ -lt 127) { [char]$_ } else { '.' } })
+              "$hex  |$text|"
+          }
+          foreach ($r in ($ranges | Select-Object -First 24)) {
+              $len = [Math]::Min(24, $r.End - $r.Start + 1)
+              Write-Host ("range {0}-{1} ({2} bytes)" -f $r.Start, $r.End, ($r.End - $r.Start + 1))
+              Write-Host ("   ubuntu : " + (Show-Bytes $x $r.Start $len))
+              Write-Host ("   windows: " + (Show-Bytes $y $r.Start $len))
+          }
+          foreach ($name in 'ubuntu', 'windows') {
+              $bytes = if ($name -eq 'ubuntu') { $x } else { $y }
+              $r = [System.Reflection.PortableExecutable.PEReader]::new([System.IO.MemoryStream]::new($bytes))
+              $md = [System.Reflection.Metadata.PEReaderExtensions]::GetMetadataReader($r)
+              Write-Host ("{0}: mvid={1} header-timestamp=0x{2:x8} codeview={3}" -f $name, $md.GetGuid($md.GetModuleDefinition().Mvid), $r.PEHeaders.CoffHeader.TimeDateStamp, ($r.ReadDebugDirectory() | Where-Object { $_.Type -eq 'CodeView' } | ForEach-Object { $r.ReadCodeViewDebugDirectoryData($_).Path }))
+          }
+
+      - name: Compare
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "Ubuntu manifest:"
+          cat ubuntu/manifest.txt
+          echo
+          echo "Windows manifest:"
+          cat windows/manifest.txt
+          echo
+          if diff -u ubuntu/manifest.txt windows/manifest.txt; then
+            echo "Reproducible: Ubuntu and Windows produced byte-identical logc.dll and logc.pdb."
+          else
+            echo "::error::logc.dll or logc.pdb differ across runners - the build is not byte-identical cross-OS."
+            exit 1
+          fi

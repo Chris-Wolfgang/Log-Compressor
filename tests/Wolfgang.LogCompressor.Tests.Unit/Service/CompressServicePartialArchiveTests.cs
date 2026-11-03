@@ -34,7 +34,7 @@ public sealed class CompressServicePartialArchiveTests : IDisposable
         var strategyFactory = Substitute.For<CompressionStrategyFactory>();
         strategyFactory.Create(Arg.Any<CompressionFormat>(), Arg.Any<System.IO.Compression.CompressionLevel>()).Returns(_strategy);
         _strategy.FileExtension.Returns("zip");
-        _archiveVerifier.VerifyAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<long?>()).Returns(Task.FromResult(true));
+        _archiveVerifier.VerifyAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<long?>(), Arg.Any<CancellationToken>()).Returns(Task.FromResult(true));
 
         _source = _tempDir.WriteFile("app.log", "content");
         var fileInfo = new FileInfo(_source);
@@ -78,7 +78,7 @@ public sealed class CompressServicePartialArchiveTests : IDisposable
         Assert.True(Assert.Single(results).Success);
         _fileSystem.Received(1).CreateWrite(_partial);
         _fileSystem.DidNotReceive().CreateWrite(_output);
-        await _archiveVerifier.Received(1).VerifyAsync(_partial, "zip", Arg.Any<long?>());
+        await _archiveVerifier.Received(1).VerifyAsync(_partial, "zip", Arg.Any<long?>(), Arg.Any<CancellationToken>());
         Received.InOrder(() =>
         {
             _fileSystem.MoveFile(_partial, _output, false);
@@ -91,7 +91,7 @@ public sealed class CompressServicePartialArchiveTests : IDisposable
     [Fact]
     public async Task ExecuteAsync_when_verificationFails_expected_archiveKeptAsFailedNotAtFinalName()
     {
-        _archiveVerifier.VerifyAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<long?>()).Returns(Task.FromResult(false));
+        _archiveVerifier.VerifyAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<long?>(), Arg.Any<CancellationToken>()).Returns(Task.FromResult(false));
 
         var results = await _sut.ExecuteAsync(new CompressionOptions { SourcePath = _source, Verify = true });
 
@@ -193,6 +193,27 @@ public sealed class CompressServicePartialArchiveTests : IDisposable
 
         _fileSystem.DidNotReceive().GetFileInfo(workFile);
         _fileSystem.Received(1).GetFileInfo(_source);
+    }
+
+
+
+    [Fact]
+    public async Task ExecuteAsync_when_canceledDuringVerification_expected_tokenPassedPartialDeletedAndCancellationPropagates()
+    {
+        using var cts = new CancellationTokenSource();
+        _archiveVerifier.VerifyAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<long?>(), Arg.Any<CancellationToken>())
+            .Returns<Task<bool>>(_ => throw new OperationCanceledException(cts.Token));
+        _fileSystem.When(f => f.CreateWrite(_partial)).Do(_ => _fileSystem.FileExists(_partial).Returns(returnThis: true));
+
+        await Assert.ThrowsAsync<OperationCanceledException>
+        (
+            () => _sut.ExecuteAsync(new CompressionOptions { SourcePath = _source, Verify = true }, cts.Token)
+        );
+
+        await _archiveVerifier.Received(1).VerifyAsync(_partial, "zip", Arg.Any<long?>(), cts.Token);
+        _fileSystem.Received(1).DeleteFile(_partial);
+        _fileSystem.DidNotReceive().MoveFile(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<bool>());
+        _fileSystem.DidNotReceive().DeleteFile(_source);
     }
 
 

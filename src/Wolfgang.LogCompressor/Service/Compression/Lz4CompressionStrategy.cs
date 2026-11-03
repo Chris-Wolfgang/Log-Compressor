@@ -46,7 +46,8 @@ internal sealed class Lz4CompressionStrategy : ICompressionStrategy
     )
     {
         _ = entryName; // Not used by single-stream LZ4 format
-        await using var lz4Stream = LZ4Stream.Encode(outputStream, _level, leaveOpen: true);
+        var lz4Stream = LZ4Stream.Encode(outputStream, _level, leaveOpen: true);
+        await using var lz4StreamDisposal = lz4Stream.ConfigureAwait(false);
         // K4os emits NOTHING (not even the frame header/end mark) when no
         // write ever reaches the encoder, so an empty source would produce a
         // 0-byte, malformed .lz4. An explicit empty write triggers the full
@@ -65,8 +66,10 @@ internal sealed class Lz4CompressionStrategy : ICompressionStrategy
         CancellationToken cancellationToken = default
     )
     {
-        await using var lz4Stream = LZ4Stream.Encode(outputStream, _level, leaveOpen: true);
-        await using var tarWriter = new TarWriter(lz4Stream, leaveOpen: true);
+        var lz4Stream = LZ4Stream.Encode(outputStream, _level, leaveOpen: true);
+        await using var lz4StreamDisposal = lz4Stream.ConfigureAwait(false);
+        var tarWriter = new TarWriter(lz4Stream, leaveOpen: true);
+        await using var tarWriterDisposal = tarWriter.ConfigureAwait(false);
 
         await foreach (var (stream, entryName) in inputs.WithCancellation(cancellationToken).ConfigureAwait(false))
         {

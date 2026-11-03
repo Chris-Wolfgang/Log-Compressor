@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using Microsoft.Extensions.Logging;
 using Wolfgang.LogCompressor.Abstraction;
 
@@ -15,6 +16,20 @@ internal sealed class RetentionService
     [
         ".zip", ".gz", ".br", ".zst", ".lz4"
     ];
+
+    // The tail of every name FileNamingService produces: "-<timestamp>" (one
+    // file, or a bundle under --timestamp compressed) or "-<min> to <max>"
+    // (a bundle), an optional "-N" collision counter, then a logc archive
+    // extension. Retention deletes only names that end this way, so unrelated
+    // archives that merely share an extension are never touched (#352).
+    // A plain Regex, not [GeneratedRegex]: the build uses no source
+    // generators (cross-OS reproducible build).
+    private static readonly Regex LogcArchiveName = new
+    (
+        @"-\d{4}-\d{2}-\d{2}_\d{2}-\d{2}-\d{2}( to \d{4}-\d{2}-\d{2}_\d{2}-\d{2}-\d{2})?(-\d+)?\.(zip|gz|br|zst|lz4|tar\.gz|tar\.br|tar\.zst|tar\.lz4)$",
+        RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture,
+        TimeSpan.FromSeconds(1)
+    );
 
     private readonly IFileSystem _fileSystem;
     private readonly ILogger<RetentionService> _logger;
@@ -42,12 +57,23 @@ internal sealed class RetentionService
 
 
     /// <summary>
-    /// Deletes compressed archives older than the specified number of days.
+    /// Deletes archives that logc produced and that are older than the specified number of days.
+    /// Only files whose names match logc's own naming pattern
+    /// (<c>&lt;name&gt;-yyyy-MM-dd_HH-mm-ss[ to yyyy-MM-dd_HH-mm-ss][-N].&lt;archive extension&gt;</c>)
+    /// are candidates; any other file is left alone, whatever its extension.
     /// </summary>
     /// <param name="directory">The directory to scan.</param>
     /// <param name="olderThanDays">Delete archives last modified more than this many days ago.</param>
+    /// <param name="searchOption">
+    /// <see cref="SearchOption.AllDirectories"/> to include subdirectories (where a recursive compress
+    /// without <c>--output</c> writes its archives); otherwise only the top level.
+    /// </param>
+    /// <param name="baseName">
+    /// When set, only archives whose name starts with <c>&lt;baseName&gt;-</c> are candidates (a bundle
+    /// knows the base name of the archives it writes); otherwise every logc-named archive is.
+    /// </param>
     /// <returns>The number of archives deleted.</returns>
-    public int DeleteOldArchives(string directory, int olderThanDays)
+    public int DeleteOldArchives(string directory, int olderThanDays, SearchOption searchOption = SearchOption.TopDirectoryOnly, string? baseName = null)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(directory);
         ArgumentOutOfRangeException.ThrowIfLessThan(olderThanDays, 1);
@@ -62,11 +88,11 @@ internal sealed class RetentionService
         var threshold = today.AddDays(-olderThanDays);
         var deleted = 0;
 
-        foreach (var filePath in _fileSystem.EnumerateFiles(directory, "*", SearchOption.TopDirectoryOnly))
+        foreach (var filePath in _fileSystem.EnumerateFiles(directory, "*", searchOption))
         {
             var fileInfo = _fileSystem.GetFileInfo(filePath);
 
-            if (!IsArchiveFile(fileInfo.Name))
+            if (!IsRetentionCandidate(fileInfo.Name, baseName))
             {
                 continue;
             }
@@ -90,6 +116,14 @@ internal sealed class RetentionService
 
         _logger.LogInformation("Retention cleanup: deleted {Count} old archive(s) from {Directory}", deleted, directory);
         return deleted;
+    }
+
+
+
+    internal static bool IsRetentionCandidate(string fileName, string? baseName)
+    {
+        return LogcArchiveName.IsMatch(fileName)
+            && (baseName is null || fileName.StartsWith(baseName + "-", StringComparison.OrdinalIgnoreCase));
     }
 
 

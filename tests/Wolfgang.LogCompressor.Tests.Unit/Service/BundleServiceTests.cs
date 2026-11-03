@@ -24,7 +24,7 @@ public sealed class BundleServiceTests : IDisposable
         var strategyFactory = Substitute.For<CompressionStrategyFactory>();
         strategyFactory.Create(Arg.Any<CompressionFormat>(), Arg.Any<System.IO.Compression.CompressionLevel>()).Returns(_strategy);
         _strategy.BundleFileExtension.Returns("zip");
-        _archiveVerifier.VerifyAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<long?>()).Returns(Task.FromResult(true));
+        _archiveVerifier.VerifyAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<long?>(), Arg.Any<CancellationToken>()).Returns(Task.FromResult(true));
 
         // The real strategies enumerate (and dispose) the lazily-opened input
         // sequence; the substitute must enumerate it too so BundleService records
@@ -87,9 +87,9 @@ public sealed class BundleServiceTests : IDisposable
         _fileSystem.FileExists(dir).Returns(returnThis: false);
         _fileSystem.DirectoryExists(dir).Returns(returnThis: true);
         _fileSystem.EnumerateFiles(dir, "*", SearchOption.TopDirectoryOnly).Returns(allFiles);
-        foreach (var file in allFiles)
+        for (var i = 0; i < allFiles.Length; i++)
         {
-            _fileSystem.GetFileInfo(file).Returns(allInfos[allFiles.ToList().IndexOf(file)]);
+            _fileSystem.GetFileInfo(allFiles[i]).Returns(allInfos[i]);
         }
 
         _fileFilter.Apply
@@ -140,29 +140,24 @@ public sealed class BundleServiceTests : IDisposable
 
 
     [Fact]
-    public async Task ExecuteAsync_when_noFilesMatch_expected_failureResult()
+    public async Task ExecuteAsync_when_noFilesMatch_expected_successWithNoArchive()
     {
         var dir = "/tmp/logs/MyApp";
 
         _fileSystem.FileExists(dir).Returns(returnThis: false);
         _fileSystem.DirectoryExists(dir).Returns(returnThis: true);
         _fileSystem.EnumerateFiles(dir, "*", SearchOption.TopDirectoryOnly).Returns([]);
-        _fileFilter.Apply
-        (
-            Arg.Any<IEnumerable<FileInfo>>(),
-            Arg.Any<int?>(),
-            Arg.Any<DateTime?>(),
-            Arg.Any<DateTime?>(),
-            Arg.Any<IReadOnlyList<string>>(),
-            Arg.Any<IReadOnlyList<string>>()
-        ).Returns([]);
+        StubFilterPassThrough([]);
 
         var options = new CompressionOptions { SourcePath = dir };
         var result = await _sut.ExecuteAsync(options);
 
-        Assert.False(result.Success);
+        // Nothing to do is success, like compress of an empty directory (#353);
+        // the empty OutputPath says no archive was written.
+        Assert.True(result.Success);
         Assert.Equal(string.Empty, result.OutputPath);
-        Assert.Equal("No files matched the specified criteria.", result.ErrorMessage);
+        Assert.Null(result.ErrorMessage);
+        _fileSystem.DidNotReceive().CreateWrite(Arg.Any<string>());
     }
 
 
@@ -218,15 +213,7 @@ public sealed class BundleServiceTests : IDisposable
 
         _fileSystem.FileExists(file).Returns(returnThis: true);
         _fileSystem.GetFileInfo(file).Returns(fileInfo);
-        _fileFilter.Apply
-        (
-            Arg.Any<IEnumerable<FileInfo>>(),
-            Arg.Any<int?>(),
-            Arg.Any<DateTime?>(),
-            Arg.Any<DateTime?>(),
-            Arg.Any<IReadOnlyList<string>>(),
-            Arg.Any<IReadOnlyList<string>>()
-        ).Returns(new List<FileInfo> { fileInfo });
+        StubFilterPassThrough(new List<FileInfo> { fileInfo });
         _fileNamer.GetBundleFileName(Arg.Any<string>(), Arg.Any<IReadOnlyList<FileInfo>>(), "zip").Returns("bundle.zip");
         _fileSystem.OpenRead(file).Returns(new MemoryStream("content"u8.ToArray()));
         _fileSystem.CreateWrite(Arg.Any<string>()).Returns(new MemoryStream());
@@ -254,15 +241,7 @@ public sealed class BundleServiceTests : IDisposable
         _fileSystem.EnumerateFiles(dir, "*", SearchOption.AllDirectories).Returns(files);
         _fileSystem.GetFileInfo(files[0]).Returns(fileInfos[0]);
         _fileSystem.OpenRead(files[0]).Returns(new MemoryStream("content"u8.ToArray()));
-        _fileFilter.Apply
-        (
-            Arg.Any<IEnumerable<FileInfo>>(),
-            Arg.Any<int?>(),
-            Arg.Any<DateTime?>(),
-            Arg.Any<DateTime?>(),
-            Arg.Any<IReadOnlyList<string>>(),
-            Arg.Any<IReadOnlyList<string>>()
-        ).Returns(fileInfos);
+        StubFilterPassThrough(fileInfos);
         _fileNamer.GetBundleFileName("MyApp", Arg.Any<IReadOnlyList<FileInfo>>(), "zip").Returns("bundle.zip");
         _fileSystem.CreateWrite(Arg.Any<string>()).Returns(new MemoryStream());
 
@@ -285,7 +264,7 @@ public sealed class BundleServiceTests : IDisposable
         SetupDirectory(dir, files, fileInfos);
         _fileNamer.GetBundleFileName("MyApp", Arg.Any<IReadOnlyList<FileInfo>>(), "zip").Returns("bundle.zip");
         _fileSystem.CreateWrite(Arg.Any<string>()).Returns(new MemoryStream());
-        _archiveVerifier.VerifyAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<long?>()).Returns(Task.FromResult(false));
+        _archiveVerifier.VerifyAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<long?>(), Arg.Any<CancellationToken>()).Returns(Task.FromResult(false));
 
         var options = new CompressionOptions { SourcePath = dir, Verify = true };
         var result = await _sut.ExecuteAsync(options);
@@ -428,15 +407,7 @@ public sealed class BundleServiceTests : IDisposable
         _fileSystem.GetFileInfo(file).Returns(info);
         _fileSystem.DirectoryExists(outputDir).Returns(returnThis: true);
         _fileSystem.OpenRead(file).Returns(new MemoryStream("content"u8.ToArray()));
-        _fileFilter.Apply
-        (
-            Arg.Any<IEnumerable<FileInfo>>(),
-            Arg.Any<int?>(),
-            Arg.Any<DateTime?>(),
-            Arg.Any<DateTime?>(),
-            Arg.Any<IReadOnlyList<string>>(),
-            Arg.Any<IReadOnlyList<string>>()
-        ).Returns([info]);
+        StubFilterPassThrough([info]);
         _fileNamer.GetBundleFileName(Arg.Any<string>(), Arg.Any<IReadOnlyList<FileInfo>>(), "zip").Returns("bundle.zip");
         _fileSystem.CreateWrite(Arg.Any<string>()).Returns(new MemoryStream());
 
@@ -478,15 +449,7 @@ public sealed class BundleServiceTests : IDisposable
             _fileSystem.OpenRead(files[i]).Returns(new MemoryStream("content"u8.ToArray()));
         }
 
-        _fileFilter.Apply
-        (
-            Arg.Any<IEnumerable<FileInfo>>(),
-            Arg.Any<int?>(),
-            Arg.Any<DateTime?>(),
-            Arg.Any<DateTime?>(),
-            Arg.Any<IReadOnlyList<string>>(),
-            Arg.Any<IReadOnlyList<string>>()
-        ).Returns(fileInfos);
+        StubFilterPassThrough(fileInfos);
     }
 
 
@@ -505,15 +468,7 @@ public sealed class BundleServiceTests : IDisposable
         _fileSystem.DirectoryExists(dir).Returns(returnThis: true);
         _fileSystem.EnumerateFiles(dir, "*", SearchOption.TopDirectoryOnly).Returns([file, lockPath]);
         _fileSystem.GetFileInfo(file).Returns(fileInfo);
-        _fileFilter.Apply
-        (
-            Arg.Any<IEnumerable<FileInfo>>(),
-            Arg.Any<int?>(),
-            Arg.Any<DateTime?>(),
-            Arg.Any<DateTime?>(),
-            Arg.Any<IReadOnlyList<string>>(),
-            Arg.Any<IReadOnlyList<string>>()
-        ).Returns([fileInfo]);
+        StubFilterPassThrough([fileInfo]);
         _fileNamer.GetBundleFileName("MyApp", Arg.Any<IReadOnlyList<FileInfo>>(), "zip").Returns("bundle.zip");
         _fileSystem.OpenRead(Arg.Any<string>()).Returns(new MemoryStream("content"u8.ToArray()));
         _fileSystem.CreateWrite(Arg.Any<string>()).Returns(new MemoryStream());
@@ -538,15 +493,7 @@ public sealed class BundleServiceTests : IDisposable
         _fileSystem.DirectoryExists(dir).Returns(returnThis: true);
         _fileSystem.EnumerateFiles(dir, "*", SearchOption.TopDirectoryOnly).Returns([file]);
         _fileSystem.GetFileInfo(file).Returns(fileInfo);
-        _fileFilter.Apply
-        (
-            Arg.Any<IEnumerable<FileInfo>>(),
-            Arg.Any<int?>(),
-            Arg.Any<DateTime?>(),
-            Arg.Any<DateTime?>(),
-            Arg.Any<IReadOnlyList<string>>(),
-            Arg.Any<IReadOnlyList<string>>()
-        ).Returns([fileInfo]);
+        StubFilterPassThrough([fileInfo]);
         _fileNamer.GetBundleFileName("MyApp", Arg.Any<IReadOnlyList<FileInfo>>(), "zip").Returns("bundle.zip");
         _fileSystem.OpenRead(Arg.Any<string>()).Returns(new MemoryStream("content"u8.ToArray()));
         _fileSystem.CreateWrite(Arg.Any<string>()).Returns(new MemoryStream());
@@ -555,7 +502,7 @@ public sealed class BundleServiceTests : IDisposable
         var result = await _sut.ExecuteAsync(options);
 
         Assert.True(result.Success);
-        await _archiveVerifier.DidNotReceive().VerifyAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<long?>());
+        await _archiveVerifier.DidNotReceive().VerifyAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<long?>(), Arg.Any<CancellationToken>());
     }
 
 
@@ -568,15 +515,7 @@ public sealed class BundleServiceTests : IDisposable
         _fileSystem.FileExists(dir).Returns(returnThis: false);
         _fileSystem.DirectoryExists(dir).Returns(returnThis: true);
         _fileSystem.EnumerateFiles(dir, "*", Arg.Any<SearchOption>()).Returns([]);
-        _fileFilter.Apply
-        (
-            Arg.Any<IEnumerable<FileInfo>>(),
-            Arg.Any<int?>(),
-            Arg.Any<DateTime?>(),
-            Arg.Any<DateTime?>(),
-            Arg.Any<IReadOnlyList<string>>(),
-            Arg.Any<IReadOnlyList<string>>()
-        ).Returns([]);
+        StubFilterPassThrough([]);
 
         await _sut.ExecuteAsync(new CompressionOptions { SourcePath = dir, Recurse = false });
 
@@ -598,15 +537,7 @@ public sealed class BundleServiceTests : IDisposable
         _fileSystem.EnumerateFiles(dir, "*", SearchOption.TopDirectoryOnly).Returns(files);
         _fileSystem.GetFileInfo(files[0]).Returns(infos[0]);
         _fileSystem.GetFileInfo(files[1]).Returns(infos[1]);
-        _fileFilter.Apply
-        (
-            Arg.Any<IEnumerable<FileInfo>>(),
-            Arg.Any<int?>(),
-            Arg.Any<DateTime?>(),
-            Arg.Any<DateTime?>(),
-            Arg.Any<IReadOnlyList<string>>(),
-            Arg.Any<IReadOnlyList<string>>()
-        ).Returns(infos);
+        StubFilterPassThrough(infos);
         _fileNamer.GetBundleFileName("MyApp", Arg.Any<IReadOnlyList<FileInfo>>(), "zip", Arg.Any<TimestampSource>(), Arg.Any<string?>()).Returns("bundle.zip");
         _fileSystem.OpenRead(files[0]).Returns(_ => throw new IOException("locked"));
         _fileSystem.OpenRead(files[1]).Returns(new MemoryStream("content"u8.ToArray()));
@@ -637,15 +568,7 @@ public sealed class BundleServiceTests : IDisposable
         _fileSystem.DirectoryExists(dir).Returns(returnThis: true);
         _fileSystem.EnumerateFiles(dir, "*", SearchOption.TopDirectoryOnly).Returns([file]);
         _fileSystem.GetFileInfo(file).Returns(info);
-        _fileFilter.Apply
-        (
-            Arg.Any<IEnumerable<FileInfo>>(),
-            Arg.Any<int?>(),
-            Arg.Any<DateTime?>(),
-            Arg.Any<DateTime?>(),
-            Arg.Any<IReadOnlyList<string>>(),
-            Arg.Any<IReadOnlyList<string>>()
-        ).Returns([info]);
+        StubFilterPassThrough([info]);
         _fileNamer.GetBundleFileName("MyApp", Arg.Any<IReadOnlyList<FileInfo>>(), "zip", Arg.Any<TimestampSource>(), Arg.Any<string?>()).Returns("bundle.zip");
         // Throws once, then readable — the transient sharing-violation shape.
         var attempts = 0;
@@ -676,6 +599,23 @@ public sealed class BundleServiceTests : IDisposable
         }
 
         return files;
+    }
+
+
+
+    private void StubFilterPassThrough(IReadOnlyList<FileInfo> files)
+    {
+        // Any filter arguments: these tests are about what the service does with
+        // the files the filter returns, not about the filter itself.
+        _fileFilter.Apply
+        (
+            Arg.Any<IEnumerable<FileInfo>>(),
+            Arg.Any<int?>(),
+            Arg.Any<DateTime?>(),
+            Arg.Any<DateTime?>(),
+            Arg.Any<IReadOnlyList<string>>(),
+            Arg.Any<IReadOnlyList<string>>()
+        ).Returns(files);
     }
 
 

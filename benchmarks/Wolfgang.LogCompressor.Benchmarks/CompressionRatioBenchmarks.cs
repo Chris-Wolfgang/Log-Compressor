@@ -100,9 +100,11 @@ public static class CompressionRatioBenchmarks
     private static void Decompress(CompressionFormat format, byte[] archive)
     {
         using var input = new MemoryStream(archive);
+        // Disposed with the method: the zip entry stream below belongs to it.
+        using var zip = format == CompressionFormat.Zip ? new ZipArchive(input, ZipArchiveMode.Read) : null;
         Stream reader = format switch
         {
-            CompressionFormat.Zip => new ZipArchive(input, ZipArchiveMode.Read).Entries[0].Open(),
+            CompressionFormat.Zip => zip!.Entries[0].Open(),
             CompressionFormat.Gz => new GZipStream(input, CompressionMode.Decompress),
             CompressionFormat.Brotli => new BrotliStream(input, CompressionMode.Decompress),
             CompressionFormat.Zstd => new ZstdSharp.DecompressionStream(input),

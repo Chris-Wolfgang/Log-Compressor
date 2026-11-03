@@ -68,14 +68,7 @@ public class CompressionBenchmarks
 
         _strategy = _factory.Create(format, level);
 
-        var line = "2026-03-15 23:00:15.123 [INF] Processing request id=abc123 method=GET path=/api/data duration=42ms\n";
-        var sb = new StringBuilder(FileSize);
-        while (sb.Length < FileSize)
-        {
-            sb.Append(line);
-        }
-
-        _testData = Encoding.UTF8.GetBytes(sb.ToString(0, FileSize));
+        _testData = BenchmarkData.RepeatedLogLines(FileSize);
     }
 
 

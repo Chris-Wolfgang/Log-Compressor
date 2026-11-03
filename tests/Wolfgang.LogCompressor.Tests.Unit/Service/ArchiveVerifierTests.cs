@@ -9,25 +9,20 @@ namespace Wolfgang.LogCompressor.Tests.Unit.Service;
 public sealed class ArchiveVerifierTests : IDisposable
 {
     private readonly ArchiveVerifier _sut;
-    private readonly string _tempDir;
+    private readonly TempDirectory _temp = new();
 
 
 
     public ArchiveVerifierTests()
     {
         _sut = new ArchiveVerifier(Substitute.For<ILogger<ArchiveVerifier>>());
-        _tempDir = Path.Combine(Path.GetTempPath(), "ArchiveVerifierTests_" + Guid.NewGuid());
-        Directory.CreateDirectory(_tempDir);
     }
 
 
 
     public void Dispose()
     {
-        if (Directory.Exists(_tempDir))
-        {
-            Directory.Delete(_tempDir, recursive: true);
-        }
+        _temp.Dispose();
     }
 
 
@@ -35,7 +30,7 @@ public sealed class ArchiveVerifierTests : IDisposable
     [Fact]
     public async Task VerifyAsync_when_validZipFile_expected_true()
     {
-        var archivePath = Path.Combine(_tempDir, "test.zip");
+        var archivePath = Path.Combine(_temp.Path, "test.zip");
         await CreateValidZipAsync(archivePath);
 
         var result = await _sut.VerifyAsync(archivePath, "zip");
@@ -48,7 +43,7 @@ public sealed class ArchiveVerifierTests : IDisposable
     [Fact]
     public async Task VerifyAsync_when_validGzFile_expected_true()
     {
-        var archivePath = Path.Combine(_tempDir, "test.gz");
+        var archivePath = Path.Combine(_temp.Path, "test.gz");
         await CreateValidGzAsync(archivePath);
 
         var result = await _sut.VerifyAsync(archivePath, "gz");
@@ -61,7 +56,7 @@ public sealed class ArchiveVerifierTests : IDisposable
     [Fact]
     public async Task VerifyAsync_when_validBrotliFile_expected_true()
     {
-        var archivePath = Path.Combine(_tempDir, "test.br");
+        var archivePath = Path.Combine(_temp.Path, "test.br");
         await CreateValidBrotliAsync(archivePath);
 
         var result = await _sut.VerifyAsync(archivePath, "br");
@@ -74,7 +69,7 @@ public sealed class ArchiveVerifierTests : IDisposable
     [Fact]
     public async Task VerifyAsync_when_validTarGzFile_expected_true()
     {
-        var archivePath = Path.Combine(_tempDir, "test.tar.gz");
+        var archivePath = Path.Combine(_temp.Path, "test.tar.gz");
         await CreateValidTarGzAsync(archivePath);
 
         var result = await _sut.VerifyAsync(archivePath, "tar.gz");
@@ -87,7 +82,7 @@ public sealed class ArchiveVerifierTests : IDisposable
     [Fact]
     public async Task VerifyAsync_when_validTarBrFile_expected_true()
     {
-        var archivePath = Path.Combine(_tempDir, "test.tar.br");
+        var archivePath = Path.Combine(_temp.Path, "test.tar.br");
         await CreateValidTarBrAsync(archivePath);
 
         var result = await _sut.VerifyAsync(archivePath, "tar.br");
@@ -100,7 +95,7 @@ public sealed class ArchiveVerifierTests : IDisposable
     [Fact]
     public async Task VerifyAsync_when_corruptedZipFile_expected_false()
     {
-        var archivePath = Path.Combine(_tempDir, "corrupt.zip");
+        var archivePath = Path.Combine(_temp.Path, "corrupt.zip");
         await File.WriteAllBytesAsync(archivePath, [0x00, 0x01, 0x02, 0x03, 0xFF, 0xFE]);
 
         var result = await _sut.VerifyAsync(archivePath, "zip");
@@ -113,7 +108,7 @@ public sealed class ArchiveVerifierTests : IDisposable
     [Fact]
     public async Task VerifyAsync_when_corruptedGzFile_expected_false()
     {
-        var archivePath = Path.Combine(_tempDir, "corrupt.gz");
+        var archivePath = Path.Combine(_temp.Path, "corrupt.gz");
         await File.WriteAllBytesAsync(archivePath, [0x00, 0x01, 0x02, 0x03, 0xFF, 0xFE]);
 
         var result = await _sut.VerifyAsync(archivePath, "gz");
@@ -126,7 +121,7 @@ public sealed class ArchiveVerifierTests : IDisposable
     [Fact]
     public async Task VerifyAsync_when_corruptedBrotliFile_expected_false()
     {
-        var archivePath = Path.Combine(_tempDir, "corrupt.br");
+        var archivePath = Path.Combine(_temp.Path, "corrupt.br");
 
         // Brotli requires specific magic bytes to fail; generate a large enough random payload
         var random = new Random(42);
@@ -146,7 +141,7 @@ public sealed class ArchiveVerifierTests : IDisposable
     [Fact]
     public async Task VerifyAsync_when_corruptedTarGzFile_expected_false()
     {
-        var archivePath = Path.Combine(_tempDir, "corrupt.tar.gz");
+        var archivePath = Path.Combine(_temp.Path, "corrupt.tar.gz");
         await File.WriteAllBytesAsync(archivePath, [0x00, 0x01, 0x02, 0x03, 0xFF, 0xFE]);
 
         var result = await _sut.VerifyAsync(archivePath, "tar.gz");
@@ -168,7 +163,7 @@ public sealed class ArchiveVerifierTests : IDisposable
     {
         var notATar = new byte[600];
         new Random(7).NextBytes(notATar);
-        var archivePath = Path.Combine(_tempDir, $"bad.{format}");
+        var archivePath = Path.Combine(_temp.Path, $"bad.{format}");
         await File.WriteAllBytesAsync(archivePath, CompressRaw(format, notATar));
 
         var result = await _sut.VerifyAsync(archivePath, format);
@@ -183,7 +178,7 @@ public sealed class ArchiveVerifierTests : IDisposable
     [InlineData("tar.lz4")]
     public async Task VerifyAsync_when_validTarBundle_expected_true(string format)
     {
-        var archivePath = Path.Combine(_tempDir, $"good.{format}");
+        var archivePath = Path.Combine(_temp.Path, $"good.{format}");
         await File.WriteAllBytesAsync(archivePath, CompressRaw(format, TarBytes("file.log", "hello tar"u8.ToArray())));
 
         var result = await _sut.VerifyAsync(archivePath, format);
@@ -198,7 +193,7 @@ public sealed class ArchiveVerifierTests : IDisposable
     {
         // The unknown-format fallback must actually open the file — a
         // missing (or unreadable) file cannot verify as readable.
-        var result = await _sut.VerifyAsync(Path.Combine(_tempDir, "missing.bin"), "unknown");
+        var result = await _sut.VerifyAsync(Path.Combine(_temp.Path, "missing.bin"), "unknown");
 
         Assert.False(result);
     }
@@ -270,7 +265,7 @@ public sealed class ArchiveVerifierTests : IDisposable
     {
         // Zero is a legal expected size (an empty source file) — it must be
         // treated as a size to compare against, never rejected as invalid.
-        var archivePath = Path.Combine(_tempDir, "nonempty.gz");
+        var archivePath = Path.Combine(_temp.Path, "nonempty.gz");
         await CreateValidGzAsync(archivePath);
 
         var result = await _sut.VerifyAsync(archivePath, "gz", expectedUncompressedSize: 0);
@@ -294,7 +289,7 @@ public sealed class ArchiveVerifierTests : IDisposable
     {
         var strategy = new Wolfgang.LogCompressor.Service.Compression.CompressionStrategyFactory()
             .Create(Enum.Parse<Wolfgang.LogCompressor.Model.CompressionFormat>(formatName, ignoreCase: true));
-        var archivePath = Path.Combine(_tempDir, $"empty-source.{strategy.FileExtension}");
+        var archivePath = Path.Combine(_temp.Path, $"empty-source.{strategy.FileExtension}");
         using (var input = new MemoryStream())
         {
             var output = File.Create(archivePath);
@@ -358,7 +353,7 @@ public sealed class ArchiveVerifierTests : IDisposable
     [Fact]
     public async Task VerifyAsync_when_unknownFormat_expected_fallbackReadable()
     {
-        var filePath = Path.Combine(_tempDir, "test.txt");
+        var filePath = Path.Combine(_temp.Path, "test.txt");
         await File.WriteAllTextAsync(filePath, "hello world");
 
         var result = await _sut.VerifyAsync(filePath, "unknown");
@@ -373,7 +368,7 @@ public sealed class ArchiveVerifierTests : IDisposable
     {
         var result = await _sut.VerifyAsync
         (
-            Path.Combine(_tempDir, "nonexistent.zip"),
+            Path.Combine(_temp.Path, "nonexistent.zip"),
             "zip"
         );
 
@@ -388,7 +383,7 @@ public sealed class ArchiveVerifierTests : IDisposable
         // Regression for the fuzz finding (#68): GZipStream returns partial
         // data on truncated input instead of throwing, so the verifier must
         // check the gzip CRC/length trailer itself.
-        var archivePath = Path.Combine(_tempDir, "test.gz");
+        var archivePath = Path.Combine(_temp.Path, "test.gz");
         await CreateValidGzAsync(archivePath);
         await TruncateAsync(archivePath, bytesToRemove: 4);
 
@@ -404,7 +399,7 @@ public sealed class ArchiveVerifierTests : IDisposable
     {
         // Brotli has no checksum in the format; the expected-size comparison
         // is what catches a truncated stream that decodes without error.
-        var archivePath = Path.Combine(_tempDir, "test.br");
+        var archivePath = Path.Combine(_temp.Path, "test.br");
         await CreateValidBrotliAsync(archivePath);
         await TruncateAsync(archivePath, bytesToRemove: 2);
 
@@ -418,7 +413,7 @@ public sealed class ArchiveVerifierTests : IDisposable
     [Fact]
     public async Task VerifyAsync_when_gzDecompressesToUnexpectedSize_expected_false()
     {
-        var archivePath = Path.Combine(_tempDir, "test.gz");
+        var archivePath = Path.Combine(_temp.Path, "test.gz");
         await CreateValidGzAsync(archivePath);
 
         var result = await _sut.VerifyAsync(archivePath, "gz", "test content"u8.Length + 1);
@@ -431,7 +426,7 @@ public sealed class ArchiveVerifierTests : IDisposable
     [Fact]
     public async Task VerifyAsync_when_truncatedTarGzFile_expected_false()
     {
-        var archivePath = Path.Combine(_tempDir, "test.tar.gz");
+        var archivePath = Path.Combine(_temp.Path, "test.tar.gz");
         await CreateValidTarGzAsync(archivePath);
         await TruncateAsync(archivePath, bytesToRemove: 4);
 
@@ -445,7 +440,7 @@ public sealed class ArchiveVerifierTests : IDisposable
     [Fact]
     public async Task VerifyAsync_when_negativeExpectedSize_expected_throws()
     {
-        var archivePath = Path.Combine(_tempDir, "test.gz");
+        var archivePath = Path.Combine(_temp.Path, "test.gz");
         await CreateValidGzAsync(archivePath);
 
         await Assert.ThrowsAsync<ArgumentOutOfRangeException>
@@ -462,7 +457,7 @@ public sealed class ArchiveVerifierTests : IDisposable
         // A stream whose CRC matches but whose ISIZE field lies: only the
         // length-trailer comparison can catch this, so patch the last 4 bytes
         // of an otherwise valid archive.
-        var archivePath = Path.Combine(_tempDir, "test.gz");
+        var archivePath = Path.Combine(_temp.Path, "test.gz");
         await CreateValidGzAsync(archivePath);
         var bytes = await File.ReadAllBytesAsync(archivePath);
         bytes[^4] ^= 0xFF;
@@ -488,7 +483,7 @@ public sealed class ArchiveVerifierTests : IDisposable
             0x03, 0x00,
             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
         ];
-        var archivePath = Path.Combine(_tempDir, "test.gz");
+        var archivePath = Path.Combine(_temp.Path, "test.gz");
         await File.WriteAllBytesAsync(archivePath, emptyGz[..16]);
 
         var result = await _sut.VerifyAsync(archivePath, "gz");
@@ -504,7 +499,7 @@ public sealed class ArchiveVerifierTests : IDisposable
         // A stored (uncompressed) entry puts the content bytes verbatim in the
         // file, so one flipped byte leaves the central directory readable and
         // only the CRC-32 check on reading the entry data can catch it.
-        var archivePath = Path.Combine(_tempDir, "bad-entry.zip");
+        var archivePath = Path.Combine(_temp.Path, "bad-entry.zip");
         var content = "zip-entry-payload-0123456789"u8.ToArray();
         await using (var fileStream = File.Create(archivePath))
         {
@@ -602,12 +597,14 @@ public sealed class ArchiveVerifierTests : IDisposable
         await tarWriter.WriteEntryAsync(entry);
     }
 
+
+
     [Theory]
     [InlineData("zst")]
     [InlineData("lz4")]
     public async Task VerifyAsync_when_validZstdOrLz4_expected_true(string format)
     {
-        var archivePath = Path.Combine(_tempDir, "test." + format);
+        var archivePath = Path.Combine(_temp.Path, "test." + format);
         await using (var fileStream = File.Create(archivePath))
         {
             Stream compressor = string.Equals(format, "zst", StringComparison.Ordinal)
@@ -634,7 +631,7 @@ public sealed class ArchiveVerifierTests : IDisposable
         // Neither format guarantees a content checksum, so — like brotli —
         // the expected-size comparison is the completeness gate (#3/#4
         // revival on top of the hardened verifier).
-        var archivePath = Path.Combine(_tempDir, "test." + format);
+        var archivePath = Path.Combine(_temp.Path, "test." + format);
         await using (var fileStream = File.Create(archivePath))
         {
             Stream compressor = string.Equals(format, "zst", StringComparison.Ordinal)
@@ -652,5 +649,4 @@ public sealed class ArchiveVerifierTests : IDisposable
 
         Assert.False(result);
     }
-
 }

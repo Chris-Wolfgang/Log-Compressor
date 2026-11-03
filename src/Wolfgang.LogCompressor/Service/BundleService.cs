@@ -147,8 +147,14 @@ internal class BundleService
             return await CompressAndDeleteAsync(filtered, outputPath, strategy, options, cancellationToken)
                 .ConfigureAwait(false);
         }
-        catch (Exception ex) when (ex is not OperationCanceledException)
+        catch (OperationCanceledException)
         {
+            ArchiveWorkFile.DeleteQuietly(_fileSystem, _logger, ArchiveWorkFile.GetPartialPath(outputPath));
+            throw;
+        }
+        catch (Exception ex)
+        {
+            ArchiveWorkFile.DeleteQuietly(_fileSystem, _logger, ArchiveWorkFile.GetPartialPath(outputPath));
             _logger.LogError(ex, "Failed to bundle files from {Source}: {Message}", options.SourcePath, ex.Message);
 
             return new CompressionResult
@@ -234,7 +240,18 @@ internal class BundleService
 
         long compressedSize;
 
-        await using (var outputStream = _fileSystem.CreateWrite(outputPath))
+        // Written under a .partial name and moved to outputPath only once it is
+        // complete and verified, so a crash or failure never leaves a file at
+        // the final name that would block every later bundle of these files.
+        var partialPath = ArchiveWorkFile.GetPartialPath(outputPath);
+
+        // A leftover from a crashed earlier attempt at this same path.
+        if (_fileSystem.FileExists(partialPath))
+        {
+            _fileSystem.DeleteFile(partialPath);
+        }
+
+        await using (var outputStream = _fileSystem.CreateWrite(partialPath))
         {
             await strategy.CompressFilesAsync(OpenInputsAsync(cancellationToken), outputStream, cancellationToken).ConfigureAwait(false);
             await outputStream.FlushAsync(cancellationToken).ConfigureAwait(false);
@@ -244,7 +261,7 @@ internal class BundleService
         if (bundled.Count == 0)
         {
             // Every candidate file was unreadable — remove the empty archive.
-            _fileSystem.DeleteFile(outputPath);
+            _fileSystem.DeleteFile(partialPath);
             _logger.LogError("No readable files to bundle from {Source}; {Skipped} file(s) skipped", options.SourcePath, skipped);
 
             return new CompressionResult
@@ -260,9 +277,13 @@ internal class BundleService
 
         // Verify after the write stream is closed (the verifier opens the archive
         // for reading) and before any deletion.
-        if (options.Verify && !await _archiveVerifier.VerifyAsync(outputPath, strategy.BundleFileExtension).ConfigureAwait(false))
+        if (options.Verify && !await _archiveVerifier.VerifyAsync(partialPath, strategy.BundleFileExtension).ConfigureAwait(false))
         {
-            _logger.LogError("Archive verification failed for {Output}, original files preserved", outputPath);
+            // Kept for inspection (ADR-0003) under a name that neither counts as
+            // an archive nor blocks the next run.
+            var failedPath = ArchiveWorkFile.GetFailedPath(outputPath);
+            _fileSystem.MoveFile(partialPath, failedPath, overwrite: true);
+            _logger.LogError("Archive verification failed for {Output}, original files preserved, suspect archive kept as {Failed}", outputPath, failedPath);
 
             return new CompressionResult
             {
@@ -274,6 +295,8 @@ internal class BundleService
                 ErrorMessage = "Archive verification failed."
             };
         }
+
+        _fileSystem.MoveFile(partialPath, outputPath, overwrite: false);
 
         // Delete only the files that were successfully bundled; skipped (unreadable)
         // files are left in place.
@@ -341,7 +364,8 @@ internal class BundleService
             // output, and the single-instance lock file — this run's own live lock
             // sits in the source directory and must never be bundled/deleted
             // (#172).
-            .Where(p => !RetentionService.IsArchiveFile(p) && !ProcessLock.IsLockFile(p))
+            // A .partial/.failed archive of an earlier run is ours too.
+            .Where(p => !RetentionService.IsArchiveFile(p) && !ArchiveWorkFile.IsWorkFile(p) && !ProcessLock.IsLockFile(p))
             .Select(p => _fileSystem.GetFileInfo(p))
             .ToList();
     }

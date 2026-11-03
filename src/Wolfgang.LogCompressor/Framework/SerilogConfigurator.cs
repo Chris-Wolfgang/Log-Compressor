@@ -58,7 +58,7 @@ internal static class SerilogConfigurator
         {
             configuration.WriteTo.File
             (
-                path: options.File.Path,
+                path: FileSinkOptions.ResolvePath(options.File.Path, AppContext.BaseDirectory),
                 restrictedToMinimumLevel: options.File.MinimumLevel,
                 outputTemplate: options.File.OutputTemplate,
                 fileSizeLimitBytes: options.File.FileSizeLimitBytes,

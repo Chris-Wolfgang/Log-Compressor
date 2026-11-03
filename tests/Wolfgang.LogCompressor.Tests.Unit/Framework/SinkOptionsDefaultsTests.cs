@@ -10,7 +10,7 @@ namespace Wolfgang.LogCompressor.Tests.Unit.Framework;
 public sealed class SinkOptionsDefaultsTests
 {
     [Fact]
-    public void ConsoleSinkOptions_defaults_expected_enabled()
+    public void Ctor_when_consoleSinkOptionsDefault_expected_enabled()
     {
         var sut = new ConsoleSinkOptions();
 
@@ -20,7 +20,7 @@ public sealed class SinkOptionsDefaultsTests
 
 
     [Fact]
-    public void FileSinkOptions_defaults_expected_enabledRollingTenMiB()
+    public void Ctor_when_fileSinkOptionsDefault_expected_enabledRollingTenMiB()
     {
         var sut = new FileSinkOptions();
 
@@ -32,7 +32,7 @@ public sealed class SinkOptionsDefaultsTests
 
 
     [Fact]
-    public void FileSinkOptions_defaults_expected_dailyRollingPathUnderLogs()
+    public void Ctor_when_fileSinkOptionsDefault_expected_dailyRollingPathUnderLogs()
     {
         var sut = new FileSinkOptions();
 

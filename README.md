@@ -11,12 +11,12 @@ A cross-platform .NET CLI (`logc`) for compressing log files. Built for **unatte
 
 ## ✨ Features
 
-- **Two compression modes:**
+- **Commands:**
   - `logc compress <path>` — produces **one archive per source file** (each log gets its own `.zip` / `.gz` / `.br` / `.zst` / `.lz4`)
   - `logc bundle <path>` — produces **one archive containing many files** (good for end-of-month rollups)
   - `logc init` — generates **starter configuration files** (`compress.rsp` / `bundle.rsp`) for scheduled jobs
   - `logc decompress <path>` — **extracts** logc archives (all formats, singles and bundles); archives are deleted only after every entry extracted successfully
-- **Five formats:** ZIP (default), GZip (`.gz` / `.tar.gz`), Brotli (`.br` / `.tar.br`), Zstandard (`.zst` / `.tar.zst`), LZ4 (`.lz4` / `.tar.lz4`) — raw extension for single files, `.tar.*` for bundles
+- **Five formats:** ZIP (default), GZip (`.gz` / `.tar.gz`), Brotli (`.br` / `.tar.br`), Zstandard (`.zst` / `.tar.zst`), LZ4 (`.lz4` / `.tar.lz4`) — raw extension for single files; bundles are `.zip` for ZIP and `.tar.*` for the other formats
 - **Filtering:**
   - `-r|--recurse` — descend into subdirectories
   - `--older-than <days>` — only files modified N+ calendar days ago
@@ -294,13 +294,14 @@ Numbers are single-run wall-clock on one machine — treat relative differences 
 
 ## 🧩 Architecture
 
-Three layers, all `internal` and exposed to the test project via `InternalsVisibleTo`:
+Everything is `internal` and exposed to the test projects (unit, integration, fuzz) and the benchmarks via `InternalsVisibleTo`:
 
-| Layer | Examples |
+| Layer | Contents |
 |-------|----------|
-| **Command** | `SharedOptions`, `Compress`, `Bundle` (McMaster CommandLineUtils) |
-| **Service** | `CompressService`, `BundleService`, `FileFilterService`, `FileNamingService`, compression strategies |
-| **Abstraction** | `IFileSystem`, `ICompressionStrategy`, `IFileFilter`, `IFileNamer` |
+| **Command** | `Compress`, `Bundle`, `Decompress`, `Init` / `InitCompress` / `InitBundle`, the shared `SharedOptions` and `RunOptionValidation` (McMaster CommandLineUtils) |
+| **Service** | `CompressService`, `BundleService`, `DecompressService`, `ArchiveVerifier`, `RetentionService`, `ReportService`, `ProcessLock`, `FileFilterService`, `FileNamingService`, `FileSystemWrapper`, compression strategies |
+| **Abstraction** | `IFileSystem`, `ICompressionStrategy`, `IArchiveVerifier`, `IFileFilter`, `IFileNamer` |
+| **Framework** | Hosting and logging set-up: `SerilogConfigurator`, sink options, `ResponseFileSanitizer` |
 
 Compression strategies (`ZipCompressionStrategy`, `GZipCompressionStrategy`, `BrotliCompressionStrategy`, `ZstdCompressionStrategy`, `Lz4CompressionStrategy`) are dispatched via `CompressionStrategyFactory`. The non-ZIP formats use `System.Formats.Tar.TarWriter` to wrap many files into a single tar before compressing — `.tar.gz`, `.tar.br`, `.tar.zst`, and `.tar.lz4` respectively. Zstandard uses [ZstdSharp.Port](https://www.nuget.org/packages/ZstdSharp.Port/) and LZ4 uses [K4os.Compression.LZ4](https://www.nuget.org/packages/K4os.Compression.LZ4.Streams/) (both pure-managed, cross-platform).
 
@@ -336,8 +337,8 @@ The output lands in `bin/Release/net10.0/linux-x64/publish/` as `logc` alongside
 
 | Metric | Value |
 |--------|-------|
-| Unit tests (xunit 2.9.3, NSubstitute) | 183 |
-| Integration tests (real file system, all OSes) | 14 |
+| Tests | xunit 2.9.3: unit (NSubstitute), integration (real file system, all OSes) and property-based fuzz (CsCheck) projects |
+| Mutation testing | Stryker.NET; the score floor is in [`docs/stryker-baseline.json`](docs/stryker-baseline.json) |
 | Code coverage | 100% line, 95% branch; 95% per-module gate in CI |
 | Benchmarks | BenchmarkDotNet (compression-format throughput) |
 

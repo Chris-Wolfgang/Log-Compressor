@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1792304537407,
+  "lastUpdate": 1794142269455,
   "repoUrl": "https://github.com/Chris-Wolfgang/Log-Compressor",
   "entries": {
     "Mutation score": [
@@ -102,6 +102,33 @@ window.BENCHMARK_DATA = {
           "url": "https://github.com/Chris-Wolfgang/Log-Compressor/commit/972607e7dffc0b146848835d4f36c141b58f7a79"
         },
         "date": 1792304533923,
+        "tool": "customBiggerIsBetter",
+        "benches": [
+          {
+            "name": "Mutation score",
+            "value": 95.27,
+            "unit": "%"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "name": "Chris Wolfgang",
+            "username": "Chris-Wolfgang",
+            "email": "210299580+Chris-Wolfgang@users.noreply.github.com"
+          },
+          "committer": {
+            "name": "GitHub",
+            "username": "web-flow",
+            "email": "noreply@github.com"
+          },
+          "id": "d0738cbb171e7a8b291127fadfff0ff3c6b18fbf",
+          "message": "ci(semgrep): run on Python 3.14; semgrep-core crashes on 3.15 (semgrep/semgrep#11979) (#396)\n\nCo-authored-by: Claude Opus 5.5 <noreply@anthropic.com>",
+          "timestamp": "2026-11-03T02:15:17Z",
+          "url": "https://github.com/Chris-Wolfgang/Log-Compressor/commit/d0738cbb171e7a8b291127fadfff0ff3c6b18fbf"
+        },
+        "date": 1794142266543,
         "tool": "customBiggerIsBetter",
         "benches": [
           {

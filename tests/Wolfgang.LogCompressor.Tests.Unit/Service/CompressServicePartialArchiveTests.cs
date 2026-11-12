@@ -193,8 +193,9 @@ public sealed class CompressServicePartialArchiveTests : IDisposable
     public async Task ExecuteAsync_when_canceledDuringVerification_expected_tokenPassedPartialDeletedAndCancellationPropagates()
     {
         using var cts = new CancellationTokenSource();
+        var token = cts.Token;
         _archiveVerifier.VerifyAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<long?>(), Arg.Any<CancellationToken>())
-            .Returns<Task<bool>>(_ => throw new OperationCanceledException(cts.Token));
+            .Returns<Task<bool>>(_ => throw new OperationCanceledException(token));
         _fileSystem.When(f => f.CreateWrite(_partial)).Do(_ => _fileSystem.FileExists(_partial).Returns(returnThis: true));
 
         await Assert.ThrowsAsync<OperationCanceledException>

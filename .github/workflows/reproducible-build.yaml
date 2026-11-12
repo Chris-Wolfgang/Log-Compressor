@@ -104,8 +104,14 @@ jobs:
         with:
           persist-credentials: false
 
+      # Install the SDK into a job-local directory so both legs build with Microsoft's
+      # published SDK. Without this, setup-dotnet reuses an SDK the runner image already
+      # ships when the version matches, and an image-provided build of the same SDK
+      # version does not always emit the same bytes as Microsoft's on the other OS.
       - name: Setup .NET
         uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
+        env:
+          DOTNET_INSTALL_DIR: ${{ runner.temp }}/dotnet
         with:
           dotnet-version: '10.0.x'
 

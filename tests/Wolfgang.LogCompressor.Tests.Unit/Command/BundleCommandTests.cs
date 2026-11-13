@@ -400,4 +400,38 @@ public sealed class BundleCommandTests : IDisposable
         _retentionFileSystem.Received(1).DirectoryExists(Path.GetFullPath(outputDir));
     }
 
+
+
+    [Fact]
+    public async Task OnExecuteAsync_when_directorySourceWithRetention_expected_parentScannedAndOnlyThisBundlesArchivesDeleted()
+    {
+        // A directory is bundled into its PARENT, which usually holds other
+        // applications' files: retention must delete only archives named like
+        // this bundle's (#352).
+        var logDir = Path.Combine(_tempDir, "MyApp");
+        Directory.CreateDirectory(logDir);
+        var own = Path.Combine(_tempDir, "MyApp-2026-01-01_00-00-00 to 2026-01-02_00-00-00.zip");
+        var otherApp = Path.Combine(_tempDir, "OtherApp-2026-01-01_00-00-00 to 2026-01-02_00-00-00.zip");
+        var thirdParty = Path.Combine(_tempDir, "backup.zip");
+        foreach (var path in new[] { own, otherApp, thirdParty })
+        {
+            await File.WriteAllTextAsync(path, "x");
+            File.SetLastWriteTime(path, DateTime.Today.AddDays(-90));
+            _retentionFileSystem.GetFileInfo(path).Returns(new FileInfo(path));
+        }
+
+        _retentionFileSystem.DirectoryExists(Path.GetFullPath(_tempDir)).Returns(returnThis: true);
+        _retentionFileSystem.EnumerateFiles(Path.GetFullPath(_tempDir), "*", SearchOption.TopDirectoryOnly).Returns([own, otherApp, thirdParty]);
+        _bundleService.ExecuteAsync(Arg.Any<CompressionOptions>(), Arg.Any<CancellationToken>())
+            .Returns(new CompressionResult { SourcePath = logDir, OutputPath = own, Success = true });
+
+        var command = new Bundle { Path = logDir, NoLock = true, DeleteArchivesOlderThan = 30 };
+
+        var result = await command.OnExecuteAsync(_console, _logger, _bundleService, _reportService, _retentionService);
+
+        Assert.Equal(ExitCode.Success, result);
+        _retentionFileSystem.Received(1).DeleteFile(own);
+        _retentionFileSystem.DidNotReceive().DeleteFile(otherApp);
+        _retentionFileSystem.DidNotReceive().DeleteFile(thirdParty);
+    }
 }

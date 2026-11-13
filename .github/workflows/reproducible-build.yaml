@@ -109,7 +109,7 @@ jobs:
       # ships when the version matches, and an image-provided build of the same SDK
       # version does not always emit the same bytes as Microsoft's on the other OS.
       - name: Setup .NET
-        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
+        uses: actions/setup-dotnet@0f4a354dd5547a28c70b7853dbd95d5b67886e73 # v6.1.0
         env:
           DOTNET_INSTALL_DIR: ${{ runner.temp }}/dotnet
         with:

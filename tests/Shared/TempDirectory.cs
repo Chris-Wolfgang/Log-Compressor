@@ -1,9 +1,9 @@
-namespace Wolfgang.LogCompressor.Tests.Unit;
+namespace Wolfgang.LogCompressor.Tests;
 
 /// <summary>
-/// Creates a unique temporary directory for a unit test and deletes it
-/// (best-effort) on dispose. Mirrors the integration-test helper of the same
-/// name so fixtures that touch the real file system leave nothing behind.
+/// Creates a unique temporary directory for a test and deletes it (best-effort) on dispose, so
+/// tests that touch the real file system leave nothing behind. One source file, compiled into the
+/// unit, integration and fuzz test projects as a linked file so the copies cannot drift.
 /// </summary>
 internal sealed class TempDirectory : IDisposable
 {
@@ -16,7 +16,7 @@ internal sealed class TempDirectory : IDisposable
         Path = System.IO.Path.Combine
         (
             System.IO.Path.GetTempPath(),
-            "logc-ut-" + Guid.NewGuid().ToString("N")
+            "logc-test-" + Guid.NewGuid().ToString("N")
         );
 
         Directory.CreateDirectory(Path);

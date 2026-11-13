@@ -63,7 +63,7 @@ public sealed class DecompressionRoundTripTests : IDisposable
     [InlineData("Brotli")]
     [InlineData("Zstd")]
     [InlineData("Lz4")]
-    public async Task Compress_then_decompress_single_file_round_trips_content(string formatName)
+    public async Task ExecuteAsync_when_decompressCompressedFile_expected_contentRoundTrips(string formatName)
     {
         var format = Enum.Parse<CompressionFormat>(formatName);
         var sourceDir = Path.Combine(_tempDir.Path, "src");
@@ -103,7 +103,7 @@ public sealed class DecompressionRoundTripTests : IDisposable
     [InlineData("Zstd")]
     [InlineData("Lz4")]
     [InlineData("Brotli")]
-    public async Task Bundle_then_decompress_round_trips_every_entry(string formatName)
+    public async Task ExecuteAsync_when_decompressBundle_expected_everyEntryRoundTrips(string formatName)
     {
         var format = Enum.Parse<CompressionFormat>(formatName);
         var sourceDir = Path.Combine(_tempDir.Path, "logs");

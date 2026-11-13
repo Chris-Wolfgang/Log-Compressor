@@ -14,7 +14,7 @@ public sealed class DecompressCommandTests : IDisposable
     private readonly ILogger<Decompress> _logger = Substitute.For<ILogger<Decompress>>();
     private readonly DecompressService _decompressService;
     private readonly ReportService _reportService = new(new FileSystemWrapper(), TimeProvider.System);
-    private readonly string _tempDir;
+    private readonly TempDirectory _temp = new();
 
 
 
@@ -30,18 +30,13 @@ public sealed class DecompressCommandTests : IDisposable
             Substitute.For<ILogger<DecompressService>>()
         );
 
-        _tempDir = Path.Combine(Path.GetTempPath(), "DecompressCommandTests_" + Guid.NewGuid());
-        Directory.CreateDirectory(_tempDir);
     }
 
 
 
     public void Dispose()
     {
-        if (Directory.Exists(_tempDir))
-        {
-            Directory.Delete(_tempDir, recursive: true);
-        }
+        _temp.Dispose();
     }
 
 
@@ -67,7 +62,7 @@ public sealed class DecompressCommandTests : IDisposable
         _decompressService.ExecuteAsync(Arg.Any<DecompressionOptions>(), Arg.Any<CancellationToken>())
             .Returns<IReadOnlyList<CompressionResult>>(_ => throw new OperationCanceledException(canceledToken));
 
-        var command = new Decompress { Path = _tempDir, NoLock = true };
+        var command = new Decompress { Path = _temp.Path, NoLock = true };
 
         var result = await command.OnExecuteAsync(_console, _logger, _decompressService, _reportService, cts.Token);
 
@@ -83,7 +78,7 @@ public sealed class DecompressCommandTests : IDisposable
         _decompressService.ExecuteAsync(Arg.Any<DecompressionOptions>(), Arg.Any<CancellationToken>())
             .Returns([Ok()]);
 
-        var command = new Decompress { Path = _tempDir, NoLock = true };
+        var command = new Decompress { Path = _temp.Path, NoLock = true };
 
         var result = await command.OnExecuteAsync(_console, _logger, _decompressService, _reportService);
 
@@ -102,7 +97,7 @@ public sealed class DecompressCommandTests : IDisposable
                 new CompressionResult { SourcePath = "b.zip", OutputPath = "/out", Success = false, ErrorMessage = "boom" }
             ]);
 
-        var command = new Decompress { Path = _tempDir, NoLock = true };
+        var command = new Decompress { Path = _temp.Path, NoLock = true };
 
         var result = await command.OnExecuteAsync(_console, _logger, _decompressService, _reportService);
 
@@ -122,7 +117,7 @@ public sealed class DecompressCommandTests : IDisposable
                 new CompressionResult { SourcePath = "b.zip", OutputPath = "/out", Success = false, ErrorMessage = "boom" }
             ]);
 
-        var command = new Decompress { Path = _tempDir, NoLock = true, OnError = "fail" };
+        var command = new Decompress { Path = _temp.Path, NoLock = true, OnError = "fail" };
 
         var result = await command.OnExecuteAsync(_console, _logger, _decompressService, _reportService);
 
@@ -134,7 +129,7 @@ public sealed class DecompressCommandTests : IDisposable
     [Fact]
     public async Task OnExecuteAsync_when_invalidOnError_expected_invalidArguments()
     {
-        var command = new Decompress { Path = _tempDir, NoLock = true, OnError = "explode" };
+        var command = new Decompress { Path = _temp.Path, NoLock = true, OnError = "explode" };
 
         var result = await command.OnExecuteAsync(_console, _logger, _decompressService, _reportService);
 
@@ -146,7 +141,7 @@ public sealed class DecompressCommandTests : IDisposable
     [Fact]
     public async Task OnExecuteAsync_when_invalidReportFormat_expected_invalidArguments()
     {
-        var command = new Decompress { Path = _tempDir, NoLock = true, Report = "xml" };
+        var command = new Decompress { Path = _temp.Path, NoLock = true, Report = "xml" };
 
         var result = await command.OnExecuteAsync(_console, _logger, _decompressService, _reportService);
 
@@ -159,7 +154,7 @@ public sealed class DecompressCommandTests : IDisposable
     [Fact]
     public async Task OnExecuteAsync_when_reportPathWithoutReport_expected_invalidArguments()
     {
-        var command = new Decompress { Path = _tempDir, NoLock = true, ReportPath = "somewhere.json" };
+        var command = new Decompress { Path = _temp.Path, NoLock = true, ReportPath = "somewhere.json" };
 
         var result = await command.OnExecuteAsync(_console, _logger, _decompressService, _reportService);
 
@@ -174,9 +169,9 @@ public sealed class DecompressCommandTests : IDisposable
     {
         _decompressService.ExecuteAsync(Arg.Any<DecompressionOptions>(), Arg.Any<CancellationToken>())
             .Returns([Ok()]);
-        var reportPath = Path.Combine(_tempDir, "report.json");
+        var reportPath = Path.Combine(_temp.Path, "report.json");
 
-        var command = new Decompress { Path = _tempDir, NoLock = true, Report = "json", ReportPath = reportPath };
+        var command = new Decompress { Path = _temp.Path, NoLock = true, Report = "json", ReportPath = reportPath };
 
         var result = await command.OnExecuteAsync(_console, _logger, _decompressService, _reportService);
 
@@ -191,7 +186,7 @@ public sealed class DecompressCommandTests : IDisposable
     {
         // Directory source: the lock lives INSIDE the directory being
         // processed, not its parent (#194).
-        var lockFile = Path.Combine(_tempDir, ".logc.lock");
+        var lockFile = Path.Combine(_temp.Path, ".logc.lock");
         await using var heldLock = new FileStream
         (
             lockFile,
@@ -200,7 +195,7 @@ public sealed class DecompressCommandTests : IDisposable
             FileShare.None
         );
 
-        var command = new Decompress { Path = _tempDir };
+        var command = new Decompress { Path = _temp.Path };
 
         var result = await command.OnExecuteAsync(_console, _logger, _decompressService, _reportService);
 
@@ -217,7 +212,7 @@ public sealed class DecompressCommandTests : IDisposable
         var stderr = new StringWriter();
         _console.Error.Returns(stderr);
 
-        var command = new Decompress { Path = _tempDir, NoLock = true };
+        var command = new Decompress { Path = _temp.Path, NoLock = true };
 
         var result = await command.OnExecuteAsync(_console, _logger, _decompressService, _reportService);
 
@@ -233,12 +228,12 @@ public sealed class DecompressCommandTests : IDisposable
         DecompressionOptions? captured = null;
         _decompressService.ExecuteAsync(Arg.Do<DecompressionOptions>(o => captured = o), Arg.Any<CancellationToken>())
             .Returns([Ok()]);
-        var outputDir = Path.Combine(_tempDir, "out");
+        var outputDir = Path.Combine(_temp.Path, "out");
         Directory.CreateDirectory(outputDir);
 
         var command = new Decompress
         {
-            Path = _tempDir,
+            Path = _temp.Path,
             Output = outputDir,
             Recurse = true,
             Include = ["*.zip"],
@@ -251,7 +246,7 @@ public sealed class DecompressCommandTests : IDisposable
         await command.OnExecuteAsync(_console, _logger, _decompressService, _reportService);
 
         Assert.NotNull(captured);
-        Assert.Equal(Path.GetFullPath(_tempDir), captured.SourcePath);
+        Assert.Equal(Path.GetFullPath(_temp.Path), captured.SourcePath);
         Assert.Equal(Path.GetFullPath(outputDir), captured.OutputPath);
         Assert.True(captured.Recurse);
         Assert.Equal(["*.zip"], captured.IncludePatterns);
@@ -272,7 +267,7 @@ public sealed class DecompressCommandTests : IDisposable
                 new CompressionResult { SourcePath = "b.zip", OutputPath = "/out", Success = false, ErrorMessage = "boom" }
             ]);
 
-        var command = new Decompress { Path = _tempDir, NoLock = true };
+        var command = new Decompress { Path = _temp.Path, NoLock = true };
 
         await command.OnExecuteAsync(_console, _logger, _decompressService, _reportService);
 
@@ -287,7 +282,7 @@ public sealed class DecompressCommandTests : IDisposable
         _decompressService.ExecuteAsync(Arg.Any<DecompressionOptions>(), Arg.Any<CancellationToken>())
             .Returns([Ok()]);
 
-        var command = new Decompress { Path = _tempDir, NoLock = true };
+        var command = new Decompress { Path = _temp.Path, NoLock = true };
 
         await command.OnExecuteAsync(_console, _logger, _decompressService, _reportService);
 
@@ -300,7 +295,7 @@ public sealed class DecompressCommandTests : IDisposable
     public async Task OnExecuteAsync_when_noLock_andLockHeld_expected_runsAnyway()
     {
         // --no-lock must skip the lock entirely, not merely tolerate a free one.
-        var lockFile = Path.Combine(_tempDir, ".logc.lock");
+        var lockFile = Path.Combine(_temp.Path, ".logc.lock");
         await using var heldLock = new FileStream
         (
             lockFile,
@@ -311,7 +306,7 @@ public sealed class DecompressCommandTests : IDisposable
         _decompressService.ExecuteAsync(Arg.Any<DecompressionOptions>(), Arg.Any<CancellationToken>())
             .Returns([Ok()]);
 
-        var command = new Decompress { Path = _tempDir, NoLock = true };
+        var command = new Decompress { Path = _temp.Path, NoLock = true };
 
         var result = await command.OnExecuteAsync(_console, _logger, _decompressService, _reportService);
 
@@ -325,9 +320,9 @@ public sealed class DecompressCommandTests : IDisposable
     {
         _decompressService.ExecuteAsync(Arg.Any<DecompressionOptions>(), Arg.Any<CancellationToken>())
             .Returns([Ok()]);
-        var reportPath = Path.Combine(_tempDir, "report.csv");
+        var reportPath = Path.Combine(_temp.Path, "report.csv");
 
-        var command = new Decompress { Path = _tempDir, NoLock = true, Report = "csv", ReportPath = reportPath };
+        var command = new Decompress { Path = _temp.Path, NoLock = true, Report = "csv", ReportPath = reportPath };
 
         var result = await command.OnExecuteAsync(_console, _logger, _decompressService, _reportService);
 
@@ -346,7 +341,7 @@ public sealed class DecompressCommandTests : IDisposable
         fileSystem.CreateWrite(Arg.Any<string>()).Returns(_ => new MemoryStream());
         var reportService = new ReportService(fileSystem, TimeProvider.System);
 
-        var command = new Decompress { Path = _tempDir, NoLock = true, Report = "csv" };
+        var command = new Decompress { Path = _temp.Path, NoLock = true, Report = "csv" };
 
         var result = await command.OnExecuteAsync(_console, _logger, _decompressService, reportService);
 
@@ -365,7 +360,7 @@ public sealed class DecompressCommandTests : IDisposable
         // decompress (#353).
         _decompressService.ExecuteAsync(Arg.Any<DecompressionOptions>(), Arg.Any<CancellationToken>())
             .Returns([Ok()]);
-        var command = new Decompress { Path = _tempDir, NoLock = true, Report = format, ReportPath = Path.Combine(_tempDir, "r.report") };
+        var command = new Decompress { Path = _temp.Path, NoLock = true, Report = format, ReportPath = Path.Combine(_temp.Path, "r.report") };
 
         var exitCode = await command.OnExecuteAsync(_console, _logger, _decompressService, _reportService);
 

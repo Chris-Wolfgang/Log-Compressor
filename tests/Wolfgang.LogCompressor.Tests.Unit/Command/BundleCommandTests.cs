@@ -16,7 +16,7 @@ public sealed class BundleCommandTests : IDisposable
     private readonly ReportService _reportService = new(new FileSystemWrapper(), TimeProvider.System);
     private readonly IFileSystem _retentionFileSystem = Substitute.For<IFileSystem>();
     private readonly RetentionService _retentionService;
-    private readonly string _tempDir;
+    private readonly TempDirectory _temp = new();
 
 
 
@@ -42,18 +42,13 @@ public sealed class BundleCommandTests : IDisposable
             TimeProvider.System
         );
 
-        _tempDir = Path.Combine(Path.GetTempPath(), "BundleCommandTests_" + Guid.NewGuid());
-        Directory.CreateDirectory(_tempDir);
     }
 
 
 
     public void Dispose()
     {
-        if (Directory.Exists(_tempDir))
-        {
-            Directory.Delete(_tempDir, recursive: true);
-        }
+        _temp.Dispose();
     }
 
 
@@ -204,7 +199,7 @@ public sealed class BundleCommandTests : IDisposable
                 }
             );
 
-        var reportPath = Path.Combine(_tempDir, "bundle-report.csv");
+        var reportPath = Path.Combine(_temp.Path, "bundle-report.csv");
         var command = new Bundle
         {
             Path = "/tmp/logs",
@@ -255,8 +250,8 @@ public sealed class BundleCommandTests : IDisposable
             (
                 new CompressionResult
                 {
-                    SourcePath = _tempDir,
-                    OutputPath = Path.Combine(_tempDir, "bundle.zip"),
+                    SourcePath = _temp.Path,
+                    OutputPath = Path.Combine(_temp.Path, "bundle.zip"),
                     Success = true,
                     OriginalSize = 1000,
                     CompressedSize = 200
@@ -265,7 +260,7 @@ public sealed class BundleCommandTests : IDisposable
 
         // NoLock omitted -> the real ProcessLock acquires a lock in the source
         // directory (a clean temp dir, so acquisition succeeds and is released).
-        var command = new Bundle { Path = Path.Combine(_tempDir, "logs") };
+        var command = new Bundle { Path = Path.Combine(_temp.Path, "logs") };
 
         var result = await command.OnExecuteAsync(_console, _logger, _bundleService, _reportService, _retentionService);
 
@@ -280,7 +275,7 @@ public sealed class BundleCommandTests : IDisposable
         // Hold the lock file open with FileShare.None — an open handle IS the
         // lock under the OpenOrCreate protocol (a mere leftover file no longer
         // blocks; see #172) — so the command's ProcessLock.TryAcquire fails.
-        var lockFile = Path.Combine(_tempDir, ".logc.lock");
+        var lockFile = Path.Combine(_temp.Path, ".logc.lock");
         await using var heldLock = new FileStream
         (
             lockFile,
@@ -289,7 +284,7 @@ public sealed class BundleCommandTests : IDisposable
             FileShare.None
         );
 
-        var command = new Bundle { Path = Path.Combine(_tempDir, "logs") };
+        var command = new Bundle { Path = Path.Combine(_temp.Path, "logs") };
 
         var result = await command.OnExecuteAsync(_console, _logger, _bundleService, _reportService, _retentionService);
 
@@ -315,25 +310,21 @@ public sealed class BundleCommandTests : IDisposable
             );
 
         // Report set but ReportPath omitted -> the default "bundle-report.<fmt>"
-        // name (relative to the working directory) is used.
-        const string defaultReport = "bundle-report.json";
-        try
-        {
-            var command = new Bundle { Path = "/tmp/logs", NoLock = true, Report = "json" };
+        // name (relative to the working directory) is used. A substitute file
+        // system records the path without writing into the test host's working
+        // directory, where parallel tests would race on it.
+        var fileSystem = Substitute.For<IFileSystem>();
+        fileSystem.CreateWrite(Arg.Any<string>()).Returns(_ => new MemoryStream());
+        var reportService = new ReportService(fileSystem, TimeProvider.System);
+        var command = new Bundle { Path = "/tmp/logs", NoLock = true, Report = "json" };
 
-            var result = await command.OnExecuteAsync(_console, _logger, _bundleService, _reportService, _retentionService);
+        var result = await command.OnExecuteAsync(_console, _logger, _bundleService, reportService, _retentionService);
 
-            Assert.Equal(ExitCode.Success, result);
-            Assert.True(File.Exists(defaultReport));
-        }
-        finally
-        {
-            if (File.Exists(defaultReport))
-            {
-                File.Delete(defaultReport);
-            }
-        }
+        Assert.Equal(ExitCode.Success, result);
+        fileSystem.Received(1).CreateWrite("bundle-report.json");
     }
+
+
 
     [Fact]
     public async Task OnExecuteAsync_when_bundleSucceeds_withoutReport_expected_success()
@@ -341,7 +332,7 @@ public sealed class BundleCommandTests : IDisposable
         _bundleService.ExecuteAsync(Arg.Any<CompressionOptions>(), Arg.Any<CancellationToken>())
             .Returns(new CompressionResult { SourcePath = "logs", OutputPath = "logs.zip", Success = true });
 
-        var command = new Bundle { Path = _tempDir, NoLock = true };
+        var command = new Bundle { Path = _temp.Path, NoLock = true };
 
         var result = await command.OnExecuteAsync(_console, _logger, _bundleService, _reportService, _retentionService);
 
@@ -358,7 +349,7 @@ public sealed class BundleCommandTests : IDisposable
         var stderr = new StringWriter();
         _console.Error.Returns(stderr);
 
-        var command = new Bundle { Path = _tempDir, NoLock = true };
+        var command = new Bundle { Path = _temp.Path, NoLock = true };
 
         var result = await command.OnExecuteAsync(_console, _logger, _bundleService, _reportService, _retentionService);
 
@@ -374,13 +365,13 @@ public sealed class BundleCommandTests : IDisposable
         _bundleService.ExecuteAsync(Arg.Any<CompressionOptions>(), Arg.Any<CancellationToken>())
             .Returns(new CompressionResult { SourcePath = "logs", OutputPath = "logs.zip", Success = true });
 
-        var command = new Bundle { Path = _tempDir, NoLock = true, DeleteArchivesOlderThan = 30 };
+        var command = new Bundle { Path = _temp.Path, NoLock = true, DeleteArchivesOlderThan = 30 };
 
         await command.OnExecuteAsync(_console, _logger, _bundleService, _reportService, _retentionService);
 
         // Bundle writes next to the source directory, so retention scans the
         // source's PARENT (GetDirectoryName of the source path).
-        _retentionFileSystem.Received(1).DirectoryExists(Path.GetDirectoryName(Path.GetFullPath(_tempDir))!);
+        _retentionFileSystem.Received(1).DirectoryExists(Path.GetDirectoryName(Path.GetFullPath(_temp.Path))!);
     }
 
 
@@ -390,10 +381,10 @@ public sealed class BundleCommandTests : IDisposable
     {
         _bundleService.ExecuteAsync(Arg.Any<CompressionOptions>(), Arg.Any<CancellationToken>())
             .Returns(new CompressionResult { SourcePath = "logs", OutputPath = "logs.zip", Success = true });
-        var outputDir = Path.Combine(_tempDir, "archives");
+        var outputDir = Path.Combine(_temp.Path, "archives");
         Directory.CreateDirectory(outputDir);
 
-        var command = new Bundle { Path = _tempDir, Output = outputDir, NoLock = true, DeleteArchivesOlderThan = 30 };
+        var command = new Bundle { Path = _temp.Path, Output = outputDir, NoLock = true, DeleteArchivesOlderThan = 30 };
 
         await command.OnExecuteAsync(_console, _logger, _bundleService, _reportService, _retentionService);
 
@@ -408,11 +399,11 @@ public sealed class BundleCommandTests : IDisposable
         // A directory is bundled into its PARENT, which usually holds other
         // applications' files: retention must delete only archives named like
         // this bundle's (#352).
-        var logDir = Path.Combine(_tempDir, "MyApp");
+        var logDir = Path.Combine(_temp.Path, "MyApp");
         Directory.CreateDirectory(logDir);
-        var own = Path.Combine(_tempDir, "MyApp-2026-01-01_00-00-00 to 2026-01-02_00-00-00.zip");
-        var otherApp = Path.Combine(_tempDir, "OtherApp-2026-01-01_00-00-00 to 2026-01-02_00-00-00.zip");
-        var thirdParty = Path.Combine(_tempDir, "backup.zip");
+        var own = Path.Combine(_temp.Path, "MyApp-2026-01-01_00-00-00 to 2026-01-02_00-00-00.zip");
+        var otherApp = Path.Combine(_temp.Path, "OtherApp-2026-01-01_00-00-00 to 2026-01-02_00-00-00.zip");
+        var thirdParty = Path.Combine(_temp.Path, "backup.zip");
         foreach (var path in new[] { own, otherApp, thirdParty })
         {
             await File.WriteAllTextAsync(path, "x");
@@ -420,8 +411,8 @@ public sealed class BundleCommandTests : IDisposable
             _retentionFileSystem.GetFileInfo(path).Returns(new FileInfo(path));
         }
 
-        _retentionFileSystem.DirectoryExists(Path.GetFullPath(_tempDir)).Returns(returnThis: true);
-        _retentionFileSystem.EnumerateFiles(Path.GetFullPath(_tempDir), "*", SearchOption.TopDirectoryOnly).Returns([own, otherApp, thirdParty]);
+        _retentionFileSystem.DirectoryExists(Path.GetFullPath(_temp.Path)).Returns(returnThis: true);
+        _retentionFileSystem.EnumerateFiles(Path.GetFullPath(_temp.Path), "*", SearchOption.TopDirectoryOnly).Returns([own, otherApp, thirdParty]);
         _bundleService.ExecuteAsync(Arg.Any<CompressionOptions>(), Arg.Any<CancellationToken>())
             .Returns(new CompressionResult { SourcePath = logDir, OutputPath = own, Success = true });
 
@@ -442,7 +433,7 @@ public sealed class BundleCommandTests : IDisposable
     {
         _bundleService.ExecuteAsync(Arg.Any<CompressionOptions>(), Arg.Any<CancellationToken>())
             .Returns(new CompressionResult { SourcePath = "/tmp/logs", OutputPath = string.Empty, Success = true });
-        var reportPath = Path.Combine(_tempDir, "empty-report.csv");
+        var reportPath = Path.Combine(_temp.Path, "empty-report.csv");
 
         var command = new Bundle { Path = "/tmp/logs", NoLock = true, Report = "csv", ReportPath = reportPath };
 

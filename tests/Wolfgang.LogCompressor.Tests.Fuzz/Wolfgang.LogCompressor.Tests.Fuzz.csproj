@@ -11,6 +11,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <!-- One shared copy of the temp-directory fixture and its tests (see tests/Shared). -->
+    <Compile Include="..\Shared\TempDirectory.cs" Link="TempDirectory.cs" />
+    <Compile Include="..\Shared\TempDirectoryTests.cs" Link="TempDirectoryTests.cs" />
+    <Using Include="Xunit" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\src\Wolfgang.LogCompressor\Wolfgang.LogCompressor.csproj" />
   </ItemGroup>
 

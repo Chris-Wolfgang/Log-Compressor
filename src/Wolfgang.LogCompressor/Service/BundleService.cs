@@ -277,7 +277,7 @@ internal class BundleService
 
         // Verify after the write stream is closed (the verifier opens the archive
         // for reading) and before any deletion.
-        if (options.Verify && !await _archiveVerifier.VerifyAsync(partialPath, strategy.BundleFileExtension).ConfigureAwait(false))
+        if (options.Verify && !await _archiveVerifier.VerifyAsync(partialPath, strategy.BundleFileExtension, expectedUncompressedSize: null, cancellationToken).ConfigureAwait(false))
         {
             // Kept for inspection (ADR-0003) under a name that neither counts as
             // an archive nor blocks the next run.

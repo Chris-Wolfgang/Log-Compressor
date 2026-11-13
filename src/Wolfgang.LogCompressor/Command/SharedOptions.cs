@@ -43,7 +43,7 @@ internal abstract class SharedOptions
     [Option
     (
         "-o|--output",
-        Description = "Output directory for compressed files (defaults to source directory)"
+        Description = "Output directory for archives (default: compress - the source directory; bundle - the source's parent directory)"
     )]
     public string? Output { get; set; }
 
@@ -280,15 +280,10 @@ internal abstract class SharedOptions
             return false;
         }
 
-        if (Report != null && !IsValidReportFormat(Report))
+        var runOptionError = RunOptionValidation.Validate(OnError, Report, ReportPath);
+        if (runOptionError != null)
         {
-            console.Error.WriteLine($"Error: Unsupported report format: '{Report}'. Supported: json, csv");
-            return false;
-        }
-
-        if (ReportPath != null && Report == null)
-        {
-            console.Error.WriteLine("Error: --report-path requires --report to be specified.");
+            console.Error.WriteLine(runOptionError);
             return false;
         }
 
@@ -310,8 +305,8 @@ internal abstract class SharedOptions
 
         return new CompressionOptions
         {
-            SourcePath = System.IO.Path.GetFullPath(Path),
-            OutputPath = Output != null ? System.IO.Path.GetFullPath(Output) : null,
+            SourcePath = Path,
+            OutputPath = Output,
             Recurse = Recurse,
             OlderThanDays = OlderThan,
             MinDateTime = ParseDateTime(MinDateTime),
@@ -381,12 +376,6 @@ internal abstract class SharedOptions
             return false;
         }
 
-        if (!ErrorPolicy.TryParse(OnError, out _))
-        {
-            console.Error.WriteLine($"Error: Unsupported error policy: '{OnError}'. Supported: skip, fail, retry:N (1-100)");
-            return false;
-        }
-
         return true;
     }
 
@@ -421,8 +410,4 @@ internal abstract class SharedOptions
 
 
 
-    private static bool IsValidReportFormat(string value)
-    {
-        return value.ToLowerInvariant() is "json" or "csv";
-    }
 }

@@ -8,7 +8,7 @@
     "killed": 580,
     "survived": 39,
     "timeout": 11,
-    "environment": "GitHub ubuntu-latest, stryker.yaml PR gate on test/burndown-stryker-1 (run 36341050865, head 184869b), dotnet-stryker from .config/dotnet-tools.json, Release unit suite (413 tests)",
+    "environment": "GitHub ubuntu-latest, stryker.yaml PR gate of PR #304 (run 36341050865, head 184869b), dotnet-stryker from .config/dotnet-tools.json, Release unit suite (413 tests)",
     "note": "Single CI run. Killed rose 570 -> 580 with timeouts unchanged at 11, so the gain is kills, not timeout variance."
   },
   "history": [

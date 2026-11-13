@@ -98,7 +98,7 @@ All code is analyzed by these tools during build:
 
 ### Async-First Enforcement
 
-This library **prohibits synchronous blocking calls** via `BannedSymbols.txt`. The following APIs are **banned**:
+This application **prohibits synchronous blocking calls** via `BannedSymbols.txt`. The following APIs are **banned**:
 
 #### ❌ Blocking Async Operations
 ```csharp

@@ -93,14 +93,16 @@ internal class BundleService
 
         if (filtered.Count == 0)
         {
-            _logger.LogWarning("No files matched the specified criteria");
+            // Nothing to do is not a failure: a scheduled bundle on a quiet day
+            // must exit 0, exactly like compress of an empty directory (#353).
+            // An empty OutputPath tells the caller no archive was written.
+            _logger.LogInformation("No files matched the specified criteria; nothing to bundle");
 
             return new CompressionResult
             {
                 SourcePath = options.SourcePath,
                 OutputPath = string.Empty,
-                Success = false,
-                ErrorMessage = "No files matched the specified criteria."
+                Success = true
             };
         }
 

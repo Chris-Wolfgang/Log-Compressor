@@ -128,23 +128,14 @@ internal class Decompress
     {
         logger.LogDebug("Starting {Command}", GetType().Name);
 
-        if (Report != null && Report is not ("json" or "csv"))
+        var runOptionError = RunOptionValidation.Validate(OnError, Report, ReportPath);
+        if (runOptionError != null)
         {
-            await console.Error.WriteLineAsync($"Error: Unsupported report format: '{Report}'. Supported: json, csv");
+            await console.Error.WriteLineAsync(runOptionError);
             return ExitCode.InvalidArguments;
         }
 
-        if (!ErrorPolicy.TryParse(OnError, out var onError))
-        {
-            await console.Error.WriteLineAsync($"Error: Unsupported error policy: '{OnError}'. Supported: skip, fail, retry:N (1-100)");
-            return ExitCode.InvalidArguments;
-        }
-
-        if (ReportPath != null && Report == null)
-        {
-            await console.Error.WriteLineAsync("Error: --report-path requires --report (matches compress/bundle validation).");
-            return ExitCode.InvalidArguments;
-        }
+        _ = ErrorPolicy.TryParse(OnError, out var onError);
 
         var options = new DecompressionOptions
         {

@@ -619,6 +619,25 @@ public sealed class DecompressServiceTests : IDisposable
     }
 
 
+    [Fact]
+    public async Task ExecuteAsync_when_tokenAlreadyCanceled_expected_canceledBeforeTheArchiveIsOpened()
+    {
+        var archive = SetupSingleArchive("a.gz", GzBytes("a"));
+        using var cancellation = new CancellationTokenSource();
+        await cancellation.CancelAsync();
+
+        await Assert.ThrowsAnyAsync<OperationCanceledException>
+        (
+            () => _sut.ExecuteAsync(new DecompressionOptions { SourcePath = archive }, cancellation.Token)
+        );
+
+        // The per-archive check must stop the run before the archive is read or an
+        // output file is created; the copy observing the token later is too late.
+        _fileSystem.DidNotReceive().OpenRead(Arg.Any<string>());
+        _fileSystem.DidNotReceive().CreateWrite(Arg.Any<string>());
+    }
+
+
 
     [Theory]
     [InlineData("bad.zst", true)]

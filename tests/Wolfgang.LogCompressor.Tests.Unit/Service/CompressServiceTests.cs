@@ -611,13 +611,13 @@ public sealed class CompressServiceTests : IDisposable
         // not be diverted to a "-2" name by its own first attempt.
         Assert.EndsWith("out.zip", result.OutputPath, StringComparison.Ordinal);
         Assert.DoesNotContain("-2", Path.GetFileName(result.OutputPath), StringComparison.Ordinal);
-        _fileSystem.Received(2).CreateWrite(result.OutputPath);
+        _fileSystem.Received(2).CreateWrite(result.OutputPath + ".partial");
     }
 
 
 
     [Fact]
-    public async Task ExecuteAsync_when_retry_withLeftoverPartialOutput_expected_partialDeletedBeforeRetry()
+    public async Task ExecuteAsync_when_retry_withArchiveLeftAtOutputPath_expected_archiveDeletedBeforeRetry()
     {
         var tempFile = CreateTempFile();
         var fileInfo = new FileInfo(tempFile);
@@ -636,19 +636,19 @@ public sealed class CompressServiceTests : IDisposable
         _fileNamer.GetCompressedFileName(Arg.Any<FileInfo>(), "zip", Arg.Any<TimestampSource>(), Arg.Any<string?>()).Returns("out.zip");
         _fileSystem.OpenRead(tempFile).Returns(_ => new MemoryStream("content"u8.ToArray()));
         _fileSystem.CreateWrite(Arg.Any<string>()).Returns(_ => new MemoryStream());
-        _archiveVerifier.VerifyAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<long?>())
-            .Returns(Task.FromResult(false), Task.FromResult(true));
-        // The output path is free before attempt 1 but occupied (by attempt
-        // 1's unverified archive) when the retry inspects it.
+        // The output path is free before attempt 1. Attempt 1 moves its
+        // verified archive there but then cannot delete the source, so the
+        // path is occupied (by attempt 1's archive) when the retry inspects it.
         var expectedOutput = Path.Combine(fileInfo.DirectoryName!, "out.zip");
         _fileSystem.FileExists(expectedOutput).Returns(returnThis: false);
-        var firstAttemptDone = false;
-        _fileSystem.When(f => f.CreateWrite(expectedOutput)).Do(_ =>
+        _fileSystem.When(f => f.MoveFile(expectedOutput + ".partial", expectedOutput, false)).Do(_ =>
+            _fileSystem.FileExists(expectedOutput).Returns(returnThis: true));
+        var sourceDeletes = 0;
+        _fileSystem.When(f => f.DeleteFile(tempFile)).Do(_ =>
         {
-            if (!firstAttemptDone)
+            if (sourceDeletes++ == 0)
             {
-                firstAttemptDone = true;
-                _fileSystem.FileExists(expectedOutput).Returns(returnThis: true);
+                throw new IOException("source locked");
             }
         });
 
@@ -661,9 +661,10 @@ public sealed class CompressServiceTests : IDisposable
         var results = await _sut.ExecuteAsync(options);
 
         Assert.True(Assert.Single(results).Success);
-        // The failed attempt's leftover was cleared before the retry wrote to
+        // The failed attempt's archive was cleared before the retry wrote to
         // the same path (source deletion is a separate DeleteFile call).
         _fileSystem.Received(1).DeleteFile(expectedOutput);
+        _fileSystem.Received(2).DeleteFile(tempFile);
     }
 
 

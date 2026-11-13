@@ -74,4 +74,14 @@ internal interface IFileSystem
     /// </summary>
     /// <param name="path">The directory path.</param>
     void CreateDirectory(string path);
+
+
+
+    /// <summary>
+    /// Moves a file to a new path.
+    /// </summary>
+    /// <param name="sourcePath">The file to move.</param>
+    /// <param name="destinationPath">The new path.</param>
+    /// <param name="overwrite"><see langword="true"/> to replace an existing file at <paramref name="destinationPath"/>.</param>
+    void MoveFile(string sourcePath, string destinationPath, bool overwrite);
 }

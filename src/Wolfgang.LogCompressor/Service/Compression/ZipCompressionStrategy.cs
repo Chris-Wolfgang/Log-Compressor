@@ -42,7 +42,8 @@ internal sealed class ZipCompressionStrategy : ICompressionStrategy
         CancellationToken cancellationToken = default
     )
     {
-        using var archive = new ZipArchive(outputStream, ZipArchiveMode.Create, leaveOpen: true);
+        var archive = new ZipArchive(outputStream, ZipArchiveMode.Create, leaveOpen: true);
+        await using var archiveDisposal = archive.ConfigureAwait(false);
         var entry = archive.CreateEntry(entryName, _level);
         var entryStream = await entry.OpenAsync(cancellationToken).ConfigureAwait(false);
         await using (entryStream.ConfigureAwait(false))
@@ -61,7 +62,8 @@ internal sealed class ZipCompressionStrategy : ICompressionStrategy
         CancellationToken cancellationToken = default
     )
     {
-        using var archive = new ZipArchive(outputStream, ZipArchiveMode.Create, leaveOpen: true);
+        var archive = new ZipArchive(outputStream, ZipArchiveMode.Create, leaveOpen: true);
+        await using var archiveDisposal = archive.ConfigureAwait(false);
 
         await foreach (var (stream, entryName) in inputs.WithCancellation(cancellationToken).ConfigureAwait(false))
         {

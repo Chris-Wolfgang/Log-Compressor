@@ -201,7 +201,7 @@ internal class DecompressService
                 Success = true
             };
         }
-        catch (Exception ex) when (ex is IOException or InvalidDataException or UnauthorizedAccessException or NotSupportedException)
+        catch (Exception ex) when (IsArchiveFailure(ex))
         {
             _logger.LogError(ex, "Extraction failed for {Archive}, archive preserved: {Message}", archive.FullName, ex.Message);
 
@@ -215,6 +215,16 @@ internal class DecompressService
                 ErrorMessage = ex.Message
             };
         }
+    }
+
+
+
+    private static bool IsArchiveFailure(Exception ex)
+    {
+        // ZstdSharp reports a corrupt frame with its own ZstdException, not an
+        // InvalidDataException; it is a bad archive like any other and must
+        // not abort the whole batch (#354).
+        return ex is IOException or InvalidDataException or UnauthorizedAccessException or NotSupportedException or ZstdSharp.ZstdException;
     }
 
 
@@ -342,7 +352,8 @@ internal class DecompressService
         var stream = _fileSystem.OpenRead(archive.FullName);
         await using (stream.ConfigureAwait(false))
         {
-            using var zip = new ZipArchive(stream, ZipArchiveMode.Read);
+            var zip = await ZipArchive.CreateAsync(stream, ZipArchiveMode.Read, leaveOpen: true, entryNameEncoding: null, cancellationToken).ConfigureAwait(false);
+            await using var zipDisposal = zip.ConfigureAwait(false);
 
             foreach (var entry in zip.Entries)
             {
@@ -385,7 +396,8 @@ internal class DecompressService
             var decompressed = decompressorFactory(stream);
             await using (decompressed.ConfigureAwait(false))
             {
-                await using var tar = new TarReader(decompressed);
+                var tar = new TarReader(decompressed);
+                await using var tarDisposal = tar.ConfigureAwait(false);
 
                 while (await tar.GetNextEntryAsync(cancellationToken: cancellationToken).ConfigureAwait(false) is { } entry)
                 {

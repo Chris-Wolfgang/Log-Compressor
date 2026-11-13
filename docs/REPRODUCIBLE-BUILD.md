@@ -6,20 +6,41 @@ that source and nothing else. This page is the **consumer side** of that
 guarantee: how *you* independently verify a release.
 
 > Related: [`reproducible-build.yaml`](../.github/workflows/reproducible-build.yaml)
-> proves the build is reproducible on every PR (it builds the same commit twice
-> in different paths and fails if the assemblies differ). This document is about
-> a third party reproducing it out-of-band.
+> proves the build is reproducible on every PR. It builds the same commit twice
+> in different directories on one runner, and also builds it on `ubuntu-latest`
+> and `windows-latest` and fails if `logc.dll` or `logc.pdb` differ between the
+> two operating systems. This document is about a third party reproducing it
+> out-of-band.
 
 ## What is reproducible — and what is not
 
-The unit of verification is the **managed assembly `logc.dll`**
-(single target, `net10.0`). It is byte-for-byte reproducible because the build
-sets:
+The unit of verification is the **managed assembly `logc.dll`** and its
+symbols file **`logc.pdb`** (single target, `net10.0`). Both are byte-for-byte
+reproducible, **across Linux and Windows** as well as across checkout
+directories, because the build sets:
 
 - `Deterministic` (default) — no timestamps or random GUIDs baked into the IL;
 - `ContinuousIntegrationBuild=true` on CI — normalizes source paths to `/_/` so
   the checkout directory doesn't affect output;
-- `EmbedUntrackedSources` + SourceLink — provenance is embedded deterministically.
+- `EmbedUntrackedSources` + SourceLink — provenance is embedded deterministically;
+- LF line endings in everything that is hashed into the output. `.gitattributes`
+  checks the hand-written sources out as LF on every OS, even with
+  `core.autocrlf=true`. The .NET SDK writes `AssemblyInfo`,
+  `AssemblyAttributes` and `GlobalUsings` sources with the build machine's
+  newline (CRLF on Windows), and the PDB records a hash of each
+  source; `Directory.Build.targets` rewrites them to LF before compilation. The
+  project also avoids .NET source generators (their output exists only in
+  memory and used the machine's newline) and ships its own LF `app.manifest`
+  instead of the compiler's default Win32 manifest, which differed by OS.
+
+The guarantee covers **Linux and Windows**. macOS builds are not compared, so
+a macOS hash match is not promised.
+
+It also assumes the **same toolchain**: the same .NET SDK *and* the same .NET
+runtime running the compiler. `logc.pdb` records the compiler's runtime version
+(`runtime-version` in its compilation options), and the PDB's checksum feeds
+into `logc.dll`, so a different runtime patch changes both hashes even when the
+SDK version is identical. See [Reproduce it](#reproduce-it) for how to pin it.
 
 > **The downloadable release archives (`logc-win-x64.zip`,
 > `logc-linux-x64.tar.gz`, `logc-osx-x64.tar.gz`) are *not* byte-for-byte
@@ -73,21 +94,43 @@ You need the **same .NET SDK version** the manifest records in `dotnetSdk`
 (a different SDK ships a different Roslyn and may emit different IL). Install
 it from <https://dotnet.microsoft.com/download/dotnet>.
 
+The compiler must also run on **that SDK's own .NET runtime**. By default
+`dotnet` rolls forward to the newest installed runtime patch, so a machine that
+also has a newer `Microsoft.NETCore.App` 10.0.x runtime (`dotnet --list-runtimes`)
+compiles on it and records that version in `logc.pdb`, which changes the
+`logc.dll` hash. Set `DOTNET_ROLL_FORWARD=Disable` for the build, as below, so
+the compiler uses the runtime the SDK shipped with.
+
 ```bash
 # 1. Clone the source at the exact published tag.
 git clone --depth 1 --branch v0.2.0 https://github.com/Chris-Wolfgang/Log-Compressor
 cd Log-Compressor
 
-# 2. Build Release with the CI determinism flag (matches the release build).
-dotnet build src/Wolfgang.LogCompressor/Wolfgang.LogCompressor.csproj \
+# 2. Build Release with the CI determinism flag (matches the release build),
+#    with the compiler pinned to the SDK's own runtime.
+DOTNET_ROLL_FORWARD=Disable dotnet build src/Wolfgang.LogCompressor/Wolfgang.LogCompressor.csproj \
   -c Release -p:ContinuousIntegrationBuild=true
 
 # 3. Hash the assembly and compare against the manifest.
 sha256sum src/Wolfgang.LogCompressor/bin/Release/net10.0/logc.dll
 ```
 
+On Windows (PowerShell), steps 2 and 3 are:
+
+```powershell
+$env:DOTNET_ROLL_FORWARD = 'Disable'
+dotnet build src/Wolfgang.LogCompressor/Wolfgang.LogCompressor.csproj -c Release -p:ContinuousIntegrationBuild=true
+(Get-FileHash src/Wolfgang.LogCompressor/bin/Release/net10.0/logc.dll -Algorithm SHA256).Hash.ToLowerInvariant()
+```
+
+`Get-FileHash` prints upper-case hex; `.ToLowerInvariant()` makes it directly
+comparable with `sha256sum` and the manifest. The hash is the same as a Linux
+build of the same commit with the same SDK and runtime.
+
 If your `sha256` matches the manifest's `assemblies[0].sha256`, the published
-release is reproducible from source on your machine.
+release is reproducible from source on your machine. The manifest records the
+assembly hash only; `logc.pdb` is not in it, so compare the PDB between two of
+your own builds (for example one on Linux and one on Windows).
 
 ## If a hash does not match
 
@@ -95,11 +138,19 @@ A mismatch is worth reporting — it may be a determinism regression, a
 toolchain difference, or something more serious.
 
 1. Double-check you used the **exact** `dotnetSdk` from the manifest
-   (`dotnet --version` must match) and passed `-p:ContinuousIntegrationBuild=true`.
+   (`dotnet --version` must match), passed `-p:ContinuousIntegrationBuild=true`,
+   and built with `DOTNET_ROLL_FORWARD=Disable` (or with no newer 10.0 runtime
+   installed). Run `dotnet build-server shutdown` first, so a compiler server
+   started earlier on another runtime is not reused. If you build on macOS,
+   expect that this may not match: it is outside what CI compares.
+
+   The manifest records the SDK but not the runtime the release build's
+   compiler ran on, so a remaining mismatch can also be a runtime-patch
+   difference on the release runner rather than a determinism bug.
 2. [Open an issue](https://github.com/Chris-Wolfgang/Log-Compressor/issues/new)
    titled `reproducible-build discrepancy: <tag>` and include: the tag, your
-   `dotnet --version`, your OS, and the assembly hash you got versus the
-   manifest's. Label it `maintenance - security`.
+   `dotnet --version`, `dotnet --list-runtimes`, your OS, and the assembly hash
+   you got versus the manifest's. Label it `maintenance - security`.
 
 ## Publish a third-party verification attestation
 

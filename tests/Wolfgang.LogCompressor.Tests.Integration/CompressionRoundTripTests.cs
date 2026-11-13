@@ -48,7 +48,7 @@ public sealed class CompressionRoundTripTests
     [InlineData("Zip")]
     [InlineData("Gz")]
     [InlineData("Brotli")]
-    public async Task Compress_singleFile_creates_verifiable_archive_and_deletes_original(string formatName)
+    public async Task ExecuteAsync_when_compressSingleFile_expected_verifiableArchiveAndOriginalDeleted(string formatName)
     {
         var format = Enum.Parse<CompressionFormat>(formatName);
 
@@ -76,7 +76,7 @@ public sealed class CompressionRoundTripTests
 
 
     [Fact]
-    public async Task Compress_zipArchive_roundtrips_original_content()
+    public async Task ExecuteAsync_when_compressToZip_expected_originalContentRoundTrips()
     {
         using var temp = new TempDirectory();
         const string content = "line one\nline two\nline three";
@@ -109,7 +109,7 @@ public sealed class CompressionRoundTripTests
     [InlineData("Zip")]
     [InlineData("Gz")]
     [InlineData("Brotli")]
-    public async Task Bundle_multipleFiles_creates_single_archive_and_deletes_all_originals(string formatName)
+    public async Task ExecuteAsync_when_bundleMultipleFiles_expected_singleArchiveAndAllOriginalsDeleted(string formatName)
     {
         var format = Enum.Parse<CompressionFormat>(formatName);
 
@@ -139,7 +139,7 @@ public sealed class CompressionRoundTripTests
 
 
     [Fact]
-    public async Task Compress_withOlderThan_compresses_old_file_and_preserves_recent_file()
+    public async Task ExecuteAsync_when_compressWithOlderThan_expected_oldFileCompressedRecentFileKept()
     {
         using var temp = new TempDirectory();
         var oldFile = temp.WriteFile("old.log", "old data");
@@ -168,7 +168,7 @@ public sealed class CompressionRoundTripTests
 
 
     [Fact]
-    public async Task Bundle_skips_unreadable_file_preserves_it_and_returns_nonsuccess()
+    public async Task ExecuteAsync_when_bundleHasUnreadableFile_expected_fileSkippedKeptAndNonSuccess()
     {
         using var temp = new TempDirectory();
         var readable = temp.WriteFile("readable.log", "readable content");
@@ -201,7 +201,7 @@ public sealed class CompressionRoundTripTests
 
 
     [Fact]
-    public async Task Compress_run_twice_does_not_recompress_its_own_archive()
+    public async Task ExecuteAsync_when_compressRunTwice_expected_ownArchiveNotRecompressed()
     {
         using var temp = new TempDirectory();
         temp.WriteFile("app.log", "log contents");
@@ -227,7 +227,7 @@ public sealed class CompressionRoundTripTests
 
 
     [Fact]
-    public async Task Compress_when_output_archive_already_exists_preserves_original_and_fails()
+    public async Task ExecuteAsync_when_compressOutputArchiveExists_expected_originalKeptAndFailure()
     {
         using var temp = new TempDirectory();
         var source = temp.WriteFile("app.log", "source data");
@@ -250,5 +250,63 @@ public sealed class CompressionRoundTripTests
         Assert.Contains("already exists", result.ErrorMessage, StringComparison.OrdinalIgnoreCase);
         Assert.True(File.Exists(source));                              // original preserved (not deleted)
         Assert.Equal("PRE-EXISTING ARCHIVE", File.ReadAllText(existing)); // existing archive not overwritten
+    }
+
+
+
+    [Fact]
+    public async Task ExecuteAsync_when_directoryHoldsLeftoverWorkFiles_expected_sourceCompressedAndWorkFilesUntouched()
+    {
+        // A crash leftover (.partial) and a quarantined suspect archive
+        // (.failed) from earlier runs must neither block the source nor be
+        // compressed as sources themselves (#351).
+        using var temp = new TempDirectory();
+        temp.WriteFile("app.log", "the quick brown fox jumps over the lazy dog");
+        var partial = temp.WriteFile("old.log.zip.partial", "torn");
+        var failed = temp.WriteFile("old.log.zip.failed", "suspect");
+        var sut = CreateCompressService();
+
+        var results = await sut.ExecuteAsync
+        (
+            new CompressionOptions
+            {
+                SourcePath = temp.Path,
+                Format = CompressionFormat.Zip,
+                Verify = true
+            }
+        );
+
+        var result = Assert.Single(results);
+        Assert.True(result.Success, result.ErrorMessage);
+        Assert.True(File.Exists(result.OutputPath));
+        Assert.False(File.Exists(result.OutputPath + ".partial"));
+        Assert.Equal("torn", await File.ReadAllTextAsync(partial));
+        Assert.Equal("suspect", await File.ReadAllTextAsync(failed));
+    }
+
+
+
+    [Fact]
+    public async Task ExecuteAsync_when_bundleSucceeds_expected_noPartialLeftBehind()
+    {
+        using var temp = new TempDirectory();
+        var logDir = Path.Combine(temp.Path, "MyApp");
+        Directory.CreateDirectory(logDir);
+        await File.WriteAllTextAsync(Path.Combine(logDir, "a.log"), "alpha");
+        var sut = CreateBundleService();
+
+        var result = await sut.ExecuteAsync
+        (
+            new CompressionOptions
+            {
+                SourcePath = logDir,
+                Format = CompressionFormat.Zip,
+                Verify = true
+            }
+        );
+
+        Assert.True(result.Success, result.ErrorMessage);
+        Assert.True(File.Exists(result.OutputPath));
+        Assert.Empty(Directory.EnumerateFiles(temp.Path, "*.partial", SearchOption.AllDirectories));
     }
 }

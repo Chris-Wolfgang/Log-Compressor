@@ -1,7 +1,7 @@
 name: "🐞 Bug report"
 description: "File a bug report to help us improve"
 title: "[Bug]: "
-labels: [bug, needs-triage]
+labels: [bug]
 assignees: []
 body:
   - type: markdown
@@ -54,8 +54,8 @@ body:
   - type: input
     id: package-version
     attributes:
-      label: "Package version"
-      description: "The NuGet package version (or commit) that shows the problem."
+      label: "logc version"
+      description: "The output of `logc --version` (or the commit you built from)."
       placeholder: "e.g. 1.4.2"
     validations:
       required: false

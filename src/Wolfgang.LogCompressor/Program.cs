@@ -1,7 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using McMaster.Extensions.CommandLineUtils;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
@@ -49,9 +48,7 @@ internal class Program
 
                 .UseSerilog((context, configuration) =>
                 {
-                    var options = context.Configuration
-                        .GetSection("Logging")
-                        .Get<LoggingOptions>() ?? new LoggingOptions();
+                    var options = LoggingOptionsBinder.Bind(context.Configuration.GetSection("Logging"));
 
                     configuration
                         .Apply(options)

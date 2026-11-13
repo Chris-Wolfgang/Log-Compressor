@@ -19,10 +19,11 @@
     <RepositoryType>git</RepositoryType>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
     <AssemblyName>logc</AssemblyName>
+    <!-- Without a manifest of its own, the compiler embeds a default one written with the build
+         machine's newline (CRLF on Windows, LF on Linux), which made logc.dll differ by OS. This
+         file has the same content as that default, with LF endings. -->
+    <ApplicationManifest>app.manifest</ApplicationManifest>
     <PublishSingleFile>true</PublishSingleFile>
-    <!-- Bind IConfiguration via the source generator (reflection-free) so single-file
-         and trimmed publishes are clean. This replaces the suppressed SYSLIB1104. -->
-    <EnableConfigurationBindingGenerator>true</EnableConfigurationBindingGenerator>
     <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
   </PropertyGroup>
 

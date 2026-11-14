@@ -1,5 +1,4 @@
 using System.IO.Compression;
-using System.Text;
 using BenchmarkDotNet.Attributes;
 using Wolfgang.LogCompressor.Abstraction;
 using Wolfgang.LogCompressor.Model;

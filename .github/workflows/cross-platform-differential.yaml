@@ -33,8 +33,11 @@ jobs:
       fail-fast: false
       matrix:
         include:
+          # Pinned to 24.04 like pr.yaml's Linux stage and the linux-arm64 leg:
+          # ubuntu-latest is now 26.04, where the ar-SA Umm al-Qura culture test
+          # (ADR-0004 limitation) resolves differently from every other leg.
           - leg: linux-x64
-            os: ubuntu-latest
+            os: ubuntu-24.04
           - leg: linux-arm64
             os: ubuntu-24.04-arm
           - leg: macos-arm64

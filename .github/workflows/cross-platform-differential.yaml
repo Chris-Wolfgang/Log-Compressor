@@ -74,7 +74,13 @@ jobs:
         shell: bash
         env:
           DiffEngine_Disabled: 'true'
+          MATRIX_OS: ${{ matrix.os }}
         run: |
+          # ubuntu-24.04-arm + SDK 10.0.404: VSTest exits 1 (errno 22) after every test
+          # passes because it cannot verify its artifacts directory. Scoped to that leg only.
+          if [ "$MATRIX_OS" = "ubuntu-24.04-arm" ]; then
+            export VSTEST_DISABLE_ARTIFACTS_DIRECTORY_VERIFICATION=1
+          fi
           dotnet test Wolfgang.LogCompressor.slnx -c Release \
             --logger "trx;LogFilePrefix=results" \
             --results-directory TestResults-diff

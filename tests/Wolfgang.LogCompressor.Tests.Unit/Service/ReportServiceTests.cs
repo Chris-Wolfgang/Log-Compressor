@@ -13,12 +13,6 @@ public sealed class ReportServiceTests : IDisposable
 
 
 
-    public ReportServiceTests()
-    {
-    }
-
-
-
     public void Dispose()
     {
         _temp.Dispose();

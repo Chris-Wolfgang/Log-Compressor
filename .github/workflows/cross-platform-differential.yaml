@@ -33,8 +33,11 @@ jobs:
       fail-fast: false
       matrix:
         include:
+          # Pinned to 24.04 like pr.yaml's Linux stage and the linux-arm64 leg:
+          # ubuntu-latest is now 26.04, where the ar-SA Umm al-Qura culture test
+          # (ADR-0004 limitation) resolves differently from every other leg.
           - leg: linux-x64
-            os: ubuntu-latest
+            os: ubuntu-24.04
           - leg: linux-arm64
             os: ubuntu-24.04-arm
           - leg: macos-arm64
@@ -71,7 +74,13 @@ jobs:
         shell: bash
         env:
           DiffEngine_Disabled: 'true'
+          MATRIX_OS: ${{ matrix.os }}
         run: |
+          # ubuntu-24.04-arm + SDK 10.0.404: VSTest exits 1 (errno 22) after every test
+          # passes because it cannot verify its artifacts directory. Scoped to that leg only.
+          if [ "$MATRIX_OS" = "ubuntu-24.04-arm" ]; then
+            export VSTEST_DISABLE_ARTIFACTS_DIRECTORY_VERIFICATION=1
+          fi
           dotnet test Wolfgang.LogCompressor.slnx -c Release \
             --logger "trx;LogFilePrefix=results" \
             --results-directory TestResults-diff

@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1794142269455,
+  "lastUpdate": 1794749104609,
   "repoUrl": "https://github.com/Chris-Wolfgang/Log-Compressor",
   "entries": {
     "Mutation score": [
@@ -134,6 +134,33 @@ window.BENCHMARK_DATA = {
           {
             "name": "Mutation score",
             "value": 95.27,
+            "unit": "%"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "name": "Chris Wolfgang",
+            "username": "Chris-Wolfgang",
+            "email": "210299580+Chris-Wolfgang@users.noreply.github.com"
+          },
+          "committer": {
+            "name": "GitHub",
+            "username": "web-flow",
+            "email": "noreply@github.com"
+          },
+          "id": "b963e33e24f73626a7d1c4cdcc880c29a9821101",
+          "message": "ci(release): publish to NuGet via OIDC trusted publishing (#420)\n\nReplace the stored NUGET_API_KEY secret with NuGet/login (pinned v1.2.0, the\nsame SHA repo-template uses) and give publish-nuget id-token: write. Resolves\nzizmor use-trusted-publishing (code-scanning alert 497, #397).\n\nCo-authored-by: Claude Opus 5.5 <noreply@anthropic.com>",
+          "timestamp": "2026-11-14T15:22:59Z",
+          "url": "https://github.com/Chris-Wolfgang/Log-Compressor/commit/b963e33e24f73626a7d1c4cdcc880c29a9821101"
+        },
+        "date": 1794749101744,
+        "tool": "customBiggerIsBetter",
+        "benches": [
+          {
+            "name": "Mutation score (tests/Wolfgang.LogCompressor.Tests.Unit)",
+            "value": 95.87,
             "unit": "%"
           }
         ]

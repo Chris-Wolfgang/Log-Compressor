@@ -791,13 +791,17 @@ jobs:
   # binaries to the GitHub Release. This is the primary distribution channel:
   # logc ships as per-RID executables (no .NET runtime required on the target),
   # NOT as a NuGet package (see IsPackable=false in the csproj). A self-contained
-  # single-file build is RID-specific, so one asset is produced per RID. All RIDs
-  # cross-compile from a single Linux runner.
+  # single-file build is RID-specific, so one asset is produced per RID. logc is a
+  # Native AOT executable (PublishAot, #375), and Native AOT does not cross-compile
+  # across OS or (on Linux) CPU architecture, so each RID builds on a runner of its
+  # own OS and architecture (fleet aot-smoke standard: win-x64, linux-x64, osx-arm64,
+  # plus linux-arm64 from the 2026-11-07 test-matrix standard, #404). osx-x64 is kept
+  # for Intel Macs, on the x64 macos-15-intel image.
   publish-binaries:
     name: Publish Self-Contained Binaries
     needs: validate-release
     if: github.repository != 'Chris-Wolfgang/repo-template'
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     permissions:
       contents: write       # Required to upload assets to the GitHub Release
       id-token: write       # Required for OIDC signing of the SLSA provenance attestation (#77)
@@ -807,12 +811,23 @@ jobs:
       matrix:
         include:
           - rid: win-x64
+            os: windows-latest
             ext: ".exe"
             archive: zip      # zip is the convention on Windows
           - rid: linux-x64
+            os: ubuntu-latest
             ext: ""
             archive: targz    # tar.gz preserves the executable bit on Unix
+          - rid: linux-arm64
+            os: ubuntu-24.04-arm
+            ext: ""
+            archive: targz
           - rid: osx-x64
+            os: macos-15-intel
+            ext: ""
+            archive: targz
+          - rid: osx-arm64
+            os: macos-latest
             ext: ""
             archive: targz
     steps:
@@ -838,14 +853,12 @@ jobs:
             --output publish/${{ matrix.rid }}
           if ($LASTEXITCODE -ne 0) { Write-Error "❌ Publish failed for ${{ matrix.rid }}"; exit $LASTEXITCODE }
 
-      # The binaries are trimmed (ADR-0006). All three RIDs build on this Linux runner, so
-      # only linux-x64 can be executed here; the Windows and macOS binaries are smoke-tested
-      # on their own OS by the "Published binary smoke" job in pr.yaml. A failing smoke test
-      # stops this RID before its archive is staged and attached.
+      # The binaries are trimmed native executables (ADR-0006, #375). Each RID builds on its
+      # own OS and architecture, so every binary is executed here, on the runner that built
+      # it. A failing smoke test stops this RID before its archive is staged and attached.
       - name: Smoke-test the published binary (${{ matrix.rid }})
-        if: matrix.rid == 'linux-x64'
         shell: pwsh
-        run: ./scripts/smoke-published.ps1 -Exe publish/linux-x64/logc
+        run: ./scripts/smoke-published.ps1 -Exe 'publish/${{ matrix.rid }}/logc${{ matrix.ext }}'
 
       - name: Stage release archive
         shell: pwsh
@@ -905,6 +918,8 @@ jobs:
       # `gh` is pre-installed on the runner, so no third-party action is needed
       # to upload release assets (zizmor superfluous-actions).
       - name: Attach archive to release
+        # bash on every runner: the Windows default shell is pwsh, and this script is bash.
+        shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}

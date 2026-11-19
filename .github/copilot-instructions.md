@@ -7,7 +7,7 @@
 - **Repository Type:** Application (CLI tool); nothing is published to NuGet
 - **Target Framework:** `net10.0`
 - **Primary Language:** C#
-- **Distribution:** Self-contained, trimmed single-file executables (`win-x64`, `linux-x64`, `osx-x64`) attached to GitHub Releases
+- **Distribution:** Self-contained, trimmed Native AOT executables (`win-x64`, `linux-x64`, `linux-arm64`, `osx-arm64`, `osx-x64`) attached to GitHub Releases
 - **Commands:** `compress`, `bundle`, `decompress`, `init compress` / `init bundle`
 - **Status:** Released from `main` (see `CHANGELOG.md` for the current version). Base all work on `main`.
 

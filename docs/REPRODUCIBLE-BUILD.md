@@ -43,7 +43,8 @@ into `logc.dll`, so a different runtime patch changes both hashes even when the
 SDK version is identical. See [Reproduce it](#reproduce-it) for how to pin it.
 
 > **The downloadable release archives (`logc-win-x64.zip`,
-> `logc-linux-x64.tar.gz`, `logc-osx-x64.tar.gz`) are *not* byte-for-byte
+> `logc-linux-x64.tar.gz`, `logc-linux-arm64.tar.gz`, `logc-osx-arm64.tar.gz`,
+> `logc-osx-x64.tar.gz`) are *not* byte-for-byte
 > reproducible.** A self-contained single-file bundle embeds the .NET runtime
 > and the archives record per-entry timestamps, so their hashes vary between
 > builds. The manifest lists their hashes for **download-integrity** checks;

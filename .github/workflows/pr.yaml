@@ -2639,6 +2639,11 @@ jobs:
           - os: ubuntu-latest
             rid: linux-x64
             exe: logc
+          # linux-arm64 is the fourth release binary (fleet aot-smoke / test-matrix standards,
+          # 2026-11-07): Native AOT cannot cross-compile, so it is built and run on an arm64 runner.
+          - os: ubuntu-24.04-arm
+            rid: linux-arm64
+            exe: logc
           - os: windows-latest
             rid: win-x64
             exe: logc.exe

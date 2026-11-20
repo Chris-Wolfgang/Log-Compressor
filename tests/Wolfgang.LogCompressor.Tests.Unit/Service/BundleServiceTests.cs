@@ -620,6 +620,62 @@ public sealed class BundleServiceTests : IDisposable
 
 
 
+    [Fact]
+    public async Task ExecuteAsync_when_filesBundled_expected_everyFileHandedToStrategyAsEntry()
+    {
+        // Kills the #303 survivor that drops the `yield return`: the files would
+        // still be recorded as bundled (and deleted) while the archive got no entries.
+        var dir = "/tmp/logs/MyApp";
+        var files = CreateTempFiles(2);
+        var fileInfos = files.Select(f => new FileInfo(f)).ToList();
+        var entryNames = new List<string>();
+
+        SetupDirectory(dir, files, fileInfos);
+        _fileNamer.GetBundleFileName("MyApp", Arg.Any<IReadOnlyList<FileInfo>>(), "zip").Returns("bundle.zip");
+        _fileSystem.CreateWrite(Arg.Any<string>()).Returns(new MemoryStream());
+        _strategy
+            .CompressFilesAsync(Arg.Any<IAsyncEnumerable<(Stream Stream, string EntryName)>>(), Arg.Any<Stream>(), Arg.Any<CancellationToken>())
+            .Returns(async callInfo =>
+            {
+                await foreach (var (_, entryName) in callInfo.Arg<IAsyncEnumerable<(Stream Stream, string EntryName)>>())
+                {
+                    entryNames.Add(entryName);
+                }
+            });
+
+        var result = await _sut.ExecuteAsync(new CompressionOptions { SourcePath = dir });
+
+        Assert.True(result.Success);
+        Assert.Equal
+        (
+            fileInfos.Select(f => f.Name).Order(StringComparer.Ordinal),
+            entryNames.Order(StringComparer.Ordinal)
+        );
+    }
+
+
+
+    [Fact]
+    public async Task ExecuteAsync_when_noOutputPath_expected_noDirectoryCreated()
+    {
+        // Kills the #303 survivor that turns `OutputPath != null && !DirectoryExists`
+        // into `||`: without --output nothing may be created.
+        var dir = "/tmp/logs/MyApp";
+        var files = CreateTempFiles(1);
+        var fileInfos = files.Select(f => new FileInfo(f)).ToList();
+
+        SetupDirectory(dir, files, fileInfos);
+        _fileNamer.GetBundleFileName("MyApp", Arg.Any<IReadOnlyList<FileInfo>>(), "zip").Returns("bundle.zip");
+        _fileSystem.CreateWrite(Arg.Any<string>()).Returns(new MemoryStream());
+
+        var result = await _sut.ExecuteAsync(new CompressionOptions { SourcePath = dir });
+
+        Assert.True(result.Success);
+        _fileSystem.DidNotReceive().CreateDirectory(Arg.Any<string>());
+    }
+
+
+
     public void Dispose()
     {
         _tempDir.Dispose();

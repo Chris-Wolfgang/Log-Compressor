@@ -666,6 +666,29 @@ public sealed class CompressServiceTests : IDisposable
 
 
 
+    [Fact]
+    public async Task ExecuteAsync_when_noOutputPath_expected_noDirectoryCreated()
+    {
+        // Kills the #303 survivor that turns `OutputPath != null && !DirectoryExists`
+        // into `||`: without --output nothing may be created.
+        var tempFile = CreateTempFile();
+        var fileInfo = new FileInfo(tempFile);
+
+        _fileSystem.FileExists(tempFile).Returns(returnThis: true);
+        _fileSystem.GetFileInfo(tempFile).Returns(fileInfo);
+        StubFilterPassThrough([fileInfo]);
+        _fileNamer.GetCompressedFileName(fileInfo, "zip").Returns("test-2026-01-01_00-00-00.zip");
+        _fileSystem.OpenRead(tempFile).Returns(new MemoryStream("content"u8.ToArray()));
+        _fileSystem.CreateWrite(Arg.Any<string>()).Returns(new MemoryStream());
+
+        var results = await _sut.ExecuteAsync(new CompressionOptions { SourcePath = tempFile });
+
+        Assert.True(Assert.Single(results).Success);
+        _fileSystem.DidNotReceive().CreateDirectory(Arg.Any<string>());
+    }
+
+
+
     private string CreateTempFile()
     {
         return _tempDir.WriteFile(Guid.NewGuid() + ".log", "test content");

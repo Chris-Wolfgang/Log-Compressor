@@ -668,4 +668,28 @@ public sealed class DecompressServiceTests : IDisposable
         Assert.False(results[0].Success);
         Assert.True(results[1].Success);
     }
+
+
+
+    [Fact]
+    public async Task ExecuteAsync_when_outputPathGiven_expected_entriesWrittenUnderOutputPath()
+    {
+        // Kills the #303 survivor that drops `options.OutputPath ??`: the entries
+        // would land beside the archive instead of under --output.
+        var archive = SetupSingleArchive("o.zip", ZipBytes(("a.log", "x")));
+        var outputDir = Path.Combine(_tempDir.Path, "elsewhere");
+
+        var results = await _sut.ExecuteAsync(new DecompressionOptions
+        {
+            SourcePath = archive,
+            OutputPath = outputDir
+        });
+
+        Assert.True(Assert.Single(results).Success);
+        Assert.Equal
+        (
+            Path.Combine(Path.GetFullPath(outputDir), "a.log"),
+            Path.GetFullPath(Assert.Single(_written).Key)
+        );
+    }
 }

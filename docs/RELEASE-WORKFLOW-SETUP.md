@@ -2,7 +2,7 @@
 
 How a Log-Compressor release is built and published by `.github/workflows/release.yaml`.
 
-Log-Compressor is an application: **nothing is published to NuGet** (`IsPackable` is `false`, see `SECURITY.md` and ADR-0001). A release ships self-contained, trimmed `logc` executables for `win-x64`, `linux-x64` and `osx-x64` as GitHub Release assets, with build provenance, an SBOM and a reproducible-build manifest.
+Log-Compressor is an application: **nothing is published to NuGet** (`IsPackable` is `false`, see `SECURITY.md` and ADR-0001). A release ships self-contained, trimmed `logc` Native AOT executables for `win-x64`, `linux-x64`, `linux-arm64`, `osx-arm64` and `osx-x64` as GitHub Release assets, with build provenance, an SBOM and a reproducible-build manifest.
 
 ## Trigger
 
@@ -19,9 +19,11 @@ validate-release (windows-latest)
   • Release build, all tests with coverage, coverage threshold
         │
         ▼
-publish-binaries (ubuntu-latest, one job per RID: win-x64, linux-x64, osx-x64)
-  • dotnet publish: self-contained, single-file, trimmed (TrimMode=partial, ADR-0006)
-  • scripts/smoke-published.ps1 against the published binary
+publish-binaries (one job per RID, each on its own OS and architecture, since Native AOT does not cross-compile:
+                  win-x64 windows-latest, linux-x64 ubuntu-latest, linux-arm64 ubuntu-24.04-arm,
+                  osx-arm64 macos-latest, osx-x64 macos-15-intel)
+  • dotnet publish: Native AOT, trimmed (TrimMode=partial, ADR-0006)
+  • scripts/smoke-published.ps1 against the published binary, on the runner that built it
   • stage the archive (.zip on Windows, .tar.gz elsewhere): logc + AppSettings.json
   • SLSA build provenance attestation for the archive
   • attach the archive to the release

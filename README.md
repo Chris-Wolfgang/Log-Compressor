@@ -40,6 +40,8 @@ Each release attaches one self-contained archive per platform. Download the one 
 |----------|----------|
 | Windows (x64) | **[logc-win-x64.zip](https://github.com/Chris-Wolfgang/Log-Compressor/releases/latest/download/logc-win-x64.zip)** |
 | Linux (x64) | **[logc-linux-x64.tar.gz](https://github.com/Chris-Wolfgang/Log-Compressor/releases/latest/download/logc-linux-x64.tar.gz)** |
+| Linux (ARM64) | **[logc-linux-arm64.tar.gz](https://github.com/Chris-Wolfgang/Log-Compressor/releases/latest/download/logc-linux-arm64.tar.gz)** |
+| macOS (Apple silicon, ARM64) | **[logc-osx-arm64.tar.gz](https://github.com/Chris-Wolfgang/Log-Compressor/releases/latest/download/logc-osx-arm64.tar.gz)** |
 | macOS (Intel, x64) | **[logc-osx-x64.tar.gz](https://github.com/Chris-Wolfgang/Log-Compressor/releases/latest/download/logc-osx-x64.tar.gz)** |
 
 Or browse every release on the [Releases page](https://github.com/Chris-Wolfgang/Log-Compressor/releases).
@@ -51,7 +53,7 @@ Each archive contains the `logc` executable **and** its `AppSettings.json` — k
 **Linux / macOS**
 
 ```bash
-# Download + extract (Linux x64 shown; swap in osx-x64 for macOS):
+# Download + extract (Linux x64 shown; swap in linux-arm64, osx-arm64 or osx-x64):
 curl -L -o logc-linux-x64.tar.gz \
   https://github.com/Chris-Wolfgang/Log-Compressor/releases/latest/download/logc-linux-x64.tar.gz
 mkdir -p ~/logc && tar -xzf logc-linux-x64.tar.gz -C ~/logc
@@ -310,11 +312,11 @@ Compression strategies (`ZipCompressionStrategy`, `GZipCompressionStrategy`, `Br
 ## 🎯 Target Framework & Distribution
 
 - **TFM:** `net10.0`
-- **Distribution:** self-contained, per-platform archive attached to each GitHub Release (no .NET runtime required on the target)
-- **Runtimes:** `win-x64`, `linux-x64`, `osx-x64`
+- **Distribution:** self-contained, per-platform Native AOT archive attached to each GitHub Release (no .NET runtime required on the target)
+- **Runtimes:** `win-x64`, `linux-x64`, `linux-arm64`, `osx-arm64`, `osx-x64`
 - **Not on NuGet:** `logc` is an application, not a library, so it is not published as a NuGet package.
 
-Releases are produced by the `publish-binaries` job in [`.github/workflows/release.yaml`](.github/workflows/release.yaml), which cross-compiles all three runtimes and uploads one archive each (`.zip` for Windows, `.tar.gz` for Linux/macOS).
+Releases are produced by the `publish-binaries` job in [`.github/workflows/release.yaml`](.github/workflows/release.yaml), which builds each runtime on a runner of its own OS and architecture (Native AOT does not cross-compile), smoke-tests the binary there, and uploads one archive each (`.zip` for Windows, `.tar.gz` for Linux/macOS).
 
 Each archive contains two files:
 
@@ -338,6 +340,7 @@ The output lands in `bin/Release/net10.0/linux-x64/publish/` as `logc` alongside
 | Metric | Value |
 |--------|-------|
 | Tests | xunit 2.9.3: unit (NSubstitute), integration (real file system, all OSes) and property-based fuzz (CsCheck) projects |
+| Test matrix | five legs on every PR: linux-x64 (Stage 1), windows-x64 (Stage 2), macos-arm64 (Stage 3), linux-arm64 (`Stage 4: Linux ARM64 Tests`, `ubuntu-24.04-arm`) and windows-arm64 (`Stage 5: Windows ARM64 Tests`, `windows-11-arm`); each leg runs the TFMs its runtime supports there (ARM64 and macOS: net6.0 and later), plus a published-binary smoke per release runtime |
 | Mutation testing | Stryker.NET; the score floor is in [`docs/stryker-baseline.json`](docs/stryker-baseline.json) |
 | Code coverage | 100% line, 95% branch; 95% per-module gate in CI |
 | Benchmarks | BenchmarkDotNet (compression-format throughput) |

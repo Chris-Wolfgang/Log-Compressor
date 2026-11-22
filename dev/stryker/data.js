@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1794749104609,
+  "lastUpdate": 1795356105122,
   "repoUrl": "https://github.com/Chris-Wolfgang/Log-Compressor",
   "entries": {
     "Mutation score": [
@@ -161,6 +161,33 @@ window.BENCHMARK_DATA = {
           {
             "name": "Mutation score (tests/Wolfgang.LogCompressor.Tests.Unit)",
             "value": 95.87,
+            "unit": "%"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "name": "Chris Wolfgang",
+            "username": "Chris-Wolfgang",
+            "email": "210299580+Chris-Wolfgang@users.noreply.github.com"
+          },
+          "committer": {
+            "name": "GitHub",
+            "username": "web-flow",
+            "email": "noreply@github.com"
+          },
+          "id": "b68392181a1819cece0daf73b81724b2cee5b25a",
+          "message": "test: kill four Stryker survivors in the compress, bundle and decompress services (#428)\n\n- BundleService: every bundled file reaches the strategy as an entry\n  (survivor: the removed `yield return`).\n- BundleService / CompressService: no --output creates no directory\n  (survivor: `OutputPath != null && ...` turned into `||`).\n- DecompressService: entries land under --output, not beside the archive\n  (survivor: the removed `options.OutputPath ??`).\n\nEach mutant was applied by hand and fails its new test.\n\nRefs #303\n\nCo-authored-by: Claude Opus 5.5 <noreply@anthropic.com>",
+          "timestamp": "2026-11-20T18:39:42Z",
+          "url": "https://github.com/Chris-Wolfgang/Log-Compressor/commit/b68392181a1819cece0daf73b81724b2cee5b25a"
+        },
+        "date": 1795356102454,
+        "tool": "customBiggerIsBetter",
+        "benches": [
+          {
+            "name": "Mutation score (tests/Wolfgang.LogCompressor.Tests.Unit)",
+            "value": 96.4,
             "unit": "%"
           }
         ]

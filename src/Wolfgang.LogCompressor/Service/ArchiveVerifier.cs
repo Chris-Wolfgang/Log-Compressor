@@ -89,17 +89,20 @@ internal sealed class ArchiveVerifier : IArchiveVerifier
                 // Brotli carries no checksum; the 512-byte tar structure is
                 // the completeness signal (a truncation mid-entry breaks
                 // the walk).
+                // Stryker disable once Boolean : equivalent - the decompression stream is disposed by its own await using either way, so leaveOpen: false only adds a second, no-op dispose of the file stream.
                 await VerifyTarStreamAsync(archivePath, static s => new BrotliStream(s, CompressionMode.Decompress, leaveOpen: true), cancellationToken).ConfigureAwait(false);
                 break;
             case "gz":
                 await VerifyGZipAsync(archivePath, expectedUncompressedSize, consume: null, cancellationToken).ConfigureAwait(false);
                 break;
             case "br":
+                // Stryker disable once Boolean : equivalent - the decompression stream is disposed by its own await using either way, so leaveOpen: false only adds a second, no-op dispose of the file stream.
                 await VerifySizedDecompressionAsync(archivePath, static s => new BrotliStream(s, CompressionMode.Decompress, leaveOpen: true), expectedUncompressedSize, cancellationToken).ConfigureAwait(false);
                 break;
             case "tar.zst":
                 // ZstdSharp validates each frame's checksum when present, and
                 // the tar structure is the completeness signal.
+                // Stryker disable once Boolean : equivalent - the decompression stream is disposed by its own await using either way, so leaveOpen: false only adds a second, no-op dispose of the file stream.
                 await VerifyTarStreamAsync(archivePath, static s => new ZstdSharp.DecompressionStream(s, leaveOpen: true), cancellationToken).ConfigureAwait(false);
                 break;
             case "tar.lz4":
@@ -111,6 +114,7 @@ internal sealed class ArchiveVerifier : IArchiveVerifier
                 // validated by ZstdSharp when the frame carries one, but
                 // presence isn't guaranteed, so the size check is the
                 // completeness gate.
+                // Stryker disable once Boolean : equivalent - the decompression stream is disposed by its own await using either way, so leaveOpen: false only adds a second, no-op dispose of the file stream.
                 await VerifySizedDecompressionAsync(archivePath, static s => new ZstdSharp.DecompressionStream(s, leaveOpen: true), expectedUncompressedSize, cancellationToken).ConfigureAwait(false);
                 break;
             case "lz4":
@@ -176,10 +180,12 @@ internal sealed class ArchiveVerifier : IArchiveVerifier
 
     private static async Task WalkTarAsync(Stream tarStream, CancellationToken cancellationToken)
     {
+        // Stryker disable once Boolean : equivalent - the caller disposes tarStream with its own await using right after the walk, so leaveOpen: false only adds a second, no-op dispose.
         var tarReader = new TarReader(tarStream, leaveOpen: true);
         await using (tarReader.ConfigureAwait(false))
         {
             while (await tarReader.GetNextEntryAsync(cancellationToken: cancellationToken).ConfigureAwait(false) is { } entry)
+            // Stryker disable once Block : equivalent - without the explicit drain TarReader still reads past the entry data to reach the next header, so a truncated or corrupt stream fails the walk either way.
             {
                 if (entry.DataStream != null)
                 {
@@ -307,6 +313,7 @@ internal sealed class ArchiveVerifier : IArchiveVerifier
             return total;
         }
         finally
+        // Stryker disable once Block,Statement : equivalent - not returning a rented buffer to the shared pool has no observable effect (the pool just allocates a new one later).
         {
             ArrayPool<byte>.Shared.Return(buffer);
         }

@@ -67,7 +67,9 @@ internal sealed class FileFilterService : IFileFilter
             query = query.Where(f => matcher.Match(f.Name).HasMatches);
         }
 
-        if (excludePatterns is { Count: > 0 })
+        // Unlike the include list, an empty exclude list needs no guard: a Matcher
+        // with no patterns matches nothing, so the filter below keeps every file.
+        if (excludePatterns is not null)
         {
             var matcher = new Matcher();
             foreach (var pattern in excludePatterns)

@@ -175,6 +175,39 @@ public sealed class DecompressServiceTests : IDisposable
 
 
     [Fact]
+    public async Task ExecuteAsync_when_zipHasDuplicateEntry_withForce_expected_failureAndArchiveKept()
+    {
+        // An archive from an older recursive bundle can name the same file
+        // twice; extracting it would overwrite the first copy and then delete
+        // the archive, so it fails even under --force (#441).
+        var archive = SetupSingleArchive("dup.zip", ZipBytes(("app.log", "AAA"), ("app.log", "BBB")));
+
+        var results = await _sut.ExecuteAsync(new DecompressionOptions { SourcePath = archive, Force = true });
+
+        var result = Assert.Single(results);
+        Assert.False(result.Success);
+        Assert.Contains("more than one entry", result.ErrorMessage, StringComparison.Ordinal);
+        _fileSystem.DidNotReceive().DeleteFile(archive);
+    }
+
+
+
+    [Fact]
+    public async Task ExecuteAsync_when_tarHasDuplicateEntry_withForce_expected_failureAndArchiveKept()
+    {
+        var archive = SetupSingleArchive("dup.tar.gz", TarGzBytes(("app.log", "AAA"), ("app.log", "BBB")));
+
+        var results = await _sut.ExecuteAsync(new DecompressionOptions { SourcePath = archive, Force = true });
+
+        var result = Assert.Single(results);
+        Assert.False(result.Success);
+        Assert.Contains("more than one entry", result.ErrorMessage, StringComparison.Ordinal);
+        _fileSystem.DidNotReceive().DeleteFile(archive);
+    }
+
+
+
+    [Fact]
     public async Task ExecuteAsync_when_zipSlipEntry_expected_failureAndArchiveKept()
     {
         var archive = SetupSingleArchive("evil.zip", ZipBytes(("../evil.txt", "pwned")));

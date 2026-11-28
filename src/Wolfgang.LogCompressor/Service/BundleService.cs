@@ -170,6 +170,7 @@ internal class BundleService
     {
         var bundled = new List<FileInfo>(filtered.Count);
         var skipped = 0;
+        var sourceIsFile = _fileSystem.FileExists(options.SourcePath);
 
         // Open each source lazily as the strategy writes it; the strategy disposes
         // each stream immediately, so only one source handle is open at a time —
@@ -222,7 +223,7 @@ internal class BundleService
                 }
 
                 bundled.Add(file);
-                yield return (stream, file.Name);
+                yield return (stream, GetEntryName(options.SourcePath, sourceIsFile, file.FullName));
             }
         }
 
@@ -361,6 +362,29 @@ internal class BundleService
         return sourceDirectory.Parent is null
             ? (outputPath ?? sourceDirectory.FullName, "archive")
             : (outputPath ?? sourceDirectory.Parent.FullName, sourceDirectory.Name);
+    }
+
+
+
+    /// <summary>
+    /// Returns the archive entry name for a bundled file.
+    /// </summary>
+    /// <param name="sourcePath">The bundle source: a file or a directory.</param>
+    /// <param name="sourceIsFile"><see langword="true"/> when <paramref name="sourcePath"/> is a file.</param>
+    /// <param name="filePath">The full path of the bundled file.</param>
+    /// <returns>
+    /// The file name for a file source; for a directory source, the path relative to it with
+    /// <c>/</c> separators, so same-named files in different subdirectories stay distinct entries
+    /// and the layout survives a decompress (#441). A file outside the source directory (not
+    /// produced by the enumeration) falls back to its file name.
+    /// </returns>
+    internal static string GetEntryName(string sourcePath, bool sourceIsFile, string filePath)
+    {
+        var relative = sourceIsFile ? string.Empty : Path.GetRelativePath(sourcePath, filePath);
+
+        return relative.Length == 0 || relative.StartsWith("..", StringComparison.Ordinal) || Path.IsPathRooted(relative)
+            ? Path.GetFileName(filePath)
+            : relative.Replace(Path.DirectorySeparatorChar, '/');
     }
 
 

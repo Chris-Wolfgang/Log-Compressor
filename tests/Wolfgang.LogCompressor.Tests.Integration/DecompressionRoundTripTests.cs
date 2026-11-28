@@ -147,6 +147,42 @@ public sealed class DecompressionRoundTripTests : IDisposable
 
 
 
+    [Theory]
+    [InlineData("Zip")]
+    [InlineData("Gz")]
+    public async Task ExecuteAsync_when_recursiveBundleHasSameNamedFiles_expected_bothRestoredInTheirSubdirectories(string formatName)
+    {
+        // #441: entries were stored under the bare file name, so a/app.log and
+        // b/app.log became duplicate entries and one was lost on --force.
+        var format = Enum.Parse<CompressionFormat>(formatName);
+        var sourceDir = Path.Combine(_tempDir.Path, "logs");
+        Directory.CreateDirectory(Path.Combine(sourceDir, "a"));
+        Directory.CreateDirectory(Path.Combine(sourceDir, "b"));
+        await File.WriteAllTextAsync(Path.Combine(sourceDir, "a", "app.log"), "AAA\n");
+        await File.WriteAllTextAsync(Path.Combine(sourceDir, "b", "app.log"), "BBB\n");
+
+        var bundleResult = await NewBundleService().ExecuteAsync(new CompressionOptions
+        {
+            SourcePath = sourceDir,
+            Format = format,
+            Recurse = true
+        });
+        Assert.True(bundleResult.Success, bundleResult.ErrorMessage);
+
+        var extractDir = Path.Combine(_tempDir.Path, "out");
+        var decompressResults = await _decompress.ExecuteAsync(new DecompressionOptions
+        {
+            SourcePath = bundleResult.OutputPath,
+            OutputPath = extractDir
+        });
+
+        Assert.True(Assert.Single(decompressResults).Success);
+        Assert.Equal("AAA\n", await File.ReadAllTextAsync(Path.Combine(extractDir, "a", "app.log")));
+        Assert.Equal("BBB\n", await File.ReadAllTextAsync(Path.Combine(extractDir, "b", "app.log")));
+    }
+
+
+
     public void Dispose()
     {
         _tempDir.Dispose();

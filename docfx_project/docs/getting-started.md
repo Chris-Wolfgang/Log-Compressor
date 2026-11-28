@@ -15,6 +15,8 @@ Wolfgang.LogCompressor ships as a self-contained single-file executable (`logc`)
 |----------|----------|
 | Windows (x64) | [logc-win-x64.zip](https://github.com/Chris-Wolfgang/Log-Compressor/releases/latest/download/logc-win-x64.zip) |
 | Linux (x64) | [logc-linux-x64.tar.gz](https://github.com/Chris-Wolfgang/Log-Compressor/releases/latest/download/logc-linux-x64.tar.gz) |
+| Linux (ARM64) | [logc-linux-arm64.tar.gz](https://github.com/Chris-Wolfgang/Log-Compressor/releases/latest/download/logc-linux-arm64.tar.gz) |
+| macOS (Apple silicon, ARM64) | [logc-osx-arm64.tar.gz](https://github.com/Chris-Wolfgang/Log-Compressor/releases/latest/download/logc-osx-arm64.tar.gz) |
 | macOS (Intel, x64) | [logc-osx-x64.tar.gz](https://github.com/Chris-Wolfgang/Log-Compressor/releases/latest/download/logc-osx-x64.tar.gz) |
 
 Each archive contains `logc` and its `AppSettings.json`; keep the two together in one folder.
@@ -34,7 +36,7 @@ cd Log-Compressor
 dotnet publish src/Wolfgang.LogCompressor -c Release -r linux-x64 --self-contained
 ```
 
-Replace `linux-x64` with `win-x64` or `osx-x64` for your platform. The output (`logc` plus `AppSettings.json`) is written to `src/Wolfgang.LogCompressor/bin/Release/net10.0/<rid>/publish/` — copy both to your server.
+Replace `linux-x64` with `win-x64`, `linux-arm64`, `osx-arm64` or `osx-x64` for your platform. The output (`logc` plus `AppSettings.json`) is written to `src/Wolfgang.LogCompressor/bin/Release/net10.0/<rid>/publish/` — copy both to your server.
 
 ## Quick Start
 

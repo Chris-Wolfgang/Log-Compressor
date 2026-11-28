@@ -541,6 +541,9 @@ public sealed class CompressServiceTests : IDisposable
         _fileSystem.FileExists(expectedOutput).Returns(returnThis: false);
         _fileSystem.When(f => f.MoveFile(expectedOutput + ".partial", expectedOutput, false)).Do(_ =>
             _fileSystem.FileExists(expectedOutput).Returns(returnThis: true));
+        // The attempt's own rollback (#442) removes its archive; model that.
+        _fileSystem.When(f => f.DeleteFile(expectedOutput)).Do(_ =>
+            _fileSystem.FileExists(expectedOutput).Returns(returnThis: false));
         var sourceDeletes = 0;
         _fileSystem.When(f => f.DeleteFile(tempFile)).Do(_ =>
         {
@@ -560,9 +563,60 @@ public sealed class CompressServiceTests : IDisposable
 
         Assert.True(Assert.Single(results).Success);
         // The failed attempt's archive was cleared before the retry wrote to
-        // the same path (source deletion is a separate DeleteFile call).
+        // the same path (source deletion is a separate DeleteFile call); since
+        // #442 the attempt's rollback clears it, so the retry finds the path free.
         _fileSystem.Received(1).DeleteFile(expectedOutput);
         _fileSystem.Received(2).DeleteFile(tempFile);
+    }
+
+
+
+    [Fact]
+    public async Task ExecuteAsync_when_retry_andRollbackCouldNotDeleteArchive_expected_retryClearsIt()
+    {
+        // The rollback of #442 is best-effort: when it cannot delete the
+        // published archive, the retry clears the reserved path itself.
+        var tempFile = CreateTempFile();
+        var fileInfo = new FileInfo(tempFile);
+
+        _fileSystem.FileExists(tempFile).Returns(returnThis: true);
+        _fileSystem.GetFileInfo(tempFile).Returns(fileInfo);
+        StubFilterPassThrough([fileInfo]);
+        _fileNamer.GetCompressedFileName(Arg.Any<FileInfo>(), "zip", Arg.Any<TimestampSource>(), Arg.Any<string?>()).Returns("out.zip");
+        _fileSystem.OpenRead(tempFile).Returns(_ => new MemoryStream("content"u8.ToArray()));
+        _fileSystem.CreateWrite(Arg.Any<string>()).Returns(_ => new MemoryStream());
+        var expectedOutput = Path.Combine(fileInfo.DirectoryName!, "out.zip");
+        _fileSystem.FileExists(expectedOutput).Returns(returnThis: false);
+        _fileSystem.When(f => f.MoveFile(expectedOutput + ".partial", expectedOutput, false)).Do(_ =>
+            _fileSystem.FileExists(expectedOutput).Returns(returnThis: true));
+        var archiveDeletes = 0;
+        _fileSystem.When(f => f.DeleteFile(expectedOutput)).Do(_ =>
+        {
+            if (archiveDeletes++ == 0)
+            {
+                throw new IOException("archive in use");
+            }
+
+            _fileSystem.FileExists(expectedOutput).Returns(returnThis: false);
+        });
+        var sourceDeletes = 0;
+        _fileSystem.When(f => f.DeleteFile(tempFile)).Do(_ =>
+        {
+            if (sourceDeletes++ == 0)
+            {
+                throw new IOException("source locked");
+            }
+        });
+
+        var results = await _sut.ExecuteAsync(new CompressionOptions
+        {
+            SourcePath = tempFile,
+            Verify = true,
+            OnError = new ErrorPolicy { RetryCount = 1 }
+        });
+
+        Assert.True(Assert.Single(results).Success);
+        _fileSystem.Received(2).DeleteFile(expectedOutput);
     }
 
 

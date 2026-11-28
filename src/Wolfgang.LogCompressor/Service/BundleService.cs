@@ -289,10 +289,7 @@ internal class BundleService
 
         // Delete only the files that were successfully bundled; skipped (unreadable)
         // files are left in place.
-        foreach (var file in bundled)
-        {
-            _fileSystem.DeleteFile(file.FullName);
-        }
+        DeleteBundledSources(bundled, outputPath);
 
         _logger.LogInformation
         (
@@ -362,6 +359,27 @@ internal class BundleService
         return sourceDirectory.Parent is null
             ? (outputPath ?? sourceDirectory.FullName, "archive")
             : (outputPath ?? sourceDirectory.Parent.FullName, sourceDirectory.Name);
+    }
+
+
+
+    private void DeleteBundledSources(List<FileInfo> bundled, string outputPath)
+    {
+        for (var i = 0; i < bundled.Count; i++)
+        {
+            try
+            {
+                _fileSystem.DeleteFile(bundled[i].FullName);
+            }
+            catch (Exception ex) when (i == 0 && ex is IOException or UnauthorizedAccessException)
+            {
+                // No source is gone yet: take the just-published archive back,
+                // so the failed bundle leaves no archive behind (#442). Once one
+                // source is deleted the archive is its only copy and stays.
+                ArchiveWorkFile.DeleteQuietly(_fileSystem, _logger, outputPath);
+                throw;
+            }
+        }
     }
 
 

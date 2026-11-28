@@ -248,13 +248,12 @@ internal class DecompressService
         return kind switch
         {
             ArchiveKind.Zip => await ExtractZipAsync(archive, outputDir, options, cancellationToken).ConfigureAwait(false),
-            // Stryker disable once Boolean : equivalent - ExtractTarAsync/ExtractRawAsync dispose the decompression stream and the archive stream with their own await using, so leaveOpen: false only adds a second, no-op dispose.
-            ArchiveKind.TarGz => await ExtractTarAsync(archive, outputDir, options, static s => new GZipStream(s, CompressionMode.Decompress, leaveOpen: true), cancellationToken).ConfigureAwait(false),
+            // gzip checks its trailer when the data ends: GZipStream alone returns a truncated archive's partial data without error (#466).
+            ArchiveKind.TarGz => await ExtractTarAsync(archive, outputDir, options, static s => new GZipTrailerCheckingStream(s), cancellationToken).ConfigureAwait(false),
             ArchiveKind.TarBrotli => await ExtractTarAsync(archive, outputDir, options, static s => new BrotliStream(s, CompressionMode.Decompress, leaveOpen: true), cancellationToken).ConfigureAwait(false),
             ArchiveKind.TarZstd => await ExtractTarAsync(archive, outputDir, options, static s => new ZstdSharp.DecompressionStream(s, leaveOpen: true), cancellationToken).ConfigureAwait(false),
             ArchiveKind.TarLz4 => await ExtractTarAsync(archive, outputDir, options, static s => K4os.Compression.LZ4.Streams.LZ4Stream.Decode(s, leaveOpen: true), cancellationToken).ConfigureAwait(false),
-            // Stryker disable once Boolean : equivalent - ExtractTarAsync/ExtractRawAsync dispose the decompression stream and the archive stream with their own await using, so leaveOpen: false only adds a second, no-op dispose.
-            ArchiveKind.RawGz => await ExtractRawAsync(archive, outputDir, options, static s => new GZipStream(s, CompressionMode.Decompress, leaveOpen: true), cancellationToken).ConfigureAwait(false),
+            ArchiveKind.RawGz => await ExtractRawAsync(archive, outputDir, options, static s => new GZipTrailerCheckingStream(s), cancellationToken).ConfigureAwait(false),
             ArchiveKind.RawBrotli => await ExtractRawAsync(archive, outputDir, options, static s => new BrotliStream(s, CompressionMode.Decompress, leaveOpen: true), cancellationToken).ConfigureAwait(false),
             // Stryker disable once Boolean : equivalent - ExtractTarAsync/ExtractRawAsync dispose the decompression stream and the archive stream with their own await using, so leaveOpen: false only adds a second, no-op dispose.
             ArchiveKind.RawZstd => await ExtractRawAsync(archive, outputDir, options, static s => new ZstdSharp.DecompressionStream(s, leaveOpen: true), cancellationToken).ConfigureAwait(false),
@@ -453,6 +452,11 @@ internal class DecompressService
 
                     total += await WriteEntryAsync(entry.DataStream, destination, options.Force, cancellationToken).ConfigureAwait(false);
                 }
+
+                // Read past the tar end-of-archive padding to the end of the
+                // compressed stream, so a checksum or trailer that sits there
+                // (the gzip trailer, a zstd/lz4 frame checksum) is checked.
+                await decompressed.CopyToAsync(Stream.Null, cancellationToken).ConfigureAwait(false);
             }
         }
 

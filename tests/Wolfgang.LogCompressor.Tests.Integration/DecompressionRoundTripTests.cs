@@ -226,6 +226,46 @@ public sealed class DecompressionRoundTripTests : IDisposable
 
 
 
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task ExecuteAsync_when_gzipArchiveTruncated_expected_failureAndArchiveKept(bool bundle)
+    {
+        // #466: GZipStream returns a truncated archive's data without error;
+        // the trailer check fails it, so the archive is not deleted.
+        var sourceDir = Path.Combine(_tempDir.Path, "src");
+        Directory.CreateDirectory(sourceDir);
+        var random = new Random(466);
+        var content = new string(Enumerable.Range(0, 300_000).Select(_ => (char)('a' + random.Next(26))).ToArray());
+        var sourcePath = Path.Combine(sourceDir, "big.log");
+        await File.WriteAllTextAsync(sourcePath, content);
+
+        string archive;
+        if (bundle)
+        {
+            var bundleResult = await NewBundleService().ExecuteAsync(new CompressionOptions { SourcePath = sourceDir, Format = CompressionFormat.Gz });
+            Assert.True(bundleResult.Success);
+            archive = bundleResult.OutputPath;
+        }
+        else
+        {
+            var compressResult = Assert.Single(await NewCompressService().ExecuteAsync(new CompressionOptions { SourcePath = sourcePath, Format = CompressionFormat.Gz }));
+            Assert.True(compressResult.Success);
+            archive = compressResult.OutputPath;
+        }
+
+        var bytes = await File.ReadAllBytesAsync(archive);
+        await File.WriteAllBytesAsync(archive, bytes[..(bytes.Length * 3 / 4)]);
+        var extractDir = Path.Combine(_tempDir.Path, "out");
+
+        var result = Assert.Single(await _decompress.ExecuteAsync(new DecompressionOptions { SourcePath = archive, OutputPath = extractDir }));
+
+        Assert.False(result.Success);
+        Assert.True(File.Exists(archive));
+    }
+
+
+
     public void Dispose()
     {
         _tempDir.Dispose();

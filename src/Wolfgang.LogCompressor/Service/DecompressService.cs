@@ -18,9 +18,11 @@ namespace Wolfgang.LogCompressor.Service;
 /// existing file at an extraction target fails that archive (kept intact)
 /// unless <see cref="DecompressionOptions.Force"/> allows overwriting.
 /// Entry paths are confined to the destination directory — an entry that
-/// would escape it (zip-slip / tar-slip) fails the archive. A failed tar or
-/// multi-entry extraction can leave already-written entries behind; the
-/// archive itself is always kept on any failure, so no data is lost.
+/// would escape it (zip-slip / tar-slip) fails the archive. Each entry is
+/// written under a <c>.partial</c> name and moved to its final name only when
+/// complete, so a failure never leaves a truncated file at the final name. A
+/// failed tar or multi-entry extraction can leave already-completed entries
+/// behind; the archive itself is always kept on any failure, so no data is lost.
 /// </remarks>
 internal class DecompressService
 {
@@ -397,7 +399,7 @@ internal class DecompressService
                 var entryStream = await entry.OpenAsync(cancellationToken).ConfigureAwait(false);
                 await using (entryStream.ConfigureAwait(false))
                 {
-                    total += await WriteEntryAsync(entryStream, destination, cancellationToken).ConfigureAwait(false);
+                    total += await WriteEntryAsync(entryStream, destination, options.Force, cancellationToken).ConfigureAwait(false);
                 }
             }
         }
@@ -449,7 +451,7 @@ internal class DecompressService
                         continue;
                     }
 
-                    total += await WriteEntryAsync(entry.DataStream, destination, cancellationToken).ConfigureAwait(false);
+                    total += await WriteEntryAsync(entry.DataStream, destination, options.Force, cancellationToken).ConfigureAwait(false);
                 }
             }
         }
@@ -489,7 +491,7 @@ internal class DecompressService
             var decompressed = decompressorFactory(stream);
             await using (decompressed.ConfigureAwait(false))
             {
-                return await WriteEntryAsync(decompressed, destination, cancellationToken).ConfigureAwait(false);
+                return await WriteEntryAsync(decompressed, destination, options.Force, cancellationToken).ConfigureAwait(false);
             }
         }
     }
@@ -513,13 +515,32 @@ internal class DecompressService
 
 
 
-    private async Task<long> WriteEntryAsync(Stream source, string destination, CancellationToken cancellationToken)
+    private async Task<long> WriteEntryAsync(Stream source, string destination, bool overwrite, CancellationToken cancellationToken)
     {
-        var output = _fileSystem.CreateWrite(destination);
-        await using (output.ConfigureAwait(false))
+        // Written under .partial and moved to the final name only once the
+        // entry is complete, so a failed or canceled extraction never leaves a
+        // truncated file that looks restored and blocks the re-run, and under
+        // --force an existing file is replaced only by a complete one (#444).
+        // CreateWrite truncates a stale partial of an earlier run.
+        var partialPath = ArchiveWorkFile.GetPartialPath(destination);
+
+        try
         {
-            await source.CopyToAsync(output, cancellationToken).ConfigureAwait(false);
-            return output.Length;
+            long length;
+            var output = _fileSystem.CreateWrite(partialPath);
+            await using (output.ConfigureAwait(false))
+            {
+                await source.CopyToAsync(output, cancellationToken).ConfigureAwait(false);
+                length = output.Length;
+            }
+
+            _fileSystem.MoveFile(partialPath, destination, overwrite);
+            return length;
+        }
+        catch (Exception)
+        {
+            ArchiveWorkFile.DeleteQuietly(_fileSystem, _logger, partialPath);
+            throw;
         }
     }
 }

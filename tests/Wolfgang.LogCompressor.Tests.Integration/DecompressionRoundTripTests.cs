@@ -183,6 +183,49 @@ public sealed class DecompressionRoundTripTests : IDisposable
 
 
 
+    [Fact]
+    public async Task ExecuteAsync_when_archiveCorrupt_expected_noFileAtFinalNameAndRerunNotBlocked()
+    {
+        // #444: a failed extraction left a truncated file at the final name,
+        // and every re-run then failed with "Extraction target already exists".
+        var sourceDir = Path.Combine(_tempDir.Path, "src");
+        Directory.CreateDirectory(sourceDir);
+        var random = new Random(444);
+        var content = new string(Enumerable.Range(0, 300_000).Select(_ => (char)('a' + random.Next(26))).ToArray());
+        await File.WriteAllTextAsync(Path.Combine(sourceDir, "big.log"), content);
+        var compressResult = Assert.Single(await NewCompressService().ExecuteAsync(new CompressionOptions
+        {
+            SourcePath = Path.Combine(sourceDir, "big.log"),
+            Format = CompressionFormat.Zstd
+        }));
+        Assert.True(compressResult.Success);
+
+        // A flipped byte in the middle: the decoder writes most of the entry,
+        // then the frame checksum (#448) fails it.
+        var archive = compressResult.OutputPath;
+        var bytes = await File.ReadAllBytesAsync(archive);
+        var corrupt = bytes.ToArray();
+        corrupt[corrupt.Length / 2] ^= 0x01;
+        await File.WriteAllBytesAsync(archive, corrupt);
+        var destination = archive[..^".zst".Length];
+
+        var first = Assert.Single(await _decompress.ExecuteAsync(new DecompressionOptions { SourcePath = archive }));
+
+        Assert.False(first.Success);
+        Assert.True(File.Exists(archive));
+        Assert.False(File.Exists(destination));
+        Assert.False(File.Exists(destination + ".partial"));
+
+        // The re-run with an intact archive is not blocked by a leftover.
+        await File.WriteAllBytesAsync(archive, bytes);
+        var second = Assert.Single(await _decompress.ExecuteAsync(new DecompressionOptions { SourcePath = archive }));
+
+        Assert.True(second.Success, second.ErrorMessage);
+        Assert.Equal(content, await File.ReadAllTextAsync(destination));
+    }
+
+
+
     public void Dispose()
     {
         _tempDir.Dispose();

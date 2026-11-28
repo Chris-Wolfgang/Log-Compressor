@@ -189,7 +189,7 @@ logc decompress /var/log/archives --keep-archives
 | Command | Directory scanned | Files considered |
 |---------|-------------------|------------------|
 | `compress` | `--output`, else the source directory (the file's directory for a file source); with `--recurse` and no `--output`, its subdirectories too | every logc-named archive there |
-| `bundle` | `--output`, else the directory the bundle is written to: the source's **parent** for a directory source, the file's directory for a file source | only archives whose name starts with this bundle's base name (`--name`, else the source folder/file name) followed by `-` |
+| `bundle` | `--output`, else the directory the bundle is written to: the source's **parent** for a directory source, the file's directory for a file source | only archives named exactly this bundle's base name (`--name`, else the source folder/file name) followed directly by the timestamp tail: `app` never matches `app-server-...` |
 
 ### Exit codes
 

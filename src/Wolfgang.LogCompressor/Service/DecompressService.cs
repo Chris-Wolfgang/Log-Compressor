@@ -162,10 +162,11 @@ internal class DecompressService
         // success path the archive is deleted before the result is built, and
         // a first Length access after deletion throws FileNotFoundException.
         var archiveSize = archive.Length;
+        var kind = ArchiveKind.Unknown;
 
         try
         {
-            var kind = DetectByName(archive.FullName);
+            kind = DetectByName(archive.FullName);
             if (kind == ArchiveKind.Unknown)
             {
                 kind = await SniffKindAsync(archive.FullName, cancellationToken).ConfigureAwait(false);
@@ -201,7 +202,7 @@ internal class DecompressService
                 Success = true
             };
         }
-        catch (Exception ex) when (IsArchiveFailure(ex))
+        catch (Exception ex) when (IsArchiveFailure(ex, kind))
         {
             _logger.LogError(ex, "Extraction failed for {Archive}, archive preserved: {Message}", archive.FullName, ex.Message);
 
@@ -219,12 +220,16 @@ internal class DecompressService
 
 
 
-    private static bool IsArchiveFailure(Exception ex)
+    private static bool IsArchiveFailure(Exception ex, ArchiveKind kind)
     {
         // ZstdSharp reports a corrupt frame with its own ZstdException, not an
         // InvalidDataException; it is a bad archive like any other and must
-        // not abort the whole batch (#354).
-        return ex is IOException or InvalidDataException or UnauthorizedAccessException or NotSupportedException or ZstdSharp.ZstdException;
+        // not abort the whole batch (#354). BrotliStream reports corrupt input
+        // with InvalidOperationException ("Decoder ran into invalid data"); it
+        // counts only for the Brotli kinds, so a real programming error
+        // elsewhere still surfaces (#443).
+        return ex is IOException or InvalidDataException or UnauthorizedAccessException or NotSupportedException or ZstdSharp.ZstdException
+            || (ex is InvalidOperationException && kind is ArchiveKind.RawBrotli or ArchiveKind.TarBrotli);
     }
 
 

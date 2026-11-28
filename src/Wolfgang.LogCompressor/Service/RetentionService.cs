@@ -31,6 +31,15 @@ internal sealed class RetentionService
         TimeSpan.FromSeconds(1)
     );
 
+    // The same timestamp tail anchored at the start too: with a base name the
+    // tail must follow it directly, so "app" never claims "app-server-..." (#445).
+    private static readonly Regex LogcArchiveTail = new
+    (
+        @"^-\d{4}-\d{2}-\d{2}_\d{2}-\d{2}-\d{2}( to \d{4}-\d{2}-\d{2}_\d{2}-\d{2}-\d{2})?(-\d+)?\.(zip|gz|br|zst|lz4|tar\.gz|tar\.br|tar\.zst|tar\.lz4)$",
+        RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture,
+        TimeSpan.FromSeconds(1)
+    );
+
     private readonly IFileSystem _fileSystem;
     private readonly ILogger<RetentionService> _logger;
     private readonly TimeProvider _timeProvider;
@@ -122,8 +131,13 @@ internal sealed class RetentionService
 
     internal static bool IsRetentionCandidate(string fileName, string? baseName)
     {
-        return LogcArchiveName.IsMatch(fileName)
-            && (baseName is null || fileName.StartsWith(baseName + "-", StringComparison.OrdinalIgnoreCase));
+        if (baseName is null)
+        {
+            return LogcArchiveName.IsMatch(fileName);
+        }
+
+        return fileName.StartsWith(baseName, StringComparison.OrdinalIgnoreCase)
+            && LogcArchiveTail.IsMatch(fileName.AsSpan(baseName.Length));
     }
 
 

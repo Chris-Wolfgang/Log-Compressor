@@ -239,6 +239,11 @@ public sealed class RetentionServiceTests : IDisposable
     [InlineData("myapp-2026-01-01_00-00-00.zip", true)]
     [InlineData("OtherApp-2026-01-01_00-00-00 to 2026-01-02_00-00-00.zip", false)]
     [InlineData("MyAppX-2026-01-01_00-00-00.zip", false)]
+    [InlineData("MyApp-server-2026-01-01_00-00-00 to 2026-01-02_00-00-00.zip", false)]
+    [InlineData("MyApp-server-2026-01-01_00-00-00.zip", false)]
+    [InlineData("MyApp-2026-01-01_00-00-00-2.tar.gz", true)]
+    [InlineData("MyApp-2026-01-01.zip", false)]
+    [InlineData("MyApp", false)]
     public void IsRetentionCandidate_when_baseNameGiven_expected_onlyThatBaseName(string fileName, bool expected)
     {
         Assert.Equal(expected, RetentionService.IsRetentionCandidate(fileName, "MyApp"));

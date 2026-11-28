@@ -107,7 +107,7 @@
          longer fails on truncated input, so the verifier checks the stream's
          own trailer itself. -->
     <PackageReference Include="System.IO.Hashing" Version="11.0.0" />
-    <PackageReference Include="ZstdSharp.Port" Version="0.8.8" />
+    <PackageReference Include="ZstdSharp.Port" Version="0.9.1" />
   </ItemGroup>
 
   <ItemGroup>

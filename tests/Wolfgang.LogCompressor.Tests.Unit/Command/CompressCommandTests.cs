@@ -270,6 +270,21 @@ public sealed class CompressCommandTests : IDisposable
 
 
     [Fact]
+    public async Task OnExecuteAsync_when_sourceParentMissing_expected_applicationErrorNotAlreadyRunning()
+    {
+        // #447: the lock directory does not exist, so the lock cannot be
+        // created; that is a bad path, not another instance.
+        var command = new Compress { Path = Path.Combine(_temp.Path, "nope", "missing.log") };
+
+        var result = await command.OnExecuteAsync(_console, _logger, _compressService, _reportService, _retentionService);
+
+        Assert.Equal(ExitCode.ApplicationError, result);
+        await _compressService.DidNotReceive().ExecuteAsync(Arg.Any<CompressionOptions>(), Arg.Any<CancellationToken>());
+    }
+
+
+
+    [Fact]
     public async Task OnExecuteAsync_when_reportPathNotSet_expected_defaultReportNameUsed()
     {
         _compressService.ExecuteAsync(Arg.Any<CompressionOptions>(), Arg.Any<CancellationToken>())

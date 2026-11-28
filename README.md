@@ -204,7 +204,7 @@ logc decompress /var/log/archives --keep-archives
 | 3 | Completed with skips — the run finished but one or more items failed and were skipped (`--on-error skip`, or `retry:N` exhausted) |
 | 4 | Canceled — the run was interrupted (Ctrl+C) before completing |
 | 10 | Unhandled exception |
-| 11 | Application error — the run failed (`--on-error fail` stopped at the first failure, or a fatal error) |
+| 11 | Application error — the run failed (`--on-error fail` stopped at the first failure, or a fatal error such as a source path that does not exist or a lock file that cannot be created) |
 
 Under `--on-error fail`, the first item that still fails after any retries stops the run and exits 11. Under the default `skip`, failures are logged, the item is left in place, and the run continues — ending in exit 3 so schedulers can tell a degraded run from a clean one.
 

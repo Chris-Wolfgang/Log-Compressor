@@ -71,6 +71,58 @@ public sealed class ProcessLockTests : IDisposable
 
 
 
+    [Fact]
+    public void TryAcquire_when_directoryMissing_expected_falseWithDirectoryNotFound()
+    {
+        // #447: a missing directory is not "another instance".
+        using var sut = new ProcessLock(Path.Combine(_temp.Path, "missing"), NullLogger.Instance);
+
+        Assert.False(sut.TryAcquire());
+        Assert.Equal(ProcessLockFailure.DirectoryNotFound, sut.Failure);
+        Assert.NotNull(sut.FailureMessage);
+    }
+
+
+
+    [Fact]
+    public void TryAcquire_when_lockFileCannotBeCreated_expected_falseWithCannotCreate()
+    {
+        // A directory where the lock file should be stands in for a read-only
+        // or ACL-denied directory (UnauthorizedAccessException).
+        Directory.CreateDirectory(Path.Combine(_temp.Path, ProcessLock.LockFileName));
+        using var sut = new ProcessLock(_temp.Path, NullLogger.Instance);
+
+        Assert.False(sut.TryAcquire());
+        Assert.Equal(ProcessLockFailure.CannotCreate, sut.Failure);
+    }
+
+
+
+    [Fact]
+    public void TryAcquire_when_heldByAnotherHandle_expected_falseWithAlreadyHeld()
+    {
+        using var held = new FileStream(Path.Combine(_temp.Path, ProcessLock.LockFileName), FileMode.OpenOrCreate, FileAccess.Write, FileShare.None);
+        using var sut = new ProcessLock(_temp.Path, NullLogger.Instance);
+
+        Assert.False(sut.TryAcquire());
+        Assert.Equal(ProcessLockFailure.AlreadyHeld, sut.Failure);
+    }
+
+
+
+    [Fact]
+    public void TryAcquire_when_acquired_expected_noFailure()
+    {
+        using var sut = new ProcessLock(_temp.Path, NullLogger.Instance);
+
+        Assert.True(sut.TryAcquire());
+        Assert.Equal(ProcessLockFailure.None, sut.Failure);
+        Assert.Null(sut.FailureMessage);
+        Assert.Equal(Path.Combine(_temp.Path, ProcessLock.LockFileName), sut.LockFilePath);
+    }
+
+
+
     public void Dispose()
     {
         _temp.Dispose();

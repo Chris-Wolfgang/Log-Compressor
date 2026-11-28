@@ -110,4 +110,53 @@ public sealed class ZstdCompressionStrategyTests
         using var reader = new StreamReader(zstdStream);
         Assert.Equal("level mapping round-trip", await reader.ReadToEndAsync());
     }
+
+
+
+    private static byte[] RandomLetters(int length)
+    {
+        // Seeded, so the corrupted byte is the same on every run.
+        var random = new Random(448);
+        var bytes = new byte[length];
+        for (var i = 0; i < bytes.Length; i++)
+        {
+            bytes[i] = (byte)('a' + random.Next(26));
+        }
+
+        return bytes;
+    }
+
+
+
+    [Fact]
+    public async Task CompressFileAsync_when_payloadByteFlipped_expected_decodeFails()
+    {
+        // #448: the frame carries a checksum, so corruption is detected on read.
+        var content = RandomLetters(20_000);
+        using var outputStream = new MemoryStream();
+        await _sut.CompressFileAsync(new MemoryStream(content), outputStream, "test.log");
+        var corrupt = outputStream.ToArray();
+        corrupt[corrupt.Length / 2] ^= 0x01;
+
+        await using var decoder = new DecompressionStream(new MemoryStream(corrupt));
+        await Assert.ThrowsAsync<ZstdException>(() => decoder.CopyToAsync(Stream.Null));
+    }
+
+
+
+    [Fact]
+    public async Task CompressFilesAsync_when_payloadByteFlipped_expected_decodeFails()
+    {
+        var inputs = new List<(Stream Stream, string EntryName)>
+        {
+            (new MemoryStream(RandomLetters(20_000)), "a.log")
+        };
+        using var outputStream = new MemoryStream();
+        await _sut.CompressFilesAsync(inputs.ToAsyncEnumerable(), outputStream);
+        var corrupt = outputStream.ToArray();
+        corrupt[corrupt.Length / 2] ^= 0x01;
+
+        await using var decoder = new DecompressionStream(new MemoryStream(corrupt));
+        await Assert.ThrowsAsync<ZstdException>(() => decoder.CopyToAsync(Stream.Null));
+    }
 }

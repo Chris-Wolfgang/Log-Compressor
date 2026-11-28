@@ -45,9 +45,22 @@ internal sealed class ZstdCompressionStrategy : ICompressionStrategy
     )
     {
         _ = entryName; // Not used by single-stream zstd format
-        var zstdStream = new CompressionStream(outputStream, _level, leaveOpen: true);
+        var zstdStream = NewCompressionStream(outputStream);
         await using var zstdStreamDisposal = zstdStream.ConfigureAwait(false);
         await inputStream.CopyToAsync(zstdStream, cancellationToken).ConfigureAwait(false);
+    }
+
+
+
+    private CompressionStream NewCompressionStream(Stream outputStream)
+    {
+        // The frame's content checksum is optional and off by default; without
+        // it a flipped byte decodes without error and decompress would delete
+        // the archive after restoring damaged data. ZstdSharp verifies it on
+        // read and throws ZstdException on a mismatch (#448).
+        var zstdStream = new CompressionStream(outputStream, _level, leaveOpen: true);
+        zstdStream.SetParameter(ZstdSharp.Unsafe.ZSTD_cParameter.ZSTD_c_checksumFlag, 1);
+        return zstdStream;
     }
 
 
@@ -60,7 +73,7 @@ internal sealed class ZstdCompressionStrategy : ICompressionStrategy
         CancellationToken cancellationToken = default
     )
     {
-        var zstdStream = new CompressionStream(outputStream, _level, leaveOpen: true);
+        var zstdStream = NewCompressionStream(outputStream);
         await using var zstdStreamDisposal = zstdStream.ConfigureAwait(false);
         // Stryker disable once Boolean : equivalent - the TarWriter is disposed first (LIFO), so leaveOpen: false only disposes the compression stream one statement before its own await using does.
         var tarWriter = new TarWriter(zstdStream, leaveOpen: true);

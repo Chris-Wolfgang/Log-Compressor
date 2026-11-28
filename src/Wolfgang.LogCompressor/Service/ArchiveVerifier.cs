@@ -110,10 +110,10 @@ internal sealed class ArchiveVerifier : IArchiveVerifier
                 break;
             case "zst":
                 // Like brotli: decompress fully and compare against the
-                // expected size — zstd's optional content checksum is
-                // validated by ZstdSharp when the frame carries one, but
-                // presence isn't guaranteed, so the size check is the
-                // completeness gate.
+                // expected size. logc writes zstd frames with a content
+                // checksum, which ZstdSharp validates; archives from older
+                // versions (or other tools) may lack one, so the size check
+                // stays the completeness gate.
                 // Stryker disable once Boolean : equivalent - the decompression stream is disposed by its own await using either way, so leaveOpen: false only adds a second, no-op dispose of the file stream.
                 await VerifySizedDecompressionAsync(archivePath, static s => new ZstdSharp.DecompressionStream(s, leaveOpen: true), expectedUncompressedSize, cancellationToken).ConfigureAwait(false);
                 break;

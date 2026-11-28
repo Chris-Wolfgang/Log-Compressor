@@ -135,7 +135,7 @@ logc decompress /var/log/archives --recurse --output /var/log/restored
 logc decompress /var/log/archives --keep-archives
 ```
 
-`decompress` handles every format logc produces — `.zip`, `.gz`, `.br`, `.zst`, `.lz4` and the `.tar.*` bundles. ZIP and tar entries restore their original names; raw single-stream formats extract to the archive name minus its compression suffix (the original file extension is not stored in those formats). Entries are confined to the output directory (zip-slip protected), an existing file fails that archive unless `--force`, and an archive is deleted only after every entry extracted successfully (`--keep-archives` to opt out) — the safety mirror of compress's verify-then-delete.
+`decompress` handles every format logc produces — `.zip`, `.gz`, `.br`, `.zst`, `.lz4` and the `.tar.*` bundles. ZIP and tar entries restore their original names; raw single-stream formats extract to the archive name minus its compression suffix (the original file extension is not stored in those formats). Entries are confined to the output directory (zip-slip protected), an existing file fails that archive unless `--force`, and an archive is deleted only after every entry extracted successfully (`--keep-archives` to opt out) — the safety mirror of compress's verify-then-delete. ZIP and GZip carry a CRC-32, and logc writes Zstandard and LZ4 archives with a content checksum, so corruption in those formats fails the extraction; Brotli has no checksum in its format.
 
 ### Output filename conventions
 

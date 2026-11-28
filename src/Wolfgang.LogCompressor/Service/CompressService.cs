@@ -259,8 +259,16 @@ internal class CompressService
         // archive (and refuse to overwrite, blocking the source forever).
         var partialPath = ArchiveWorkFile.GetPartialPath(outputPath);
 
+        // FileInfo.Length is lazy: read it once, BEFORE the source is deleted.
+        // With --timestamp compressed, --no-verify and no date filter nothing
+        // else touches the FileInfo first, so a later read would throw
+        // FileNotFoundException after a successful compress (#440).
+        long originalSize = 0;
+
         try
         {
+            originalSize = sourceFile.Length;
+
             if (options.OutputPath != null && !_fileSystem.DirectoryExists(options.OutputPath))
             {
                 _fileSystem.CreateDirectory(options.OutputPath);
@@ -293,7 +301,7 @@ internal class CompressService
             // while its read handle is open. Both must run after the using block.
             // The source length lets the verifier catch truncated gz/br output
             // (their decompressors return partial data instead of failing).
-            if (options.Verify && !await _archiveVerifier.VerifyAsync(partialPath, strategy.FileExtension, sourceFile.Length, cancellationToken).ConfigureAwait(false))
+            if (options.Verify && !await _archiveVerifier.VerifyAsync(partialPath, strategy.FileExtension, originalSize, cancellationToken).ConfigureAwait(false))
             {
                 // Kept for inspection (ADR-0003) under a name that neither counts
                 // as an archive nor blocks the next run.
@@ -305,7 +313,7 @@ internal class CompressService
                 {
                     SourcePath = sourceFile.FullName,
                     OutputPath = outputPath,
-                    OriginalSize = sourceFile.Length,
+                    OriginalSize = originalSize,
                     CompressedSize = compressedSize,
                     Success = false,
                     ErrorMessage = "Archive verification failed."
@@ -320,7 +328,7 @@ internal class CompressService
                 "Compressed {Source} -> {Output} ({OriginalSize:N0} -> {CompressedSize:N0} bytes)",
                 sourceFile.FullName,
                 outputPath,
-                sourceFile.Length,
+                originalSize,
                 compressedSize
             );
 
@@ -328,7 +336,7 @@ internal class CompressService
             {
                 SourcePath = sourceFile.FullName,
                 OutputPath = outputPath,
-                OriginalSize = sourceFile.Length,
+                OriginalSize = originalSize,
                 CompressedSize = compressedSize,
                 Success = true
             };
@@ -347,7 +355,7 @@ internal class CompressService
             {
                 SourcePath = sourceFile.FullName,
                 OutputPath = outputPath,
-                OriginalSize = sourceFile.Length,
+                OriginalSize = originalSize,
                 Success = false,
                 ErrorMessage = ex.Message
             };

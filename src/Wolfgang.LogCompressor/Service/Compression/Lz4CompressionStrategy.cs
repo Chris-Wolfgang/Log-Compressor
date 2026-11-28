@@ -46,7 +46,7 @@ internal sealed class Lz4CompressionStrategy : ICompressionStrategy
     )
     {
         _ = entryName; // Not used by single-stream LZ4 format
-        var lz4Stream = LZ4Stream.Encode(outputStream, _level, leaveOpen: true);
+        var lz4Stream = LZ4Stream.Encode(outputStream, NewEncoderSettings(), leaveOpen: true);
         await using var lz4StreamDisposal = lz4Stream.ConfigureAwait(false);
         // K4os emits NOTHING (not even the frame header/end mark) when no
         // write ever reaches the encoder, so an empty source would produce a
@@ -54,6 +54,21 @@ internal sealed class Lz4CompressionStrategy : ICompressionStrategy
         // valid frame (11 bytes: magic + descriptor + end mark).
         await lz4Stream.WriteAsync(ReadOnlyMemory<byte>.Empty, cancellationToken).ConfigureAwait(false);
         await inputStream.CopyToAsync(lz4Stream, cancellationToken).ConfigureAwait(false);
+    }
+
+
+
+    private LZ4EncoderSettings NewEncoderSettings()
+    {
+        // LZ4 frames carry no checksum unless the encoder asks for one; without
+        // it a flipped byte decodes without error. The K4os decoder verifies
+        // both and throws InvalidDataException on a mismatch (#448).
+        return new LZ4EncoderSettings
+        {
+            CompressionLevel = _level,
+            ContentChecksum = true,
+            BlockChecksum = true
+        };
     }
 
 
@@ -66,7 +81,7 @@ internal sealed class Lz4CompressionStrategy : ICompressionStrategy
         CancellationToken cancellationToken = default
     )
     {
-        var lz4Stream = LZ4Stream.Encode(outputStream, _level, leaveOpen: true);
+        var lz4Stream = LZ4Stream.Encode(outputStream, NewEncoderSettings(), leaveOpen: true);
         await using var lz4StreamDisposal = lz4Stream.ConfigureAwait(false);
         // Stryker disable once Boolean : equivalent - the TarWriter is disposed first (LIFO), so leaveOpen: false only disposes the compression stream one statement before its own await using does.
         var tarWriter = new TarWriter(lz4Stream, leaveOpen: true);

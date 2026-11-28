@@ -21,6 +21,27 @@ namespace Wolfgang.LogCompressor.Service;
 internal sealed class ProcessLock : IDisposable
 {
     /// <summary>
+    /// Why the last <see cref="TryAcquire"/> returned <see langword="false"/>
+    /// (<see cref="ProcessLockFailure.None"/> after a success or before any attempt).
+    /// </summary>
+    internal ProcessLockFailure Failure { get; private set; }
+
+
+
+    /// <summary>
+    /// The message of the exception behind <see cref="Failure"/>, if any.
+    /// </summary>
+    internal string? FailureMessage { get; private set; }
+
+
+
+    /// <summary>
+    /// The full path of the lock file this instance claims.
+    /// </summary>
+    internal string LockFilePath => _lockFilePath;
+
+
+    /// <summary>
     /// Name of the lock file created in the locked directory. Compression and
     /// bundling exclude this file from enumeration so a run never tries to
     /// compress (and delete) its own live lock.
@@ -146,8 +167,17 @@ internal sealed class ProcessLock : IDisposable
 
             WriteDiagnostics(_lockStream);
 
+            Failure = ProcessLockFailure.None;
+            FailureMessage = null;
             _logger.LogDebug("Lock acquired: {Path}", _lockFilePath);
             return true;
+        }
+        catch (DirectoryNotFoundException ex)
+        {
+            // The directory to lock does not exist (a typo in a source path
+            // whose parent is missing): not another instance (#447).
+            _logger.LogWarning(ex, "Cannot create the lock file, its directory does not exist. Lock file: {Path}", _lockFilePath);
+            return Fail(ProcessLockFailure.DirectoryNotFound, ex);
         }
         catch (IOException ex)
         {
@@ -157,7 +187,7 @@ internal sealed class ProcessLock : IDisposable
                 "Another instance is already processing this directory. Lock file: {Path}",
                 _lockFilePath
             );
-            return false;
+            return Fail(ProcessLockFailure.AlreadyHeld, ex);
         }
         catch (UnauthorizedAccessException ex)
         {
@@ -171,8 +201,17 @@ internal sealed class ProcessLock : IDisposable
                 "Cannot create the lock file (access denied — is the directory read-only?). Use --no-lock to skip locking. Lock file: {Path}",
                 _lockFilePath
             );
-            return false;
+            return Fail(ProcessLockFailure.CannotCreate, ex);
         }
+    }
+
+
+
+    private bool Fail(ProcessLockFailure failure, Exception ex)
+    {
+        Failure = failure;
+        FailureMessage = ex.Message;
+        return false;
     }
 
 

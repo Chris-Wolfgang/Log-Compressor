@@ -54,8 +54,7 @@ internal class Bundle : SharedOptions
 
         if (!options.NoLock && !processLock.TryAcquire())
         {
-            await console.Error.WriteLineAsync("Another instance is already processing this directory.");
-            return ExitCode.AlreadyRunning;
+            return await LockFailureConsole.ReportAsync(console, processLock, options.SourcePath).ConfigureAwait(false);
         }
 
         try

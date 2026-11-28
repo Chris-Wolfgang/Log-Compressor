@@ -263,6 +263,13 @@ internal abstract class SharedOptions
             return false;
         }
 
+        // A swapped pair matches nothing and would exit 0 like a quiet day (#449).
+        if (ParseDateTime(MinDateTime) > ParseDateTime(MaxDateTime))
+        {
+            console.Error.WriteLine("Error: --min-datetime must not be later than --max-datetime.");
+            return false;
+        }
+
         if (!TryParseFormat(Format, out _))
         {
             console.Error.WriteLine($"Error: Unsupported compression format: '{Format}'. Supported: zip, gz, brotli, zstd, lz4");

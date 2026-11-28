@@ -202,6 +202,44 @@ public sealed class SharedOptionsValidationTests
 
 
     [Fact]
+    public void ValidateOptions_when_minDateTimeLaterThanMaxDateTime_expected_falseWithError()
+    {
+        var console = Substitute.For<IConsole>();
+        var error = new StringWriter();
+        console.Error.Returns(error);
+
+        var options = new TestOptions
+        {
+            Path = "/tmp",
+            MinDateTime = "2026-12-31",
+            MaxDateTime = "2026-01-01"
+        };
+
+        Assert.False(options.ValidateOptions(console));
+        Assert.Contains("--min-datetime must not be later than --max-datetime", error.ToString(), StringComparison.Ordinal);
+    }
+
+
+
+    [Fact]
+    public void ValidateOptions_when_minDateTimeEqualsMaxDateTime_expected_true()
+    {
+        var console = Substitute.For<IConsole>();
+        console.Error.Returns(new StringWriter());
+
+        var options = new TestOptions
+        {
+            Path = "/tmp",
+            MinDateTime = "2026-01-01",
+            MaxDateTime = "2026-01-01"
+        };
+
+        Assert.True(options.ValidateOptions(console));
+    }
+
+
+
+    [Fact]
     public void ValidateOptions_when_invalidMaxDateTime_expected_false()
     {
         var console = Substitute.For<IConsole>();

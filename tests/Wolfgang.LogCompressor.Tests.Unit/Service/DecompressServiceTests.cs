@@ -671,6 +671,31 @@ public sealed class DecompressServiceTests : IDisposable
 
 
 
+    [Theory]
+    [InlineData("bad.br")]
+    [InlineData("bad.tar.br")]
+    public async Task ExecuteAsync_when_brotliStreamCorrupt_expected_archiveSkippedAndRunContinues(string badName)
+    {
+        // BrotliStream throws InvalidOperationException ("Decoder ran into
+        // invalid data") for corrupt input; under the default --on-error skip
+        // the bad archive fails and the next one is still extracted (#443).
+        var dir = _tempDir.Path;
+        var corrupt = Enumerable.Repeat((byte)0xFF, 64).ToArray();
+
+        var bad = SetupSingleArchive(badName, corrupt);
+        var good = SetupSingleArchive("good.gz", GzBytes("good"));
+        _fileSystem.FileExists(dir).Returns(returnThis: false);
+        _fileSystem.EnumerateFiles(dir, "*", SearchOption.TopDirectoryOnly).Returns([bad, good]);
+
+        var results = await _sut.ExecuteAsync(new DecompressionOptions { SourcePath = dir });
+
+        Assert.Equal(2, results.Count);
+        Assert.False(results[0].Success);
+        Assert.True(results[1].Success);
+    }
+
+
+
     [Fact]
     public async Task ExecuteAsync_when_outputPathGiven_expected_entriesWrittenUnderOutputPath()
     {

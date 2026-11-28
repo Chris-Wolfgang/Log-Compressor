@@ -70,4 +70,36 @@ public sealed class BundleServiceResolveTargetTests
         Assert.Equal(output, outputDirectory);
         Assert.Equal("archive", folderName);
     }
+
+
+
+    [Fact]
+    public void GetEntryName_when_fileSource_expected_fileName()
+    {
+        var file = Path.Combine(Path.GetTempPath(), "logs", "app.log");
+
+        Assert.Equal("app.log", BundleService.GetEntryName(file, sourceIsFile: true, file));
+    }
+
+
+
+    [Fact]
+    public void GetEntryName_when_fileInSubdirectoryOfDirectorySource_expected_relativePathWithForwardSlashes()
+    {
+        // Same-named files in different subdirectories must stay distinct (#441).
+        var source = Path.Combine(Path.GetTempPath(), "logs");
+
+        Assert.Equal("a/app.log", BundleService.GetEntryName(source, sourceIsFile: false, Path.Combine(source, "a", "app.log")));
+        Assert.Equal("top.log", BundleService.GetEntryName(source, sourceIsFile: false, Path.Combine(source, "top.log")));
+    }
+
+
+
+    [Fact]
+    public void GetEntryName_when_fileOutsideDirectorySource_expected_fileName()
+    {
+        var source = Path.Combine(Path.GetTempPath(), "logs");
+
+        Assert.Equal("other.log", BundleService.GetEntryName(source, sourceIsFile: false, Path.Combine(Path.GetTempPath(), "elsewhere", "other.log")));
+    }
 }

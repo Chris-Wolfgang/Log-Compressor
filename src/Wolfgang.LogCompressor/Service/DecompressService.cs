@@ -311,7 +311,7 @@ internal class DecompressService
 
 
 
-    private string ResolveDestination(string outputDir, string entryName, DecompressionOptions options)
+    private string ResolveDestination(string outputDir, string entryName, DecompressionOptions options, ISet<string>? extracted = null)
     {
         // Confine every entry to the destination (zip-slip / tar-slip guard):
         // the resolved full path must stay under the destination directory.
@@ -331,6 +331,15 @@ internal class DecompressService
             throw new InvalidDataException($"Archive entry escapes the destination directory: {entryName}");
         }
 
+        // An archive that names the same file twice (a recursive bundle of an
+        // earlier version stored bare file names) would be extracted over itself
+        // and then deleted, losing all but the last copy: fail it even under
+        // --force, so the archive is kept (#441).
+        if (extracted is not null && !extracted.Add(destination))
+        {
+            throw new InvalidDataException($"Archive contains more than one entry for {destination}; extract it with another tool to keep every copy.");
+        }
+
         if (_fileSystem.FileExists(destination) && !options.Force)
         {
             throw new IOException($"Extraction target already exists: {destination} (use --force to overwrite)");
@@ -343,6 +352,15 @@ internal class DecompressService
         }
 
         return destination;
+    }
+
+
+
+    private static HashSet<string> NewEntrySet()
+    {
+        // Windows and macOS file systems are case-insensitive by default, so
+        // "App.log" and "app.log" are one file there.
+        return new HashSet<string>(OperatingSystem.IsLinux() ? StringComparer.Ordinal : StringComparer.OrdinalIgnoreCase);
     }
 
 
@@ -363,6 +381,8 @@ internal class DecompressService
             var zip = await ZipArchive.CreateAsync(stream, ZipArchiveMode.Read, leaveOpen: true, entryNameEncoding: null, cancellationToken).ConfigureAwait(false);
             await using var zipDisposal = zip.ConfigureAwait(false);
 
+            var extracted = NewEntrySet();
+
             foreach (var entry in zip.Entries)
             {
                 // Directory entries have an empty Name; their paths are
@@ -372,7 +392,7 @@ internal class DecompressService
                     continue;
                 }
 
-                var destination = ResolveDestination(outputDir, entry.FullName, options);
+                var destination = ResolveDestination(outputDir, entry.FullName, options, extracted);
 
                 var entryStream = await entry.OpenAsync(cancellationToken).ConfigureAwait(false);
                 await using (entryStream.ConfigureAwait(false))
@@ -406,6 +426,7 @@ internal class DecompressService
             {
                 var tar = new TarReader(decompressed);
                 await using var tarDisposal = tar.ConfigureAwait(false);
+                var extracted = NewEntrySet();
 
                 while (await tar.GetNextEntryAsync(cancellationToken: cancellationToken).ConfigureAwait(false) is { } entry)
                 {
@@ -414,7 +435,7 @@ internal class DecompressService
                         continue;
                     }
 
-                    var destination = ResolveDestination(outputDir, entry.Name, options);
+                    var destination = ResolveDestination(outputDir, entry.Name, options, extracted);
 
                     if (entry.DataStream is null)
                     {

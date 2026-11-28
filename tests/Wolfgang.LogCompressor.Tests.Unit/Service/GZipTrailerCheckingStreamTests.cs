@@ -99,9 +99,7 @@ public sealed class GZipTrailerCheckingStreamTests
         byte[] archive = [0x1F, 0x8B, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xFF, 0x03, 0x00];
         using var sut = new GZipTrailerCheckingStream(new MemoryStream(archive));
 
-        var ex = Record.Exception(() => sut.Read(new byte[16], 0, 16));
-
-        Assert.IsType<InvalidDataException>(ex);
+        Assert.Throws<InvalidDataException>(() => sut.Read(new byte[16], 0, 16));
     }
 
 

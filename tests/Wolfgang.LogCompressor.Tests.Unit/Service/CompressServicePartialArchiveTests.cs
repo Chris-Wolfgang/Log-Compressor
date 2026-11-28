@@ -98,6 +98,25 @@ public sealed class CompressServicePartialArchiveTests : IDisposable
 
 
     [Fact]
+    public async Task ExecuteAsync_when_sourceCannotBeDeleted_expected_publishedArchiveRemoved()
+    {
+        // #442: a source held open without delete sharing is archived but not
+        // deleted; the archive must not stay at the final name and block every
+        // later run with "Output archive already exists".
+        _fileSystem.When(f => f.MoveFile(_partial, _output, false)).Do(_ => _fileSystem.FileExists(_output).Returns(returnThis: true));
+        _fileSystem.When(f => f.DeleteFile(_source)).Do(_ => throw new IOException("in use"));
+
+        var results = await _sut.ExecuteAsync(new CompressionOptions { SourcePath = _source });
+
+        var result = Assert.Single(results);
+        Assert.False(result.Success);
+        Assert.Equal("in use", result.ErrorMessage);
+        _fileSystem.Received(1).DeleteFile(_output);
+    }
+
+
+
+    [Fact]
     public async Task ExecuteAsync_when_writeFails_expected_partialDeletedAndNothingAtFinalName()
     {
         _strategy

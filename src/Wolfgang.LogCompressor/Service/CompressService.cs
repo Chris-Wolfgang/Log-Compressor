@@ -321,7 +321,20 @@ internal class CompressService
             }
 
             _fileSystem.MoveFile(partialPath, outputPath, overwrite: false);
-            _fileSystem.DeleteFile(sourceFile.FullName);
+
+            try
+            {
+                _fileSystem.DeleteFile(sourceFile.FullName);
+            }
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+            {
+                // The source is still there (held open without delete sharing,
+                // read-only): take the just-published archive back, so a failed
+                // item leaves no archive that blocks every later run with
+                // "Output archive already exists" (#442).
+                ArchiveWorkFile.DeleteQuietly(_fileSystem, _logger, outputPath);
+                throw;
+            }
 
             _logger.LogInformation
             (

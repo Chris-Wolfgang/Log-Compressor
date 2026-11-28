@@ -75,6 +75,44 @@ public sealed class BundleServicePartialArchiveTests : IDisposable
 
 
     [Fact]
+    public async Task ExecuteAsync_when_firstSourceCannotBeDeleted_expected_publishedArchiveRemoved()
+    {
+        // #442: nothing has been deleted yet, so the archive is taken back.
+        _fileSystem.When(f => f.MoveFile(_partial, _output, false)).Do(_ => _fileSystem.FileExists(_output).Returns(returnThis: true));
+        _fileSystem.When(f => f.DeleteFile(_source)).Do(_ => throw new IOException("in use"));
+
+        var result = await _sut.ExecuteAsync(new CompressionOptions { SourcePath = Dir });
+
+        Assert.False(result.Success);
+        Assert.Equal("in use", result.ErrorMessage);
+        _fileSystem.Received(1).DeleteFile(_output);
+    }
+
+
+
+    [Fact]
+    public async Task ExecuteAsync_when_laterSourceCannotBeDeleted_expected_archiveKeptAsOnlyCopyOfDeletedSources()
+    {
+        // Once a source is deleted the archive is its only copy: it stays.
+        var second = _tempDir.WriteFile("b.log", "more");
+        var secondInfo = new FileInfo(second);
+        _fileSystem.EnumerateFiles(Dir, "*", SearchOption.TopDirectoryOnly).Returns([_source, second]);
+        _fileSystem.GetFileInfo(second).Returns(secondInfo);
+        _fileSystem.OpenRead(second).Returns(_ => new MemoryStream("more"u8.ToArray()));
+        StubFilterPassThrough([new FileInfo(_source), secondInfo]);
+        _fileSystem.When(f => f.MoveFile(_partial, _output, false)).Do(_ => _fileSystem.FileExists(_output).Returns(returnThis: true));
+        _fileSystem.When(f => f.DeleteFile(second)).Do(_ => throw new IOException("in use"));
+
+        var result = await _sut.ExecuteAsync(new CompressionOptions { SourcePath = Dir });
+
+        Assert.False(result.Success);
+        _fileSystem.Received(1).DeleteFile(_source);
+        _fileSystem.DidNotReceive().DeleteFile(_output);
+    }
+
+
+
+    [Fact]
     public async Task ExecuteAsync_when_bundleVerifies_expected_writtenAsPartialThenMovedToFinalName()
     {
         var result = await _sut.ExecuteAsync(new CompressionOptions { SourcePath = Dir, Verify = true });

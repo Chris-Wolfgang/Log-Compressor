@@ -138,7 +138,7 @@ public sealed class Lz4CompressionStrategyTests
         var corrupt = outputStream.ToArray();
         corrupt[corrupt.Length / 2] ^= 0x01;
 
-        await using var decoder = K4os.Compression.LZ4.Streams.LZ4Stream.Decode(new MemoryStream(corrupt));
+        await using var decoder = LZ4Stream.Decode(new MemoryStream(corrupt));
         await Assert.ThrowsAsync<InvalidDataException>(() => decoder.CopyToAsync(Stream.Null));
     }
 
@@ -156,7 +156,7 @@ public sealed class Lz4CompressionStrategyTests
         var corrupt = outputStream.ToArray();
         corrupt[corrupt.Length / 2] ^= 0x01;
 
-        await using var decoder = K4os.Compression.LZ4.Streams.LZ4Stream.Decode(new MemoryStream(corrupt));
+        await using var decoder = LZ4Stream.Decode(new MemoryStream(corrupt));
         await Assert.ThrowsAsync<InvalidDataException>(() => decoder.CopyToAsync(Stream.Null));
     }
 }

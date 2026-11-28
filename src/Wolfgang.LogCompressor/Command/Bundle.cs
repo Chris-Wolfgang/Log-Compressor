@@ -60,6 +60,11 @@ internal class Bundle : SharedOptions
 
         try
         {
+            // Resolve where retention looks BEFORE the bundle runs: a bundled
+            // file source is deleted on success, and resolved afterwards it
+            // would be taken for a directory named "app.log" (#446).
+            var (archiveDir, folderName) = BundleService.ResolveTarget(options.SourcePath, File.Exists(options.SourcePath), options.OutputPath);
+
             var started = Stopwatch.GetTimestamp();
             var result = await bundleService.ExecuteAsync(options, cancellationToken).ConfigureAwait(false);
             var elapsed = Stopwatch.GetElapsedTime(started);
@@ -98,7 +103,6 @@ internal class Bundle : SharedOptions
                 // Scan the directory the bundle was written to (for a directory
                 // source that is its PARENT), and only archives named like this
                 // bundle's: other files there belong to someone else (#352).
-                var (archiveDir, folderName) = BundleService.ResolveTarget(options.SourcePath, File.Exists(options.SourcePath), options.OutputPath);
                 retentionService.DeleteOldArchives(archiveDir, options.DeleteArchivesOlderThanDays.Value, SearchOption.TopDirectoryOnly, options.NamePrefix ?? folderName);
             }
 

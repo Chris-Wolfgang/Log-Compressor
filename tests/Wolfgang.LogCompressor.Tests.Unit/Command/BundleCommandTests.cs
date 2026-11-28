@@ -429,6 +429,42 @@ public sealed class BundleCommandTests : IDisposable
 
 
     [Fact]
+    public async Task OnExecuteAsync_when_fileSourceWithRetention_expected_oldArchiveOfThatFileDeleted()
+    {
+        // The bundle deletes a file source on success, so the retention target
+        // must be resolved before the bundle runs; afterwards the base name
+        // would be "app.log" and nothing would match (#446).
+        var source = Path.Combine(_temp.Path, "app.log");
+        await File.WriteAllTextAsync(source, "log");
+        var own = Path.Combine(_temp.Path, "app-2020-01-01_00-00-00 to 2020-01-01_00-00-00.zip");
+        await File.WriteAllTextAsync(own, "x");
+        File.SetLastWriteTime(own, DateTime.Today.AddDays(-90));
+        _retentionFileSystem.GetFileInfo(own).Returns(new FileInfo(own));
+
+        var archiveDir = Path.GetFullPath(_temp.Path);
+        _retentionFileSystem.DirectoryExists(archiveDir).Returns(returnThis: true);
+        _retentionFileSystem.EnumerateFiles(archiveDir, "*", SearchOption.TopDirectoryOnly).Returns([own]);
+        _bundleService.ExecuteAsync(Arg.Any<CompressionOptions>(), Arg.Any<CancellationToken>())
+            .Returns
+            (
+                _ =>
+                {
+                    File.Delete(source);
+                    return new CompressionResult { SourcePath = source, OutputPath = Path.Combine(_temp.Path, "app-new.zip"), Success = true };
+                }
+            );
+
+        var command = new Bundle { Path = source, NoLock = true, DeleteArchivesOlderThan = 30 };
+
+        var result = await command.OnExecuteAsync(_console, _logger, _bundleService, _reportService, _retentionService);
+
+        Assert.Equal(ExitCode.Success, result);
+        _retentionFileSystem.Received(1).DeleteFile(own);
+    }
+
+
+
+    [Fact]
     public async Task OnExecuteAsync_when_noFilesMatched_expected_successAndEmptyReport()
     {
         _bundleService.ExecuteAsync(Arg.Any<CompressionOptions>(), Arg.Any<CancellationToken>())

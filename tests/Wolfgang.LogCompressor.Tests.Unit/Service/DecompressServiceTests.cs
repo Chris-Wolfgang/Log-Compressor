@@ -27,6 +27,16 @@ public sealed class DecompressServiceTests : IDisposable
             _written[call.Arg<string>()] = stream;
             return stream;
         });
+
+        // Entries are written under .partial and then moved (#444): follow the
+        // move so _written is keyed by the final names.
+        _fileSystem.When(f => f.MoveFile(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<bool>())).Do(call =>
+        {
+            if (_written.Remove(call.ArgAt<string>(0), out var stream))
+            {
+                _written[call.ArgAt<string>(1)] = stream;
+            }
+        });
     }
 
 
@@ -203,6 +213,44 @@ public sealed class DecompressServiceTests : IDisposable
         Assert.False(result.Success);
         Assert.Contains("more than one entry", result.ErrorMessage, StringComparison.Ordinal);
         _fileSystem.DidNotReceive().DeleteFile(archive);
+    }
+
+
+
+    [Fact]
+    public async Task ExecuteAsync_when_entryFailsMidway_expected_partialDeletedAndNothingAtFinalName()
+    {
+        // #444: a corrupt stream fails while the entry is being written; the
+        // truncated output must not stay at the final name.
+        var archive = SetupSingleArchive("bad.br", Enumerable.Repeat((byte)0xFF, 64).ToArray());
+        var destination = Path.Combine(_tempDir.Path, "bad");
+        var partial = destination + ".partial";
+        _fileSystem.FileExists(destination).Returns(returnThis: false);
+        _fileSystem.When(f => f.CreateWrite(partial)).Do(_ => _fileSystem.FileExists(partial).Returns(returnThis: true));
+
+        var results = await _sut.ExecuteAsync(new DecompressionOptions { SourcePath = archive });
+
+        Assert.False(Assert.Single(results).Success);
+        _fileSystem.Received(1).CreateWrite(partial);
+        _fileSystem.Received(1).DeleteFile(partial);
+        _fileSystem.DidNotReceive().MoveFile(Arg.Any<string>(), destination, Arg.Any<bool>());
+        _fileSystem.DidNotReceive().CreateWrite(destination);
+    }
+
+
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task ExecuteAsync_when_entryComplete_expected_partialMovedToFinalNameWithForceAsOverwrite(bool force)
+    {
+        var archive = SetupSingleArchive("app.gz", GzBytes("log line"));
+        var destination = Path.Combine(_tempDir.Path, "app");
+
+        var results = await _sut.ExecuteAsync(new DecompressionOptions { SourcePath = archive, Force = force });
+
+        Assert.True(Assert.Single(results).Success);
+        _fileSystem.Received(1).MoveFile(destination + ".partial", destination, force);
     }
 
 

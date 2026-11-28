@@ -306,6 +306,40 @@ public sealed class CompressServiceTests : IDisposable
 
 
     [Fact]
+    public async Task ExecuteAsync_when_verifyDisabled_and_sourceReallyDeleted_expected_successWithOriginalSize()
+    {
+        // #440: nothing reads the lazy FileInfo.Length before the delete when
+        // the verifier is skipped and the namer is stubbed (as with
+        // --timestamp compressed and no date filter), so the delete must be real.
+        var tempFile = CreateTempFile();
+        var fileInfo = new FileInfo(tempFile);
+        var expectedSize = new FileInfo(tempFile).Length;
+
+        _fileSystem.FileExists(tempFile).Returns(returnThis: true);
+        _fileSystem.GetFileInfo(tempFile).Returns(fileInfo);
+        _fileSystem.When(fs => fs.DeleteFile(tempFile)).Do(_ => File.Delete(tempFile));
+        StubFilterPassThrough([fileInfo]);
+        _fileNamer.GetCompressedFileName(fileInfo, "zip", Arg.Any<TimestampSource>(), Arg.Any<string?>()).Returns("out.zip");
+        _fileSystem.OpenRead(tempFile).Returns(new MemoryStream("content"u8.ToArray()));
+        _fileSystem.CreateWrite(Arg.Any<string>()).Returns(new MemoryStream());
+
+        var options = new CompressionOptions
+        {
+            SourcePath = tempFile,
+            Verify = false,
+            TimestampSource = TimestampSource.Compressed
+        };
+        var results = await _sut.ExecuteAsync(options);
+
+        var result = Assert.Single(results);
+        Assert.True(result.Success, result.ErrorMessage);
+        Assert.Equal(expectedSize, result.OriginalSize);
+        Assert.False(File.Exists(tempFile));
+    }
+
+
+
+    [Fact]
     public async Task ExecuteAsync_when_recurseDisabled_expected_topDirectoryOnlyEnumeration()
     {
         var dir = Path.GetTempPath();

@@ -1,4 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
 using McMaster.Extensions.CommandLineUtils;
 using Microsoft.Extensions.Logging;
 
@@ -12,7 +11,6 @@ namespace Wolfgang.LogCompressor.Command;
     Name = "compress",
     Description = "Generate a compress configuration file"
 )]
-[ExcludeFromCodeCoverage]
 internal class InitCompress
 {
     // The generated starter file. A const keeps OnExecuteAsync focused on I/O

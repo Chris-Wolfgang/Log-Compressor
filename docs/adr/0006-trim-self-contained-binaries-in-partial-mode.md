@@ -1,6 +1,6 @@
 # ADR-0006: Trim the self-contained binaries, in partial mode, behind a smoke test
 
-- **Status:** Accepted
+- **Status:** Accepted; its Native AOT bullets are superseded by [ADR-0007](0007-ship-native-aot-executables.md)
 - **Date:** 2026-10-17
 
 ## Context
@@ -38,7 +38,8 @@ in the csproj, conditional on `SelfContained`).
   help, a compress and decompress round trip for every format with SHA-256 verification,
   bundling, the JSON report, the exit code of each kind of invalid input, and an edited `init`
   response file) and exits non-zero on any failure. CI runs it against the trimmed binary.
-- Native AOT stays out. McMaster 5.1's AOT source generator does not compile against this app's
+- *(Superseded by [ADR-0007](0007-ship-native-aot-executables.md): logc has shipped as a Native AOT
+  executable since #375, with the generator removed.)* Native AOT stays out. McMaster 5.1's AOT source generator does not compile against this app's
   command layer (service parameters on `OnExecuteAsync`, `required` members, a private version
   member), and the generic-host integration is not covered by it.
 
@@ -55,4 +56,5 @@ in the csproj, conditional on `SelfContained`).
   test on those runners is their check). (The open question about Serilog.Exceptions under
   trimming is moot: the package was never used and was removed in #355.)
 - Revisit full trimming and AOT together with a move off McMaster (see ADR-0002), which is the
-  only dependency that blocks either.
+  only dependency that blocks either. *(AOT was adopted without that move: see
+  [ADR-0007](0007-ship-native-aot-executables.md).)*

@@ -13,4 +13,5 @@ Start from [TEMPLATE.md](TEMPLATE.md).
 | [0003](0003-verify-then-delete-original.md) | Compress → verify → only then delete the original | Accepted |
 | [0004](0004-locale-aware-datetime-parsing.md) | `--min-datetime` / `--max-datetime` parse with the local culture | Accepted |
 | [0005](0005-no-trimmed-or-aot-binaries.md) | Ship untrimmed self-contained binaries — no PublishTrimmed / PublishAot | Superseded by 0006 |
-| [0006](0006-trim-self-contained-binaries-in-partial-mode.md) | Trim the self-contained binaries, in partial mode, behind a smoke test | Accepted |
+| [0006](0006-trim-self-contained-binaries-in-partial-mode.md) | Trim the self-contained binaries, in partial mode, behind a smoke test | Accepted (AOT bullets superseded by 0007) |
+| [0007](0007-ship-native-aot-executables.md) | Ship logc as a Native AOT executable per RID | Accepted |

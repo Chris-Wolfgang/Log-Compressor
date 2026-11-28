@@ -88,7 +88,9 @@ gh attestation verify logc-win-x64.zip --repo Chris-Wolfgang/Log-Compressor
 Each release also attaches an SBOM (`logc.bom.json`) and a
 `reproducible-build-manifest.json` with the deterministic-build hash —
 [docs/REPRODUCIBLE-BUILD.md](docs/REPRODUCIBLE-BUILD.md) shows how to rebuild
-from source and confirm the release matches it byte for byte.
+the managed `logc.dll` from source and confirm it matches the release's hash byte
+for byte. The shipped Native AOT executables are covered by the provenance
+attestation above, not by that hash.
 
 ### Build from source
 

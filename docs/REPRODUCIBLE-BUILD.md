@@ -45,10 +45,13 @@ SDK version is identical. See [Reproduce it](#reproduce-it) for how to pin it.
 > **The downloadable release archives (`logc-win-x64.zip`,
 > `logc-linux-x64.tar.gz`, `logc-linux-arm64.tar.gz`, `logc-osx-arm64.tar.gz`,
 > `logc-osx-x64.tar.gz`) are *not* byte-for-byte
-> reproducible.** A self-contained single-file bundle embeds the .NET runtime
-> and the archives record per-entry timestamps, so their hashes vary between
-> builds. The manifest lists their hashes for **download-integrity** checks;
-> the *build* is verified against the assembly.
+> reproducible.** Each one holds a Native AOT executable
+> ([ADR-0007](adr/0007-ship-native-aot-executables.md)), which contains neither
+> the .NET runtime as a bundle nor `logc.dll`, and the archives record
+> per-entry timestamps, so their hashes vary between builds. The manifest lists
+> their hashes for **download-integrity** checks. The `logc.dll` hash proves
+> that the tagged source builds reproducibly into the managed assembly; it does
+> not prove the bytes of the shipped executables.
 
 For the release archives, the stronger guarantee is the **SLSA provenance
 attestation**: every archive is attested at build time with the workflow's

@@ -241,12 +241,15 @@ internal class DecompressService
         return kind switch
         {
             ArchiveKind.Zip => await ExtractZipAsync(archive, outputDir, options, cancellationToken).ConfigureAwait(false),
+            // Stryker disable once Boolean : equivalent - ExtractTarAsync/ExtractRawAsync dispose the decompression stream and the archive stream with their own await using, so leaveOpen: false only adds a second, no-op dispose.
             ArchiveKind.TarGz => await ExtractTarAsync(archive, outputDir, options, static s => new GZipStream(s, CompressionMode.Decompress, leaveOpen: true), cancellationToken).ConfigureAwait(false),
             ArchiveKind.TarBrotli => await ExtractTarAsync(archive, outputDir, options, static s => new BrotliStream(s, CompressionMode.Decompress, leaveOpen: true), cancellationToken).ConfigureAwait(false),
             ArchiveKind.TarZstd => await ExtractTarAsync(archive, outputDir, options, static s => new ZstdSharp.DecompressionStream(s, leaveOpen: true), cancellationToken).ConfigureAwait(false),
             ArchiveKind.TarLz4 => await ExtractTarAsync(archive, outputDir, options, static s => K4os.Compression.LZ4.Streams.LZ4Stream.Decode(s, leaveOpen: true), cancellationToken).ConfigureAwait(false),
+            // Stryker disable once Boolean : equivalent - ExtractTarAsync/ExtractRawAsync dispose the decompression stream and the archive stream with their own await using, so leaveOpen: false only adds a second, no-op dispose.
             ArchiveKind.RawGz => await ExtractRawAsync(archive, outputDir, options, static s => new GZipStream(s, CompressionMode.Decompress, leaveOpen: true), cancellationToken).ConfigureAwait(false),
             ArchiveKind.RawBrotli => await ExtractRawAsync(archive, outputDir, options, static s => new BrotliStream(s, CompressionMode.Decompress, leaveOpen: true), cancellationToken).ConfigureAwait(false),
+            // Stryker disable once Boolean : equivalent - ExtractTarAsync/ExtractRawAsync dispose the decompression stream and the archive stream with their own await using, so leaveOpen: false only adds a second, no-op dispose.
             ArchiveKind.RawZstd => await ExtractRawAsync(archive, outputDir, options, static s => new ZstdSharp.DecompressionStream(s, leaveOpen: true), cancellationToken).ConfigureAwait(false),
             ArchiveKind.RawLz4 => await ExtractRawAsync(archive, outputDir, options, static s => K4os.Compression.LZ4.Streams.LZ4Stream.Decode(s, leaveOpen: true), cancellationToken).ConfigureAwait(false),
             // ArchiveKind.Unknown lands here: DetectByName and SniffKind both

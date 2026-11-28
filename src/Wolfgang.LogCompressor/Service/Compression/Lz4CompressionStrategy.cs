@@ -68,6 +68,7 @@ internal sealed class Lz4CompressionStrategy : ICompressionStrategy
     {
         var lz4Stream = LZ4Stream.Encode(outputStream, _level, leaveOpen: true);
         await using var lz4StreamDisposal = lz4Stream.ConfigureAwait(false);
+        // Stryker disable once Boolean : equivalent - the TarWriter is disposed first (LIFO), so leaveOpen: false only disposes the compression stream one statement before its own await using does.
         var tarWriter = new TarWriter(lz4Stream, leaveOpen: true);
         await using var tarWriterDisposal = tarWriter.ConfigureAwait(false);
 
@@ -77,6 +78,7 @@ internal sealed class Lz4CompressionStrategy : ICompressionStrategy
             // is written so only one source handle is open at a time.
             await using (stream.ConfigureAwait(false))
             {
+                // Stryker disable once Statement : equivalent - WriteEntryAsync receives the same token and throws on it before writing anything.
                 cancellationToken.ThrowIfCancellationRequested();
 
                 var entry = new PaxTarEntry(TarEntryType.RegularFile, entryName)

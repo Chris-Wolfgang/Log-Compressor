@@ -89,4 +89,36 @@ public sealed class ZipCompressionStrategyTests
         Assert.Single(archive.Entries);
         Assert.Equal(0, archive.Entries[0].Length);
     }
+
+
+
+    [Fact]
+    public async Task CompressFilesAsync_when_cancelledBetweenEntries_expected_noEntryCreatedForNextInput()
+    {
+        using var cts = new CancellationTokenSource();
+        using var outputStream = new MemoryStream();
+
+        await Assert.ThrowsAnyAsync<OperationCanceledException>
+        (
+            () => _sut.CompressFilesAsync(CancelAfterFirstEntryAsync(cts), outputStream, cts.Token)
+        );
+
+        // ZipArchive writes every entry created so far when it is disposed, so an
+        // entry created for the second input would show up here.
+        outputStream.Position = 0;
+        using var archive = new ZipArchive(outputStream, ZipArchiveMode.Read);
+        var entry = Assert.Single(archive.Entries);
+        Assert.Equal("file1.log", entry.Name);
+    }
+
+
+
+    private static async IAsyncEnumerable<(Stream Stream, string EntryName)> CancelAfterFirstEntryAsync(CancellationTokenSource cts)
+    {
+        yield return (new MemoryStream("File 1 content"u8.ToArray()), "file1.log");
+
+        await cts.CancelAsync();
+
+        yield return (new MemoryStream("File 2 content"u8.ToArray()), "file2.log");
+    }
 }

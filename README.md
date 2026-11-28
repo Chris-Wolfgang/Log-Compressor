@@ -119,7 +119,8 @@ logc compress /var/log/myapp --recurse --older-than 7
 
 ```bash
 logc bundle /var/log/myapp --recurse --min-datetime 2026-04-01 --max-datetime 2026-04-30 --format gz
-# Produces: /var/log/myapp/myapp-2026-04-01 to 2026-04-30.tar.gz
+# Produces (in the source's parent, named for the oldest and newest bundled file):
+#   /var/log/myapp-2026-04-01_00-00-12 to 2026-04-30_23-58-41.tar.gz
 ```
 
 ### Extract archives back out
